@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://wlcyyfycrbsc"]
+
+[ext_resource type="Script" uid="uid://cgrcb0jqj7gx2" path="res://gear_obstacle/gear_obstacle.gd" id="1_cqn30"]
+[ext_resource type="Texture2D" uid="uid://b2jm28dc7uxbp" path="res://Sprite/톱니바귀-removebg-preview.png" id="1_fxn5p"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cqn30"]
+radius = 208.61447
+
+[node name="gear_obstacle" type="AnimatableBody2D" unique_id=1789796318]
+scale = Vector2(0.5, 0.5)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_cqn30")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1513404881]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_fxn5p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=488063987]
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CircleShape2D_cqn30")
