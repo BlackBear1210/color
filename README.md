@@ -96,12 +96,15 @@ obstacle/
 **최상위 카테고리 폴더 → 세부 폴더** 순서로 생성 후 작업한다.
 ---
 ## Collision 구조 (Layer / Mask)
-| 오브젝트 | Layer | Mask | 설명 |
-|----------|-------|------|------|
-| Player | 1 | 2, 3 | 플랫폼·장애물과 충돌 |
-| Color Platform | 2 | - | 플레이어가 올라서는 지형 |
-| Gear Obstacle | 2 | - | 이동형 톱니바퀴 장애물 |
-| Falling Block | 2 | - | 낙하 블록 |
+### Layer / Mask 표
+| 오브젝트 | 노드 타입 | Layer | Mask | 설명 |
+|----------|-----------|-------|------|------|
+| Player | CharacterBody2D | 1 | 2, 3 | 플랫폼·장애물과 충돌 |
+| White TileMapLayer | TileMapLayer | 2 | - | 흰색 지형, 플레이어가 밟을 수 있음 |
+| Black TileMapLayer | TileMapLayer | 3 | - | 검은색 지형, 플레이어가 밟을 수 있음 |
+| Broken TileMapLayer | TileMapLayer | 2, 3 | 4 | 부서지는 타일 |
+| Gear Obstacle | AnimatableBody2D | 2 | - | 이동형 톱니바퀴 장애물 |
+| Falling Block | RigidBody2D | 2 | - | 낙하 블록 |
 ### 사망 판정 방식
 - **색상 플랫폼**: 플레이어 색상과 다른 색 타일을 밟으면 사망  
   → `get_slide_collision()` + 그룹(`black_tiles` / `white_tiles`) 판별
@@ -115,8 +118,8 @@ obstacle/
 | `player` | Player |
 | `obstacle` | Gear Obstacle |
 | `falling_blocks` | Falling Block |
-| `black_tiles` | 검은색 Color Platform |
-| `white_tiles` | 흰색 Color Platform |
+| `black_tiles` | Black TileMapLayer |
+| `white_tiles` | White TileMapLayer |
 | `camera` | Camera2D |
 ---
 ## 팀원 & 역할
