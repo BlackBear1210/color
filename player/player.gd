@@ -30,6 +30,7 @@ var jump_buffer_timer: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group("player")
 	update_player_color()
 
 
@@ -121,6 +122,10 @@ func check_color_tile_collision() -> void:
 		
 		if collider == null:
 			continue
+			
+		if collider.is_in_group("falling_blocks"):
+			die()
+			return
 		
 		if collider.is_in_group("obstacle"):
 			die()
@@ -133,6 +138,8 @@ func check_color_tile_collision() -> void:
 		if current_color == PlayerColor.BLACK and collider.is_in_group("white_tiles"):
 			die()
 			return
+		
+		
 
 
 func check_fall_death() -> void:
