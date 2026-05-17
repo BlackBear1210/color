@@ -399,5 +399,4 @@ STAGE_DATA = {
 - [ ] FloorLayer_black → 그룹 `black_tiles` 등록됨
 - [ ] FloorLayer_white → 그룹 `white_tiles` 등록됨
 
-> 맵 작업 중 게임을 직접 실행해서 확인하고 싶을 경우:  
-> `ui/` 폴더와 `game_manager.gd` 를 삭제한 뒤 실행하면 됩니다.
+
