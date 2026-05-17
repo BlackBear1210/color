@@ -17,7 +17,7 @@ enum PlayerColor {
 @export var jump_buffer_time: float = 0.12
 
 @export var respawn_position: Vector2 = Vector2(216, 464)
-@export var fall_limit: float = 600.0
+@export var fall_limit: float = 2000.0
 
 var last_direction: float = 0.0
 var current_color: PlayerColor = PlayerColor.BLACK
@@ -124,26 +124,29 @@ func check_color_tile_collision() -> void:
 			continue
 			
 		if collider.is_in_group("falling_blocks"):
+			print("낙하 블록에 사망")
 			die()
 			return
-		
+
 		if collider.is_in_group("obstacle"):
+			print("장애물에 사망")
 			die()
 			return
-		
+
 		if current_color == PlayerColor.WHITE and collider.is_in_group("black_tiles"):
+			print("흑타일 사망")
 			die()
 			return
-		
+
 		if current_color == PlayerColor.BLACK and collider.is_in_group("white_tiles"):
+			print("백타일 사망")
 			die()
 			return
-		
-		
 
 
 func check_fall_death() -> void:
 	if global_position.y > fall_limit:
+		print("낙사")
 		die()
 
 

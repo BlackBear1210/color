@@ -1,33 +1,18 @@
 [gd_scene format=3 uid="uid://b3v1edmqhqd75"]
 
 [ext_resource type="PackedScene" uid="uid://hbint5s5cqe" path="res://player/player.tscn" id="2_pjrb6"]
-[ext_resource type="PackedScene" uid="uid://yqno2pmn5xt2" path="res://area/area.tscn" id="3_xwkvk"]
-[ext_resource type="PackedScene" uid="uid://cese5a8gf0mfu" path="res://background/parallax_background.tscn" id="4_3wy1v"]
 [ext_resource type="PackedScene" uid="uid://bo2ri56x102em" path="res://camera/camera_2d.tscn" id="4_c651c"]
-[ext_resource type="PackedScene" uid="uid://wlcyyfycrbsc" path="res://obstacle/obstacle_gear/gear_obstacle.tscn" id="5_3wy1v"]
+[ext_resource type="PackedScene" uid="uid://jk3gm0yd3ve7" path="res://map/world_1/stage_1.tscn" id="5_kfbq2"]
 
 [node name="Main" type="Node2D" unique_id=1683136593]
-
-[node name="Player" parent="." unique_id=435997237 instance=ExtResource("2_pjrb6")]
-position = Vector2(216, 464)
+metadata/_edit_horizontal_guides_ = [-373.0]
 
 [node name="Camera2D" parent="." unique_id=1110488952 node_paths=PackedStringArray("target") instance=ExtResource("4_c651c")]
 position = Vector2(576, 325)
 target = NodePath("../Player")
 
-[node name="area" parent="." unique_id=2020636811 instance=ExtResource("3_xwkvk")]
-position = Vector2(0, 325)
+[node name="MapBlack" parent="." unique_id=29922680 instance=ExtResource("5_kfbq2")]
+position = Vector2(-2, 0)
 
-[node name="ParallaxBackground" parent="." unique_id=96986184 node_paths=PackedStringArray("target") instance=ExtResource("4_3wy1v")]
-target = NodePath("../Player")
-
-[node name="obstacle" type="Node2D" parent="." unique_id=1513043891]
-
-[node name="gear_obstacle" parent="obstacle" unique_id=1789796318 instance=ExtResource("5_3wy1v")]
-position = Vector2(368, 544)
-move_distance = 200.0
-
-[node name="gear_obstacle2" parent="obstacle" unique_id=1995071530 instance=ExtResource("5_3wy1v")]
-position = Vector2(104, 440)
-move_horizontal = false
-move_vertical = true
+[node name="Player" parent="." unique_id=435997237 instance=ExtResource("2_pjrb6")]
+position = Vector2(228, 448)
