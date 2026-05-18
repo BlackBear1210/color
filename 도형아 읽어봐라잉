@@ -1,0 +1,26 @@
+## 렌더링 순서 문제 (노드 순서)
+
+**증상:** 프로젝트 실행 시 검정 타일이 안 보이고 흰색 타일만 보임
+
+**원인:** Godot에서 같은 부모 노드 안의 자식들은 씬 트리 순서대로 렌더링됨. 나중에 선언된 노드가 위에 그려짐.
+
+Stage_1
+├── FloorLayer_black ← 먼저 그려짐 (아래)
+└── FloorLayer_white ← 나중에 그려짐 (위에 덮음) ← 이게 보임
+
+**해결:** Godot 에디터 씬 트리에서 FloorLayer_white를 FloorLayer_black 위로 드래그해서 순서 변경
+Stage_1
+├── FloorLayer_white ← 먼저 그려짐 (아래)
+└── FloorLayer_black ← 나중에 그려짐 (위에 덮음) ← 이게 보임
+
+---
+
+## 새 스테이지 추가 시 stage_base.gd 연결 방법
+
+1. 새 씬 생성 후 루트 노드를 `Node2D`로 설정
+2. 자식 노드로 `FloorLayer_white`, `FloorLayer_black` (TileMapLayer) 순서로 추가
+3. `FloorLayer_black` → 그룹 `black_tiles` 추가
+4. `FloorLayer_white` → 그룹 `white_tiles` 추가
+5. 루트 노드 선택 → 인스펙터 → Script 슬롯에 `res://map/stage_base.gd` 연결
+6. 씬 트리 순서: `FloorLayer_white`가 `FloorLayer_black`보다 **위**에 있어야 함
+7. 두 레이어에 동일한 타일을 겹쳐서 그리기  
