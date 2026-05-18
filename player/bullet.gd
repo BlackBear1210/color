@@ -24,28 +24,12 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is TileMapLayer:
-		if player_color == 1 and body == black_tilemap:
-			paint_tiles(black_tilemap, white_tilemap, Vector2i(9, 11))
-		elif player_color == 0 and body == white_tilemap:
-			paint_tiles(white_tilemap, black_tilemap, Vector2i(22, 13))
+		print("타일 충돌: ", body.name, " / player_color: ", player_color)
+		var is_target = (player_color == 1 and body == black_tilemap) or \
+						(player_color == 0 and body == white_tilemap)
+		if is_target:
+			var stage = get_tree().get_first_node_in_group("stage")
+			print("stage 찾음: ", stage)
+			if stage:
+				stage.flip_tiles(global_position)
 	queue_free()
-
-func paint_tiles(source: TileMapLayer, target: TileMapLayer, atlas_coords: Vector2i) -> void:
-	var local_pos = source.to_local(global_position)
-	var center = source.local_to_map(local_pos)
-	for dx in [-1, 0, 1]:
-		for dy in [-1, 0, 1]:
-			var tile_pos = center + Vector2i(dx, dy)
-			if tile_pos in source.get_used_cells():
-				source.erase_cell(tile_pos)
-				target.set_cell(tile_pos, 0, atlas_coords)
-	rebuild_physics(source)
-	rebuild_physics(target)
-
-func rebuild_physics(tilemap: TileMapLayer) -> void:
-	var cells: Dictionary = {}
-	for cell in tilemap.get_used_cells():
-		cells[cell] = tilemap.get_cell_atlas_coords(cell)
-	tilemap.clear()
-	for cell in cells:
-		tilemap.set_cell(cell, 0, cells[cell])
