@@ -400,3 +400,31 @@ STAGE_DATA = {
 - [ ] FloorLayer_white → 그룹 `white_tiles` 등록됨
 
 
+처음 시작할 때 (최초 1회)
+1. 프로젝트 받기 (master 기준)
+
+git clone https://github.com/BlackBear1210/color.git
+
+2. dev 브랜치 만들고 이동
+
+git checkout -b dev
+git push -u origin dev
+이후 작업할 때마다
+작업 전 — 최신 내용 받기
+
+git pull origin dev
+작업 후 — 올리기
+
+git add .
+git commit -m "작업 내용 설명"
+git push origin dev
+dev 브랜치가 이미 있을 때 (두 번째 팀원 또는 재접속 시)
+git clone https://github.com/BlackBear1210/color.git
+git checkout dev
+이렇게 하면 dev 브랜치로 바로 이동됩니다.
+
+현재 어느 브랜치인지 확인
+git branch
+* dev 라고 표시되면 현재 dev에 있는 거에요.
+
+
