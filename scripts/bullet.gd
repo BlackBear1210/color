@@ -8,8 +8,9 @@ extends Area2D
 ##   · 그 외 지형         → PaintSplat 이펙트 + 새 PaintMark 생성
 
 # ── 인스펙터 조절 파라미터 ────────────────────────────────────────────
-@export var speed: float          = 1400.0   # 발사 초기 속도 (px/s)
-@export var bullet_gravity: float = 600.0    # 중력 가속도 (px/s²). 0 이면 직선 비행.
+@export var speed: float               = 1400.0  # 발사 초기 속도 (px/s)
+@export var bullet_gravity: float      = 600.0   # 중력 가속도 (px/s²). 0 이면 직선 비행.
+@export var paint_overlap_radius: float = 5.0    # 이 반경 안의 기존 마크를 제거 (작을수록 촘촘히 칠해짐)
 
 # ── 런타임 변수 ───────────────────────────────────────────────────────
 var direction:    Vector2 = Vector2.RIGHT    # 발사 방향 (단위 벡터)
@@ -39,13 +40,13 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("paint_bodies"):
-		# 이미 페인트가 있는 자리 → 색만 덮어씌우기 (Node2D라 body_entered 는 안 잡힘,
-		# 아래 _spawn_mark 의 40px 제거 로직이 담당)
-		body.call_deferred("update_color", bullet_color)
+		# StaticBody2D(PaintMark 자식)이 감지된 경우 → update_color는 부모(PaintMark)에 있음
+		var target: Node = body if body.has_method("update_color") else body.get_parent()
+		if target.has_method("update_color"):
+			target.call_deferred("update_color", bullet_color)
 	elif not body.is_in_group("obstacle"):
-		# 빈 지형 → 순간 스플래시 이펙트 + 영구 페인트 마크 생성
 		_spawn_splat()
-		_spawn_mark()
+		_spawn_mark(body)
 	_safe_free()
 
 ## 순간 스플래시 이펙트: 0.22초 후 자동 삭제
@@ -53,27 +54,110 @@ func _spawn_splat() -> void:
 	var splat := PAINT_SPLAT.instantiate()
 	splat.set_color(bullet_color)
 	splat.global_position = global_position
-	# PaintOverlay 하위에 추가 (없으면 루트 씬)
 	var overlay := get_tree().current_scene.find_child("PaintOverlay", true, false)
 	var parent: Node = overlay if overlay else get_tree().current_scene
 	parent.call_deferred("add_child", splat)
 
 ## 영구 페인트 자국: "runtime_paint" 그룹 → 리스폰 시 일괄 제거
-func _spawn_mark() -> void:
-	var pos: Vector2 = global_position + direction * 6.0
+func _spawn_mark(terrain_body: Node = null) -> void:
+	var pos: Vector2 = global_position + direction * 25.0
 
-	# 반경 40px 내 기존 페인트 제거 → 한 지점에 한 겹만 칠해지는 느낌
+	# 반경 내 기존 페인트 제거 (paint_overlap_radius 로 조정)
 	for p in get_tree().get_nodes_in_group("runtime_paint"):
-		if p.global_position.distance_to(pos) < 40.0:
+		if p.global_position.distance_to(pos) < paint_overlap_radius:
 			p.queue_free()
 
 	var mark := PAINT_MARK.instantiate()
-	mark.paint_color     = bullet_color
-	mark.global_position = pos
+	mark.paint_color      = bullet_color
+	mark.global_position  = pos
+
+	# ① 1차: 플레이어 기준 (총알 방향)
+	# ② 2차: 실제 지형 폴리곤 엣지 법선으로 보정
+	var impact_dir := direction
+	if terrain_body:
+		var poly_node := _find_collision_polygon(terrain_body)
+		if poly_node:
+			impact_dir = _get_surface_normal(
+				poly_node.polygon,
+				poly_node.global_transform,
+				global_position,
+				direction
+			)
+			mark.setup_terrain_clip(poly_node.polygon, poly_node.global_transform)
+
+	mark.impact_direction = impact_dir
 
 	var overlay := get_tree().current_scene.find_child("PaintOverlay", true, false)
 	var parent: Node = overlay if overlay else get_tree().current_scene
 	parent.call_deferred("add_child", mark)
+
+## StaticBody 안의 모든 CollisionPolygon2D 중 충돌 지점에 가장 가까운 것을 반환
+func _find_collision_polygon(node: Node) -> CollisionPolygon2D:
+	# 모든 폴리곤 수집
+	var all_polys: Array[CollisionPolygon2D] = []
+	_collect_polygons(node, all_polys)
+	if all_polys.is_empty():
+		return null
+	if all_polys.size() == 1:
+		return all_polys[0]
+
+	# 충돌 지점(global_position)에서 가장 가까운 엣지를 가진 폴리곤 선택
+	var best: CollisionPolygon2D = all_polys[0]
+	var best_dist := INF
+	for poly in all_polys:
+		var xf := poly.global_transform
+		var n   := poly.polygon.size()
+		for i in n:
+			var a: Vector2 = xf * poly.polygon[i]
+			var b: Vector2 = xf * poly.polygon[(i + 1) % n]
+			var edge    := b - a
+			var edge_len := edge.length()
+			if edge_len < 0.001:
+				continue
+			var edge_dir := edge / edge_len
+			var t    := clampf((global_position - a).dot(edge_dir), 0.0, edge_len)
+			var dist := (global_position - (a + edge_dir * t)).length()
+			if dist < best_dist:
+				best_dist = dist
+				best = poly
+	return best
+
+func _collect_polygons(node: Node, result: Array[CollisionPolygon2D]) -> void:
+	for child in node.get_children():
+		if child is CollisionPolygon2D:
+			result.append(child as CollisionPolygon2D)
+		_collect_polygons(child, result)
+
+## 충돌 지점에서 가장 가까운 폴리곤 엣지의 법선을 반환.
+## fallback(총알 방향)과 같은 방향인 법선을 선택 → 지형 안쪽을 향하도록 보정.
+func _get_surface_normal(polygon: PackedVector2Array,
+		terrain_xform: Transform2D,
+		impact_pos: Vector2,
+		fallback: Vector2) -> Vector2:
+	var closest_dist := INF
+	var result       := fallback
+
+	var n := polygon.size()
+	for i in n:
+		var a: Vector2 = terrain_xform * polygon[i]
+		var b: Vector2 = terrain_xform * polygon[(i + 1) % n]
+		var edge    := b - a
+		var edge_len := edge.length()
+		if edge_len < 0.001:
+			continue
+		var edge_dir := edge / edge_len
+		var t        := clampf((impact_pos - a).dot(edge_dir), 0.0, edge_len)
+		var dist     := (impact_pos - (a + edge_dir * t)).length()
+
+		if dist < closest_dist:
+			closest_dist = dist
+			var normal := Vector2(-edge_dir.y, edge_dir.x)
+			# fallback(총알 방향)과 내적이 음수면 반전 → 항상 지형 안쪽 방향
+			if normal.dot(fallback) < 0.0:
+				normal = -normal
+			result = normal
+
+	return result
 
 func _safe_free() -> void:
 	if is_inside_tree():
