@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/skull.png" id="2_skull"]
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Bar" type="HBoxContainer" parent="."]
+offset_left = 28.0
+offset_top = 16.0
+offset_right = 560.0
+offset_bottom = 76.0
+theme_override_constants/separation = 16
+
+[node name="Time" type="Label" parent="Bar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "TIME  00:00"
+vertical_alignment = 1
+
+[node name="Skull" type="TextureRect" parent="Bar"]
+texture_filter = 1
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+texture = ExtResource("2_skull")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Deaths" type="Label" parent="Bar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "x0"
+vertical_alignment = 1

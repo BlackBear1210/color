@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://isfawu6y4o31"]
+
+[ext_resource type="Script" uid="uid://cx6afmv2v2xai" path="res://scripts/ui/signboard.gd" id="1_sign"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detect"]
+radius = 83.09633
+
+[node name="Signboard" type="Node2D" unique_id=19285756]
+script = ExtResource("1_sign")
+
+[node name="DetectZone" type="Area2D" parent="." unique_id=1426171162]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectZone" unique_id=736365836]
+shape = SubResource("CircleShape2D_detect")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=247084918]
+
+[node name="Popup" type="Control" parent="UI" unique_id=1039976662]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dim" type="ColorRect" parent="UI/Popup" unique_id=2028270440]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="UI/Popup" unique_id=98310730]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -200.0
+offset_right = 320.0
+offset_bottom = 200.0
+
+[node name="Title" type="Label" parent="UI/Popup/Panel" unique_id=231190259]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 20.0
+offset_right = 612.0
+offset_bottom = 64.0
+theme_override_font_sizes/font_size = 28
+text = "조작 안내"
+
+[node name="Message" type="Label" parent="UI/Popup/Panel" unique_id=1730945775]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 74.0
+offset_right = -28.0
+offset_bottom = -84.0
+theme_override_font_sizes/font_size = 20
+text = "설명"
+autowrap_mode = 3
+
+[node name="CloseButton" type="Button" parent="UI/Popup/Panel" unique_id=1804304877]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -184.0
+offset_top = -64.0
+offset_right = -28.0
+offset_bottom = -20.0
+text = "닫기 (X)"

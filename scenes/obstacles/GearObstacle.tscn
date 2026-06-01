@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/obstacles/gear_obstacle.gd" id="1_gear"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="2_tex"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 32.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kill"]
+radius = 32.0
+
+[node name="GearObstacle" type="AnimatableBody2D"]
+collision_layer = 256
+collision_mask = 0
+script = ExtResource("1_gear")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="KillArea" type="Area2D" parent="."]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillArea"]
+shape = SubResource("CircleShape2D_kill")

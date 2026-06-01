@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://dlvoqvtrme2at"]
+
+[ext_resource type="Script" uid="uid://b4ysb51nelmre" path="res://scripts/obstacles/spike_obstacle.gd" id="1_spike"]
+[ext_resource type="Texture2D" uid="uid://2hvarel76b6p" path="res://도형_타일셋/spike.png.png" id="2_spiketex"]
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_body"]
+points = PackedVector2Array(0, -10, 20, 20, -20, 20)
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_kill"]
+points = PackedVector2Array(0, -16, 26, 24, -26, 24)
+
+[node name="SpikeObstacle" type="StaticBody2D" unique_id=835885995]
+collision_layer = 256
+collision_mask = 0
+script = ExtResource("1_spike")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=331358054]
+shape = SubResource("ConvexPolygonShape2D_body")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1139975008]
+position = Vector2(0.18999994, 7.5)
+scale = Vector2(0.029958788, 0.04027778)
+texture = ExtResource("2_spiketex")
+
+[node name="KillArea" type="Area2D" parent="." unique_id=346692598]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillArea" unique_id=483286414]
+position = Vector2(0, 2)
+shape = SubResource("ConvexPolygonShape2D_kill")

@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="0_stage"]
+[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="1_bg"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/Hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://c17u16eb61p5x" path="res://scenes/platforms/Platform.tscn" id="4_plat"]
+
+[sub_resource type="RectangleShape2D" id="kz_shape"]
+size = Vector2(6000, 200)
+
+[node name="stage_3" type="Node2D"]
+script = ExtResource("0_stage")
+
+[node name="Background" parent="." instance=ExtResource("1_bg")]
+[node name="Hud" parent="." instance=ExtResource("3_hud")]
+
+[node name="MapVisual" type="Node2D" parent="."]
+[node name="PaintOverlay" type="Node2D" parent="MapVisual"]
+
+[node name="MapPhysics" type="Node2D" parent="."]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
+position = Vector2(1500, 900)
+shape = SubResource("kz_shape")
+
+[node name="BlackFloor_A" parent="MapPhysics" instance=ExtResource("4_plat")]
+position = Vector2(500, 600)
+scale = Vector2(5, 1)
+color_state = 0
+
+[node name="BlackFloor_B" parent="MapPhysics" instance=ExtResource("4_plat")]
+position = Vector2(1500, 600)
+scale = Vector2(5, 1)
+color_state = 0
+
+[node name="BlackFloor_C" parent="MapPhysics" instance=ExtResource("4_plat")]
+position = Vector2(2500, 600)
+scale = Vector2(5, 1)
+color_state = 0
+
+[node name="Info" type="CanvasLayer" parent="."]
+[node name="Label" type="Label" parent="Info"]
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 960.0
+offset_bottom = 100.0
+theme_override_font_sizes/font_size = 32
+text = "STAGE 3 (임시) — 스테이지 전환 성공!"
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(100, 520)

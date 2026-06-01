@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://c17u16eb61p5x"]
+
+[ext_resource type="Script" uid="uid://2fe0kt0hmy34" path="res://scripts/platform.gd" id="1_platform"]
+
+[sub_resource type="RectangleShape2D" id="shape_body"]
+size = Vector2(200, 40)
+
+[sub_resource type="RectangleShape2D" id="shape_death"]
+size = Vector2(200, 40)
+
+[node name="Platform" type="StaticBody2D" unique_id=722908828]
+script = ExtResource("1_platform")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=641755279]
+shape = SubResource("shape_body")
+
+[node name="Preview" type="Polygon2D" parent="." unique_id=705993927]
+color = Color(0.05, 0.05, 0.05, 1)
+polygon = PackedVector2Array(-100, -20, 100, -20, 100, 20, -100, 20)
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=258104022]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathDetector" unique_id=2079795593]
+shape = SubResource("shape_death")
