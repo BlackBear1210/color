@@ -10,8 +10,29 @@
 [ext_resource type="Texture2D" uid="uid://8sjpqxtandfj" path="res://PaintSplat02/PaintSplat_White_03.png" id="8_w3"]
 [ext_resource type="Texture2D" uid="uid://cdx30uobbw7p7" path="res://PaintSplat02/PaintSplat_White_04.png" id="9_w4"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ggjac"]
-size = Vector2(113, 21)
+[sub_resource type="RectangleShape2D" id="Rect_B1"]
+size = Vector2(661, 96)
+
+[sub_resource type="RectangleShape2D" id="Rect_B2"]
+size = Vector2(684.6154, 96)
+
+[sub_resource type="RectangleShape2D" id="Rect_B3"]
+size = Vector2(661, 96)
+
+[sub_resource type="RectangleShape2D" id="Rect_B4"]
+size = Vector2(684.3462, 96)
+
+[sub_resource type="RectangleShape2D" id="Rect_W1"]
+size = Vector2(661, 96)
+
+[sub_resource type="RectangleShape2D" id="Rect_W2"]
+size = Vector2(676.6539, 96)
+
+[sub_resource type="RectangleShape2D" id="Rect_W3"]
+size = Vector2(684.615, 96)
+
+[sub_resource type="RectangleShape2D" id="Rect_W4"]
+size = Vector2(700, 96)
 
 [node name="PaintMark" type="Node2D" unique_id=2047297334]
 script = ExtResource("1_paintmark")
@@ -19,45 +40,123 @@ script = ExtResource("1_paintmark")
 [node name="BlackMark" type="Node2D" parent="." unique_id=138932926]
 
 [node name="B1" type="Sprite2D" parent="BlackMark" unique_id=1667503099]
+visible = false
 scale = Vector2(0.13, 0.13)
 texture = ExtResource("2_b1")
 
+[node name="JudgmentZone" type="Area2D" parent="BlackMark/B1" unique_id=1543221927]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlackMark/B1/JudgmentZone" unique_id=611056685]
+position = Vector2(7.692308, -200.00002)
+shape = SubResource("Rect_B1")
+
 [node name="B2" type="Sprite2D" parent="BlackMark" unique_id=974352531]
+visible = false
 scale = Vector2(0.13, 0.13)
 texture = ExtResource("3_b2")
 
+[node name="JudgmentZone" type="Area2D" parent="BlackMark/B2" unique_id=173148954]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlackMark/B2/JudgmentZone" unique_id=4558336]
+position = Vector2(-3.846147, -157.6923)
+shape = SubResource("Rect_B2")
+
 [node name="B3" type="Sprite2D" parent="BlackMark" unique_id=336823088]
+visible = false
 scale = Vector2(0.13, 0.13)
 texture = ExtResource("4_b3")
+
+[node name="JudgmentZone" type="Area2D" parent="BlackMark/B3" unique_id=1002349566]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlackMark/B3/JudgmentZone" unique_id=1209198941]
+position = Vector2(0, -223.07693)
+shape = SubResource("Rect_B3")
 
 [node name="B4" type="Sprite2D" parent="BlackMark" unique_id=1409294721]
 scale = Vector2(0.13, 0.13)
 texture = ExtResource("5_b4")
 
+[node name="JudgmentZone" type="Area2D" parent="BlackMark/B4" unique_id=739467681]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BlackMark/B4/JudgmentZone" unique_id=1766079458]
+position = Vector2(7.692308, -192.3077)
+shape = SubResource("Rect_B4")
+
 [node name="WhiteMark" type="Node2D" parent="." unique_id=1489607157]
 visible = false
 
 [node name="W1" type="Sprite2D" parent="WhiteMark" unique_id=645375955]
+visible = false
 scale = Vector2(0.13, 0.13)
 texture = ExtResource("6_w1")
 
-[node name="W2" type="Sprite2D" parent="WhiteMark" unique_id=616400256]
-scale = Vector2(0.13, 0.13)
-texture = ExtResource("7_w2")
-
-[node name="W3" type="Sprite2D" parent="WhiteMark" unique_id=353173458]
-scale = Vector2(0.13, 0.13)
-texture = ExtResource("8_w3")
-
-[node name="W4" type="Sprite2D" parent="WhiteMark" unique_id=507013092]
-scale = Vector2(0.13, 0.13)
-texture = ExtResource("9_w4")
-
-[node name="JudgmentZone" type="Area2D" parent="." unique_id=4339049]
+[node name="JudgmentZone" type="Area2D" parent="WhiteMark/W1" unique_id=1075009932]
 collision_layer = 32
 collision_mask = 0
 monitoring = false
+monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="JudgmentZone" unique_id=659353255]
-position = Vector2(2.5, -13.5)
-shape = SubResource("RectangleShape2D_ggjac")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WhiteMark/W1/JudgmentZone" unique_id=2088184060]
+position = Vector2(0, -200)
+shape = SubResource("Rect_W1")
+
+[node name="W2" type="Sprite2D" parent="WhiteMark" unique_id=616400256]
+visible = false
+scale = Vector2(0.13, 0.13)
+texture = ExtResource("7_w2")
+
+[node name="JudgmentZone" type="Area2D" parent="WhiteMark/W2" unique_id=507842868]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WhiteMark/W2/JudgmentZone" unique_id=707943117]
+position = Vector2(-7.692308, -161.53847)
+shape = SubResource("Rect_W2")
+
+[node name="W3" type="Sprite2D" parent="WhiteMark" unique_id=353173458]
+visible = false
+scale = Vector2(0.13, 0.13)
+texture = ExtResource("8_w3")
+
+[node name="JudgmentZone" type="Area2D" parent="WhiteMark/W3" unique_id=2101686529]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WhiteMark/W3/JudgmentZone" unique_id=618237115]
+position = Vector2(0, -223.07693)
+shape = SubResource("Rect_W3")
+
+[node name="W4" type="Sprite2D" parent="WhiteMark" unique_id=507013092]
+visible = false
+scale = Vector2(0.13, 0.13)
+texture = ExtResource("9_w4")
+
+[node name="JudgmentZone" type="Area2D" parent="WhiteMark/W4" unique_id=51912229]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WhiteMark/W4/JudgmentZone" unique_id=1948505040]
+position = Vector2(0, -192.3077)
+shape = SubResource("Rect_W4")

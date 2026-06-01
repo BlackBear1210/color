@@ -1,24 +1,25 @@
-[gd_scene format=3 uid="uid://hu7kipqfqrfc"]
+[gd_scene format=3 uid="uid://clnsjjnagmp13"]
 
-[ext_resource type="Script" path="res://scripts/bullet.gd" id="1_bullet"]
+[ext_resource type="Script" uid="uid://4waibyndlyn" path="res://scripts/bullet.gd" id="1_bullet"]
 [ext_resource type="Texture2D" uid="uid://ed5mm6ciruox" path="res://Paint_Splat/PaintBall_Black_01.png" id="2_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bullet"]
-radius = 8.0
+radius = 3.0
 
-[node name="Bullet" type="Area2D"]
+[node name="Bullet" type="Area2D" unique_id=623423544]
 collision_layer = 16
 collision_mask = 398
 script = ExtResource("1_bullet")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2085439740]
 scale = Vector2(0.03, 0.03)
 texture = ExtResource("2_tex")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1455000146]
+position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_bullet")
 
-[node name="LifeTimer" type="Timer" parent="."]
+[node name="LifeTimer" type="Timer" parent="." unique_id=94219675]
 wait_time = 2.0
 one_shot = true
 autostart = true

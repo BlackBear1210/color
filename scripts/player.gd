@@ -230,9 +230,11 @@ func _check_color_death() -> void:
 			ghost_zones.append(a)
 
 	# ① 페인트 우선: 같은 색 페인트가 하나라도 있으면 안전
+	# 계층: JudgmentZone → Sprite2D → BlackMark/WhiteMark → PaintMark(paint_color)
 	if not marks.is_empty():
 		for m in marks:
-			if m.get_parent().get("paint_color") == player_color:
+			var paint_mark: Node = m.get_parent().get_parent().get_parent()
+			if paint_mark.get("paint_color") == player_color:
 				return
 		die()
 		return
