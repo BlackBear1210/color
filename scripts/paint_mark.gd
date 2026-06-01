@@ -69,11 +69,8 @@ func _align_zone_to_surface(sprite: Sprite2D) -> void:
 	var rect := cs.shape as RectangleShape2D
 	var s    := sprite.scale.x  # 0.13
 
-	# Sprite2D 로컬 좌표계에서의 zone 중심 위치:
-	#   surface_local = -SPAWN_DEPTH / s  (지형 표면까지 로컬 거리)
-	#   zone 중심 = surface_local + rect.size.y / 2  (윗변이 표면에 닿도록)
-	# 루트가 이미 surface_angle 로 회전된 상태이므로
-	# 로컬 공간에서 "지형 방향" = Vector2.DOWN (항상 고정)
+	# 인스펙터의 rect.size.y 값을 그대로 사용
+	# zone 중심 = surface_local - rect.size.y / 2 → 윗변이 표면에 닿음
 	var surface_local := -SPAWN_DEPTH / s
 	zone.position = Vector2(0.0, surface_local - rect.size.y / 2.0)
 
