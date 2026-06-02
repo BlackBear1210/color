@@ -10,9 +10,10 @@ extends CharacterBody2D
 
 # ── 이동 파라미터 ──────────────────────────────────────────────────────
 # 맵을 좌우로 1.3배 늘렸으므로 이동속도도 비례해 올림(300→390)
-@export var move_speed: float     = 390.0
-@export var jump_velocity: float  = -600.0
-@export var gravity: float        = 1200.0
+@export var move_speed: float          = 390.0
+@export var jump_velocity: float       = -600.0
+@export var gravity: float             = 1200.0
+@export var gray_slide_multiplier: float = 5.0
 
 # ── 시작 색상 ─────────────────────────────────────────────────────────
 # 인스펙터 드롭다운으로 스테이지별 시작 색 지정 가능
@@ -127,6 +128,8 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 
+	var on_gray := _is_touching_gray()
+
 	# ── 중력 (비대칭: 낙하 시 배수 적용) ─────────────────────────────
 	if not is_on_floor():
 		var grav := gravity * FALL_GRAVITY_MULTIPLIER if velocity.y > 0.0 else gravity
@@ -147,7 +150,7 @@ func _physics_process(delta: float) -> void:
 		_coyote_timer -= delta
 
 	# ── 점프 실행 ────────────────────────────────────────────────────
-	if _jump_buffer_timer > 0.0 and _coyote_timer > 0.0:
+	if _jump_buffer_timer > 0.0 and _coyote_timer > 0.0 and not on_gray:
 		velocity.y         = jump_velocity
 		_coyote_timer      = 0.0
 		_jump_buffer_timer = 0.0
@@ -159,11 +162,28 @@ func _physics_process(delta: float) -> void:
 		_toggle_color()
 
 	# ── 좌우 이동 ────────────────────────────────────────────────────
-	# 회색 지형 위에서는 입력을 무시하고 자연스럽게 미끄러짐
-	var on_gray := _is_touching_gray()
 	floor_stop_on_slope = not on_gray
-	var dir := Input.get_axis("move_left", "move_right")
-	velocity.x = 0.0 if on_gray else dir * move_speed
+
+	if on_gray:
+		# 회색 지형: 입력 무시, 마찰 없음
+		if is_on_floor():
+			var n := get_floor_normal()
+			if abs(n.x) < 0.01:
+				# 수평: velocity.x 불변 (얼음판)
+				pass
+			else:
+				# 경사: velocity를 사면 접선 방향으로 완전히 맞춤
+				# → move_and_slide()에 수직 성분이 없어 떨림 없이 부드럽게 미끄러짐
+				var tangent := Vector2(n.y, -n.x)
+				if tangent.y < 0.0:
+					tangent = -tangent          # 항상 내리막(y 양수) 방향
+				var speed: float = max(velocity.dot(tangent), 0.0)   # 오르막 성분 차단
+				speed += gravity * abs(n.x) * gray_slide_multiplier * delta
+				velocity.x = tangent.x * speed
+				velocity.y = tangent.y * speed
+	else:
+		var dir := Input.get_axis("move_left", "move_right")
+		velocity.x = dir * move_speed
 
 	# ── 총 조준 (마우스 방향으로 GunPivot 회전) ──────────────────────
 	if gun_pivot:
