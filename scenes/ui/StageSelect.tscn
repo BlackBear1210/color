@@ -1,12 +1,63 @@
 [gd_scene format=3 uid="uid://b1stagesel00"]
 
+[ext_resource type="Script" path="res://scripts/ui/stage_select.gd" id="1_sel"]
+
 [node name="StageSelect" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+script = ExtResource("1_sel")
 
-[node name="Label" type="Label" parent="."]
-offset_left = 40.0
-offset_top = 40.0
-offset_right = 400.0
+[node name="Dim" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.08, 0.08, 0.12, 1)
+
+[node name="Panel" type="Panel" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -260.0
+offset_right = 320.0
+offset_bottom = 260.0
+
+[node name="Title" type="Label" parent="Panel"]
+offset_right = 640.0
+offset_top = 20.0
 offset_bottom = 80.0
-text = "StageSelect (미구현)"
+theme_override_font_sizes/font_size = 40
+text = "스테이지 선택"
+horizontal_alignment = 1
+
+[node name="Stage1Button" type="Button" parent="Panel"]
+offset_left = 60.0
+offset_top = 110.0
+offset_right = 260.0
+offset_bottom = 170.0
+theme_override_font_sizes/font_size = 26
+text = "Stage 1"
+
+[node name="Stage2Button" type="Button" parent="Panel"]
+offset_left = 60.0
+offset_top = 190.0
+offset_right = 260.0
+offset_bottom = 250.0
+theme_override_font_sizes/font_size = 26
+text = "Stage 2"
+
+[node name="Stage3Button" type="Button" parent="Panel"]
+offset_left = 60.0
+offset_top = 270.0
+offset_right = 260.0
+offset_bottom = 330.0
+theme_override_font_sizes/font_size = 26
+text = "Stage 3"
+
+[node name="MainMenuButton" type="Button" parent="Panel"]
+offset_left = 340.0
+offset_top = 390.0
+offset_right = 580.0
+offset_bottom = 450.0
+theme_override_font_sizes/font_size = 22
+text = "메인 메뉴로"

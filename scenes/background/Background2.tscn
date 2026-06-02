@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://t3pcec3jc42w"]
+
+[ext_resource type="Script" path="res://scripts/background_stage2.gd" id="1_bg2"]
+[ext_resource type="Texture2D" uid="uid://dl6fyvnjt1ye7" path="res://BG_02/BG_02_Layer1_Sky.png" id="2_sky"]
+[ext_resource type="Texture2D" uid="uid://c6vmln17bdj7j" path="res://BG_02/BG_02_Layer2_Mid.png" id="3_mid"]
+[ext_resource type="Texture2D" uid="uid://d27k0f0sx10lt" path="res://BG_02/BG_02_Layer3_Front.png" id="4_front"]
+[ext_resource type="Texture2D" uid="uid://cy7p6vexia4nl" path="res://BG_02/BG_02_Layer4_Front.png" id="5_near"]
+
+[node name="Background2" type="ParallaxBackground"]
+layer = -1
+script = ExtResource("1_bg2")
+
+[node name="Layer1_Sky" type="ParallaxLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Layer1_Sky"]
+texture = ExtResource("2_sky")
+
+[node name="Layer2_Mid" type="ParallaxLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Layer2_Mid"]
+texture = ExtResource("3_mid")
+
+[node name="Layer3_Front" type="ParallaxLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Layer3_Front"]
+texture = ExtResource("4_front")
+
+[node name="Layer4_Near" type="ParallaxLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Layer4_Near"]
+texture = ExtResource("5_near")

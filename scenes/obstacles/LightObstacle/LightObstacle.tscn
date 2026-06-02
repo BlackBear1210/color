@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://l61b1omwck6x" path="res://scenes/obstacles/LightObstacle/light_obstacle.gd" id="1_script"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 5.0
+
+[sub_resource type="PolygonOccluder2D" id="PolygonOccluder2D_1"]
+
+[node name="LightObstacle" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="LampSprite" type="Sprite2D" parent="."]
+position = Vector2(0, 0)
+# 가로등 이미지: 인스펙터에서 Texture 직접 지정
+# texture = ExtResource("your_lamp_texture")
+
+[node name="LightVisual" type="Sprite2D" parent="."]
+position = Vector2(0, 0)
+modulate = Color(0, 0, 0, 0.45)
+# 부채꼴 반투명 스프라이트: 인스펙터에서 Texture 직접 지정
+# texture = ExtResource("your_fan_texture")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+monitoring = true
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DetectionArea"]
+# 부채꼴 폴리곤은 light_obstacle.gd 의 _build_fan_polygon() 에서 런타임 생성됩니다.
+polygon = PackedVector2Array()

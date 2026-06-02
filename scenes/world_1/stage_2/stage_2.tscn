@@ -1,66 +1,170 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dn2vt3hooa8kq"]
 
-[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="0_stage"]
-[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="1_bg"]
-[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="2_player"]
-[ext_resource type="PackedScene" path="res://scenes/ui/Hud.tscn" id="3_hud"]
-[ext_resource type="PackedScene" path="res://scenes/obstacles/Portal.tscn" id="4_portal"]
-[ext_resource type="PackedScene" uid="uid://c17u16eb61p5x" path="res://scenes/platforms/Platform.tscn" id="5_plat"]
+[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
+[ext_resource type="PackedScene" uid="uid://t3pcec3jc42w" path="res://scenes/background/Background2.tscn" id="2_bg"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/Portal.tscn" id="5_portal"]
+[ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="6_gear"]
+[ext_resource type="PackedScene" uid="uid://cxhoh8flfddit" path="res://scenes/obstacles/ThornObstacle.tscn" id="7_thorn"]
+[ext_resource type="PackedScene" uid="uid://bi3krld1ex8yu" path="res://scenes/platforms/TerrainImage.tscn" id="8_terrain"]
+[ext_resource type="Texture2D" uid="uid://djcxplrandf67" path="res://scenes/world_1/map2/Slope_Body_02.png" id="13_sef3b"]
+[ext_resource type="Texture2D" uid="uid://cdwlr61kb5ydx" path="res://scenes/world_1/map2/Vine.png" id="19_vine"]
+[ext_resource type="Texture2D" uid="uid://d25qa73ae7nqf" path="res://scenes/world_1/map2/Platform_Black_01.png" id="20_blk1"]
+[ext_resource type="Texture2D" uid="uid://doldgrr7dex64" path="res://scenes/world_1/map2/Platform_Black_02.png" id="21_blk2"]
+[ext_resource type="Texture2D" uid="uid://cp1f3mbo4y1r6" path="res://scenes/world_1/map2/Platform_White_01.png" id="22_wht1"]
+[ext_resource type="Texture2D" uid="uid://d2fko4dx1fmkx" path="res://scenes/world_1/map2/Platform_White_02.png" id="23_wht2"]
+[ext_resource type="Texture2D" uid="uid://bb1je7hlpaiiq" path="res://scenes/world_1/map2/Platform_White_03.png" id="24_wht3"]
+[ext_resource type="Texture2D" uid="uid://col5m1usj07ry" path="res://scenes/world_1/map2/Platform_White_04.png" id="25_wht4"]
+[ext_resource type="Texture2D" uid="uid://clwimdcp1seod" path="res://scenes/world_1/map2/Platform_White_05.png" id="26_wht5"]
+[ext_resource type="Texture2D" uid="uid://dbyksed0plijy" path="res://scenes/world_1/map2/Platform_Thorn_01.png" id="27_thorn1"]
+[ext_resource type="Texture2D" uid="uid://bxgy6b3037gvy" path="res://scenes/world_1/map2/Platform_Thorn_02.png" id="28_thorn2"]
 
 [sub_resource type="RectangleShape2D" id="kz_shape"]
-size = Vector2(6000, 200)
+size = Vector2(5352, 198.00006)
 
-[node name="stage_2" type="Node2D"]
-script = ExtResource("0_stage")
+[sub_resource type="RectangleShape2D" id="wall_left"]
+size = Vector2(205, 5458)
 
-[node name="Background" parent="." instance=ExtResource("1_bg")]
+[node name="stage_2" type="Node2D" unique_id=1106624679]
+script = ExtResource("1_stage")
+camera_limit_left = -1100
+camera_limit_top = -200
+camera_limit_right = 1600
+camera_limit_bottom = 4200
 
-[node name="Hud" parent="." instance=ExtResource("3_hud")]
+[node name="Background" parent="." unique_id=682878116 instance=ExtResource("2_bg")]
 
-[node name="MapVisual" type="Node2D" parent="."]
-[node name="PaintOverlay" type="Node2D" parent="MapVisual"]
+[node name="Hud" parent="." unique_id=2064540314 instance=ExtResource("4_hud")]
 
-[node name="MapPhysics" type="Node2D" parent="."]
+[node name="MapVisual" type="Node2D" parent="." unique_id=1405794795]
 
-[node name="KillZone" type="Area2D" parent="MapPhysics"]
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
-position = Vector2(1500, 900)
+[node name="Vine" type="Sprite2D" parent="MapVisual" unique_id=835308105]
+position = Vector2(-755, 20)
+texture = ExtResource("19_vine")
+centered = false
+
+[node name="PaintOverlay" type="Node2D" parent="MapVisual" unique_id=105939046]
+
+[node name="Details" type="Node2D" parent="MapVisual" unique_id=183574064]
+
+[node name="MapPhysics" type="Node2D" parent="." unique_id=1925865379]
+
+[node name="BlackCave3" parent="MapPhysics" unique_id=2126747417 instance=ExtResource("8_terrain")]
+position = Vector2(1, 2699)
+terrain_texture = ExtResource("21_blk2")
+
+[node name="BlackCave1" parent="MapPhysics" unique_id=2027839465 instance=ExtResource("8_terrain")]
+terrain_texture = ExtResource("20_blk1")
+
+[node name="BlackCave2" parent="MapPhysics" unique_id=513635198 instance=ExtResource("8_terrain")]
+position = Vector2(0, 2700)
+terrain_texture = ExtResource("21_blk2")
+
+[node name="WhitePlatform1" parent="MapPhysics" unique_id=1211540600 instance=ExtResource("8_terrain")]
+position = Vector2(209, 1405)
+collision_layer = 4
+color_state = 1
+terrain_texture = ExtResource("22_wht1")
+
+[node name="WhitePlatform2" parent="MapPhysics" unique_id=181799203 instance=ExtResource("8_terrain")]
+position = Vector2(-168, 1428)
+collision_layer = 4
+color_state = 1
+terrain_texture = ExtResource("23_wht2")
+
+[node name="WhitePlatform3" parent="MapPhysics" unique_id=1611823658 instance=ExtResource("8_terrain")]
+position = Vector2(-136, 1874)
+collision_layer = 4
+color_state = 1
+terrain_texture = ExtResource("24_wht3")
+
+[node name="WhitePlatform4" parent="MapPhysics" unique_id=54649504 instance=ExtResource("8_terrain")]
+position = Vector2(15, 2432)
+collision_layer = 4
+color_state = 1
+terrain_texture = ExtResource("25_wht4")
+
+[node name="WhitePlatform5" parent="MapPhysics" unique_id=427375646 instance=ExtResource("8_terrain")]
+position = Vector2(1, 3005)
+collision_layer = 4
+color_state = 1
+terrain_texture = ExtResource("26_wht5")
+
+[node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=1844447280]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=144669294]
+position = Vector2(1296, 1342)
+rotation = 1.5707964
 shape = SubResource("kz_shape")
 
-[node name="WhiteFloor_A" parent="MapPhysics" instance=ExtResource("5_plat")]
-position = Vector2(500, 600)
-scale = Vector2(5, 1)
-color_state = 1
+[node name="SlopeBody02" type="Sprite2D" parent="MapPhysics" unique_id=1792788817]
+position = Vector2(770, 1327)
+texture = ExtResource("13_sef3b")
 
-[node name="WhiteFloor_B" parent="MapPhysics" instance=ExtResource("5_plat")]
-position = Vector2(1500, 600)
-scale = Vector2(5, 1)
-color_state = 1
+[node name="MapBounds" type="Node2D" parent="MapPhysics" unique_id=460218241]
 
-[node name="WhiteFloor_C" parent="MapPhysics" instance=ExtResource("5_plat")]
-position = Vector2(2500, 600)
-scale = Vector2(5, 1)
-color_state = 1
+[node name="LeftWall" type="StaticBody2D" parent="MapPhysics/MapBounds" unique_id=866930340]
+collision_layer = 8
+collision_mask = 0
 
-[node name="Obstacles" type="Node2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/MapBounds/LeftWall" unique_id=1692464659]
+position = Vector2(-1304, 1295)
+shape = SubResource("wall_left")
 
-[node name="Portal" parent="Obstacles" instance=ExtResource("4_portal")]
-position = Vector2(2900, 520)
+[node name="Obstacles" type="Node2D" parent="." unique_id=1333011163]
+
+[node name="Portal2(테스트용)" parent="Obstacles" unique_id=1080514606 instance=ExtResource("5_portal")]
+position = Vector2(-844, 3519)
 next_stage_path = "res://scenes/world_1/stage_3/stage_3.tscn"
 
-[node name="Visual" type="Polygon2D" parent="Obstacles/Portal"]
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal2(테스트용)" unique_id=1295198123]
 color = Color(0.85, 0.1, 0.75, 0.55)
 polygon = PackedVector2Array(90, 0, 87, 23, 78, 45, 64, 64, 45, 78, 23, 87, 0, 90, -23, 87, -45, 78, -64, 64, -78, 45, -87, 23, -90, 0, -87, -23, -78, -45, -64, -64, -45, -78, -23, -87, 0, -90, 23, -87, 45, -78, 64, -64, 78, -45, 87, -23)
 
-[node name="Label" type="Label" parent="Obstacles/Portal"]
-offset_left = -60.0
-offset_top = -140.0
-offset_right = 60.0
-offset_bottom = -100.0
-theme_override_font_sizes/font_size = 28
+[node name="Label" type="Label" parent="Obstacles/Portal2(테스트용)" unique_id=1418737859]
+offset_left = -72.0
+offset_top = -124.0
+offset_right = 74.0
+offset_bottom = -84.0
+theme_override_font_sizes/font_size = 22
+text = "포탈(테스트용)"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="ThornPlatform1" parent="Obstacles" unique_id=1740685730 instance=ExtResource("7_thorn")]
+position = Vector2(-752, 34)
+thorn_texture = ExtResource("27_thorn1")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Obstacles/ThornPlatform1" unique_id=1250299029]
+position = Vector2(418, 329)
+
+[node name="ThornPlatform2" parent="Obstacles" unique_id=1474439583 instance=ExtResource("7_thorn")]
+position = Vector2(-423, 1839)
+thorn_texture = ExtResource("28_thorn2")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Obstacles/ThornPlatform2" unique_id=1001400031]
+
+[node name="GearObstacle" parent="Obstacles" unique_id=531754362 instance=ExtResource("6_gear")]
+position = Vector2(-268, 36)
+rotate_speed = 60.0
+
+[node name="Portal" parent="Obstacles" unique_id=1806652968 instance=ExtResource("5_portal")]
+position = Vector2(1045, -305)
+next_stage_path = "res://scenes/world_1/stage_3/stage_3.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal" unique_id=1265852148]
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(90, 0, 87, 23, 78, 45, 64, 64, 45, 78, 23, 87, 0, 90, -23, 87, -45, 78, -64, 64, -78, 45, -87, 23, -90, 0, -87, -23, -78, -45, -64, -64, -45, -78, -23, -87, 0, -90, 23, -87, 45, -78, 64, -64, 78, -45, 87, -23)
+
+[node name="Label" type="Label" parent="Obstacles/Portal" unique_id=1766837727]
+offset_left = -50.0
+offset_top = -130.0
+offset_right = 50.0
+offset_bottom = -90.0
+theme_override_font_sizes/font_size = 22
 text = "포탈"
 horizontal_alignment = 1
 
-[node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector2(100, 520)
-start_color = 1
+[node name="Player" parent="." unique_id=675876762 instance=ExtResource("3_player")]
+position = Vector2(-655, 3500)

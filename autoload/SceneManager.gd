@@ -57,4 +57,5 @@ func go_to_main_menu() -> void:
 	get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")
 
 func go_to_stage_select() -> void:
+	timing_active = false   # 스테이지 선택 화면에선 타이머 멈춤
 	get_tree().change_scene_to_file("res://scenes/ui/StageSelect.tscn")

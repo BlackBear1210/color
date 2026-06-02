@@ -28,13 +28,23 @@ func _ready() -> void:
 func _on_next() -> void:
 	get_tree().paused = false
 	if not next_stage_path.is_empty():
-		# 인스펙터에서 지정한 경로로 직접 이동
 		SceneManager.timing_active = true
-		get_tree().change_scene_to_file(next_stage_path)
+		# call_deferred: paused=false 직후 씬 전환 시 트리 충돌 방지
+		call_deferred("_change_to", next_stage_path)
 	else:
-		# SceneManager 가 current_stage + 1 로 자동 이동
-		SceneManager.next_stage()
+		call_deferred("_do_next_stage")
 
 func _on_select() -> void:
 	get_tree().paused = false
+	# call_deferred: paused=false 직후 씬 전환 시 트리 충돌 방지
+	call_deferred("_do_select")
+
+# ── 씬 전환 헬퍼 (call_deferred 로만 호출) ──────────────────────
+func _change_to(path: String) -> void:
+	get_tree().change_scene_to_file(path)
+
+func _do_next_stage() -> void:
+	SceneManager.next_stage()
+
+func _do_select() -> void:
 	SceneManager.go_to_stage_select()

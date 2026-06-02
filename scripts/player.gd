@@ -43,6 +43,7 @@ var _jump_buffer_timer: float = 0.0
 var _color_str: String  = "black"
 
 # ── 사격 ──────────────────────────────────────────────────────────────
+# 페인트 총알: 색깔별 전용 씬 (작업자 페인트 시스템 병합)
 const BULLET_BLACK: PackedScene = preload("res://scenes/bullet/BulletBlack.tscn")
 const BULLET_WHITE: PackedScene = preload("res://scenes/bullet/BulletWhite.tscn")
 @export var fire_cooldown: float = 0.15
@@ -230,9 +231,9 @@ func _check_color_death() -> void:
 			ghost_zones.append(a)
 
 	# ① 페인트 우선: 같은 색 페인트가 하나라도 있으면 안전
-	# 계층: JudgmentZone → Sprite2D → BlackMark/WhiteMark → PaintMark(paint_color)
 	if not marks.is_empty():
 		for m in marks:
+			# 계층: JudgmentZone → Sprite2D → BlackMark/WhiteMark → PaintMark(paint_color)
 			var paint_mark: Node = m.get_parent().get_parent().get_parent()
 			if paint_mark.get("paint_color") == player_color:
 				return
@@ -262,6 +263,7 @@ func _check_color_death() -> void:
 ## 총알 색 = 플레이어 색의 반대.
 ## add_child 전에 bullet_color 를 세팅해야 _ready() 에서 올바른 색이 적용됨.
 func _shoot() -> void:
+	# 총알 색 = 플레이어 반대색 → 색깔별 전용 씬 선택 (작업자 페인트 시스템)
 	var bullet_color := ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK
 	var scene := BULLET_BLACK if bullet_color == ColorDefs.BLACK else BULLET_WHITE
 	var bullet := scene.instantiate()
