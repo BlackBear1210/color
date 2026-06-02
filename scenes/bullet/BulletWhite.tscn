@@ -4,19 +4,21 @@
 [ext_resource type="Texture2D" uid="uid://yoof14e87he0" path="res://Paint_Splat/PaintBall_White_01.png" id="2_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bullet"]
-radius = 3.0
+radius = 2.5
 
 [node name="Bullet" type="Area2D" unique_id=1413777644]
 collision_layer = 16
 collision_mask = 398
 script = ExtResource("1_bullet")
+speed = 1200.0
+bullet_gravity = 950.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1240608505]
 scale = Vector2(0.03, 0.03)
 texture = ExtResource("2_tex")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=457034657]
-position = Vector2(1, 0)
+position = Vector2(2, 0)
 shape = SubResource("CircleShape2D_bullet")
 
 [node name="LifeTimer" type="Timer" parent="." unique_id=262719750]

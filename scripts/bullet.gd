@@ -10,7 +10,7 @@ extends Area2D
 # ── 인스펙터 조절 파라미터 ────────────────────────────────────────────
 @export var speed: float               = 1400.0  # 발사 초기 속도 (px/s)
 @export var bullet_gravity: float      = 600.0   # 중력 가속도 (px/s²). 0 이면 직선 비행.
-@export var paint_overlap_radius: float = 5.0    # 이 반경 안의 기존 마크를 제거 (작을수록 촘촘히 칠해짐)
+@export var paint_overlap_radius: float = 3.0    # 이 반경 안의 기존 마크를 제거 (작을수록 촘촘히 칠해짐)
 
 # ── 런타임 변수 ───────────────────────────────────────────────────────
 var direction:    Vector2 = Vector2.RIGHT    # 발사 방향 (단위 벡터)
@@ -40,10 +40,14 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("paint_bodies"):
-		# StaticBody2D(PaintMark 자식)이 감지된 경우 → update_color는 부모(PaintMark)에 있음
-		var target: Node = body if body.has_method("update_color") else body.get_parent()
-		if target.has_method("update_color"):
-			target.call_deferred("update_color", bullet_color)
+		var hit_mark: Node = body if body.has_method("update_color") else body.get_parent()
+		if hit_mark and hit_mark.get("paint_color") != bullet_color:
+			# 다른 색: 반경 내 모든 페인트를 새 색으로 변경
+			var pos: Vector2 = hit_mark.global_position
+			for p in get_tree().get_nodes_in_group("runtime_paint"):
+				if p.global_position.distance_to(pos) < paint_overlap_radius:
+					p.call_deferred("update_color", bullet_color)
+		# 같은 색: 아무것도 안 함 (bullet만 소멸)
 	elif not body.is_in_group("obstacle"):
 		_spawn_splat()
 		_spawn_mark(body)
@@ -62,10 +66,11 @@ func _spawn_splat() -> void:
 func _spawn_mark(terrain_body: Node = null) -> void:
 	var pos: Vector2 = global_position + direction * 25.0
 
-	# 반경 내 기존 페인트 제거 (paint_overlap_radius 로 조정)
+	# 반경 내 다른 색 페인트만 제거 (같은 색은 유지 → 스택)
 	for p in get_tree().get_nodes_in_group("runtime_paint"):
 		if p.global_position.distance_to(pos) < paint_overlap_radius:
-			p.queue_free()
+			if p.get("paint_color") != bullet_color:
+				p.queue_free()
 
 	var mark := PAINT_MARK.instantiate()
 	mark.paint_color      = bullet_color
