@@ -31,11 +31,13 @@ const LAYER_DEATH_ZONE: int = 1 << 6
 @export var terrain_texture: Texture2D:
 	set(value):
 		terrain_texture = value
-		var spr := get_node_or_null("Sprite2D") as Sprite2D
-		if spr:
-			spr.texture = terrain_texture
-		if Engine.is_editor_hint() and value != null and is_inside_tree():
-			_bake()
+		if is_inside_tree():
+			_apply_texture()
+			if Engine.is_editor_hint() and value != null:
+				_bake()
+		else:
+			# 씬 로드 중 노드가 트리에 없을 때는 준비된 후 적용
+			call_deferred("_apply_texture")
 
 # 인스펙터에서 체크하면 충돌을 다시 굽는다(에디터 전용)
 @export var bake_collision: bool = false:
@@ -46,12 +48,10 @@ const LAYER_DEATH_ZONE: int = 1 << 6
 
 func _ready() -> void:
 	_apply_color_state()
+	# terrain_texture 를 항상 Sprite2D 에 적용 (sub-scene 기본값 덮어쓰기)
+	_apply_texture()
 	if Engine.is_editor_hint():
 		return
-	# terrain_texture 가 있으면 Sprite2D 에 적용
-	var spr := get_node_or_null("Sprite2D") as Sprite2D
-	if spr and terrain_texture and spr.texture == null:
-		spr.texture = terrain_texture
 	# DeathDetector 그룹 등록 (player ColorSensor 가 탐지)
 	var detector := get_node_or_null("DeathDetector") as Area2D
 	if detector and not detector.is_in_group("death_zones"):
@@ -87,6 +87,11 @@ func _apply_color_state() -> void:
 		detector.monitorable     = color_state != ColorDefs.GRAY
 		detector.collision_layer = LAYER_DEATH_ZONE
 		detector.collision_mask  = 0
+
+func _apply_texture() -> void:
+	var spr := get_node_or_null("Sprite2D") as Sprite2D
+	if spr and terrain_texture:
+		spr.texture = terrain_texture
 
 # ── 충돌 자동 생성 (에디터) ────────────────────────────────────────
 func _bake() -> void:

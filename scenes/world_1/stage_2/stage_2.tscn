@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/obstacles/Portal.tscn" id="5_portal"]
 [ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="6_gear"]
 [ext_resource type="PackedScene" uid="uid://cxhoh8flfddit" path="res://scenes/obstacles/ThornObstacle.tscn" id="7_thorn"]
-[ext_resource type="PackedScene" uid="uid://bi3krld1ex8yu" path="res://scenes/platforms/TerrainImage.tscn" id="8_terrain"]
+[ext_resource type="Script" uid="uid://2fe0kt0hmy34" path="res://scripts/platform.gd" id="9_plat"]
 [ext_resource type="Texture2D" uid="uid://djcxplrandf67" path="res://scenes/world_1/map2/Slope_Body_02.png" id="13_sef3b"]
 [ext_resource type="Texture2D" uid="uid://cdwlr61kb5ydx" path="res://scenes/world_1/map2/Vine.png" id="19_vine"]
 [ext_resource type="Texture2D" uid="uid://d25qa73ae7nqf" path="res://scenes/world_1/map2/Platform_Black_01.png" id="20_blk1"]
@@ -50,46 +50,166 @@ centered = false
 
 [node name="MapPhysics" type="Node2D" parent="." unique_id=1925865379]
 
-[node name="BlackCave3" parent="MapPhysics" unique_id=2126747417 instance=ExtResource("8_terrain")]
+[node name="BlackCave3" type="StaticBody2D" parent="MapPhysics" unique_id=100000022]
 position = Vector2(1, 2699)
-terrain_texture = ExtResource("21_blk2")
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("9_plat")
 
-[node name="BlackCave1" parent="MapPhysics" unique_id=2027839465 instance=ExtResource("8_terrain")]
-terrain_texture = ExtResource("20_blk1")
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/BlackCave3" unique_id=100000023]
+texture = ExtResource("21_blk2")
 
-[node name="BlackCave2" parent="MapPhysics" unique_id=513635198 instance=ExtResource("8_terrain")]
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000024]
+polygon = PackedVector2Array(-1200, -1350, -1200, 1349, 638, 1349, 656, 1029, 667, 1349, 1199, 1349, 953, 759, 1104, 441, 1199, 650, 1199, -1288, 1040, -588, 646, -157, 883, 386, 494, 789, 629, 307, 249, 299, 348, 1006, -68, 1296, -257, 1063, -82, 885, -789, 920, -957, 881, -986, 798, -999, 746, -215, 260, -931, 403, -1180, 216, -492, -78, -1081, -36, -1015, -455, -701, -691, 317, -646, -322, -642, -311, -842, -694, -925, -961, -627, -1166, -870, -981, -1148)
+
+[node name="Col1" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000025]
+polygon = PackedVector2Array(-816, -1217, -795, -1191, -748, -1187, -716, -1170, -566, -1162, -398, -1189, -387, -1203, -386, -1228, -397, -1238, -390, -1255, -443, -1272, -439, -1350, -456, -1350, -458, -1270, -757, -1272, -753, -1350, -774, -1350, -765, -1342, -769, -1273, -810, -1259)
+
+[node name="Col2" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000026]
+polygon = PackedVector2Array(-509, 19, -500, 46, -437, 83, -408, 124, -361, 148, -307, 128, -282, 126, -259, 108, -231, 101, -159, 47, -185, 15, -214, 1, -373, -13)
+
+[node name="Col3" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000027]
+polygon = PackedVector2Array(-333, -401, -396, -411, -701, -391, -742, -381, -771, -386, -824, -381, -848, -363, -833, -351, -802, -350, -748, -329, -548, -314, -433, -349, -400, -369, -365, -372, -339, -387)
+
+[node name="Col4" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000028]
+polygon = PackedVector2Array(-992, -1020, -992, -1008, -986, -999, -961, -995, -944, -977, -916, -969, -841, -974, -821, -982, -814, -989, -799, -992, -788, -1002, -794, -1025, -813, -1037, -831, -1038, -851, -1046, -897, -1046, -909, -1052, -936, -1055, -968, -1050, -984, -1038)
+
+[node name="Col5" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000029]
+polygon = PackedVector2Array(282, -498, 288, -477, 319, -446, 335, -437, 342, -426, 364, -420, 376, -406, 398, -429, 420, -439, 431, -453, 449, -460, 477, -486, 469, -500, 434, -508, 385, -503, 344, -509, 312, -503, 291, -504)
+
+[node name="Col6" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000030]
+polygon = PackedVector2Array(524, -353, 526, -342, 539, -334, 556, -315, 567, -310, 574, -298, 596, -288, 610, -276, 630, -282, 640, -299, 660, -308, 685, -329, 703, -333, 712, -341, 709, -350, 686, -356, 639, -357, 617, -362, 575, -359, 546, -361, 530, -358)
+
+[node name="Col7" type="CollisionPolygon2D" parent="MapPhysics/BlackCave3" unique_id=100000031]
+polygon = PackedVector2Array(-752, -202, -759, -208, -873, -208, -929, -201, -948, -192, -951, -186, -929, -164, -919, -159, -897, -158, -883, -150, -866, -147, -833, -150, -773, -165, -764, -172, -762, -185)
+
+[node name="BlackCave1" type="StaticBody2D" parent="MapPhysics" unique_id=100000001]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("9_plat")
+
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/BlackCave1" unique_id=100000002]
+texture = ExtResource("20_blk1")
+
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/BlackCave1" unique_id=100000003]
+polygon = PackedVector2Array(891, -1350, -1200, -1350, -1200, 1349, -1054, 1255, -1008, 1011, -952, 1135, -807, 945, -774, 1349, -764, 976, -489, 991, -456, 1349, -438, 1007, -373, 1093, 46, 993, -440, 723, -970, 165, -968, -63, -935, 16, -908, -101, -563, -120, -527, -599, -439, -724, -380, -668, -109, -1149, 236, -1259, 387, -915, 460, -1201)
+
+[node name="Col1" type="CollisionPolygon2D" parent="MapPhysics/BlackCave1" unique_id=100000004]
+polygon = PackedVector2Array(189, -41, 430, 36, 538, 166, 678, 256, 801, 227, 889, 251, 1021, 468, 1135, 547, 1156, 777, 1020, 1037, 1101, 1067, 1199, 1171, 1199, -206, 1033, -167, 931, -217, 698, -203, 544, -256)
+
+[node name="Col2" type="CollisionPolygon2D" parent="MapPhysics/BlackCave1" unique_id=100000005]
+polygon = PackedVector2Array(1199, -1225, 120, -805, 456, -771, -59, -652, -270, -550, 759, -633, 780, -543, 810, -661, 951, -674, 978, -609, 1002, -670, 1038, -543, 1087, -673, 1199, -651, 1146, -669, 1199, -659)
+
+[node name="Col3" type="CollisionPolygon2D" parent="MapPhysics/BlackCave1" unique_id=100000006]
+polygon = PackedVector2Array(-378, 69, -364, 167, -303, 101, 74, 102, 214, 342, 263, 370, 358, 337, 417, 374, 519, 632, 622, 646, 671, 715, 702, 693, 756, 753, 933, 590, 595, 362, 230, 67)
+
+[node name="Col4" type="CollisionPolygon2D" parent="MapPhysics/BlackCave1" unique_id=100000007]
+polygon = PackedVector2Array(-794, 45, -808, 73, -799, 88, -809, 99, -808, 110, -795, 119, -805, 136, -794, 147, -802, 167, -798, 182, -791, 186, -797, 192, -794, 216, -785, 224, -764, 230, -709, 225, -690, 209, -697, 185, -690, 177, -691, 161, -682, 153, -686, 135, -699, 127, -688, 123, -688, 115, -698, 98, -695, 80, -701, 75, -703, 56, -713, 45, -722, 43, -736, 49, -739, 59, -753, 40)
+
+[node name="Col5" type="CollisionPolygon2D" parent="MapPhysics/BlackCave1" unique_id=100000008]
+polygon = PackedVector2Array(579, 1055, 573, 1046, 557, 1037, 530, 1038, 520, 1032, 449, 1033, 391, 1046, 384, 1061, 384, 1071, 401, 1078, 420, 1111, 428, 1113, 439, 1123, 448, 1119, 456, 1121, 474, 1135, 509, 1131, 539, 1096, 563, 1084, 565, 1076, 578, 1064)
+
+[node name="Col6" type="CollisionPolygon2D" parent="MapPhysics/BlackCave1" unique_id=100000009]
+polygon = PackedVector2Array(301, 1026, 286, 1015, 269, 1012, 250, 1015, 243, 1008, 210, 1011, 202, 1015, 184, 1011, 168, 1015, 156, 1011, 128, 1022, 116, 1039, 143, 1063, 161, 1089, 172, 1092, 178, 1098, 209, 1101, 224, 1094, 239, 1094, 260, 1079, 272, 1063, 293, 1053, 294, 1039)
+
+[node name="BlackCave2" type="StaticBody2D" parent="MapPhysics" unique_id=100000010]
 position = Vector2(0, 2700)
-terrain_texture = ExtResource("21_blk2")
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("9_plat")
 
-[node name="WhitePlatform1" parent="MapPhysics" unique_id=1211540600 instance=ExtResource("8_terrain")]
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/BlackCave2" unique_id=100000011]
+position = Vector2(-1, -1)
+texture = ExtResource("21_blk2")
+
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000012]
+polygon = PackedVector2Array(-1200, -1350, -1200, 1349, 638, 1349, 656, 1029, 667, 1349, 1199, 1349, 953, 759, 1104, 441, 1199, 650, 1199, -1288, 1040, -588, 646, -157, 883, 386, 494, 789, 629, 307, 249, 299, 348, 1006, -68, 1296, -257, 1063, -82, 885, -143, 871, -160, 863, -177, 856, -210, 844, -249, 837, -267, 836, -275, 831, -288, 831, -292, 829, -303, 829, -310, 824, -320, 819, -335, 821, -358, 820, -378, 814, -394, 813, -410, 810, -431, 805, -444, 806, -458, 813, -464, 810, -467, 804, -471, 802, -510, 811, -525, 817, -534, 824, -537, 825, -545, 824, -551, 827, -556, 833, -566, 842, -573, 845, -581, 846, -589, 849, -597, 853, -603, 857, -613, 858, -618, 858, -623, 857, -630, 858, -636, 862, -640, 868, -644, 871, -650, 873, -657, 873, -662, 875, -667, 878, -670, 877, -674, 876, -678, 877, -681, 879, -690, 882, -698, 883, -705, 883, -729, 894, -745, 900, -755, 905, -757, 907, -769, 905, -778, 903, -787, 902, -809, 910, -824, 910, -834, 902, -860, 903, -874, 902, -882, 892, -902, 878, -917, 877, -927, 857, -939, 843, -954, 839, -961, 836, -962, 829, -973, 814, -986, 798, -999, 746, -215, 260, -931, 403, -1180, 216, -492, -78, -1081, -36, -1015, -455, -701, -691, 317, -646, -322, -642, -311, -842, -694, -925, -961, -627, -1166, -870, -981, -1148)
+
+[node name="Col1" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000013]
+polygon = PackedVector2Array(-816, -1217, -795, -1191, -748, -1187, -716, -1170, -566, -1162, -398, -1189, -387, -1203, -386, -1228, -397, -1238, -390, -1255, -443, -1272, -439, -1350, -456, -1350, -458, -1270, -757, -1272, -753, -1350, -774, -1350, -765, -1342, -769, -1273, -810, -1259)
+
+[node name="Col2" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000014]
+polygon = PackedVector2Array(-509, 19, -500, 46, -437, 83, -408, 124, -361, 148, -307, 128, -282, 126, -259, 108, -231, 101, -159, 47, -185, 15, -214, 1, -373, -13)
+
+[node name="Col3" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000015]
+polygon = PackedVector2Array(-333, -401, -396, -411, -701, -391, -742, -381, -771, -386, -824, -381, -848, -363, -833, -351, -802, -350, -748, -329, -548, -314, -433, -349, -400, -369, -365, -372, -339, -387)
+
+[node name="Col4" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000016]
+polygon = PackedVector2Array(-992, -1020, -992, -1008, -986, -999, -961, -995, -944, -977, -916, -969, -841, -974, -821, -982, -814, -989, -799, -992, -788, -1002, -794, -1025, -813, -1037, -831, -1038, -851, -1046, -897, -1046, -909, -1052, -936, -1055, -968, -1050, -984, -1038)
+
+[node name="Col5" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000017]
+polygon = PackedVector2Array(282, -498, 288, -477, 319, -446, 335, -437, 342, -426, 364, -420, 376, -406, 398, -429, 420, -439, 431, -453, 449, -460, 477, -486, 469, -500, 434, -508, 385, -503, 344, -509, 312, -503, 291, -504)
+
+[node name="Col6" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000018]
+polygon = PackedVector2Array(524, -353, 526, -342, 539, -334, 556, -315, 567, -310, 574, -298, 596, -288, 610, -276, 630, -282, 640, -299, 660, -308, 685, -329, 703, -333, 712, -341, 709, -350, 686, -356, 639, -357, 617, -362, 575, -359, 546, -361, 530, -358)
+
+[node name="Col7" type="CollisionPolygon2D" parent="MapPhysics/BlackCave2" unique_id=100000019]
+polygon = PackedVector2Array(-752, -202, -759, -208, -873, -208, -929, -201, -948, -192, -951, -186, -929, -164, -919, -159, -897, -158, -883, -150, -866, -147, -833, -150, -773, -165, -764, -172, -762, -185)
+
+[node name="WhitePlatform1" type="StaticBody2D" parent="MapPhysics" unique_id=100000034]
 position = Vector2(209, 1405)
 collision_layer = 4
+collision_mask = 0
+script = ExtResource("9_plat")
 color_state = 1
-terrain_texture = ExtResource("22_wht1")
 
-[node name="WhitePlatform2" parent="MapPhysics" unique_id=181799203 instance=ExtResource("8_terrain")]
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/WhitePlatform1" unique_id=100000035]
+texture = ExtResource("22_wht1")
+
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/WhitePlatform1" unique_id=100000036]
+polygon = PackedVector2Array(103.5, -42, 82.5, -52, 14.5, -59, -34.5, -56, -62.5, -45, -88.5, -47, -106.5, -31, -107.5, -19, -76.5, 6, -37.5, 15, -15.5, 29, 12.5, 33, 39.5, 14, 76.5, 5, 100.5, -25)
+
+[node name="WhitePlatform2" type="StaticBody2D" parent="MapPhysics" unique_id=100000037]
 position = Vector2(-168, 1428)
 collision_layer = 4
+collision_mask = 0
+script = ExtResource("9_plat")
 color_state = 1
-terrain_texture = ExtResource("23_wht2")
 
-[node name="WhitePlatform3" parent="MapPhysics" unique_id=1611823658 instance=ExtResource("8_terrain")]
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/WhitePlatform2" unique_id=100000038]
+texture = ExtResource("23_wht2")
+
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/WhitePlatform2" unique_id=100000039]
+polygon = PackedVector2Array(42.5, -82.5, -60.5, -75.5, -84.5, -54.5, -81.5, 33.5, -60.5, 69.5, -39.5, 73.5, -17.5, 92.5, 44.5, 45.5, 66.5, 4.5, 82.5, -10.5, 82.5, -37.5, 74.5, -53.5)
+
+[node name="WhitePlatform3" type="StaticBody2D" parent="MapPhysics" unique_id=100000040]
 position = Vector2(-136, 1874)
 collision_layer = 4
+collision_mask = 0
+script = ExtResource("9_plat")
 color_state = 1
-terrain_texture = ExtResource("24_wht3")
 
-[node name="WhitePlatform4" parent="MapPhysics" unique_id=54649504 instance=ExtResource("8_terrain")]
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/WhitePlatform3" unique_id=100000041]
+texture = ExtResource("24_wht3")
+
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/WhitePlatform3" unique_id=100000042]
+polygon = PackedVector2Array(104, -0.5, 103, -16.5, 72, -34.5, 6, -44.5, -80, -35.5, -104, -27.5, -112, -14.5, -109, -3.5, -77, 25.5, -9, 37.5, 24, 37.5, 67, 20.5, 85, 21.5)
+
+[node name="WhitePlatform4" type="StaticBody2D" parent="MapPhysics" unique_id=100000043]
 position = Vector2(15, 2432)
 collision_layer = 4
+collision_mask = 0
+script = ExtResource("9_plat")
 color_state = 1
-terrain_texture = ExtResource("25_wht4")
 
-[node name="WhitePlatform5" parent="MapPhysics" unique_id=427375646 instance=ExtResource("8_terrain")]
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/WhitePlatform4" unique_id=100000044]
+texture = ExtResource("25_wht4")
+
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/WhitePlatform4" unique_id=100000045]
+polygon = PackedVector2Array(-227, -81.5, -216, -57.5, -124, 13.5, 1, 72.5, 61, 52.5, 225, -78.5, 210, -92.5, -21, -80.5, -212, -94.5)
+
+[node name="WhitePlatform5" type="StaticBody2D" parent="MapPhysics" unique_id=100000046]
 position = Vector2(1, 3005)
 collision_layer = 4
+collision_mask = 0
+script = ExtResource("9_plat")
 color_state = 1
-terrain_texture = ExtResource("26_wht5")
+
+[node name="Sprite2D" type="Sprite2D" parent="MapPhysics/WhitePlatform5" unique_id=100000047]
+texture = ExtResource("26_wht5")
+
+[node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/WhitePlatform5" unique_id=100000048]
+polygon = PackedVector2Array(157.5, -29.5, 120.5, -51.5, 53.5, -63.5, -58.5, -58.5, -124.5, -48.5, -150.5, -31.5, -160.5, -6.5, -104.5, 47.5, 21.5, 57.5, 125.5, 17.5, 151.5, -0.5)
 
 [node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=1844447280]
 
@@ -148,6 +268,8 @@ thorn_texture = ExtResource("28_thorn2")
 [node name="GearObstacle" parent="Obstacles" unique_id=531754362 instance=ExtResource("6_gear")]
 position = Vector2(-268, 36)
 rotate_speed = 60.0
+move_distance = 180.0
+move_speed = 90.0
 
 [node name="Portal" parent="Obstacles" unique_id=1806652968 instance=ExtResource("5_portal")]
 position = Vector2(1045, -305)
