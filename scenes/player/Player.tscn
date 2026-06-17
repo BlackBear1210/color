@@ -2,17 +2,23 @@
 
 [ext_resource type="Script" uid="uid://daht1yu34t87c" path="res://scripts/player.gd" id="1_dovo2"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hqtel"]
-size = Vector2(64, 142)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wr5hl"]
+radius = 32.0
+height = 142.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gfjak"]
+radius = 32.0
+height = 142.0
 
 [node name="Player" type="CharacterBody2D" unique_id=591392999]
 position = Vector2(0, -92)
 scale = Vector2(0.3, 0.3)
 script = ExtResource("1_dovo2")
+gray_slide_multiplier = 40.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=691500753]
 position = Vector2(-12, 108)
-shape = SubResource("RectangleShape2D_hqtel")
+shape = SubResource("CapsuleShape2D_wr5hl")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=283504610]
 position = Vector2(-19, 55)
@@ -30,6 +36,6 @@ monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ColorSensor" unique_id=1022558338]
 position = Vector2(-12, 108)
-shape = SubResource("RectangleShape2D_hqtel")
+shape = SubResource("CapsuleShape2D_gfjak")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1618506046]
