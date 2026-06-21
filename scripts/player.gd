@@ -283,13 +283,13 @@ func _check_color_death() -> void:
 ## 총알 색 = 플레이어 색의 반대.
 ## add_child 전에 bullet_color 를 세팅해야 _ready() 에서 올바른 색이 적용됨.
 func _shoot() -> void:
-	# ▼ 2026-06-21 (작업 W-C) 변경: 총알 색 = 플레이어와 '같은 색'.
-	#   이유: 회색 경사로 기믹의 요구사항("검정 플레이어가 쏘면 검정 그라데이션,
-	#         흰색 플레이어가 쏘면 흰색 그라데이션, 칠한 곳을 자기 색으로 밟고 오른다")을
-	#         만족시키려면 페인트 색이 플레이어 색과 같아야 한다.
-	#         (이전: 반대색 발사 → 칠한 곳이 반대색이라 밟을 수 없고 사망 판정되어 기믹 불가)
-	#   영향: 일반 지형에서도 "내 색으로 칠해 안전 지대를 만든다"는 직관적 규칙으로 통일됨.
-	var bullet_color := player_color
+	# 총알 색 = 플레이어의 '반대색' (불변 규칙).
+	#   검정 플레이어 → 흰색 페인트 / 흰색 플레이어 → 검정 페인트.
+	#   회색 경사로 기믹: 반대색 페인트를 회색 지형에 쏜 뒤, 점프하면서 그 색으로
+	#   전환해 페인트 위에 착지하면 미끄럼이 멈춘다(같은 색이라 안전). 따라서
+	#   기믹은 반대색 발사 전제 위에서 성립하며, 이 규칙을 깨면 안 된다.
+	#   (2026-06-22: 작업 W-C 의 '같은 색 발사' 변경이 불변 규칙을 깨 되돌림)
+	var bullet_color := ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK
 	var scene := BULLET_BLACK if bullet_color == ColorDefs.BLACK else BULLET_WHITE
 	var bullet := scene.instantiate()
 	bullet.bullet_color = bullet_color
