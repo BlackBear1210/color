@@ -344,12 +344,13 @@ func _check_color_death() -> void:
 ## 총알 색 = 플레이어 색의 반대.
 ## add_child 전에 bullet_color 를 세팅해야 _ready() 에서 올바른 색이 적용됨.
 func _shoot() -> void:
-	# ▼ 2026-06-22 되돌림(버그 수정): 총알 색 = 플레이어 '반대색' (원래 동작 복구).
-	#   문제였던 것: 2026-06-21 에 '자기색 발사'로 바꿨더니, 검정 플레이어는 검정 총알을,
-	#     흰 플레이어는 흰 총알을 쏘게 되어 → 총알/페인트가 배경에 묻히고 "플레이어 색에 따라
-	#     총알색이 달라져 이상하다"는 증상 발생. 그래서 원래의 '반대색 발사'로 복구한다.
-	#   회색 경사로 기믹은 유지: bullet.gd 가 'gray_slopes' 에 한해 '플레이어 색'(=반대색의 반대)
-	#     으로 칠하도록 예외 처리하므로, 전역 총알색을 반대색으로 되돌려도 등반/그라데이션은 정상.
+	# 총알 색 = 플레이어의 '반대색' (불변 규칙 — 작업자 커밋 7d15dd1 '총알 색 반대색 수정' 반영).
+	#   검정 플레이어 → 흰색 페인트 / 흰색 플레이어 → 검정 페인트.
+	#   ※ 2026-06-21 의 '같은 색 발사' 변경이 이 규칙을 깨 총알색이 들쭉날쭉해지는 버그를 만들어 되돌림.
+	#   회색 경사로(현재 적용 방식): bullet.gd 가 'gray_slopes' 에 한해 '플레이어 색'(=반대색의 반대)
+	#     으로 칠해 토글 없이 바로 등반 + 그라데이션이 되도록 예외 처리한다.
+	#     ─ 작업자 의도(반대색 칠 → 그 색으로 토글해 착지하면 미끄럼 멈춤)로 통일하려면
+	#       bullet.gd 의 gray_slopes 분기를 제거하면 됨.
 	var bullet_color := ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK
 	var scene := BULLET_BLACK if bullet_color == ColorDefs.BLACK else BULLET_WHITE
 	var bullet := scene.instantiate()
