@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/platform.gd" id="1_fe8yg"]
+[ext_resource type="Texture2D" path="res://scenes/world_1/map1/Platform_White_04.png" id="2_6t7r0"]
+
+[node name="Platform_White_04" type="StaticBody2D" unique_id=99820178]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_fe8yg")
+color_state = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1009020372]
+texture = ExtResource("2_6t7r0")
+centered = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=960673837]
+polygon = PackedVector2Array(85, 181, 123, 150, 178, 145, 254, 163, 270, 183, 267, 194, 248, 210, 153, 237, 92, 212, 85, 181)
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1951354136]
+monitoring = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DeathDetector" unique_id=513887805]
+polygon = PackedVector2Array(85, 181, 123, 150, 178, 145, 254, 163, 270, 183, 267, 194, 248, 210, 153, 237, 92, 212, 85, 181)

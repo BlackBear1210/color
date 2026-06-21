@@ -8,7 +8,10 @@ extends Node2D
 @export var camera_limit_right:  int = 100000
 @export var camera_limit_bottom: int = 100000
 
-@onready var kill_zone: Area2D = $MapPhysics/KillZone
+# ▼ 2026-06-17: $ 직접경로 → get_node_or_null 로 변경.
+#   이유: KillZone 이 없는 씬(예: 모듈 조립 템플릿)에서 @onready $경로가
+#         "Node not found" 에러를 뱉었다. 선택적 노드이므로 null 허용으로 바꿈.
+@onready var kill_zone: Area2D = get_node_or_null("MapPhysics/KillZone")
 
 func _ready() -> void:
 	if kill_zone:

@@ -26,6 +26,14 @@ const LAYER_DEATH_ZONE: int = 1 << 6
 # 폴리곤 단순화 정도(px). 클수록 정점↓(가벼움), 작을수록 외곽이 정밀
 @export_range(0.5, 20.0, 0.5) var simplify: float = 3.0
 
+## ▼ 2026-06-17 추가: 충돌 빌드 모드.
+##   SOLIDS(0)  = 속을 채움. 평지·언덕 등 "구멍 없는" 지형 기본값.
+##   SEGMENTS(1) = 외곽선만. 동굴·도넛처럼 "안쪽 빈 공간"이 있는 지형 전용.
+##   왜 필요?: 동굴 PNG 를 SOLIDS 로 구우면 opaque_to_polygons 의 키홀(자기교차)
+##            폴리곤이 구멍을 메워버려 플레이어가 지나갈 동굴 속이 충돌로 막힌다.
+##            (stage_2 BlackCave 먹통 버그의 원인) → 동굴은 이 값을 SEGMENTS 로.
+@export_enum("SOLIDS:0", "SEGMENTS:1") var collision_build_mode: int = 0
+
 ## 스테이지 tscn 에서 직접 지정하는 지형 텍스처.
 ## 값을 설정하면 Sprite2D 에 자동 적용, 에디터에서는 충돌도 자동 재굽는다.
 @export var terrain_texture: Texture2D:
@@ -68,9 +76,11 @@ func _bake_if_missing() -> void:
 	if spr == null or spr.texture == null:
 		push_warning("TerrainImage '%s': terrain_texture 가 설정되지 않았습니다." % name)
 		return
-	var n := AutoCollision.bake_into(self, spr, alpha_threshold, simplify, null)
+	# ▼ 2026-06-17: collision_build_mode 를 함께 전달 (동굴형은 SEGMENTS 로 구멍 보존)
+	var n := AutoCollision.bake_into(self, spr, alpha_threshold, simplify, null, collision_build_mode)
 	var detector := get_node_or_null("DeathDetector") as Area2D
 	if detector:
+		# 사망 판정 영역은 "겹침 감지"만 하므로 항상 SOLIDS 가 맞다 (모드 고정)
 		AutoCollision.bake_into(detector, spr, alpha_threshold, simplify, null)
 	if n == 0:
 		push_warning("TerrainImage '%s': 런타임 충돌 생성 실패 — 텍스처 import가 Lossless인지 확인하세요." % name)
@@ -97,7 +107,8 @@ func _apply_texture() -> void:
 func _bake() -> void:
 	var spr := get_node_or_null("Sprite2D") as Sprite2D
 	var root := get_tree().edited_scene_root
-	var n := AutoCollision.bake_into(self, spr, alpha_threshold, simplify, root)
+	# ▼ 2026-06-17: collision_build_mode 전달 (동굴형 지형 충돌 메움 버그 해결)
+	var n := AutoCollision.bake_into(self, spr, alpha_threshold, simplify, root, collision_build_mode)
 	var detector := get_node_or_null("DeathDetector") as Area2D
 	if detector:
 		AutoCollision.bake_into(detector, spr, alpha_threshold, simplify, root)

@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_0yo7n"]
+[ext_resource type="Texture2D" path="res://scenes/도형_타일셋_최신/sliced/Platform_Black_02_shape05.png" id="2_f6cmr"]
+
+[node name="Platform_Black_02_shape05" type="StaticBody2D" unique_id=303039197]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_0yo7n")
+simplify = 4.0
+terrain_texture = ExtResource("2_f6cmr")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=104552468]
+texture = ExtResource("2_f6cmr")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=11871729]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=2048248938]
+polygon = PackedVector2Array(452, 1, 160, 20, 147, 20, 107, 29, 107, 30, 62, 28, 37, 28, 18, 33, 15, 33, 1, 44, 0, 44, 1, 49, 1, 51, 15, 60, 15, 61, 38, 62, 47, 62, 94, 81, 94, 82, 115, 81, 129, 81, 150, 90, 150, 91, 255, 90, 259, 90, 285, 98, 301, 98, 412, 63, 416, 63, 448, 44, 448, 43, 481, 40, 484, 40, 504, 28, 506, 28, 515, 17, 516, 17, 511, 7, 511, 6, 452, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=1820634735]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=1468548238]
+position = Vector2(517, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1009169774]
+polygon = PackedVector2Array(452, 1, 160, 20, 147, 20, 107, 29, 107, 30, 62, 28, 37, 28, 18, 33, 15, 33, 1, 44, 0, 44, 1, 49, 1, 51, 15, 60, 15, 61, 38, 62, 47, 62, 94, 81, 94, 82, 115, 81, 129, 81, 150, 90, 150, 91, 255, 90, 259, 90, 285, 98, 301, 98, 412, 63, 416, 63, 448, 44, 448, 43, 481, 40, 484, 40, 504, 28, 506, 28, 515, 17, 516, 17, 511, 7, 511, 6, 452, 0)
+metadata/auto_baked = true

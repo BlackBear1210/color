@@ -283,8 +283,13 @@ func _check_color_death() -> void:
 ## 총알 색 = 플레이어 색의 반대.
 ## add_child 전에 bullet_color 를 세팅해야 _ready() 에서 올바른 색이 적용됨.
 func _shoot() -> void:
-	# 총알 색 = 플레이어 반대색 → 색깔별 전용 씬 선택 (작업자 페인트 시스템)
-	var bullet_color := ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK
+	# ▼ 2026-06-21 (작업 W-C) 변경: 총알 색 = 플레이어와 '같은 색'.
+	#   이유: 회색 경사로 기믹의 요구사항("검정 플레이어가 쏘면 검정 그라데이션,
+	#         흰색 플레이어가 쏘면 흰색 그라데이션, 칠한 곳을 자기 색으로 밟고 오른다")을
+	#         만족시키려면 페인트 색이 플레이어 색과 같아야 한다.
+	#         (이전: 반대색 발사 → 칠한 곳이 반대색이라 밟을 수 없고 사망 판정되어 기믹 불가)
+	#   영향: 일반 지형에서도 "내 색으로 칠해 안전 지대를 만든다"는 직관적 규칙으로 통일됨.
+	var bullet_color := player_color
 	var scene := BULLET_BLACK if bullet_color == ColorDefs.BLACK else BULLET_WHITE
 	var bullet := scene.instantiate()
 	bullet.bullet_color = bullet_color
@@ -367,4 +372,9 @@ func _respawn() -> void:
 	# 칠했던 페인트 전부 제거 + 시작 색으로 복귀
 	for p in get_tree().get_nodes_in_group("runtime_paint"):
 		p.queue_free()
+	# ▼ 2026-06-21 (작업 W-C) 추가: 회색 경사로의 그라데이션 페인트도 함께 초기화
+	#   (PaintMark 는 runtime_paint 로 지워지지만, 경사로 셰이더 누적은 별도이므로 직접 리셋)
+	for s in get_tree().get_nodes_in_group("gray_slopes"):
+		if s.has_method("reset_paint"):
+			s.reset_paint()
 	_set_color(start_color)

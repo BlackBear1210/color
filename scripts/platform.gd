@@ -32,6 +32,11 @@ var is_white: bool = false
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
+	# ▼ 2026-06-21 (작업 W-B/E) 추가: 런타임에 충돌 레이어를 반드시 적용.
+	#   이유: color_state 를 기본값(BLACK=0)으로 둔 인스턴스는 setter 가 호출되지 않아
+	#         collision_layer 가 1(기본)로 남는다 → 플레이어 마스크에 없어 그대로 통과(밟기 실패).
+	#         terrain_image.gd 와 동일하게 _ready 에서 _apply_color_state() 를 호출해 보정.
+	_apply_color_state()
 	# color_state 로 is_white 초기값 동기화
 	is_white = (color_state == ColorDefs.WHITE)
 	# DeathDetector 를 그룹에 등록 (player ColorSensor 가 탐지)

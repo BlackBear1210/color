@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/platform.gd" id="1_8gyq4"]
+[ext_resource type="Texture2D" path="res://scenes/world_1/map2/Slope_Body_01.png" id="2_fky1q"]
+
+[node name="Slope_Body_01" type="StaticBody2D" unique_id=1305654228]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_8gyq4")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=323292853]
+texture = ExtResource("2_fky1q")
+centered = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1465429710]
+polygon = PackedVector2Array(109, 110, 115, 80, 127, 84, 668, 449, 720, 494, 772, 565, 772, 574, 768, 581, 565, 640, 349, 679, 284, 603, 147, 324, 113, 208, 109, 110)
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1317729508]
+monitoring = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DeathDetector" unique_id=183426973]
+polygon = PackedVector2Array(109, 110, 115, 80, 127, 84, 668, 449, 720, 494, 772, 565, 772, 574, 768, 581, 565, 640, 349, 679, 284, 603, 147, 324, 113, 208, 109, 110)

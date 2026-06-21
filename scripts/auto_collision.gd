@@ -33,15 +33,49 @@ static func polygons_from_texture(texture: Texture2D, alpha_threshold: float = 0
 	# 채워진 영역의 외곽선을 폴리곤들로 추출 (epsilon으로 정점 단순화)
 	return bitmap.opaque_to_polygons(rect, epsilon)
 
+## ▼ 2026-06-17 추가: 폴리곤 빌드 모드 상수
+##   왜 추가했나(중요):
+##     opaque_to_polygons() 는 "구멍(동굴) 있는 도넛 모양"을 만나면, 바깥 외곽선과
+##     안쪽 구멍을 폭 0 의 슬릿(키홀)으로 이어 붙인 "자기교차 폴리곤" 1개를 돌려준다.
+##     이 폴리곤을 CollisionPolygon2D 의 기본값인 SOLIDS(채움) 모드로 쓰면,
+##     내부 삼각분할(ear-clipping)이 구멍 영역까지 메워 버려서
+##     "동굴 안(플레이어가 지나가야 할 빈 공간)"이 충돌로 꽉 차 버린다.
+##     → stage_2 의 BlackCave 들이 바로 이 증상(폴리가 안 들어가야 할 곳까지 들어감)이었다.
+##   해결:
+##     동굴/도넛형 지형은 SEGMENTS(외곽선만, 속을 채우지 않음) 모드로 구우면
+##     구멍이 메워지지 않고 벽/바닥 선만 충돌로 남는다.
+##     평지·언덕처럼 구멍이 없는 단순 지형은 기존대로 SOLIDS 가 안전하다.
+const BUILD_SOLIDS: int = CollisionPolygon2D.BUILD_SOLIDS
+const BUILD_SEGMENTS: int = CollisionPolygon2D.BUILD_SEGMENTS
+
+## ▼ 2026-06-17 추가: 너무 작은(노이즈) 폴리곤을 버리는 최소 면적(px²).
+##   왜: 알파 외곽에 생기는 1~2px 짜리 사금파리 폴리곤이 캐릭터 발에 걸리는
+##       "고스트 충돌" 의 원인이 된다. 일정 면적 미만은 충돌로 만들지 않는다.
+const MIN_POLY_AREA: float = 24.0
+
+## 폴리곤의 절대 면적(px²)을 구한다 (신발끈 공식). 부호 무시.
+static func _polygon_area(poly: PackedVector2Array) -> float:
+	var n := poly.size()
+	if n < 3:
+		return 0.0
+	var area := 0.0
+	for i in n:
+		var a := poly[i]
+		var b := poly[(i + 1) % n]
+		area += a.x * b.y - b.x * a.y
+	return absf(area) * 0.5
+
 ## sprite 의 알파 모양대로 target(StaticBody2D/Area2D)의 직속 자식에
 ## CollisionPolygon2D 들을 생성한다.
 ## - target       : 폴리곤을 자식으로 가질 충돌 바디 (CollisionObject2D)
 ## - sprite       : 모양의 기준이 되는 Sprite2D
 ## - owner_root   : 보통 get_tree().edited_scene_root. .tscn 저장을 위해 필요.
+## - build_mode   : 0=SOLIDS(채움, 단순 지형 기본) / 1=SEGMENTS(외곽선만, 동굴·도넛형)
+##                  ▼ 2026-06-17 추가된 인자. 동굴형 지형의 충돌 메움 버그 해결용.
 ## 반환: 생성한 폴리곤 개수.
 ## 주의: 이전에 이 함수로 구운(meta "auto_baked") 폴리곤은 먼저 모두 제거한다.
 ##       → 다시 Bake 해도 중복으로 쌓이지 않음.
-static func bake_into(target: Node, sprite: Sprite2D, alpha_threshold: float, epsilon: float, owner_root: Node) -> int:
+static func bake_into(target: Node, sprite: Sprite2D, alpha_threshold: float, epsilon: float, owner_root: Node, build_mode: int = BUILD_SOLIDS) -> int:
 	# 1) 기존에 자동 생성했던 폴리곤 제거 (수동으로 만든 것은 건드리지 않음)
 	var to_remove: Array = []
 	for c in target.get_children():
@@ -68,11 +102,16 @@ static func bake_into(target: Node, sprite: Sprite2D, alpha_threshold: float, ep
 	# 3) 폴리곤마다 CollisionPolygon2D 노드 생성
 	var count := 0
 	for poly in polys:
+		# ▼ 2026-06-17 추가: 노이즈(초소형) 폴리곤은 건너뛴다 → 고스트 충돌(발 걸림) 예방
+		if _polygon_area(poly) < MIN_POLY_AREA:
+			continue
 		var pts := PackedVector2Array()
 		for p in poly:
 			pts.append((p + origin) * sprite.scale + sprite.position)
 		var cp := CollisionPolygon2D.new()
 		cp.polygon = pts
+		# ▼ 2026-06-17 추가: build_mode 적용 (SEGMENTS 면 동굴 구멍이 메워지지 않음)
+		cp.build_mode = build_mode
 		cp.name = "AutoCol_%d" % count
 		cp.set_meta("auto_baked", true)   # 다음 Bake 때 식별/제거용 표시
 		target.add_child(cp)

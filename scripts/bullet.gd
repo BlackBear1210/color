@@ -51,6 +51,11 @@ func _on_body_entered(body: Node) -> void:
 	elif not body.is_in_group("obstacle"):
 		_spawn_splat()
 		_spawn_mark(body)
+		# ▼ 2026-06-21 (작업 W-C) 추가: 회색 그라데이션 경사로에 닿으면
+		#   경사로 자체에도 페인트 지점을 알려 '자기색→회색' 그라데이션을 렌더링한다.
+		#   (밟기/미끄럼 해제/사망 안전은 위의 _spawn_mark 가 만든 PaintMark 가 담당)
+		if body.is_in_group("gray_slopes") and body.has_method("paint_at"):
+			body.call_deferred("paint_at", global_position, bullet_color)
 	_safe_free()
 
 ## 순간 스플래시 이펙트: 0.22초 후 자동 삭제

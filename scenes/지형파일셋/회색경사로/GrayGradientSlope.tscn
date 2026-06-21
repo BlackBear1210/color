@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=3]
+
+; ▼ 2026-06-21 (작업 W-C) 신규: 회색 그라데이션 경사로 씬.
+;   구조: StaticBody2D(GRAY) + 삼각형 비주얼(그라데이션) + 매끈한 충돌 폴리곤 1개 + 페인트 오버레이(셰이더)
+;   - Visual(Polygon2D): 회색 그라데이션(꼭짓점 색 보간)으로 "왜 회색?" 궁금증 유발
+;   - CollisionPolygon2D: 26.6° 완만 경사 1개(floor_max_angle 이하). 회색이라 안 칠하면 미끄러짐
+;   - PaintOverlay(ColorRect+셰이더): 총 맞은 지점에 자기색→회색 그라데이션 렌더
+
+[ext_resource type="Script" path="res://scripts/gray_gradient_slope.gd" id="1_slope"]
+[ext_resource type="Shader" path="res://shaders/gray_slope_paint.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="mat_paint"]
+shader = ExtResource("2_shader")
+shader_parameter/point_count = 0
+shader_parameter/rect_size = Vector2(512, 256)
+shader_parameter/radius = 120.0
+shader_parameter/max_strength = 0.95
+
+[node name="GrayGradientSlope" type="StaticBody2D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_slope")
+color_state = 2
+
+[node name="Visual" type="Polygon2D" parent="."]
+; 경사로 삼각형 (원점=좌상단 0,0 기준). 꼭짓점 색을 다르게 줘 회색 그라데이션
+color = Color(0.5, 0.5, 0.5, 1)
+polygon = PackedVector2Array(0, 256, 512, 0, 512, 256)
+vertex_colors = PackedColorArray(0.44, 0.44, 0.46, 1, 0.63, 0.63, 0.66, 1, 0.38, 0.38, 0.4, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+; 손으로 찍은 매끈한 경사 충돌 1개 (조각 없음). 빗변(0,256)->(512,0) 이 걷는 면
+polygon = PackedVector2Array(0, 256, 512, 0, 512, 256)
+
+[node name="PaintOverlay" type="ColorRect" parent="."]
+; 평소 투명. 셰이더가 페인트 지점 근처만 자기색→회색 그라데이션으로 그린다
+material = SubResource("mat_paint")
+offset_right = 512.0
+offset_bottom = 256.0
+color = Color(1, 1, 1, 0)
