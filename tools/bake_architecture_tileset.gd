@@ -51,6 +51,9 @@ const ENTRIES: Array = [
 ##   (비우면 ENTRIES 만 처리)
 const SCAN_DIRS: Array = [
 	"res://scenes/도형_타일셋_최신/sliced/",
+	# ▼ 2026-06-21 추가: silhouette_from_image.gd 가 만든 '흑/백 실루엣 PNG' 자동 굽기.
+	#   파이프라인: 원본이미지 → silhouette_from_image.gd → 실루엣/ → (여기서 자동 bake) → Arch 씬
+	"res://scenes/지형파일셋/실루엣/",
 ]
 
 
@@ -74,14 +77,20 @@ func _initialize() -> void:
 				continue
 			var tex_path: String = dir_path + f
 			var arch_name: String = f.get_basename()   # 파일명 = 씬 이름
-			made += _bake_entry(arch_name, tex_path, dir_path, script_res)
+			# ▼ 2026-06-22 추가: silhouette_from_image.gd 가 붙인 색표기(_W/_B)로 color_state 결정.
+			#   → 흰 지형은 platform_white(layer3), 검정은 platform_black(layer2) 물리레이어가 정확히 적용됨.
+			var cs := 0   # 기본 BLACK
+			if arch_name.ends_with("_W"):
+				cs = 1     # WHITE
+			made += _bake_entry(arch_name, tex_path, dir_path, script_res, cs)
 
 	print("──────── 아키텍처 타일셋 %d개 생성 완료" % made)
 	quit()   # 헤드리스 MainLoop 종료
 
 
 ## 텍스처 1장 → (이미지+폴리+색판정) 씬 1개. 반환: 성공 1 / 실패 0.
-func _bake_entry(arch_name: String, tex_path: String, out_dir: String, script_res: Resource) -> int:
+## ▼ 2026-06-22: color_state 인자 추가(0=BLACK/1=WHITE/2=GRAY). 물리레이어가 색에 맞게 적용됨.
+func _bake_entry(arch_name: String, tex_path: String, out_dir: String, script_res: Resource, color_state: int = 0) -> int:
 	var tex := load(tex_path) as Texture2D
 	if tex == null:
 		push_warning("타일셋: 텍스처 로드 실패 → %s" % tex_path)
@@ -90,7 +99,8 @@ func _bake_entry(arch_name: String, tex_path: String, out_dir: String, script_re
 	# terrain_image.gd 가 기대하는 노드 구조: StaticBody2D ├ Sprite2D └ DeathDetector
 	var root := StaticBody2D.new()
 	root.name = arch_name
-	root.collision_layer = 2
+	# 충돌 레이어는 color_state 에 맞춰: BLACK=2, WHITE=4, GRAY=8 (terrain_image._apply_color_state 가 재적용하나 초기값도 맞춤)
+	root.collision_layer = [2, 4, 8][clampi(color_state, 0, 2)]
 	root.collision_mask = 0
 
 	var spr := Sprite2D.new()
@@ -117,7 +127,7 @@ func _bake_entry(arch_name: String, tex_path: String, out_dir: String, script_re
 	root.add_child(exitm)
 
 	root.set_script(script_res)
-	root.set("color_state", 0)
+	root.set("color_state", color_state)
 	root.set("alpha_threshold", ALPHA_THRESHOLD)
 	root.set("simplify", SIMPLIFY)
 	root.set("collision_build_mode", 0)   # SOLIDS → 에디터에서 무지개색으로 보임

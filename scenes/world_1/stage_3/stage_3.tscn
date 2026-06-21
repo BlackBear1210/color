@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 ; ▼ 2026-06-21 (작업 W-E) 샘플 스테이지: 모듈 키트 + 회색 그라데이션 경사로 + 죽음/리스폰 데모.
+;   (2026-06-22 복구: 디스크에서 삭제돼 있어 재생성)
 ;   구성(왼→오): 도입(안전 검정바닥) → 흰색 구간(색 토글/죽음 학습) → 검정바닥+가시(상승)
 ;                → 회색 그라데이션 경사로(절정: 총으로 칠해야 등반) → 보상(안전바닥) → 포탈(출구).
 ;   ※ 모든 지형은 '모듈만' 배치(크기·색만 변경, 충돌 새로 안 그림). Ground_Flat 을 4가지로 재사용.
@@ -13,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/지형파일셋/회색경사로/GrayGradientSlope.tscn" id="g_slope"]
 [ext_resource type="PackedScene" uid="uid://dlvoqvtrme2at" path="res://scenes/obstacles/SpikeObstacle.tscn" id="spike"]
 [ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="portal"]
+[ext_resource type="PackedScene" path="res://scenes/effects/Atmosphere.tscn" id="atmo"]
 
 [sub_resource type="RectangleShape2D" id="kz_shape"]
 size = Vector2(8000, 300)
@@ -26,6 +28,8 @@ camera_limit_bottom = 1100
 
 [node name="Background" parent="." instance=ExtResource("1_bg")]
 [node name="Hud" parent="." instance=ExtResource("3_hud")]
+; ▼ 2026-06-22 (작업 C) 분위기 레이어(비네트+먼지) 추가
+[node name="Atmosphere" parent="." instance=ExtResource("atmo")]
 
 [node name="MapVisual" type="Node2D" parent="."]
 [node name="PaintOverlay" type="Node2D" parent="MapVisual"]

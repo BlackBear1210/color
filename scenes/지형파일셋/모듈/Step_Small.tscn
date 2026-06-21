@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/platform.gd" id="1_swhmu"]
+
+[node name="Step_Small" type="StaticBody2D" unique_id=102007167]
+script = ExtResource("1_swhmu")
+
+[node name="Preview" type="Polygon2D" parent="." unique_id=1449874866]
+color = Color(0.05, 0.05, 0.05, 1)
+polygon = PackedVector2Array(0, 64, 128, 64, 128, 0, 256, 0, 256, 128, 0, 128)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1708927839]
+polygon = PackedVector2Array(0, 64, 128, 64, 128, 0, 256, 0, 256, 128, 0, 128)
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=318745686]
+monitoring = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DeathDetector" unique_id=184900294]
+polygon = PackedVector2Array(0, 64, 128, 64, 128, 0, 256, 0, 256, 128, 0, 128)
+
+[node name="SnapPoints" type="Node2D" parent="." unique_id=400165139]
+
+[node name="Entry" type="Marker2D" parent="SnapPoints" unique_id=538403181]
+position = Vector2(0, 64)
+
+[node name="Exit" type="Marker2D" parent="SnapPoints" unique_id=2119414049]
+position = Vector2(256, 0)

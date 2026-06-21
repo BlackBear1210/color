@@ -21,8 +21,20 @@ const PAINT_SPLAT := preload("res://scenes/effects/PaintSplat.tscn")
 
 var _velocity: Vector2 = Vector2.ZERO
 
+# ▼ 2026-06-22 (작업 A) 총알 잔상(트레일)용 Line2D
+var _trail: Line2D = null
+
 func _ready() -> void:
 	_velocity = direction * speed
+
+	# ▼ 2026-06-22: 총알 잔상 생성. top_level=true 로 월드 좌표에 그려 꼬리가 따라오게 한다.
+	_trail = Line2D.new()
+	_trail.top_level = true
+	_trail.width = 4.0
+	_trail.z_index = -1
+	_trail.default_color = Color(0.1, 0.1, 0.1, 0.55) if bullet_color == ColorDefs.BLACK \
+						   else Color(1.0, 1.0, 1.0, 0.7)
+	add_child(_trail)
 
 	body_entered.connect(_on_body_entered)
 
@@ -38,6 +50,12 @@ func _physics_process(delta: float) -> void:
 	if spr and _velocity.length_squared() > 0.0:
 		spr.rotation = _velocity.angle()
 
+	# ▼ 2026-06-22: 잔상 갱신 — 현재 위치를 추가하고 오래된 점은 버려 짧은 꼬리 유지
+	if _trail:
+		_trail.add_point(global_position)
+		while _trail.get_point_count() > 10:
+			_trail.remove_point(0)
+
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("paint_bodies"):
 		var hit_mark: Node = body if body.has_method("update_color") else body.get_parent()
@@ -48,15 +66,45 @@ func _on_body_entered(body: Node) -> void:
 				if p.global_position.distance_to(pos) < paint_overlap_radius:
 					p.call_deferred("update_color", bullet_color)
 		# 같은 색: 아무것도 안 함 (bullet만 소멸)
+	elif body.is_in_group("gray_slopes"):
+		# ▼ 2026-06-22 변경: 회색 경사로는 '플레이어 색'으로 칠해야 밟고 오를 수 있다.
+		#   총알은 플레이어의 반대색이므로, 칠하는 색 = 반대색의 반대 = 플레이어 색.
+		#   (전역 총알색을 반대색으로 되돌린 뒤에도 회색경사로 기믹을 유지하기 위한 예외 처리)
+		var player_color := ColorDefs.BLACK if bullet_color == ColorDefs.WHITE else ColorDefs.WHITE
+		_spawn_splat()
+		_spawn_impact_particles()         # ▼ 2026-06-22: 탄착 스플래터 파티클
+		_spawn_mark(body, player_color)   # 등반/안전/미끄럼해제용 PaintMark (플레이어 색)
+		if body.has_method("paint_at"):
+			# 경사로 표면 '플레이어색→회색' 그라데이션 (비주얼)
+			body.call_deferred("paint_at", global_position, player_color)
 	elif not body.is_in_group("obstacle"):
 		_spawn_splat()
+		_spawn_impact_particles()         # ▼ 2026-06-22: 탄착 스플래터 파티클
 		_spawn_mark(body)
-		# ▼ 2026-06-21 (작업 W-C) 추가: 회색 그라데이션 경사로에 닿으면
-		#   경사로 자체에도 페인트 지점을 알려 '자기색→회색' 그라데이션을 렌더링한다.
-		#   (밟기/미끄럼 해제/사망 안전은 위의 _spawn_mark 가 만든 PaintMark 가 담당)
-		if body.is_in_group("gray_slopes") and body.has_method("paint_at"):
-			body.call_deferred("paint_at", global_position, bullet_color)
 	_safe_free()
+
+## ▼ 2026-06-22 신규(작업 A): 탄착 지점에 페인트 튀김 파티클을 잠깐 터뜨린다.
+##   총알은 곧 사라지므로, 파티클은 씬 루트에 월드 좌표로 스폰해 독립적으로 재생/자동삭제.
+func _spawn_impact_particles() -> void:
+	var p := CPUParticles2D.new()
+	p.one_shot     = true
+	p.explosiveness = 0.9
+	p.amount       = 10
+	p.lifetime     = 0.4
+	p.spread       = 80.0
+	p.gravity      = Vector2(0, 500)
+	p.initial_velocity_min = 40.0
+	p.initial_velocity_max = 130.0
+	p.scale_amount_min = 1.5
+	p.scale_amount_max = 3.5
+	p.color        = Color(0.1, 0.1, 0.1, 0.9) if bullet_color == ColorDefs.BLACK \
+					 else Color(1.0, 1.0, 1.0, 0.95)
+	p.position     = global_position
+	p.emitting     = true
+	p.finished.connect(p.queue_free)
+	var scene := get_tree().current_scene
+	if scene:
+		scene.call_deferred("add_child", p)
 
 ## 순간 스플래시 이펙트: 0.22초 후 자동 삭제
 func _spawn_splat() -> void:
@@ -68,17 +116,20 @@ func _spawn_splat() -> void:
 	parent.call_deferred("add_child", splat)
 
 ## 영구 페인트 자국: "runtime_paint" 그룹 → 리스폰 시 일괄 제거
-func _spawn_mark(terrain_body: Node = null) -> void:
+## ▼ 2026-06-22: paint_col 인자 추가. -1 이면 총알색(bullet_color), 아니면 지정색으로 칠한다.
+##   (회색 경사로는 '플레이어 색'으로 칠해야 해서 지정색이 필요)
+func _spawn_mark(terrain_body: Node = null, paint_col: int = -1) -> void:
+	var col: int = bullet_color if paint_col < 0 else paint_col
 	var pos: Vector2 = global_position + direction * 25.0
 
 	# 반경 내 다른 색 페인트만 제거 (같은 색은 유지 → 스택)
 	for p in get_tree().get_nodes_in_group("runtime_paint"):
 		if p.global_position.distance_to(pos) < paint_overlap_radius:
-			if p.get("paint_color") != bullet_color:
+			if p.get("paint_color") != col:
 				p.queue_free()
 
 	var mark := PAINT_MARK.instantiate()
-	mark.paint_color      = bullet_color
+	mark.paint_color      = col
 	mark.global_position  = pos
 
 	# ① 1차: 플레이어 기준 (총알 방향)

@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3]
+
+; ▼ 2026-06-22 (작업 C: 분위기) 재사용 분위기 레이어: 비네트 + 떠다니는 먼지.
+;   아무 스테이지 루트에 인스턴스하면 화면에 깊이감/공기감이 생긴다.
+;   - Vignette(ColorRect+셰이더): 화면 가장자리 어둡게
+;   - Dust(CPUParticles2D): 천천히 위로 흐르는 옅은 먼지 입자
+
+[ext_resource type="Shader" path="res://shaders/vignette.gdshader" id="1_vig"]
+
+[sub_resource type="ShaderMaterial" id="mat_vig"]
+shader = ExtResource("1_vig")
+shader_parameter/strength = 0.45
+shader_parameter/inner_radius = 0.62
+
+[sub_resource type="Gradient" id="grad_dot"]
+; 중심 흰색 → 가장자리 투명: 부드러운 먼지 점
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="tex_dot"]
+gradient = SubResource("grad_dot")
+width = 16
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="Atmosphere" type="CanvasLayer"]
+layer = 1
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("mat_vig")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="Dust" type="CPUParticles2D" parent="."]
+position = Vector2(640, 360)
+amount = 44
+lifetime = 9.0
+preprocess = 5.0
+texture = SubResource("tex_dot")
+emission_shape = 3
+emission_rect_extents = Vector2(780, 460)
+direction = Vector2(0, -1)
+spread = 35.0
+gravity = Vector2(0, -5)
+initial_velocity_min = 3.0
+initial_velocity_max = 11.0
+scale_amount_min = 0.4
+scale_amount_max = 1.1
+color = Color(1, 1, 1, 0.14)

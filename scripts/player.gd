@@ -37,11 +37,42 @@ const JUMP_CUT_MULTIPLIER:     float = 0.4   # 점프 키 뗄 때 상승 감속 
 var player_color: int  = ColorDefs.BLACK   # 현재 색 (0=BLACK, 1=WHITE)
 var is_dead: bool      = false
 
+# ▼ 2026-06-22 (버그수정): 리스폰 직후 짧은 무적 시간(초).
+#   왜: 리스폰은 global_position 으로 '순간이동'하는데, ColorSensor(Area2D)의 겹침 목록은
+#       다음 물리 스텝에서야 갱신된다. 그래서 텔레포트 직후 1프레임 동안 '이전 위치(예: 흰 지형)'의
+#       겹침이 남아, 안전한 리스폰 지점에서도 곧바로 다시 사망 판정이 떠 죽음이 2번 세지는 문제 발생.
+#       → 리스폰 후 잠깐 색 사망 판정을 건너뛰어 stale overlap 프레임을 흘려보낸다(스폰 보호 효과 겸용).
+var _spawn_grace: float = 0.0
+
 var _coyote_timer:      float = 0.0
 var _jump_buffer_timer: float = 0.0
 
 # 애니메이션 이름 합성에 사용하는 색 문자열 ("black" 또는 "white")
 var _color_str: String  = "black"
+
+# ▼ 2026-06-22 추가: 색 전환 회전 모션용.
+#   _spin_tween       : 진행 중인 회전 트윈(빠른 토글 시 이전 것을 정리)
+#   _base_sprite_scale: 스프라이트 원래 스케일(스쿼시/스트레치·복귀 기준)
+var _spin_tween: Tween = null
+var _base_sprite_scale: Vector2 = Vector2.ONE
+
+# ▼ 2026-06-22 추가: 주스(연출)용.
+#   _was_on_floor  : 착지 순간 감지용(직전 프레임 바닥 여부)
+#   _squash_timer  : 착지 스쿼시 지속 타이머
+var _was_on_floor: bool = true
+var _squash_timer: float = 0.0
+
+# ▼ 2026-06-22 (색 표시 UI: 화면 테두리 글로우) — '밋밋한 전체화면 플래시'를 대체.
+#   현재 플레이어 색을 화면 가장자리 빛으로 표시. 색 전환/사망 때 잠깐 더 밝게 펄스.
+#   _glow      : 전체화면 ColorRect(셰이더 적용)
+#   _glow_mat  : 그 ShaderMaterial(색/세기 파라미터를 코드에서 변경)
+#   ※ 다른 디자인으로 교체하고 싶으면 _juice_setup / _set_glow_color / _pulse_glow 만 바꾸면 됨.
+const GLOW_SHADER: Shader = preload("res://shaders/edge_glow.gdshader")
+const GLOW_BASE_INTENSITY: float = 0.55   # 평소 세기
+const GLOW_PULSE_INTENSITY: float = 1.7   # 전환 순간 세기
+var _glow: ColorRect = null
+var _glow_mat: ShaderMaterial = null
+var _glow_tween: Tween = null
 
 # ── 사격 ──────────────────────────────────────────────────────────────
 # 페인트 총알: 색깔별 전용 씬 (작업자 페인트 시스템 병합)
@@ -76,7 +107,30 @@ func _ready() -> void:
 	# modulate 는 항상 WHITE → 에셋 자체 색을 그대로 표시 (tinting 없음)
 	sprite.modulate = Color.WHITE
 
+	# ▼ 2026-06-22: 스쿼시/스트레치·회전 모션 후 복귀할 기준 스케일 저장
+	_base_sprite_scale = sprite.scale
+
+	# ▼ 2026-06-22: 주스 노드(색전환 플래시) 생성
+	_juice_setup()
+
 	_set_color(start_color)  # 시작 색 적용
+
+## ▼ 2026-06-22 신규: 색 표시 UI(화면 테두리 글로우) 셋업.
+##   씬 파일을 건드리지 않고 코드로 전체화면 ColorRect+셰이더를 띄워 모든 스테이지에 자동 적용.
+func _juice_setup() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 49          # 월드 위, HUD 텍스트 아래쯤(테두리 빛)
+	add_child(layer)
+	_glow = ColorRect.new()
+	_glow.anchor_right = 1.0
+	_glow.anchor_bottom = 1.0                    # 화면 전체 덮기(셰이더가 가장자리만 칠함)
+	_glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_glow_mat = ShaderMaterial.new()
+	_glow_mat.shader = GLOW_SHADER
+	_glow_mat.set_shader_parameter("intensity", GLOW_BASE_INTENSITY)
+	_glow_mat.set_shader_parameter("thickness", 0.16)
+	_glow.material = _glow_mat
+	layer.add_child(_glow)
 
 # ── 스프라이트 시트를 AtlasTexture 로 분할해 SpriteFrames 에 등록 ─────
 ## black/white 두 색상의 모든 애니메이션을 하나의 SpriteFrames 에 담는다.
@@ -127,6 +181,9 @@ func _add_anim(frames: SpriteFrames, anim: String, tex: Texture2D,
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
+
+	# ▼ 2026-06-22: 리스폰 직후 무적 시간 카운트다운(stale overlap 프레임 무시용)
+	_spawn_grace = max(_spawn_grace - delta, 0.0)
 
 	var on_gray := _is_touching_gray()
 
@@ -197,6 +254,7 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_update_animation()
+	_apply_juice_motion(delta)   # ▼ 2026-06-22: 스쿼시/스트레치 + 착지 먼지
 
 	# 색 판정: 페인트 마크 우선 → 지형 색 → GhostPlatform
 	_check_color_death()
@@ -238,6 +296,9 @@ func _update_animation() -> void:
 ## 판정 우선순위: ① 페인트 자국 → ② 지형 색 → ③ GhostPlatform
 func _check_color_death() -> void:
 	if is_dead or color_sensor == null:
+		return
+	# ▼ 2026-06-22: 리스폰 직후 무적 동안은 색 사망 판정 건너뜀(텔레포트 stale overlap 방지)
+	if _spawn_grace > 0.0:
 		return
 
 	# Area2D 목록 분류
@@ -283,13 +344,13 @@ func _check_color_death() -> void:
 ## 총알 색 = 플레이어 색의 반대.
 ## add_child 전에 bullet_color 를 세팅해야 _ready() 에서 올바른 색이 적용됨.
 func _shoot() -> void:
-	# ▼ 2026-06-21 (작업 W-C) 변경: 총알 색 = 플레이어와 '같은 색'.
-	#   이유: 회색 경사로 기믹의 요구사항("검정 플레이어가 쏘면 검정 그라데이션,
-	#         흰색 플레이어가 쏘면 흰색 그라데이션, 칠한 곳을 자기 색으로 밟고 오른다")을
-	#         만족시키려면 페인트 색이 플레이어 색과 같아야 한다.
-	#         (이전: 반대색 발사 → 칠한 곳이 반대색이라 밟을 수 없고 사망 판정되어 기믹 불가)
-	#   영향: 일반 지형에서도 "내 색으로 칠해 안전 지대를 만든다"는 직관적 규칙으로 통일됨.
-	var bullet_color := player_color
+	# ▼ 2026-06-22 되돌림(버그 수정): 총알 색 = 플레이어 '반대색' (원래 동작 복구).
+	#   문제였던 것: 2026-06-21 에 '자기색 발사'로 바꿨더니, 검정 플레이어는 검정 총알을,
+	#     흰 플레이어는 흰 총알을 쏘게 되어 → 총알/페인트가 배경에 묻히고 "플레이어 색에 따라
+	#     총알색이 달라져 이상하다"는 증상 발생. 그래서 원래의 '반대색 발사'로 복구한다.
+	#   회색 경사로 기믹은 유지: bullet.gd 가 'gray_slopes' 에 한해 '플레이어 색'(=반대색의 반대)
+	#     으로 칠하도록 예외 처리하므로, 전역 총알색을 반대색으로 되돌려도 등반/그라데이션은 정상.
+	var bullet_color := ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK
 	var scene := BULLET_BLACK if bullet_color == ColorDefs.BLACK else BULLET_WHITE
 	var bullet := scene.instantiate()
 	bullet.bullet_color = bullet_color
@@ -326,6 +387,102 @@ func _is_over_paint() -> bool:
 # ═══════════════════════════════════════════════════════════════════════
 func _toggle_color() -> void:
 	_set_color(ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK)
+	# ▼ 2026-06-22: 색을 바꿀 때마다 '다이얼/리모컨 돌리듯' 회전 모션 재생
+	_play_color_switch_spin()
+
+## ▼ 2026-06-22 신규(사용자 요청): 색 전환 시 스프라이트를 한 바퀴 회전(다이얼 돌리는 느낌) + 화면 번쩍.
+##   - 회전은 sprite.rotation 만 사용 → 스케일은 스쿼시/스트레치가 담당하므로 서로 안 부딪힘.
+##   - 빠르게 연타해도 깨지지 않게 이전 트윈을 kill 하고 회전을 0 으로 리셋한다.
+func _play_color_switch_spin() -> void:
+	if sprite == null:
+		return
+	if _spin_tween and _spin_tween.is_valid():
+		_spin_tween.kill()
+	sprite.rotation = 0.0
+
+	# 회전 트윈(한 바퀴) — 끝나면 rotation 을 0 으로 정리
+	_spin_tween = create_tween()
+	_spin_tween.tween_property(sprite, "rotation", TAU, 0.30) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_spin_tween.tween_callback(func() -> void: sprite.rotation = 0.0)
+
+	# 화면 테두리 글로우 펄스(색 전환 강조)
+	_pulse_glow()
+
+## ▼ 2026-06-22 신규: 화면 테두리 글로우 색을 현재 플레이어 색에 맞춘다.
+##   검정=어두운(약간 남색 틴트로 가시성↑) / 흰색=밝은 빛. 색은 취향대로 조정 가능.
+func _set_glow_color(c: int) -> void:
+	if _glow_mat == null:
+		return
+	var col := Color(0.97, 0.97, 1.0) if c == ColorDefs.WHITE else Color(0.12, 0.13, 0.20)
+	_glow_mat.set_shader_parameter("glow_color", col)
+
+## ▼ 2026-06-22 신규: 테두리 글로우를 잠깐 더 밝게 펄스(전환/사망 강조).
+func _pulse_glow() -> void:
+	if _glow_mat == null:
+		return
+	if _glow_tween and _glow_tween.is_valid():
+		_glow_tween.kill()
+	_glow_mat.set_shader_parameter("intensity", GLOW_PULSE_INTENSITY)
+	_glow_tween = create_tween()
+	_glow_tween.tween_method(
+		func(v: float) -> void: _glow_mat.set_shader_parameter("intensity", v),
+		GLOW_PULSE_INTENSITY, GLOW_BASE_INTENSITY, 0.35
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+## ▼ 2026-06-22 신규: 스쿼시&스트레치 + 착지 먼지.
+##   점프 상승=세로로 늘리고, 낙하=살짝 늘리고, 착지 순간=납작(스쿼시) + 먼지 파편.
+##   스케일만 다루므로 회전 모션(_play_color_switch_spin)과 충돌하지 않는다.
+func _apply_juice_motion(delta: float) -> void:
+	if sprite == null:
+		return
+	var on_floor := is_on_floor()
+	# 착지 순간 감지 → 납작 스쿼시 + 발밑 먼지
+	if on_floor and not _was_on_floor:
+		_squash_timer = 0.12
+		_spawn_burst(global_position + Vector2(0, 45), Color(0.75, 0.75, 0.75, 0.7), 12, 75.0, 90.0)
+	_was_on_floor = on_floor
+
+	var target := _base_sprite_scale
+	if not on_floor:
+		if velocity.y < 0.0:
+			target = Vector2(_base_sprite_scale.x * 0.86, _base_sprite_scale.y * 1.16)  # 상승: 길쭉
+		else:
+			target = Vector2(_base_sprite_scale.x * 0.93, _base_sprite_scale.y * 1.08)  # 낙하: 약간 길쭉
+	if _squash_timer > 0.0:
+		target = Vector2(_base_sprite_scale.x * 1.22, _base_sprite_scale.y * 0.80)        # 착지: 납작
+		_squash_timer -= delta
+
+	# 지수 감쇠로 부드럽게 목표 스케일에 수렴
+	var t := 1.0 - exp(-18.0 * delta)
+	sprite.scale = sprite.scale.lerp(target, t)
+
+## ▼ 2026-06-22 신규: 한 번 터지는 파티클(먼지/파편)을 현재 씬에 스폰 → 끝나면 자동 제거.
+##   플레이어(scale 0.3)의 자식으로 두면 입자가 작아지므로, 씬 루트에 월드 좌표로 스폰한다.
+func _spawn_burst(world_pos: Vector2, color: Color, amount: int, spread: float, vel: float) -> void:
+	var p := CPUParticles2D.new()
+	p.one_shot     = true
+	p.explosiveness = 0.95
+	p.amount       = max(amount, 1)
+	p.lifetime     = 0.5
+	p.direction    = Vector2(0, -1)
+	p.spread       = spread
+	p.gravity      = Vector2(0, 600)
+	p.initial_velocity_min = vel * 0.5
+	p.initial_velocity_max = vel
+	p.scale_amount_min = 2.0
+	p.scale_amount_max = 4.5
+	p.color        = color
+	p.position     = world_pos     # 씬 루트는 원점이므로 position=월드좌표
+	p.emitting     = true
+	p.finished.connect(p.queue_free)
+	var scene := get_tree().current_scene
+	if scene:
+		scene.call_deferred("add_child", p)
+
+## 사망 파편 색 (현재 플레이어 색 계열)
+func _death_color() -> Color:
+	return Color(0.95, 0.95, 0.95, 0.95) if player_color == ColorDefs.WHITE else Color(0.12, 0.12, 0.12, 0.95)
 
 ## 색상 상태를 변경한다.
 ## ① collision_mask 교체 (자기 색 지형 + 회색 + 장애물만 충돌)
@@ -345,6 +502,9 @@ func _set_color(c: int) -> void:
 	if sprite:
 		sprite.modulate = Color.WHITE
 
+	# ▼ 2026-06-22: 화면 테두리 글로우 색을 현재 색에 동기화(전환 직후 상태가 화면에 표시됨)
+	_set_glow_color(c)
+
 	# 현재 재생 중인 동작을 새 색상으로 즉시 전환
 	var current_action: String = sprite.animation.split("_")[0] if sprite and sprite.animation else "idle"
 	_play_anim(current_action)
@@ -361,6 +521,9 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	died.emit()
 	SceneManager.add_death()   # HUD 죽음 횟수 누적 (+1)
+	# ▼ 2026-06-22: 사망 파편 폭발(현재 색 계열) + 테두리 글로우 펄스
+	_spawn_burst(global_position + Vector2(0, 25), _death_color(), 26, 150.0, 160.0)
+	_pulse_glow()
 	_play_anim("die")          # die_black 또는 die_white 재생
 	await sprite.animation_finished
 	_respawn()
@@ -369,6 +532,7 @@ func _respawn() -> void:
 	global_position = respawn_point
 	velocity        = Vector2.ZERO
 	is_dead         = false
+	_spawn_grace    = 0.2   # ▼ 2026-06-22: 리스폰 직후 짧은 무적(stale overlap 재사망 방지)
 	# 칠했던 페인트 전부 제거 + 시작 색으로 복귀
 	for p in get_tree().get_nodes_in_group("runtime_paint"):
 		p.queue_free()

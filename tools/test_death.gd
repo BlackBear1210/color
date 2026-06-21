@@ -9,6 +9,7 @@ var _frame := 0
 var _deaths_before := 0
 var _saw_dead := false
 var _respawn_pos: Vector2
+var _deaths_seen := 0
 
 func _initialize() -> void:
 	var ps: PackedScene = load("res://scenes/world_1/stage_3/stage_3.tscn")
@@ -29,6 +30,11 @@ func _process(_d: float) -> bool:
 		print("초기 player_color(0=BLACK) = ", _player.player_color)
 		_player.global_position = Vector2(1150, 540)
 	elif _frame > 8:
+		# death_count 변화 추적(언제·어디서 죽었는지)
+		var c := int(_sm.death_count) if _sm else 0
+		if c != _deaths_seen:
+			print("  [죽음 #%d] frame=%d pos=%s is_dead=%s" % [c, _frame, _player.global_position, _player.is_dead])
+			_deaths_seen = c
 		if _player.is_dead:
 			_saw_dead = true
 		# 사망을 봤고, 리스폰(위치 복귀 + is_dead 해제)까지 확인되면 종료
