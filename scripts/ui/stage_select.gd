@@ -1,26 +1,32 @@
 extends Control
 ## 스테이지 선택 화면.
-## 각 스테이지 버튼을 누르면 해당 스테이지로 이동하고,
-## 메인 메뉴 버튼으로 타이틀로 돌아간다.
+## ▼ 2026-06-22 보강: 잠금/클리어 표시 + 베스트 타임 + 잠긴 스테이지 비활성화.
 
 func _ready() -> void:
-	# 버튼 시그널 연결 (씬에 버튼이 있을 경우)
 	var main_btn := get_node_or_null("Panel/MainMenuButton") as Button
 	if main_btn:
-		main_btn.pressed.connect(_on_main_menu)
+		main_btn.pressed.connect(func() -> void:
+			AudioManager.play_sfx("click")
+			SceneManager.go_to_main_menu())
 
-	var s1 := get_node_or_null("Panel/Stage1Button") as Button
-	if s1:
-		s1.pressed.connect(func(): SceneManager.load_stage(1))
+	for n in [1, 2, 3]:
+		var btn := get_node_or_null("Panel/Stage%dButton" % n) as Button
+		if btn == null:
+			continue
+		_setup_stage_button(btn, n)
 
-	var s2 := get_node_or_null("Panel/Stage2Button") as Button
-	if s2:
-		s2.pressed.connect(func(): SceneManager.load_stage(2))
-
-	var s3 := get_node_or_null("Panel/Stage3Button") as Button
-	if s3:
-		s3.pressed.connect(func(): SceneManager.load_stage(3))
-
-
-func _on_main_menu() -> void:
-	SceneManager.go_to_main_menu()
+func _setup_stage_button(btn: Button, n: int) -> void:
+	var unlocked := SceneManager.is_unlocked(n)
+	btn.disabled = not unlocked
+	if not unlocked:
+		btn.text = "Stage %d  (잠김)" % n
+		return
+	# 클리어 여부 + 베스트 타임 표기
+	var label := "Stage %d" % n
+	if SceneManager.is_cleared(n):
+		var bt: int = int(SceneManager.best_time(n))
+		label += "  ✓ %02d:%02d" % [bt / 60, bt % 60]
+	btn.text = label
+	btn.pressed.connect(func() -> void:
+		AudioManager.play_sfx("click")
+		SceneManager.load_stage(n))

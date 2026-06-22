@@ -211,6 +211,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y         = jump_velocity
 		_coyote_timer      = 0.0
 		_jump_buffer_timer = 0.0
+		AudioManager.play_sfx("jump")   # ▼ 2026-06-22 효과음
 
 	_jump_buffer_timer = max(_jump_buffer_timer - delta, 0.0)
 
@@ -358,6 +359,7 @@ func _shoot() -> void:
 	bullet.direction    = (get_global_mouse_position() - muzzle.global_position).normalized()
 	get_tree().current_scene.add_child(bullet)
 	bullet.global_position = muzzle.global_position
+	AudioManager.play_sfx("shoot")   # ▼ 2026-06-22 효과음
 
 # ═══════════════════════════════════════════════════════════════════════
 #  회색 지형 감지
@@ -390,6 +392,7 @@ func _toggle_color() -> void:
 	_set_color(ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK)
 	# ▼ 2026-06-22: 색을 바꿀 때마다 '다이얼/리모컨 돌리듯' 회전 모션 재생
 	_play_color_switch_spin()
+	AudioManager.play_sfx("switch")   # ▼ 2026-06-22 효과음
 
 ## ▼ 2026-06-22 신규(사용자 요청): 색 전환 시 스프라이트를 한 바퀴 회전(다이얼 돌리는 느낌) + 화면 번쩍.
 ##   - 회전은 sprite.rotation 만 사용 → 스케일은 스쿼시/스트레치가 담당하므로 서로 안 부딪힘.
@@ -442,6 +445,7 @@ func _apply_juice_motion(delta: float) -> void:
 	if on_floor and not _was_on_floor:
 		_squash_timer = 0.12
 		_spawn_burst(global_position + Vector2(0, 45), Color(0.75, 0.75, 0.75, 0.7), 12, 75.0, 90.0)
+		AudioManager.play_sfx("land")   # ▼ 2026-06-22 효과음
 	_was_on_floor = on_floor
 
 	var target := _base_sprite_scale
@@ -525,6 +529,7 @@ func die() -> void:
 	# ▼ 2026-06-22: 사망 파편 폭발(현재 색 계열) + 테두리 글로우 펄스
 	_spawn_burst(global_position + Vector2(0, 25), _death_color(), 26, 150.0, 160.0)
 	_pulse_glow()
+	AudioManager.play_sfx("death")   # ▼ 2026-06-22 효과음
 	_play_anim("die")          # die_black 또는 die_white 재생
 	await sprite.animation_finished
 	_respawn()
