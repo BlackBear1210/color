@@ -1,86 +1,92 @@
 extends ParallaxBackground
-## Stage 2 전용 4레이어 패럴랙스 배경 (타일링 없음)
+## Stage 2 전용 배경 (세로 고정 백드롭 방식)
 ##
-## 이음새 없이 끊기지 않으면서도 레이어마다 다른 속도로 움직여
-## 생동감 있는 원근감을 연출한다.
-##
-## ── 원리 ───────────────────────────────────────────────────────────
-##   각 레이어 스프라이트를 수식으로 크기·위치를 계산해서,
-##   카메라가 camera_rect 안 어디에 있어도 화면 밖이 보이지 않는다.
-##   모션 배율(motion_scale)이 작을수록(멀리 있는 레이어)
-##   더 많이 확대해야 하고, 클수록(가까운 레이어) 적게 확대해도 된다.
-##
-## ── 수식 ───────────────────────────────────────────────────────────
-##   화면 좌표에서의 스프라이트 위치:
-##     screen_pos = sprite.position + camera_pos * motion_scale
-##   camera_pos 가 camera_rect.end 일 때 screen_pos = (0,0) 이 되도록 배치:
-##     sprite.position = -camera_rect.end * motion_scale
-##   필요한 스케일(카메라가 min 위치에 있을 때도 화면을 채우려면):
-##     scale ≥ (motion_scale * 카메라범위 + 뷰포트크기) / 텍스처크기
+## ▼ 2026-06-22 재작성 #2 (사용자 피드백: "배경이 아래로 빨려 들어간다 / 위아래로 붙이지 마라")
+##   [문제] 직전 버전은 배경을 세로로 무한 반복(motion_mirroring)시켰는데,
+##          가로로 된 '숲 그림 한 장'을 위아래로 이어 붙이니
+##          위 타일의 '나뭇잎'과 아래 타일의 '뿌리'가 맞닿아 어색한 이음새가 생겼다.
+##   [근본 원인] 세로로 긴 맵 + 배경 1장 → 세로로 '붙이는(타일)' 방식은 원천적으로 부자연스럽다.
+##   [해법] 배경을 세로로 반복·스크롤하지 말고, **화면을 꽉 채운 채 고정**한다.
+##          → 올라가도 같은 숲 한 장이 늘 뒤에 있으니 이음새가 아예 없다(세로 게임의 표준 기법).
+##          깊이감을 위해 레이어마다 '아주 조금만' 세로로 따라가되,
+##          이미지 가장자리가 절대 드러나지 않도록 여유분(margin) 안에서 clamp 한다.
 
-## 카메라 이동 범위 — stage.gd 의 camera_limit 값과 일치시킬 것
-## Rect2(left, top, width, height)
-@export var camera_rect: Rect2 = Rect2(-1100.0, -200.0, 2700.0, 4400.0)
+## 레이어별 세로 시차(깊이) 강도. 0=완전 고정, 클수록 더 따라 움직임(아주 작게).
+## 멀리 있는 sky 는 거의 고정, 가까운 near 는 살짝 더 반응.
+@export var sky_depth:   float = 0.02
+@export var mid_depth:   float = 0.04
+@export var front_depth: float = 0.06
+@export var near_depth:  float = 0.09
 
-## 레이어별 스크롤 배율 (x=수평, y=수직)
-## 0 = 고정, 1 = 카메라와 같이 이동 (원근 없음)
-## 값이 클수록 가까운 배경처럼 빠르게 움직임
-@export var sky_motion:   Vector2 = Vector2(0.05, 0.05)
-@export var mid_motion:   Vector2 = Vector2(0.15, 0.20)
-@export var front_motion: Vector2 = Vector2(0.30, 0.45)
-@export var near_motion:  Vector2 = Vector2(0.50, 0.75)
+## 화면보다 얼마나 더 크게 키울지(세로로 살짝 움직일 '여유분' 확보용). 1.0=딱 맞음.
+@export var oversize: float = 1.18
 
-const TEX_W: float = 2560.0
-const TEX_H: float = 1080.0
+@onready var _layers: Array[ParallaxLayer] = [
+	$Layer1_Sky, $Layer2_Mid, $Layer3_Front, $Layer4_Near
+]
+@onready var _sprites: Array[Sprite2D] = [
+	$Layer1_Sky/Sprite2D, $Layer2_Mid/Sprite2D, $Layer3_Front/Sprite2D, $Layer4_Near/Sprite2D
+]
 
-@onready var _layer1:  ParallaxLayer = $Layer1_Sky
-@onready var _layer2:  ParallaxLayer = $Layer2_Mid
-@onready var _layer3:  ParallaxLayer = $Layer3_Front
-@onready var _layer4:  ParallaxLayer = $Layer4_Near
-@onready var _sprite1: Sprite2D = $Layer1_Sky/Sprite2D
-@onready var _sprite2: Sprite2D = $Layer2_Mid/Sprite2D
-@onready var _sprite3: Sprite2D = $Layer3_Front/Sprite2D
-@onready var _sprite4: Sprite2D = $Layer4_Near/Sprite2D
+# 각 레이어의 런타임 계산값(매 프레임 위치 보정에 사용)
+var _depths: Array[float] = []
+var _base_y: Array[float] = []     # 화면 세로 중앙(스프라이트 기준점)
+var _margin_y: Array[float] = []   # 가장자리를 안 드러내고 움직일 수 있는 최대 폭
+var _ready_ok: bool = false
 
 
 func _ready() -> void:
 	_apply_layers()
+	get_viewport().size_changed.connect(_apply_layers)
 
 
 func _apply_layers() -> void:
-	var vp: Vector2   = get_viewport().get_visible_rect().size
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	_depths  = [sky_depth, mid_depth, front_depth, near_depth]
+	_base_y  = []
+	_margin_y = []
 
-	# 카메라가 도달할 수 있는 최대 좌표 (Rect2.end = position + size)
-	var cx_end: float = camera_rect.position.x + camera_rect.size.x
-	var cy_end: float = camera_rect.position.y + camera_rect.size.y
+	for i in _layers.size():
+		var layer: ParallaxLayer = _layers[i]
+		var sprite: Sprite2D = _sprites[i]
+		if sprite == null or sprite.texture == null:
+			_base_y.append(0.0); _margin_y.append(0.0)
+			continue
 
-	var motions: Array[Vector2] = [sky_motion, mid_motion, front_motion, near_motion]
-	var layers:  Array          = [_layer1, _layer2, _layer3, _layer4]
-	var sprites: Array          = [_sprite1, _sprite2, _sprite3, _sprite4]
+		var tex: Vector2 = sprite.texture.get_size()
+		if tex.x <= 0.0 or tex.y <= 0.0:
+			_base_y.append(0.0); _margin_y.append(0.0)
+			continue
 
-	for i in 4:
-		var m:      Vector2      = motions[i]
-		var layer:  ParallaxLayer = layers[i]
-		var sprite: Sprite2D     = sprites[i]
+		# ── 균등 커버 배율: 화면을 가로·세로 모두 덮고, oversize 만큼 여유 확보 ──
+		var s: float = max(vp.x / tex.x, vp.y / tex.y) * oversize
 
-		# ── 이동 배율 설정 (타일링 완전 비활성화) ──────────────────
-		layer.motion_scale     = m
+		sprite.centered = true
+		sprite.scale    = Vector2(s, s)
+		# 화면 중앙에 고정(가로도 중앙). 가로는 motion_scale 로 살짝 시차.
+		sprite.position = Vector2(vp.x * 0.5, vp.y * 0.5)
+
+		# ── 세로는 '붙이지' 않는다: 타일링 완전 해제 + 세로 스크롤 0 ──
+		#   (가로만 ParallaxLayer 가 아주 약하게 시차 처리, 세로는 아래 _process 가 clamp 로 직접 제어)
+		layer.motion_scale     = Vector2(_depths[i] * 0.5, 0.0)
 		layer.motion_mirroring = Vector2.ZERO
 
-		# ── 스케일 계산 ────────────────────────────────────────────
-		# 카메라가 최소 위치로 이동해도 스프라이트가 화면을 완전히 덮어야 함
-		# 필요 너비 = motion_scale * 카메라 이동 범위 + 뷰포트 크기
-		var scale_x: float = (m.x * camera_rect.size.x + vp.x) / TEX_W
-		var scale_y: float = (m.y * camera_rect.size.y + vp.y) / TEX_H
-		var scale_v: float = max(scale_x, scale_y) * 1.05  # 5% 여유
+		_base_y.append(sprite.position.y)
+		# 세로로 움직여도 위/아래 가장자리가 안 보이도록 하는 한계폭(스프라이트 높이 - 화면)/2
+		_margin_y.append(max((tex.y * s - vp.y) * 0.5, 0.0))
 
-		# ── 위치 계산 ────────────────────────────────────────────
-		# 카메라가 최대 위치(cx_end, cy_end)에 있을 때
-		# screen_pos = sprite.position + (cx_end, cy_end) * m = (0, 0)
-		# → 카메라 최대 위치에서 스프라이트 좌상단이 화면 좌상단에 정확히 맞음
-		sprite.centered  = false
-		sprite.scale     = Vector2(scale_v, scale_v)
-		sprite.position  = Vector2(
-			-cx_end * m.x,
-			-cy_end * m.y
-		)
+	_ready_ok = true
+
+
+func _process(_dt: float) -> void:
+	if not _ready_ok:
+		return
+	# 카메라(=ParallaxBackground.scroll_offset)의 세로 위치에 비례해 '아주 조금만' 따라 움직이되,
+	# margin 을 넘지 않게 clamp → 이미지 가장자리(검은 빈 공간)가 절대 드러나지 않는다.
+	var sy: float = scroll_offset.y
+	for i in _sprites.size():
+		var sprite: Sprite2D = _sprites[i]
+		if sprite == null:
+			continue
+		var drift: float = clamp(sy * _depths[i], -_margin_y[i], _margin_y[i])
+		sprite.position.y = _base_y[i] + drift

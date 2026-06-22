@@ -6,30 +6,29 @@
 [ext_resource type="Texture2D" uid="uid://d27k0f0sx10lt" path="res://BG_02/BG_02_Layer3_Front.png" id="4_front"]
 [ext_resource type="Texture2D" uid="uid://cy7p6vexia4nl" path="res://BG_02/BG_02_Layer4_Front.png" id="5_near"]
 
+; ▼ 2026-06-22: 각 ParallaxLayer 의 비균등 스케일(1.85 x 2.65)을 제거함.
+;   이 가로!=세로 배율이 배경을 '늘어져 보이게' 만든 주범이었음.
+;   이제 크기/위치/타일링은 전부 background_stage2.gd 가 균등 배율로 계산한다(세로 무한 타일).
 [node name="Background2" type="ParallaxBackground" unique_id=952267357]
 layer = -1
 script = ExtResource("1_bg2")
 
 [node name="Layer1_Sky" type="ParallaxLayer" parent="." unique_id=1061014038]
-scale = Vector2(1.8499304, 2.6487997)
 
 [node name="Sprite2D" type="Sprite2D" parent="Layer1_Sky" unique_id=421247880]
 texture = ExtResource("2_sky")
 
 [node name="Layer2_Mid" type="ParallaxLayer" parent="." unique_id=674011221]
-scale = Vector2(1.8499304, 2.6487997)
 
 [node name="Sprite2D" type="Sprite2D" parent="Layer2_Mid" unique_id=2070439960]
 texture = ExtResource("3_mid")
 
 [node name="Layer3_Front" type="ParallaxLayer" parent="." unique_id=769894587]
-scale = Vector2(1.8499304, 2.6487997)
 
 [node name="Sprite2D" type="Sprite2D" parent="Layer3_Front" unique_id=1312022498]
 texture = ExtResource("4_front")
 
 [node name="Layer4_Near" type="ParallaxLayer" parent="." unique_id=1506484934]
-scale = Vector2(1.8499304, 2.6487997)
 
 [node name="Sprite2D" type="Sprite2D" parent="Layer4_Near" unique_id=1057854514]
 texture = ExtResource("5_near")

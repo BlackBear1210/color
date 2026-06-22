@@ -123,10 +123,10 @@ const DEBUG_STAGE: int = 1   # 1~N: 해당 스테이지 직진입 / 0: MainMenu�
 ```
 매 프레임 _physics_process()
   └── ColorSensor (Area2D)가 겹친 영역 스캔
-      ├── paint_marks 그룹 (페인트 얼룩) → 1순위
-      │     └── paint_color == player_color ? 안전 : die()
-      └── death_zones 그룹 (지형 색) → 2순위
-            └── color_state != player_color ? die() : 안전
+	  ├── paint_marks 그룹 (페인트 얼룩) → 1순위
+	  │     └── paint_color == player_color ? 안전 : die()
+	  └── death_zones 그룹 (지형 색) → 2순위
+			└── color_state != player_color ? die() : 안전
 ```
 
 ### 4. 총알 충돌 흐름
@@ -200,15 +200,15 @@ const BLACK = 0
 ```gdscript
 # ❌ 절대 금지 — physics flush 오류
 func _on_body_entered(body):
-    body.die()              # ← 직접 호출
-    add_child(something)    # ← 직접 add_child
-    queue_free()
+	body.die()              # ← 직접 호출
+	add_child(something)    # ← 직접 add_child
+	queue_free()
 
 # ✅ 반드시 call_deferred 사용
 func _on_body_entered(body):
-    body.call_deferred("die")
-    call_deferred("add_child", something)
-    call_deferred("queue_free")
+	body.call_deferred("die")
+	call_deferred("add_child", something)
+	call_deferred("queue_free")
 ```
 
 #### 인스턴스 추가 순서
@@ -235,9 +235,9 @@ obj.some_property = value     # ← _ready() 이미 실행됨, 적용 안 될 �
 3. `autoload/SceneManager.gd`의 `STAGES` 딕셔너리에 경로 등록:
    ```gdscript
    const STAGES = {
-       1: "res://scenes/world_1/stage_1/stage_1.tscn",
-       2: "res://scenes/world_1/stage_2/stage_2.tscn",   # ← 추가
-       ...
+	   1: "res://scenes/world_1/stage_1/stage_1.tscn",
+	   2: "res://scenes/world_1/stage_2/stage_2.tscn",   # ← 추가
+	   ...
    }
    ```
 

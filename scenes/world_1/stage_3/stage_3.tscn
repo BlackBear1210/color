@@ -1,84 +1,46 @@
-[gd_scene load_steps=11 format=3]
-
-; ▼ 2026-06-21 (작업 W-E) 샘플 스테이지: 모듈 키트 + 회색 그라데이션 경사로 + 죽음/리스폰 데모.
-;   (2026-06-22 복구: 디스크에서 삭제돼 있어 재생성)
-;   구성(왼→오): 도입(안전 검정바닥) → 흰색 구간(색 토글/죽음 학습) → 검정바닥+가시(상승)
-;                → 회색 그라데이션 경사로(절정: 총으로 칠해야 등반) → 보상(안전바닥) → 포탈(출구).
-;   ※ 모든 지형은 '모듈만' 배치(크기·색만 변경, 충돌 새로 안 그림). Ground_Flat 을 4가지로 재사용.
+[gd_scene format=3 uid="uid://882gux0dqbuv"]
 
 [ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="0_stage"]
 [ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="1_bg"]
-[ext_resource type="PackedScene" path="res://scenes/ui/Hud.tscn" id="3_hud"]
 [ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="2_player"]
-[ext_resource type="PackedScene" path="res://scenes/지형파일셋/모듈/Ground_Flat.tscn" id="g_flat"]
-[ext_resource type="PackedScene" path="res://scenes/지형파일셋/회색경사로/GrayGradientSlope.tscn" id="g_slope"]
-[ext_resource type="PackedScene" uid="uid://dlvoqvtrme2at" path="res://scenes/obstacles/SpikeObstacle.tscn" id="spike"]
-[ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="portal"]
+[ext_resource type="PackedScene" path="res://scenes/ui/Hud.tscn" id="3_hud"]
 [ext_resource type="PackedScene" path="res://scenes/effects/Atmosphere.tscn" id="atmo"]
 
 [sub_resource type="RectangleShape2D" id="kz_shape"]
 size = Vector2(8000, 300)
 
-[node name="stage_3" type="Node2D"]
+[node name="stage_3" type="Node2D" unique_id=1603428531]
 script = ExtResource("0_stage")
 camera_limit_left = -200
 camera_limit_top = -400
 camera_limit_right = 3400
 camera_limit_bottom = 1100
 
-[node name="Background" parent="." instance=ExtResource("1_bg")]
-[node name="Hud" parent="." instance=ExtResource("3_hud")]
-; ▼ 2026-06-22 (작업 C) 분위기 레이어(비네트+먼지) 추가
-[node name="Atmosphere" parent="." instance=ExtResource("atmo")]
+[node name="Background" parent="." unique_id=787087849 instance=ExtResource("1_bg")]
 
-[node name="MapVisual" type="Node2D" parent="."]
-[node name="PaintOverlay" type="Node2D" parent="MapVisual"]
+[node name="Hud" parent="." unique_id=1058850009 instance=ExtResource("3_hud")]
 
-[node name="MapPhysics" type="Node2D" parent="."]
+[node name="Atmosphere" parent="." unique_id=782037183 instance=ExtResource("atmo")]
 
-[node name="KillZone" type="Area2D" parent="MapPhysics"]
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
-position = Vector2(1500, 980)
+[node name="MapVisual" type="Node2D" parent="." unique_id=1133638954]
+
+[node name="PaintOverlay" type="Node2D" parent="MapVisual" unique_id=515295415]
+
+[node name="MapPhysics" type="Node2D" parent="." unique_id=244119014]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=9859666]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=102662823]
+position = Vector2(3645, 993)
 shape = SubResource("kz_shape")
 
-; ── 도입: 안전한 검정 바닥 (Ground_Flat 재사용 #1: 크기 4배, BLACK) ──
-[node name="Floor_A" parent="MapPhysics" instance=ExtResource("g_flat")]
-position = Vector2(0, 600)
-scale = Vector2(4, 1)
-color_state = 0
+[node name="Area2D" type="Area2D" parent="MapPhysics" unique_id=130426953]
 
-; ── 흰색 구간: 검정 플레이어가 밟으면 사망 → 'Up' 으로 흰색 토글 학습 (재사용 #2: WHITE) ──
-[node name="White_Gate" parent="MapPhysics" instance=ExtResource("g_flat")]
-position = Vector2(1024, 600)
-color_state = 1
+[node name="Info" type="CanvasLayer" parent="." unique_id=1926250767]
+visible = false
 
-; ── 상승: 검정 바닥 + 가시 (Ground_Flat 재사용 #3: 크기 3배, BLACK) ──
-[node name="Floor_B" parent="MapPhysics" instance=ExtResource("g_flat")]
-position = Vector2(1280, 600)
-scale = Vector2(3, 1)
-color_state = 0
-
-[node name="Spike" parent="MapPhysics" instance=ExtResource("spike")]
-position = Vector2(1640, 584)
-scale = Vector2(1.6, 1.6)
-
-; ── 절정: 회색 그라데이션 경사로. 안 칠하면 미끄러짐, 자기색 총으로 칠한 곳만 등반 ──
-;   바닥-좌하단(로컬 0,256) 이 world (2048,600) 라 Floor_B 표면(y600)과 매끄럽게 연결
-[node name="GrayGradientSlope" parent="MapPhysics" instance=ExtResource("g_slope")]
-position = Vector2(2048, 344)
-
-; ── 보상: 경사 위 안전 바닥 (Ground_Flat 재사용 #4: 크기 2배, BLACK) ──
-[node name="Floor_C" parent="MapPhysics" instance=ExtResource("g_flat")]
-position = Vector2(2560, 344)
-scale = Vector2(2, 1)
-color_state = 0
-
-; ── 출구: 포탈 ──
-[node name="Portal" parent="MapPhysics" instance=ExtResource("portal")]
-position = Vector2(2950, 300)
-
-[node name="Info" type="CanvasLayer" parent="."]
-[node name="Label" type="Label" parent="Info"]
+[node name="Label" type="Label" parent="Info" unique_id=796770859]
+visible = false
 offset_left = 40.0
 offset_top = 40.0
 offset_right = 1400.0
@@ -86,5 +48,5 @@ offset_bottom = 120.0
 theme_override_font_sizes/font_size = 28
 text = "A/D 이동, Space 점프, Up 색전환, 좌클릭 색총.  흰칸은 흰색으로! 회색경사로는 총으로 칠해야 오른다."
 
-[node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector2(140, 540)
+[node name="Player" parent="." unique_id=488082782 instance=ExtResource("2_player")]
+position = Vector2(125, 434)
