@@ -44,6 +44,12 @@ func _ready() -> void:
 	add_to_group("gray_slopes")
 	_push_to_shader(0)
 
+## bullet.gd 가 총알 색을 넘기면 '실제로 칠할 색'을 반환한다.
+## 회색 경사로는 총알 색의 반대(= 플레이어 색)로 칠해야 밟고 오를 수 있다.
+func get_paint_color(bullet_color: int) -> int:
+	return ColorDefs.BLACK if bullet_color == ColorDefs.WHITE else ColorDefs.WHITE
+
+
 ## bullet.gd 가 회색 경사로에 총알이 닿을 때 호출.
 ## world_pos : 충돌 지점(월드 좌표)
 ## color     : 페인트 색 (0=검정, 1=흰색) = 플레이어 색

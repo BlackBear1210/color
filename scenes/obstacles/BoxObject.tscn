@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://box_object_v1"]
+
+[ext_resource type="Script" path="res://scripts/obstacles/box_object.gd" id="1_script"]
+
+[sub_resource type="PhysicsMaterial" id="PhysMat_box"]
+rough = true
+
+[sub_resource type="RectangleShape2D" id="RectShape_body"]
+size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectShape_sensor"]
+size = Vector2(80, 80)
+
+[node name="BoxObject" type="RigidBody2D"]
+collision_layer = 128
+collision_mask = 0
+physics_material_override = SubResource("PhysMat_box")
+lock_rotation = true
+script = ExtResource("1_script")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+color = Color(0.55, 0.35, 0.15, 0.45)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.45)
+# Texture: 인스펙터에서 박스 이미지 지정
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectShape_body")
+
+[node name="PaintSensor" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 32
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaintSensor"]
+shape = SubResource("RectShape_sensor")

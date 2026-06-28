@@ -547,4 +547,8 @@ func _respawn() -> void:
 	for s in get_tree().get_nodes_in_group("gray_slopes"):
 		if s.has_method("reset_paint"):
 			s.reset_paint()
+	# 페인트 활성화 오브젝트(박스 등) 초기 위치·상태 복귀
+	for obj in get_tree().get_nodes_in_group("paint_activated"):
+		if obj.has_method("reset_paint_state"):
+			obj.reset_paint_state()
 	_set_color(start_color)

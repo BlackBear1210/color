@@ -11,7 +11,8 @@ extends Node2D
 # bullet.gd 에서 add_child 전에 설정
 var impact_direction: Vector2 = Vector2.DOWN
 
-# mark 중심이 지형 표면에서 얼마나 깊이 박히는지 (bullet.gd 의 * 25.0 과 일치)
+# mark 중심이 지형 표면에서 얼마나 깊이 박히는지.
+# ※ bullet.gd 의 PAINT_SPAWN_DEPTH 와 반드시 같은 값이어야 함 — 한쪽만 바꾸면 마크가 뜨거나 꺼짐.
 const SPAWN_DEPTH := 25.0
 
 # 물리 레이어 (player.gd 와 일치)
@@ -38,6 +39,9 @@ func setup_terrain_clip(polygon: PackedVector2Array, terrain_xform: Transform2D)
 func _ready() -> void:
 	add_to_group("runtime_paint")
 	add_to_group("paint_bodies")
+	# 지형 Sprite2D(z=0)보다 위에, 플레이어(z=2)보다 아래 렌더링
+	# stage_2처럼 지형 Sprite2D가 MapPhysics 안에 있을 때 PaintMark가 가려지는 문제 해결
+	z_index = 1
 
 	# ① 루트를 지형 표면 각도에 맞춰 먼저 회전 (local +Y = 지형 방향)
 	rotation = impact_direction.angle() - PI / 2.0
