@@ -28,12 +28,57 @@ var _clip_polygon: PackedVector2Array = PackedVector2Array()
 
 const CLIP_SHADER = preload("res://shaders/paint_clip.gdshader")
 
+# ▼ 2026-06-28: 텍스처(비주얼) 알파 클리핑용 데이터.
+#   _clip_tex 가 설정되면 폴리곤 대신 '지형 그림의 알파'에 맞춰 페인트를 오린다(우선 적용).
+const CLIP_TEX_SHADER = preload("res://shaders/paint_clip_alpha.gdshader")
+var _clip_tex: Texture2D     = null
+var _clip_inv: Transform2D   = Transform2D.IDENTITY   # 월드→지형로컬 역변환
+var _clip_tex_size: Vector2  = Vector2.ONE
+var _clip_tex_offset: Vector2 = Vector2.ZERO
+var _clip_centered: bool     = true
+
+# ▼ 2026-06-28 신규: '분사(스프레이) 페인트' 절차적 비주얼.
+#   [왜?] 기존엔 미리 그린 splat PNG 한 장을 찍어 '이미지 덧씌움'처럼 보였다(사용자 피드백).
+#   [원리] 총알의 페인트가 지형에 닿아 '흩뿌려지는' 느낌 → 중심 블롭 + 흩어진 물방울 다발 + 흘러내림(드립)을
+#          코드로 매번 다르게 생성하고, 지형 텍스처 알파에 클립해 그림 위에만 칠해지게 한다.
+const SURFACE_LOCAL: float = -SPAWN_DEPTH    # 지형 표면이 mark 루트-로컬에서 y=-SPAWN_DEPTH 에 위치
+var _spray: Node2D = null                    # 물방울들을 담는 컨테이너(재색칠/정리 편의)
+static var _droplet_tex: Texture2D = null    # 부드러운 원형 물방울 텍스처(공유 캐시)
+
+## 부드러운 원형 물방울 텍스처를 1회 생성해 캐시(모든 페인트가 공유).
+static func _get_droplet_tex() -> Texture2D:
+	if _droplet_tex != null:
+		return _droplet_tex
+	var sz := 64
+	var img := Image.create(sz, sz, false, Image.FORMAT_RGBA8)
+	var c := Vector2(sz * 0.5, sz * 0.5)
+	for y in sz:
+		for x in sz:
+			var dist: float = Vector2(x, y).distance_to(c) / (sz * 0.5)
+			# ▼ 2026-06-28: 코어는 '꽉 찬' 불투명, 가장자리만 부드럽게.
+			#   (이전엔 전체가 흐릿해 여러 물방울이 겹쳐도 검은 틈이 보이는 듬성듬성 느낌이었음)
+			var a: float = clampf((1.0 - dist) * 2.4, 0.0, 1.0)   # 안쪽 ~58% 완전 불투명
+			a = smoothstep(0.0, 1.0, a)                           # 림만 부드럽게
+			img.set_pixel(x, y, Color(1, 1, 1, a))
+	_droplet_tex = ImageTexture.create_from_image(img)
+	return _droplet_tex
+
 # ── bullet.gd 에서 add_child 전에 호출 ───────────────────────────────
-## 지형의 CollisionPolygon2D 꼭짓점을 월드 좌표로 변환해 저장
+## 지형의 CollisionPolygon2D 꼭짓점을 월드 좌표로 변환해 저장 (폴리곤 클리핑 — 비주얼 텍스처가 없을 때 폴백)
 func setup_terrain_clip(polygon: PackedVector2Array, terrain_xform: Transform2D) -> void:
 	_clip_polygon = PackedVector2Array()
 	for v in polygon:
 		_clip_polygon.append(terrain_xform * v)
+
+## ▼ 2026-06-28 신규: 지형 '비주얼(Sprite2D 텍스처 알파)'에 맞춰 페인트를 오리도록 설정.
+##   충돌폴리곤과 무관하게 그림 위에만 정확히 칠해진다(권장 경로).
+func setup_terrain_clip_tex(tex: Texture2D, sprite_global_xform: Transform2D,
+		tex_size: Vector2, centered: bool, offset: Vector2) -> void:
+	_clip_tex        = tex
+	_clip_inv        = sprite_global_xform.affine_inverse()
+	_clip_tex_size   = tex_size
+	_clip_centered   = centered
+	_clip_tex_offset = offset
 
 func _ready() -> void:
 	add_to_group("runtime_paint")
@@ -51,6 +96,9 @@ func _ready() -> void:
 			_align_zone_to_surface(sprite as Sprite2D)
 
 	_create_collision_body()
+	# ▼ 2026-06-28: 분사 물방울 컨테이너 생성(스탬프 대신 이게 비주얼 담당)
+	_spray = Node2D.new()
+	add_child(_spray)
 	_apply(paint_color)
 	_play_splat_tween()
 
@@ -122,16 +170,18 @@ func _apply(c: int) -> void:
 	for i in sprites.size():
 		var sprite := sprites[i] as Sprite2D
 		var is_picked := (i == pick)
+		# ▼ 2026-06-28: 미리 그린 스탬프 PNG 는 '숨기고'(분사 비주얼은 _build_spray 가 담당),
+		#   선택된 스프라이트의 JudgmentZone(색 사망 판정)만 살린다.
+		#   self_modulate.a=0 → 스탬프는 안 그려지지만 자식 JudgmentZone(Area2D) 판정은 그대로 동작.
 		sprite.visible = is_picked
+		sprite.self_modulate.a = 0.0
 
-		# 선택된 스프라이트에만 클리핑 쉐이더 적용
-		if is_picked and not _clip_polygon.is_empty():
-			_apply_clip_shader(sprite)
-
-		# 선택된 스프라이트의 JudgmentZone만 활성화
 		var zone := sprite.get_node_or_null("JudgmentZone") as Area2D
 		if zone:
 			zone.monitorable = is_picked
+
+	# ▼ 2026-06-28: 절차적 분사 비주얼 생성(중심 블롭+흩뿌림+드립), 지형 알파에 클립
+	_build_spray(c)
 
 ## 선택된 Sprite2D 에 폴리곤 클리핑 쉐이더 설정
 func _apply_clip_shader(sprite: Sprite2D) -> void:
@@ -147,6 +197,78 @@ func _apply_clip_shader(sprite: Sprite2D) -> void:
 	mat.set_shader_parameter("vert_count", count)
 	mat.set_shader_parameter("polygon",    verts)
 	sprite.material = mat
+
+## ▼ 2026-06-28 신규: 선택된 Sprite2D 에 '텍스처 알파' 클리핑 쉐이더 설정.
+func _apply_clip_shader_tex(sprite: Sprite2D) -> void:
+	var mat := ShaderMaterial.new()
+	mat.shader = CLIP_TEX_SHADER
+	mat.set_shader_parameter("terrain_tex", _clip_tex)
+	mat.set_shader_parameter("inv_x",      _clip_inv.x)
+	mat.set_shader_parameter("inv_y",      _clip_inv.y)
+	mat.set_shader_parameter("inv_o",      _clip_inv.origin)
+	mat.set_shader_parameter("tex_size",   _clip_tex_size)
+	mat.set_shader_parameter("tex_offset", _clip_tex_offset)
+	mat.set_shader_parameter("centered",   1.0 if _clip_centered else 0.0)
+	mat.set_shader_parameter("alpha_cut",  0.25)   # ▼ 2026-06-28: 반투명 가장자리도 포함되게 낮춤
+	mat.set_shader_parameter("enabled",    1)
+	sprite.material = mat
+
+## ▼ 2026-06-28 신규: 분사(스프레이) 페인트 비주얼을 절차적으로 생성.
+##   표면(SURFACE_LOCAL) 근처에 중심 블롭 + 흩뿌려진 물방울 + 흘러내림(드립)을 만든다.
+##   매번 무작위라 같은 패턴이 반복되지 않음 → '뿌려진' 느낌. 지형 알파에 클립되어 그림 위에만 칠해짐.
+func _build_spray(c: int) -> void:
+	if _spray == null:
+		return
+	for ch in _spray.get_children():
+		ch.queue_free()
+	var col := Color(1, 1, 1, 1) if c == ColorDefs.WHITE else Color(0, 0, 0, 1)
+
+	# ▼ 2026-06-28 (중요 수정): 페인트를 지형 '안쪽(+Y)'에 깊숙이 찍는다.
+	#   루트 원점(local 0)은 표면에서 이미 SPAWN_DEPTH(25px) 안쪽이고, 지형 내부는 +Y 방향.
+	#   (이전 버그) 물방울을 SURFACE_LOCAL(-25, 표면 바깥쪽)에 찍어 알파 클립에 거의 다 잘려
+	#             가장자리만 얇게 보였다 → +Y(안쪽)로 옮겨 '안쪽까지' 칠하고 잘 보이게 함.
+
+	# ① 단단한 중심 패치 — 큰 블롭 4~5개를 가까이 겹쳐 '꽉 찬' 칠해진 영역을 만든다(직관적 가시성).
+	var core := randi_range(4, 5)
+	for i in core:
+		var cx := randf_range(-16.0, 16.0)
+		var cy := randf_range(-8.0, 22.0)                  # 표면 안쪽 위주
+		_add_drop(col, Vector2(cx, cy), randf_range(0.42, 0.62), 1.0)
+
+	# ② 중간 물방울 — 패치 주변을 메워 경계를 자연스럽게
+	for i in randi_range(5, 8):
+		var mx := randf_range(-1.0, 1.0)
+		var ox := mx * mx * signf(mx) * 42.0
+		var oy := randf_range(-14.0, 46.0)
+		_add_drop(col, Vector2(ox, oy), randf_range(0.16, 0.30), randf_range(0.9, 1.0))
+
+	# ③ 분사 흩뿌림 — 바깥으로 튄 작은 방울(스프레이 느낌)
+	for i in randi_range(7, 11):
+		var rr := randf_range(-1.0, 1.0)
+		var sx := rr * rr * signf(rr) * 66.0
+		var sy := randf_range(-20.0, 54.0)
+		_add_drop(col, Vector2(sx, sy), randf_range(0.05, 0.12), randf_range(0.8, 1.0))
+
+	# ④ 흘러내림(드립) 2~3개 — 중력 방향(월드 수직)으로 길게
+	for i in randi_range(2, 3):
+		var drip := _add_drop(col, Vector2(randf_range(-30.0, 30.0), randf_range(2.0, 12.0)), randf_range(0.09, 0.14), 0.95)
+		drip.rotation = -rotation                          # 루트 회전 상쇄 → 항상 월드 수직(중력)
+		drip.scale.y *= randf_range(3.0, 6.0)              # 세로로 길게 늘려 흘러내린 모양
+
+## 물방울 1개 생성(지형 텍스처 알파가 있으면 그에 클립). 생성한 Sprite2D 반환.
+func _add_drop(col: Color, pos: Vector2, sc: float, a: float) -> Sprite2D:
+	var d := Sprite2D.new()
+	d.texture  = _get_droplet_tex()
+	d.position = pos
+	d.scale    = Vector2(sc, sc)
+	d.modulate = Color(col.r, col.g, col.b, a)
+	# ▼ 2026-06-28: 지형 그림(텍스처)이 있으면 알파 클립, 없으면(기하 발판) 폴리곤 클립으로 블록 밖 삐짐 방지.
+	if _clip_tex != null:
+		_apply_clip_shader_tex(d)
+	elif not _clip_polygon.is_empty():
+		_apply_clip_shader(d)
+	_spray.add_child(d)
+	return d
 
 ## 페인트가 튀겼다가 스며드는 애니메이션
 func _play_splat_tween() -> void:

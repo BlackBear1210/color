@@ -12,6 +12,7 @@ const STAGES: Dictionary = {
 	1:  "res://scenes/world_1/stage_1/stage_1.tscn",
 	2:  "res://scenes/world_1/stage_2/stage_2.tscn",
 	3:  "res://scenes/world_1/stage_3/stage_3.tscn",
+	4:  "res://scenes/world_1/stage_4/stage_4.tscn",   # ▼ 2026-06-28 신규
 }
 const MAIN_MENU := "res://scenes/ui/MainMenu.tscn"
 const STAGE_SELECT := "res://scenes/ui/StageSelect.tscn"
@@ -80,6 +81,25 @@ func load_stage(n: int) -> void:
 
 func next_stage() -> void:
 	load_stage(current_stage + 1)
+
+## ▼ 2026-06-28 신규(버그수정): 포탈의 '명시 경로'로 다음 스테이지 이동.
+##   [버그] clear_popup 이 next_stage_path 가 있으면 change_scene_to_file 를 직접 호출해
+##          load_stage 를 우회 → current_stage 가 갱신되지 않아 HUD 의 'STAGE n' 이 안 바뀌었다.
+##   [수정] 경로를 STAGES 에서 역추적해 번호를 알아내고, 알면 정식 load_stage 로 라우팅(번호/타이밍/페이드 일괄).
+##          STAGES 에 없는 씬이면 페이드 전환만 한다.
+func go_to_stage_by_path(path: String) -> void:
+	var n := _stage_num_from_path(path)
+	if n > 0:
+		load_stage(n)
+	else:
+		timing_active = true
+		_change_with_fade(path)
+
+func _stage_num_from_path(path: String) -> int:
+	for k in STAGES.keys():
+		if String(STAGES[k]) == path:
+			return int(k)
+	return 0
 
 ## 현재 스테이지를 다시 로드(일시정지 메뉴 '재시작'용)
 func restart_stage() -> void:

@@ -59,8 +59,9 @@ func _medal(t: float) -> String:
 func _on_next() -> void:
 	AudioManager.play_sfx("click")
 	get_tree().paused = false
+	# ▼ 2026-06-28 (버그수정): 직접 change_scene_to_file 대신 SceneManager 경유로 이동.
+	#   → current_stage 가 갱신되어 다음 스테이지 HUD('STAGE n')가 정상으로 바뀜 + 페이드 전환 일관성.
 	if not next_stage_path.is_empty():
-		SceneManager.timing_active = true
 		call_deferred("_change_to", next_stage_path)
 	else:
 		call_deferred("_do_next_stage")
@@ -71,8 +72,9 @@ func _on_select() -> void:
 	call_deferred("_do_select")
 
 # ── 씬 전환 헬퍼 (call_deferred 로만 호출) ──────────────────────
+## ▼ 2026-06-28: SceneManager 경유(경로→스테이지번호 역추적)로 current_stage 갱신 + 페이드.
 func _change_to(path: String) -> void:
-	get_tree().change_scene_to_file(path)
+	SceneManager.go_to_stage_by_path(path)
 
 func _do_next_stage() -> void:
 	SceneManager.next_stage()

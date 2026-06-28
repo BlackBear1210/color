@@ -81,6 +81,45 @@ const BULLET_WHITE: PackedScene = preload("res://scenes/bullet/BulletWhite.tscn"
 @export var fire_cooldown: float = 0.15
 var _fire_timer: float = 0.0
 
+# ▼ 2026-06-28 신규: '발광(에너지)' 기반 연발 제한 시스템.
+#   [왜 만들었나]
+#     색깔총을 너무 빠르게 연발하면 같은 프레임에 PaintMark(call_deferred 생성)가 폭증해
+#     지형 색칠 로직이 꼬이는(겹침/판정 혼선) 문제가 있었다. 단순 쿨다운보다 '직관적'이도록
+#     플레이어 주위에 빛(에너지)을 띄우고, 쏠수록 빛이 줄며, 다 쓰면 회복될 때까지 발사를 막는다.
+#   [설계 결정 — 사용자 확정 2026-06-28]
+#     · 빛은 흑/백 색 상태와 '분리된 중립 에너지광'(호박색). 회색은 게임상 '못 밟는 지형'을 뜻해 혼동되므로 사용 안 함.
+#     · 에너지가 부족하면 실제로 발사를 막는다(디제식 탄약). → 연발을 물리적으로 차단해 페인트 로직 오류를 근본 예방.
+#   [수치] 가득=1.0. 1발당 SHOOT_ENERGY_COST 소모, 초당 SHOOT_ENERGY_REGEN 회복.
+#          발사하려면 최소 SHOOT_ENERGY_COST 만큼 남아 있어야 함(=다 쓰면 잠시 못 쏨).
+const MAX_SHOOT_ENERGY:   float = 1.0
+const SHOOT_ENERGY_COST:  float = 0.34   # 가득에서 약 3발 → 회복 대기
+const SHOOT_ENERGY_REGEN: float = 0.45   # 바닥에서 가득까지 약 2.2초
+var _shoot_energy: float = MAX_SHOOT_ENERGY
+
+# ▼ 2026-06-28: 에너지광(플레이어 주위 빛) 비주얼 노드.
+#   top_level=true 로 월드 좌표에 그려 플레이어 scale(0.3)의 영향을 받지 않게 한다(파티클과 동일 패턴).
+#   밝기/반경/투명도를 _shoot_energy 에 비례시켜 '쏠수록 어두워지고 작아짐 → 회복되면 다시 커짐'.
+const ENERGY_LIGHT_COLOR: Color = Color(1.0, 0.82, 0.45)   # 중립 호박색(흑/백/회색 어디에도 안 겹침)
+var _energy_light: Sprite2D = null
+
+## ▼ 2026-06-28: HUD 색 게이지가 읽는 접근자.
+##   에너지 비율(0~1) — 사격할수록 줄고 시간이 지나면 회복.
+func get_energy_ratio() -> float:
+	return clampf(_shoot_energy / MAX_SHOOT_ENERGY, 0.0, 1.0)
+## 현재 플레이어 색(0=BLACK, 1=WHITE) — 게이지 색을 플레이어 색에 맞추기 위함.
+func get_player_color() -> int:
+	return player_color
+
+# ▼ 2026-06-28: '화면 전체 어둠' 오버레이.
+#   왜 추가?: 기존 호박색 후광은 밝은 배경에서 잘 안 보였다(사용자 피드백).
+#   해결: 발광이 줄면 '화면 전체'를 어둡게 덮고 플레이어 주변만 원형으로 밝게 남긴다.
+#         → 어디서나 대비로 빛이 확실히 보이고, '세상이 어두워진다'는 연출도 강해짐.
+#   _dark_mat 파라미터(light_pos/light_radius/darkness/aspect)를 _update_energy_light 가 매 프레임 갱신.
+const DARK_SHADER: Shader = preload("res://shaders/energy_darkness.gdshader")
+const DARK_MIN: float = 0.12   # 에너지 가득일 때도 깔리는 은은한 비네트(빛이 늘 보이게)
+const DARK_MAX: float = 0.75   # 에너지 바닥일 때 화면 어둠 강도
+var _dark_mat: ShaderMaterial = null
+
 # ── 신호 ──────────────────────────────────────────────────────────────
 signal died
 signal color_changed(new_color: int)
@@ -113,6 +152,9 @@ func _ready() -> void:
 	# ▼ 2026-06-22: 주스 노드(색전환 플래시) 생성
 	_juice_setup()
 
+	# ▼ 2026-06-28: 에너지광(연발 제한 빛) 노드 생성
+	_energy_light_setup()
+
 	_set_color(start_color)  # 시작 색 적용
 
 ## ▼ 2026-06-22 신규: 색 표시 UI(화면 테두리 글로우) 셋업.
@@ -131,6 +173,80 @@ func _juice_setup() -> void:
 	_glow_mat.set_shader_parameter("thickness", 0.16)
 	_glow.material = _glow_mat
 	layer.add_child(_glow)
+
+## ▼ 2026-06-28 신규: 플레이어 주위 '에너지광' 비주얼을 코드로 생성한다.
+##   - 방사형 그라데이션(중심 밝음→가장자리 투명) 텍스처를 Sprite2D 로 띄우고,
+##     CanvasItemMaterial 의 ADD 블렌드로 '빛처럼' 더해지게 한다.
+##   - top_level=true 로 월드 좌표에 직접 그려 플레이어 scale(0.3) 영향을 안 받게 한다.
+##   - 실제 밝기/반경/투명도는 매 프레임 _update_energy_light() 가 _shoot_energy 로 갱신.
+func _energy_light_setup() -> void:
+	# 방사형 그라데이션 텍스처(흰 중심 → 투명 가장자리)
+	var grad := Gradient.new()
+	grad.set_color(0, Color(1, 1, 1, 1))
+	grad.set_color(1, Color(1, 1, 1, 0))
+	var tex := GradientTexture2D.new()
+	tex.gradient  = grad
+	tex.fill      = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to   = Vector2(1.0, 0.5)
+	tex.width     = 256
+	tex.height    = 256
+
+	_energy_light = Sprite2D.new()
+	_energy_light.texture   = tex
+	_energy_light.top_level = true              # 월드 좌표(플레이어 스케일 무시)
+	_energy_light.z_index   = -1                # 플레이어 뒤에 깔리는 후광
+	_energy_light.modulate  = ENERGY_LIGHT_COLOR
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode          = CanvasItemMaterial.BLEND_MODE_ADD   # 빛처럼 더해짐
+	_energy_light.material  = mat
+	add_child(_energy_light)
+
+	# ▼ 2026-06-28: 화면 전체 어둠 오버레이(빛 구멍 포함) — 전용 CanvasLayer 에 풀스크린 ColorRect.
+	#   layer 48: 월드 위 + 테두리글로우(49)·HUD(그 위) 아래. → 어둠이 HUD 텍스트를 가리지 않음.
+	var dark_layer := CanvasLayer.new()
+	dark_layer.layer = 48
+	add_child(dark_layer)
+	var dark_rect := ColorRect.new()
+	dark_rect.anchor_right  = 1.0
+	dark_rect.anchor_bottom = 1.0                                  # 화면 전체 덮기
+	dark_rect.mouse_filter  = Control.MOUSE_FILTER_IGNORE
+	_dark_mat = ShaderMaterial.new()
+	_dark_mat.shader = DARK_SHADER
+	dark_rect.material = _dark_mat
+	dark_layer.add_child(dark_rect)
+
+	_update_energy_light()
+
+## ▼ 2026-06-28 신규: 에너지 비율(0~1)에 따라 에너지광의 위치·반경·밝기를 갱신.
+##   에너지가 가득이면 크고 밝게, 바닥이면 작고 어둡게 → '발광을 잃어간다'는 피드백.
+func _update_energy_light() -> void:
+	if _energy_light == null:
+		return
+	_energy_light.global_position = global_position
+	var e: float = clampf(_shoot_energy / MAX_SHOOT_ENERGY, 0.0, 1.0)
+	# 반경: 텍스처 256px 기준, 지름이 곧 빛 크기. (바닥 70px ~ 가득 200px)
+	var diameter_px: float = lerp(70.0, 200.0, e)
+	_energy_light.scale = Vector2.ONE * (diameter_px / 256.0)
+	# 밝기(알파): 바닥에서도 희미하게 보이게 최소값 유지
+	_energy_light.modulate = Color(
+		ENERGY_LIGHT_COLOR.r, ENERGY_LIGHT_COLOR.g, ENERGY_LIGHT_COLOR.b,
+		lerp(0.10, 0.55, e)
+	)
+
+	# ▼ 2026-06-28: 화면 전체 어둠 갱신.
+	#   darkness: 에너지 가득=DARK_MIN(은은) → 바닥=DARK_MAX(어둠).  빛 구멍 반경: 가득=넓게 → 바닥=좁게.
+	if _dark_mat != null:
+		var vp := get_viewport()
+		if vp:
+			var size: Vector2 = vp.get_visible_rect().size
+			# 플레이어의 '화면 UV' 좌표(월드→화면 변환) — 빛 구멍을 플레이어에 고정
+			var screen_pos: Vector2 = vp.get_canvas_transform() * global_position
+			if size.x > 0.0 and size.y > 0.0:
+				_dark_mat.set_shader_parameter("light_pos", screen_pos / size)
+				_dark_mat.set_shader_parameter("aspect", size.x / size.y)
+		_dark_mat.set_shader_parameter("darkness", lerp(DARK_MAX, DARK_MIN, e))
+		_dark_mat.set_shader_parameter("light_radius", lerp(0.22, 0.5, e))
 
 # ── 스프라이트 시트를 AtlasTexture 로 분할해 SpriteFrames 에 등록 ─────
 ## black/white 두 색상의 모든 애니메이션을 하나의 SpriteFrames 에 담는다.
@@ -248,10 +364,18 @@ func _physics_process(delta: float) -> void:
 		gun_pivot.look_at(get_global_mouse_position())
 
 	# ── 사격 ─────────────────────────────────────────────────────────
+	# ▼ 2026-06-28: 에너지 회복(매 프레임) + 발사 게이트.
+	#   발사 조건 = 입력 + 쿨다운 종료 + 에너지가 1발치(SHOOT_ENERGY_COST) 이상 남음.
+	#   에너지가 부족하면 발사를 막아(연발 차단) 페인트 로직 폭주를 근본 예방한다.
+	_shoot_energy = min(_shoot_energy + SHOOT_ENERGY_REGEN * delta, MAX_SHOOT_ENERGY)
 	_fire_timer = max(_fire_timer - delta, 0.0)
-	if Input.is_action_pressed("shoot") and _fire_timer <= 0.0:
+	if Input.is_action_pressed("shoot") and _fire_timer <= 0.0 and _shoot_energy >= SHOOT_ENERGY_COST:
 		_shoot()
+		_shoot_energy -= SHOOT_ENERGY_COST   # 발사 1회당 에너지(빛) 소모
 		_fire_timer = fire_cooldown
+
+	# ▼ 2026-06-28: 에너지광 비주얼 갱신(위치·반경·밝기 = 현재 에너지)
+	_update_energy_light()
 
 	move_and_slide()
 	_update_animation()
@@ -539,6 +663,7 @@ func _respawn() -> void:
 	velocity        = Vector2.ZERO
 	is_dead         = false
 	_spawn_grace    = 0.2   # ▼ 2026-06-22: 리스폰 직후 짧은 무적(stale overlap 재사망 방지)
+	_shoot_energy   = MAX_SHOOT_ENERGY   # ▼ 2026-06-28: 리스폰 시 발광(에너지) 가득 회복
 	# 칠했던 페인트 전부 제거 + 시작 색으로 복귀
 	for p in get_tree().get_nodes_in_group("runtime_paint"):
 		p.queue_free()

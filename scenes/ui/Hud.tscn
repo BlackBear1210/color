@@ -1,20 +1,20 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ds0k6gh1brc44"]
 
-[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
-[ext_resource type="Texture2D" path="res://assets/textures/ui/skull.png" id="2_skull"]
+[ext_resource type="Script" uid="uid://uy0tirg1xbbg" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" uid="uid://c4bveu4sacwb1" path="res://assets/textures/ui/skull.png" id="2_skull"]
 
-[node name="Hud" type="CanvasLayer"]
+[node name="Hud" type="CanvasLayer" unique_id=700869523]
 script = ExtResource("1_hud")
 
-[node name="Bar" type="HBoxContainer" parent="."]
+[node name="Bar" type="HBoxContainer" parent="." unique_id=1403269340]
 offset_left = 28.0
 offset_top = 16.0
 offset_right = 640.0
 offset_bottom = 76.0
+scale = Vector2(0.6267367, 0.61347866)
 theme_override_constants/separation = 16
 
-; ▼ 2026-06-22 추가: 현재 스테이지 번호 표시
-[node name="Stage" type="Label" parent="Bar"]
+[node name="Stage" type="Label" parent="Bar" unique_id=1439241716]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -23,7 +23,7 @@ theme_override_font_sizes/font_size = 30
 text = "STAGE 1"
 vertical_alignment = 1
 
-[node name="Time" type="Label" parent="Bar"]
+[node name="Time" type="Label" parent="Bar" unique_id=1087883095]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -32,7 +32,7 @@ theme_override_font_sizes/font_size = 30
 text = "TIME  00:00"
 vertical_alignment = 1
 
-[node name="Skull" type="TextureRect" parent="Bar"]
+[node name="Skull" type="TextureRect" parent="Bar" unique_id=1842428620]
 texture_filter = 1
 custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
@@ -40,7 +40,7 @@ texture = ExtResource("2_skull")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Deaths" type="Label" parent="Bar"]
+[node name="Deaths" type="Label" parent="Bar" unique_id=1577249672]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)

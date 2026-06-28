@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_u8f73"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/실루엣/Slope_Down_01_B.png" id="2_tbq2e"]
+
+[node name="Slope_Down_01_B" type="StaticBody2D" unique_id=1224546809]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_u8f73")
+simplify = 4.0
+terrain_texture = ExtResource("2_tbq2e")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1423356618]
+texture = ExtResource("2_tbq2e")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1390962464]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=1590685690]
+polygon = PackedVector2Array(72, 1, 35, 11, 32, 11, 17, 28, 16, 28, 7, 63, 6, 63, 3, 107, 2, 107, 12, 170, 12, 193, 0, 216, 0, 239, 10, 266, 11, 266, 10, 306, 10, 320, 15, 330, 15, 333, 31, 362, 31, 364, 54, 374, 55, 374, 63, 394, 63, 397, 82, 418, 82, 419, 152, 427, 160, 427, 196, 414, 198, 414, 207, 403, 208, 403, 227, 415, 227, 416, 278, 424, 289, 424, 322, 402, 326, 402, 406, 433, 406, 434, 433, 437, 440, 437, 474, 413, 476, 413, 538, 424, 541, 424, 573, 450, 573, 451, 653, 451, 659, 451, 692, 429, 692, 427, 767, 418, 770, 418, 804, 388, 806, 388, 808, 369, 808, 362, 826, 333, 827, 333, 834, 309, 835, 309, 835, 282, 836, 282, 834, 272, 834, 256, 817, 217, 817, 214, 800, 199, 800, 198, 665, 191, 652, 191, 592, 179, 588, 179, 546, 163, 543, 163, 383, 85, 379, 85, 265, 22, 265, 21, 198, 6, 198, 5, 72, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=1412845874]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=1967948888]
+position = Vector2(836, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=686268730]
+polygon = PackedVector2Array(72, 1, 35, 11, 32, 11, 17, 28, 16, 28, 7, 63, 6, 63, 3, 107, 2, 107, 12, 170, 12, 193, 0, 216, 0, 239, 10, 266, 11, 266, 10, 306, 10, 320, 15, 330, 15, 333, 31, 362, 31, 364, 54, 374, 55, 374, 63, 394, 63, 397, 82, 418, 82, 419, 152, 427, 160, 427, 196, 414, 198, 414, 207, 403, 208, 403, 227, 415, 227, 416, 278, 424, 289, 424, 322, 402, 326, 402, 406, 433, 406, 434, 433, 437, 440, 437, 474, 413, 476, 413, 538, 424, 541, 424, 573, 450, 573, 451, 653, 451, 659, 451, 692, 429, 692, 427, 767, 418, 770, 418, 804, 388, 806, 388, 808, 369, 808, 362, 826, 333, 827, 333, 834, 309, 835, 309, 835, 282, 836, 282, 834, 272, 834, 256, 817, 217, 817, 214, 800, 199, 800, 198, 665, 191, 652, 191, 592, 179, 588, 179, 546, 163, 543, 163, 383, 85, 379, 85, 265, 22, 265, 21, 198, 6, 198, 5, 72, 0)
+metadata/auto_baked = true

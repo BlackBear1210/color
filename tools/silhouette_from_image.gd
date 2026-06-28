@@ -29,7 +29,9 @@ const IN_DIR: String  = "res://scenes/지형파일셋/원본이미지/"
 const OUT_DIR: String = "res://scenes/지형파일셋/실루엣/"
 
 # 조각 분리 시 이 면적(px²) 미만의 점은 노이즈로 버린다(작은 돌부스러기/외곽 사금파리 제거)
-const MIN_PIECE_AREA: int = 600
+# ▼ 2026-06-28: 8000 으로 상향 — 제미나이 이미지 우하단 흰 ✦ 워터마크(작은 조각)를 버리고
+#   큰 지형 덩어리 하나만 남기기 위함. (각 이미지는 큰 지형 1개라 안전)
+const MIN_PIECE_AREA: int = 8000
 
 # ── 기본 설정 (개별 지정이 없을 때 폴더 전체에 적용) ─────────────────────
 # color    : "AUTO" | "BLACK" | "WHITE"  (AUTO=조각 밝기로 자동: 밝으면 WHITE, 어두우면 BLACK)
@@ -41,8 +43,12 @@ const MIN_PIECE_AREA: int = 600
 # lum_dark : true=어두운 피사체를 지형으로 / false=밝은 피사체를 지형으로
 # lum_split: AUTO 색 판정 임계(조각 평균밝기 ≥ 이 값 → WHITE, 미만 → BLACK)
 const DEFAULTS := {
-	"color": "AUTO", "mode": "auto", "split": true,
-	"tol": 0.14, "lum": 0.5, "lum_dark": true, "lum_split": 0.5,
+	# ▼ 2026-06-28: 제미나이 지형(마젠타 #FF00FF 배경) 일괄 처리 설정.
+	#   color="BLACK": 우선 전부 검정 실루엣(Badland식, stage1/2 기본 톤). 흰 버전은 color="WHITE"로 재실행.
+	#   mode="colorkey": 마젠타 단색 배경을 모서리색 기준 flood-fill 제거.
+	#   tol=0.2: JPEG 압축으로 생긴 가장자리 마젠타 헤일로까지 넉넉히 제거.
+	"color": "BLACK", "mode": "colorkey", "split": true,
+	"tol": 0.2, "lum": 0.5, "lum_dark": true, "lum_split": 0.5,
 }
 
 ## 개별 이미지에 다른 설정을 주고 싶을 때만 추가 (없으면 폴더 전체에 DEFAULTS 적용)

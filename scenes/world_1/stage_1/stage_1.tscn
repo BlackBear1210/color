@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://yfi4tnuagwgp" path="res://scripts/obstacles/thorn_obstacle.gd" id="6_thorn"]
 [ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="7_portal"]
 [ext_resource type="PackedScene" uid="uid://isfawu6y4o31" path="res://scenes/ui/Signboard.tscn" id="8_sign"]
-[ext_resource type="PackedScene" path="res://scenes/ui/Hud.tscn" id="9_hud"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="9_hud"]
 
 [sub_resource type="RectangleShape2D" id="kz"]
 size = Vector2(10400, 200)
@@ -27,7 +27,7 @@ camera_limit_bottom = 1080
 
 [node name="MapVisual" type="Node2D" parent="." unique_id=465666629]
 
-[node name="TerrainSprite" type="Sprite2D" parent="MapVisual" unique_id=540585786]
+[node name="TerrainSprite" type="Sprite2D" parent="MapVisual" unique_id=540585786 groups=["paint_surface"]]
 scale = Vector2(1.3, 1)
 texture = ExtResource("4_guide")
 centered = false
@@ -44,7 +44,7 @@ collision_mask = 0
 script = ExtResource("5_plat")
 
 [node name="Col0" type="CollisionPolygon2D" parent="MapPhysics/TerrainBlack" unique_id=1678132105]
-polygon = PackedVector2Array(39, 550, -1, 550, 0, 0, 3945, 0, 3874, 8, 3821, 24, 3761, 24, 3731, 40, 3646, 52, 3620, 70, 3553, 86, 3502, 119, 3467, 162, 3384, 182, 3357, 212, 3284, 224, 3195, 254, 2941, 246, 2856, 230, 2835, 238, 2778, 238, 2713, 222, 2531, 208, 2352, 244, 2270, 246, 2236, 222, 2122, 260, 2006, 266, 1937, 252, 1929, 255, 1934, 258, 1795, 270, 1754, 317, 1749, 427, 1716, 468, 1702, 512, 1676, 467, 1661, 435, 1663, 416, 1636, 367, 1639, 353, 1593, 322, 1596, 289, 1542, 264, 1487, 254, 1446, 254, 1399, 272, 1317, 272, 1239, 258, 1184, 278, 1144, 278, 1076, 294, 988, 292, 866, 276, 840, 289, 835, 320, 777, 408, 736, 408, 676, 294, 592, 302, 560, 328, 521, 328, 511, 316, 468, 328, 479, 330, 465, 338, 471, 340, 429, 398, 390, 398, 360, 360, 236, 393, 287, 396, 214, 398, 162, 412, 62, 516)
+polygon = PackedVector2Array(39, 550, -1, 550, 0, 0, 3945, 0, 3874, 8, 3821, 24, 3761, 24, 3731, 40, 3646, 52, 3620, 70, 3553, 86, 3502, 119, 3467, 162, 3384, 182, 3357, 212, 3284, 224, 3195, 254, 2941, 246, 2856, 230, 2835, 238, 2778, 238, 2713, 222, 2531, 208, 2352, 244, 2270, 246, 2236, 222, 2122, 260, 2006, 266, 1937, 252, 1929, 255, 1934, 258, 1795, 270, 1754, 317, 1749, 427, 1716, 468, 1702, 512, 1676, 467, 1661, 435, 1663, 416, 1636, 367, 1639, 353, 1593, 322, 1596, 289, 1542, 264, 1487, 254, 1446, 254, 1399, 272, 1317, 272, 1239, 258, 1184, 278, 1144, 278, 1076, 294, 988, 292, 866, 276, 840, 289, 835, 320, 777, 408, 758, 428, 747, 454, 743, 450, 736, 408, 676, 294, 592, 302, 560, 328, 541, 363, 521, 328, 511, 316, 468, 328, 479, 330, 465, 338, 471, 340, 429, 398, 409, 457, 390, 398, 360, 360, 236, 393, 287, 396, 214, 398, 162, 412, 62, 516)
 
 [node name="Col1" type="CollisionPolygon2D" parent="MapPhysics/TerrainBlack" unique_id=1132456704]
 polygon = PackedVector2Array(8531, 448, 8491, 447, 8505, 409, 8577, 376, 8646, 356, 8776, 351, 8588, 420, 8611, 422, 8583, 424)
@@ -82,6 +82,8 @@ color_state = 1
 polygon = PackedVector2Array(3438, 742, 3401, 732, 3381, 738, 3299, 736, 3281, 711, 3282, 687, 3325, 660, 3402, 652, 3426, 634, 3485, 646, 3568, 646, 3611, 656, 3630, 680, 3593, 718, 3523, 732, 3459, 734)
 
 [node name="Col1" type="CollisionPolygon2D" parent="MapPhysics/TerrainWhite" unique_id=872053777]
+position = Vector2(-84.27895, -113.39511)
+scale = Vector2(1.0444806, 1.1577864)
 polygon = PackedVector2Array(1901, 786, 1845, 784, 1810, 776, 1782, 764, 1779, 751, 1794, 726, 1842, 710, 1876, 708, 1933, 674, 2028, 664, 2066, 666, 2119, 674, 2162, 694, 2270, 724, 2239, 780, 2175, 774, 2144, 782, 2119, 776, 2088, 776, 2079, 784, 2083, 778, 2042, 776, 2048, 782, 2040, 776, 1994, 780, 1959, 772)
 
 [node name="Col2" type="CollisionPolygon2D" parent="MapPhysics/TerrainWhite" unique_id=862349253]

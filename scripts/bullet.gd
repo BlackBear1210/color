@@ -122,18 +122,23 @@ func _spawn_mark(terrain_body: Node = null, paint_col: int = -1) -> void:
 	var col: int = bullet_color if paint_col < 0 else paint_col
 	var pos: Vector2 = global_position + direction * 25.0
 
-	# 반경 내 다른 색 페인트만 제거 (같은 색은 유지 → 스택)
+	# 반경 내 다른 색 페인트만 제거. 같은 색이 이미 있으면 새로 만들지 않고 그대로 둔다.
+	# ▼ 2026-06-28 (안전장치): 같은 자리에 같은 색 PaintMark 가 무한 스택되는 걸 막는다.
+	#   연발 사격 시 한 지점에 마크가 폭증해 색 판정/성능이 꼬이던 문제를 줄인다.
+	#   (연발 자체는 player.gd 의 에너지 시스템이 1차로 제한한다.)
 	for p in get_tree().get_nodes_in_group("runtime_paint"):
 		if p.global_position.distance_to(pos) < paint_overlap_radius:
 			if p.get("paint_color") != col:
 				p.queue_free()
+			else:
+				return   # 같은 색 마크가 이미 있음 → 중복 생성 방지
 
 	var mark := PAINT_MARK.instantiate()
 	mark.paint_color      = col
 	mark.global_position  = pos
 
 	# ① 1차: 플레이어 기준 (총알 방향)
-	# ② 2차: 실제 지형 폴리곤 엣지 법선으로 보정
+	# ② 2차: 실제 지형 폴리곤 엣지 법선으로 보정 (페인트가 표면을 따라 눕도록)
 	var impact_dir := direction
 	if terrain_body:
 		var poly_node := _find_collision_polygon(terrain_body)
@@ -144,6 +149,19 @@ func _spawn_mark(terrain_body: Node = null, paint_col: int = -1) -> void:
 				global_position,
 				direction
 			)
+		# ▼ 2026-06-28: 클리핑은 '지형 비주얼(Sprite2D 텍스처 알파)' 우선.
+		#   ① 먼저 맞은 물리 바디의 자식 Sprite2D(TerrainImage 형) 를 찾고,
+		#   ② 없으면(stage_1 처럼 비주얼/물리가 분리된 경우) paint_surface 그룹에서
+		#      '탄착점을 덮는' 지형 그림을 찾는다. 둘 다 없으면 폴리곤 클립으로 폴백.
+		var spr := _find_terrain_sprite(terrain_body)
+		if spr == null:
+			spr = _find_surface_sprite(global_position)
+		if spr and spr.texture:
+			mark.setup_terrain_clip_tex(
+				spr.texture, spr.global_transform, spr.texture.get_size(),
+				spr.centered, spr.offset
+			)
+		elif poly_node:
 			mark.setup_terrain_clip(poly_node.polygon, poly_node.global_transform)
 
 	mark.impact_direction = impact_dir
@@ -188,6 +206,38 @@ func _collect_polygons(node: Node, result: Array[CollisionPolygon2D]) -> void:
 		if child is CollisionPolygon2D:
 			result.append(child as CollisionPolygon2D)
 		_collect_polygons(child, result)
+
+## ▼ 2026-06-28 신규: 지형 노드 안에서 '텍스처가 있는 첫 Sprite2D'(비주얼 그림)를 찾는다.
+##   TerrainImage 처럼 그림 지형이면 반환, Polygon2D 기반 기하 발판이면 null(→ 폴리곤 클립 폴백).
+func _find_terrain_sprite(node: Node) -> Sprite2D:
+	for child in node.get_children():
+		if child is Sprite2D and (child as Sprite2D).texture != null:
+			return child as Sprite2D
+		var found := _find_terrain_sprite(child)
+		if found:
+			return found
+	return null
+
+## ▼ 2026-06-28 신규: paint_surface 그룹에서 '탄착점(world_pos)을 덮는' 지형 그림 Sprite2D 를 찾는다.
+##   비주얼/물리가 분리된 스테이지(예: stage_1 MapVisual/TerrainSprite)에서 페인트를 그림에 클립하기 위함.
+##   여러 개가 겹치면 가장 작은(=구체적인) 것을 선택. 정밀 알파 판정은 셰이더가 픽셀 단위로 처리.
+func _find_surface_sprite(world_pos: Vector2) -> Sprite2D:
+	var best: Sprite2D = null
+	var best_area := INF
+	for n in get_tree().get_nodes_in_group("paint_surface"):
+		var s := n as Sprite2D
+		if s == null or s.texture == null:
+			continue
+		var tex_size: Vector2 = s.texture.get_size()
+		var local: Vector2 = s.to_local(world_pos)
+		var rect := Rect2(s.offset - tex_size * 0.5, tex_size) if s.centered \
+				else Rect2(s.offset, tex_size)
+		if rect.has_point(local):
+			var area: float = tex_size.x * tex_size.y
+			if area < best_area:
+				best_area = area
+				best = s
+	return best
 
 ## 충돌 지점에서 가장 가까운 폴리곤 엣지의 법선을 반환.
 ## fallback(총알 방향)과 같은 방향인 법선을 선택 → 지형 안쪽을 향하도록 보정.

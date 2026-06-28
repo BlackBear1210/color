@@ -64,6 +64,11 @@ func _ready() -> void:
 	var detector := get_node_or_null("DeathDetector") as Area2D
 	if detector and not detector.is_in_group("death_zones"):
 		detector.add_to_group("death_zones")
+	# ▼ 2026-06-28: 지형 '비주얼' Sprite2D 를 paint_surface 그룹에 등록.
+	#   → bullet.gd 가 페인트를 이 그림의 알파에 맞춰 클립(분사 페인트가 그림 위에만 칠해짐).
+	var vspr := get_node_or_null("Sprite2D") as Sprite2D
+	if vspr and not vspr.is_in_group("paint_surface"):
+		vspr.add_to_group("paint_surface")
 	# 충돌 폴리곤이 없으면 런타임에 자동 생성
 	_bake_if_missing()
 
