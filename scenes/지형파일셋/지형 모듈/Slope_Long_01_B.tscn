@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_gjm0m"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/지형 모듈/Slope_Long_01_B.png" id="2_vqeag"]
+
+[node name="Slope_Long_01_B" type="StaticBody2D" unique_id=93143634]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_gjm0m")
+simplify = 4.0
+terrain_texture = ExtResource("2_vqeag")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=397115665]
+texture = ExtResource("2_vqeag")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=488722523]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=774351863]
+polygon = PackedVector2Array(0, 18, 28, 32, 29, 32, 70, 167, 70, 170, 112, 120, 114, 120, 161, 168, 162, 168, 210, 266, 210, 268, 259, 196, 259, 195, 296, 201, 301, 201, 350, 262, 350, 264, 404, 218, 411, 218, 447, 225, 452, 225, 490, 286, 490, 288, 529, 239, 534, 239, 584, 249, 587, 249, 630, 315, 630, 317, 673, 265, 676, 265, 709, 272, 712, 272, 770, 325, 770, 326, 829, 292, 831, 292, 868, 299, 871, 299, 888, 327, 888, 329, 938, 329, 950, 312, 950, 311, 1003, 320, 1009, 320, 1016, 327, 1016, 329, 1273, 329, 1291, 315, 1291, 314, 1305, 329, 1341, 329, 1369, 262, 1369, 260, 1380, 257, 1400, 257, 1400, 239, 1395, 239, 1395, 238, 0, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=544859207]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=211195460]
+position = Vector2(1400, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1585840697]
+polygon = PackedVector2Array(0, 18, 28, 32, 29, 32, 70, 167, 70, 170, 112, 120, 114, 120, 161, 168, 162, 168, 210, 266, 210, 268, 259, 196, 259, 195, 296, 201, 301, 201, 350, 262, 350, 264, 404, 218, 411, 218, 447, 225, 452, 225, 490, 286, 490, 288, 529, 239, 534, 239, 584, 249, 587, 249, 630, 315, 630, 317, 673, 265, 676, 265, 709, 272, 712, 272, 770, 325, 770, 326, 829, 292, 831, 292, 868, 299, 871, 299, 888, 327, 888, 329, 938, 329, 950, 312, 950, 311, 1003, 320, 1009, 320, 1016, 327, 1016, 329, 1273, 329, 1291, 315, 1291, 314, 1305, 329, 1341, 329, 1369, 262, 1369, 260, 1380, 257, 1400, 257, 1400, 239, 1395, 239, 1395, 238, 0, 0)
+metadata/auto_baked = true

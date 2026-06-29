@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_7xl3g"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/지형 모듈/Temple_Stair_01_W.png" id="2_2u5ww"]
+
+[node name="Temple_Stair_01_W" type="StaticBody2D" unique_id=1261349863]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_7xl3g")
+color_state = 1
+simplify = 4.0
+terrain_texture = ExtResource("2_2u5ww")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1299629844]
+texture = ExtResource("2_2u5ww")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1206990914]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=1342842809]
+polygon = PackedVector2Array(700, 94, 562, 95, 560, 95, 560, 187, 426, 187, 420, 187, 419, 280, 419, 281, 286, 281, 282, 281, 279, 373, 279, 374, 143, 374, 140, 374, 140, 468, 22, 467, 0, 467, 0, 560, 840, 560, 840, 0, 700, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=483710113]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=1779329731]
+position = Vector2(840, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1069238560]
+polygon = PackedVector2Array(700, 94, 562, 95, 560, 95, 560, 187, 426, 187, 420, 187, 419, 280, 419, 281, 286, 281, 282, 281, 279, 373, 279, 374, 143, 374, 140, 374, 140, 468, 22, 467, 0, 467, 0, 560, 840, 560, 840, 0, 700, 0)
+metadata/auto_baked = true

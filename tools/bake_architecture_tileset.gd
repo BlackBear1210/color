@@ -51,9 +51,13 @@ const ENTRIES: Array = [
 ##   (비우면 ENTRIES 만 처리)
 const SCAN_DIRS: Array = [
 	"res://scenes/도형_타일셋_최신/sliced/",
-	# ▼ 2026-06-21 추가: silhouette_from_image.gd 가 만든 '흑/백 실루엣 PNG' 자동 굽기.
-	#   파이프라인: 원본이미지 → silhouette_from_image.gd → 실루엣/ → (여기서 자동 bake) → Arch 씬
+	# ▼ 2026-06-21: silhouette_from_image.gd 산출(흑/백 실루엣) 자동 굽기.
 	"res://scenes/지형파일셋/실루엣/",
+	# ▼ 2026-06-29 v3 변경: 지형 PNG 의 '정식' 폴더가 '이미지/' 로 바뀜.
+	#   generate_terrain_silhouettes.gd(v3)가 한글 이름(예: 바닥(검)1.png)으로 '이미지/' 에 출력.
+	#   여기서 .tscn 을 구운 뒤, 외부 스크립트가 .tscn 만 '씬/' 폴더로 옮긴다(이미지/씬 분리).
+	#   ※ 비재귀 스캔이라 '이미지/가시/'(빨강 가시 PNG) 하위폴더는 굽지 않음(가시는 ThornObstacle 씬으로 별도).
+	"res://scenes/지형파일셋/이미지/",
 ]
 
 
@@ -77,11 +81,14 @@ func _initialize() -> void:
 				continue
 			var tex_path: String = dir_path + f
 			var arch_name: String = f.get_basename()   # 파일명 = 씬 이름
-			# ▼ 2026-06-22 추가: silhouette_from_image.gd 가 붙인 색표기(_W/_B)로 color_state 결정.
-			#   → 흰 지형은 platform_white(layer3), 검정은 platform_black(layer2) 물리레이어가 정확히 적용됨.
+			# ▼ 2026-06-22: 파일명 색표기로 color_state 결정 (_W = 흰).
+			# ▼ 2026-06-29 v3 추가: 한글 색표기 (검)/(흰)/(회) 도 인식.
+			#   → 흰=WHITE(layer4), 회=GRAY(layer8, 칠해야 밟힘), 그 외=BLACK(layer2).
 			var cs := 0   # 기본 BLACK
-			if arch_name.ends_with("_W"):
+			if arch_name.ends_with("_W") or arch_name.contains("(흰)"):
 				cs = 1     # WHITE
+			elif arch_name.contains("(회)"):
+				cs = 2     # GRAY
 			made += _bake_entry(arch_name, tex_path, dir_path, script_res, cs)
 
 	print("──────── 아키텍처 타일셋 %d개 생성 완료" % made)

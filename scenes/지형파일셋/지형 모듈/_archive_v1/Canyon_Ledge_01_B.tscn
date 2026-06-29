@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_r616q"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/지형 모듈/Canyon_Ledge_01_B.png" id="2_sxrdy"]
+
+[node name="Canyon_Ledge_01_B" type="StaticBody2D" unique_id=1409457006]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_r616q")
+simplify = 4.0
+terrain_texture = ExtResource("2_sxrdy")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=95333386]
+texture = ExtResource("2_sxrdy")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=828139508]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=1601079611]
+polygon = PackedVector2Array(592, 1, 564, 20, 564, 21, 523, 30, 523, 31, 507, 29, 506, 29, 478, 7, 478, 6, 422, 28, 422, 29, 408, 24, 408, 23, 396, 28, 395, 28, 385, 18, 385, 17, 342, 8, 339, 8, 324, 12, 320, 12, 307, 28, 307, 29, 293, 34, 293, 35, 248, 18, 246, 18, 235, 3, 235, 2, 210, 5, 208, 5, 186, 17, 184, 17, 175, 29, 175, 31, 158, 33, 158, 34, 143, 22, 143, 21, 131, 19, 127, 19, 101, 4, 101, 3, 47, 30, 47, 31, 32, 32, 32, 34, 25, 31, 20, 31, 3, 12, 0, 12, 0, 358, 820, 358, 820, 18, 772, 25, 769, 25, 744, 10, 744, 9, 729, 10, 725, 10, 717, 1, 714, 1, 684, 21, 684, 22, 657, 29, 656, 29, 638, 24, 636, 24, 609, 4, 609, 3, 592, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=1357252856]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=589881330]
+position = Vector2(820, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1737427392]
+polygon = PackedVector2Array(592, 1, 564, 20, 564, 21, 523, 30, 523, 31, 507, 29, 506, 29, 478, 7, 478, 6, 422, 28, 422, 29, 408, 24, 408, 23, 396, 28, 395, 28, 385, 18, 385, 17, 342, 8, 339, 8, 324, 12, 320, 12, 307, 28, 307, 29, 293, 34, 293, 35, 248, 18, 246, 18, 235, 3, 235, 2, 210, 5, 208, 5, 186, 17, 184, 17, 175, 29, 175, 31, 158, 33, 158, 34, 143, 22, 143, 21, 131, 19, 127, 19, 101, 4, 101, 3, 47, 30, 47, 31, 32, 32, 32, 34, 25, 31, 20, 31, 3, 12, 0, 12, 0, 358, 820, 358, 820, 18, 772, 25, 769, 25, 744, 10, 744, 9, 729, 10, 725, 10, 717, 1, 714, 1, 684, 21, 684, 22, 657, 29, 656, 29, 638, 24, 636, 24, 609, 4, 609, 3, 592, 0)
+metadata/auto_baked = true

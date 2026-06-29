@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_ky7yu"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/이미지/회색경사로(회)2.png" id="2_4qxfc"]
+
+[node name="회색경사로(회)2" type="StaticBody2D" unique_id=1293296343]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_ky7yu")
+color_state = 2
+simplify = 4.0
+terrain_texture = ExtResource("2_4qxfc")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1377204727]
+texture = ExtResource("2_4qxfc")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=645794488]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=933015689]
+polygon = PackedVector2Array(818, 1, 2, 277, 0, 277, 0, 295, 18, 298, 20, 298, 40, 319, 41, 319, 54, 374, 54, 376, 156, 376, 177, 369, 177, 368, 183, 376, 221, 376, 232, 351, 232, 349, 317, 320, 317, 319, 341, 347, 343, 347, 365, 304, 365, 302, 454, 272, 454, 271, 478, 295, 479, 295, 502, 257, 502, 255, 588, 227, 588, 226, 593, 226, 615, 270, 616, 270, 639, 211, 639, 210, 702, 189, 705, 189, 722, 175, 722, 174, 751, 194, 752, 194, 781, 69, 781, 65, 799, 37, 799, 35, 818, 18, 820, 18, 818, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=754096656]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=1502277797]
+position = Vector2(820, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1921237948]
+polygon = PackedVector2Array(818, 1, 2, 277, 0, 277, 0, 295, 18, 298, 20, 298, 40, 319, 41, 319, 54, 374, 54, 376, 156, 376, 177, 369, 177, 368, 183, 376, 221, 376, 232, 351, 232, 349, 317, 320, 317, 319, 341, 347, 343, 347, 365, 304, 365, 302, 454, 272, 454, 271, 478, 295, 479, 295, 502, 257, 502, 255, 588, 227, 588, 226, 593, 226, 615, 270, 616, 270, 639, 211, 639, 210, 702, 189, 705, 189, 722, 175, 722, 174, 751, 194, 752, 194, 781, 69, 781, 65, 799, 37, 799, 35, 818, 18, 820, 18, 818, 0)
+metadata/auto_baked = true

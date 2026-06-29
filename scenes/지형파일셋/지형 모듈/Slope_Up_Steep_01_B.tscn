@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_4rcs6"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/지형 모듈/Slope_Up_Steep_01_B.png" id="2_ojkla"]
+
+[node name="Slope_Up_Steep_01_B" type="StaticBody2D" unique_id=287443040]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_4rcs6")
+simplify = 4.0
+terrain_texture = ExtResource("2_ojkla")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1339144074]
+texture = ExtResource("2_ojkla")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1683837734]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=1342158937]
+polygon = PackedVector2Array(638, 1, 1, 383, 0, 383, 0, 400, 16, 401, 18, 401, 41, 430, 42, 430, 61, 512, 71, 512, 88, 472, 88, 471, 167, 425, 167, 424, 192, 460, 193, 460, 218, 394, 218, 393, 300, 344, 300, 343, 320, 359, 321, 359, 339, 321, 339, 319, 422, 269, 422, 268, 448, 311, 449, 311, 474, 238, 474, 237, 548, 194, 548, 193, 569, 212, 577, 212, 604, 83, 604, 79, 623, 38, 623, 36, 638, 17, 640, 17, 638, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=769501217]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=2021486456]
+position = Vector2(640, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1629484670]
+polygon = PackedVector2Array(638, 1, 1, 383, 0, 383, 0, 400, 16, 401, 18, 401, 41, 430, 42, 430, 61, 512, 71, 512, 88, 472, 88, 471, 167, 425, 167, 424, 192, 460, 193, 460, 218, 394, 218, 393, 300, 344, 300, 343, 320, 359, 321, 359, 339, 321, 339, 319, 422, 269, 422, 268, 448, 311, 449, 311, 474, 238, 474, 237, 548, 194, 548, 193, 569, 212, 577, 212, 604, 83, 604, 79, 623, 38, 623, 36, 638, 17, 640, 17, 638, 0)
+metadata/auto_baked = true

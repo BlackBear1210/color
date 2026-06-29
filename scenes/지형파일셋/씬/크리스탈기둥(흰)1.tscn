@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_mtrwb"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/이미지/크리스탈기둥(흰)1.png" id="2_4d0cp"]
+
+[node name="크리스탈기둥(흰)1" type="StaticBody2D" unique_id=24203909]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_mtrwb")
+color_state = 1
+simplify = 4.0
+terrain_texture = ExtResource("2_4d0cp")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=61597392]
+texture = ExtResource("2_4d0cp")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=288315616]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=887893853]
+polygon = PackedVector2Array(113, 4, 0, 939, 252, 939, 140, 12, 140, 4, 113, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=1032385649]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=2001003749]
+position = Vector2(252, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=807908380]
+polygon = PackedVector2Array(113, 4, 0, 939, 252, 939, 140, 12, 140, 4, 113, 0)
+metadata/auto_baked = true

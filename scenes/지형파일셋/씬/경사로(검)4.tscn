@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://dpibxg4jxjuix"]
+
+[ext_resource type="Script" uid="uid://d3gbtu48ahdil" path="res://scripts/terrain_image.gd" id="1_tcngu"]
+[ext_resource type="Texture2D" uid="uid://dts10dvd4ovlp" path="res://scenes/지형파일셋/이미지/경사로(검)4.png" id="2_dtcgr"]
+
+[node name="경사로(검)4" type="StaticBody2D" unique_id=492125553]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_tcngu")
+simplify = 4.0
+terrain_texture = ExtResource("2_dtcgr")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1119470831]
+texture = ExtResource("2_dtcgr")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1299239381]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=1165632127]
+polygon = PackedVector2Array(0, 17, 18, 40, 19, 40, 37, 84, 38, 84, 64, 220, 64, 225, 77, 216, 78, 216, 91, 195, 91, 194, 96, 197, 98, 197, 171, 241, 173, 241, 192, 289, 192, 292, 213, 265, 215, 265, 299, 314, 301, 314, 320, 354, 320, 356, 339, 337, 342, 337, 428, 387, 430, 387, 448, 439, 448, 442, 467, 409, 468, 409, 550, 458, 552, 458, 559, 476, 559, 479, 585, 479, 602, 413, 602, 411, 623, 389, 623, 388, 639, 388, 640, 388, 636, 369, 636, 368, 0, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=2140910670]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=1455943051]
+position = Vector2(640, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1447987247]
+polygon = PackedVector2Array(0, 17, 18, 40, 19, 40, 37, 84, 38, 84, 64, 220, 64, 225, 77, 216, 78, 216, 91, 195, 91, 194, 96, 197, 98, 197, 171, 241, 173, 241, 192, 289, 192, 292, 213, 265, 215, 265, 299, 314, 301, 314, 320, 354, 320, 356, 339, 337, 342, 337, 428, 387, 430, 387, 448, 439, 448, 442, 467, 409, 468, 409, 550, 458, 552, 458, 559, 476, 559, 479, 585, 479, 602, 413, 602, 411, 623, 389, 623, 388, 639, 388, 640, 388, 636, 369, 636, 368, 0, 0)
+metadata/auto_baked = true

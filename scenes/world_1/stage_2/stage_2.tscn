@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
 [ext_resource type="PackedScene" uid="uid://t3pcec3jc42w" path="res://scenes/background/Background2.tscn" id="2_bg"]
 [ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
-[ext_resource type="PackedScene" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
 [ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="5_portal"]
 [ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="6_gear"]
 [ext_resource type="PackedScene" uid="uid://cxhoh8flfddit" path="res://scenes/obstacles/ThornObstacle.tscn" id="7_thorn"]
@@ -23,24 +23,17 @@
 [ext_resource type="Texture2D" uid="uid://bxgy6b3037gvy" path="res://scenes/world_1/map2/Platform_Thorn_02.png" id="28_thorn2"]
 
 [sub_resource type="RectangleShape2D" id="kz_shape"]
-size = Vector2(5352, 196.00003)
+size = Vector2(5352, 269)
 
 [sub_resource type="RectangleShape2D" id="wall_left"]
-size = Vector2(205, 5458)
+size = Vector2(205, 5638)
 
 [node name="stage_2" type="Node2D" unique_id=1106624679]
 script = ExtResource("1_stage")
-; ▼ 2026-06-22: 카메라 한계를 '실제 지형 충돌 AABB'(측정값 X[-1201,1352] Y[-1350,4048])에 맞춤.
-;   - 기존 top=-200 은 포탈(y=-305)보다 아래라 위로 못 따라가던 버그가 있었음 → top=-1350 으로 확장.
-;   - right=1600/bottom=4200 은 지형 밖(빈 배경)까지 보였음 → 지형 끝(1352/4048)으로 좁힘.
-;   - left 도 지형 왼끝(-1202, 좌측 벽 안쪽면)에 맞춰 '지형만' 보이게 함.
 camera_limit_left = -1202
 camera_limit_top = -1350
 camera_limit_right = 1352
 camera_limit_bottom = 4048
-; ▼ 2026-06-22: 세로 스테이지라 가로 가시폭이 지형보다 넓어 좌/우 벽 너머가 보였음.
-;   zoom 1.55 → 가시폭 = 1152/(1.55*0.3) ≈ 2477 < 지형폭(2554) → 좌우 벽 너머가 절대 안 보이고
-;   카메라는 위아래로만 스크롤(가로는 약 77px 여유 안에서만 따라감).
 camera_zoom = 1.55
 
 [node name="Background" parent="." unique_id=682878116 instance=ExtResource("2_bg")]
@@ -260,7 +253,7 @@ polygon = PackedVector2Array(135, -18, 134, -23, 133, -28, 128, -31, 109, -35, 1
 [node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=1844447280]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=144669294]
-position = Vector2(1297, 1342)
+position = Vector2(1351, 1182)
 rotation = 1.5707964
 shape = SubResource("kz_shape")
 
@@ -278,15 +271,30 @@ collision_mask = 0
 position = Vector2(-1304, 1295)
 shape = SubResource("wall_left")
 
-; ▼ 2026-06-22 추가: 오른쪽 벽(기존엔 좌측 벽만 있었음).
-;   좌측 벽과 동일하게 layer 8(회색 레이어)에 둬 플레이어 색과 무관하게 항상 막는다.
-;   안쪽면(x=1454-102=1352)을 지형 오른끝(max_x=1352)에 맞춰 밖으로 못 나가게 함.
 [node name="RightWall" type="StaticBody2D" parent="MapPhysics/MapBounds" unique_id=866930341]
 collision_layer = 8
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/MapBounds/RightWall" unique_id=1692464660]
-position = Vector2(1454, 1295)
+position = Vector2(1312, 1270)
+shape = SubResource("wall_left")
+
+[node name="upWall" type="StaticBody2D" parent="MapPhysics/MapBounds" unique_id=648278471]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/MapBounds/upWall" unique_id=99770778]
+position = Vector2(27, -1465.0001)
+rotation = -1.577539
+shape = SubResource("wall_left")
+
+[node name="Wall" type="StaticBody2D" parent="MapPhysics/MapBounds" unique_id=132508533]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/MapBounds/Wall" unique_id=1421092494]
+position = Vector2(-213, 4136)
+rotation = -1.577539
 shape = SubResource("wall_left")
 
 [node name="Obstacles" type="Node2D" parent="." unique_id=1333011163]
@@ -309,10 +317,6 @@ text = "포탈(테스트용)"
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-; ▼ 2026-06-22 (가시 즉시 사망 버그수정): 기존엔 잘못 배치된 수동 충돌 TCol3(지형 밖 좌표)과
-;   빈 Sprite2D2 가 붙어 있어 가시 판정이 보이는 가시와 어긋나 '닿아도 안 죽는' 현상이 있었음.
-;   → 두 군더더기 노드를 제거. thorn_obstacle.gd 가 런타임에 가시 알파 모양대로 정확히 킬존을
-;     자동 생성하므로(헤드리스 검증: Thorn_01 폴리곤 2개/Thorn_02 1개) 색과 무관하게 닿으면 즉시 사망.
 [node name="ThornPlatform1" parent="Obstacles" unique_id=1740685730 instance=ExtResource("7_thorn")]
 position = Vector2(-752, 35)
 thorn_texture = ExtResource("27_thorn1")
@@ -326,6 +330,7 @@ position = Vector2(-268, 36)
 rotate_speed = 60.0
 move_distance = 180.0
 move_speed = 90.0
+move_vertical = true
 
 [node name="Portal" parent="Obstacles" unique_id=1806652968 instance=ExtResource("5_portal")]
 position = Vector2(1045, -305)
@@ -346,4 +351,4 @@ text = "포탈"
 horizontal_alignment = 1
 
 [node name="Player" parent="." unique_id=675876762 instance=ExtResource("3_player")]
-position = Vector2(-656, 3501)
+position = Vector2(82, -169)

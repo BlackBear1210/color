@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_w5owl"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/지형 모듈/Crystal_Column_01_B.png" id="2_5nm3h"]
+
+[node name="Crystal_Column_01_B" type="StaticBody2D" unique_id=485045760]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_w5owl")
+simplify = 4.0
+terrain_texture = ExtResource("2_5nm3h")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1808230017]
+texture = ExtResource("2_5nm3h")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=23951478]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=128037205]
+polygon = PackedVector2Array(113, 4, 0, 939, 252, 939, 140, 12, 140, 4, 113, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=1759394839]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=1641844556]
+position = Vector2(252, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=160377505]
+polygon = PackedVector2Array(113, 4, 0, 939, 252, 939, 140, 12, 140, 4, 113, 0)
+metadata/auto_baked = true

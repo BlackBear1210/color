@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_7nnhf"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/지형 모듈/Bridge_Gap_01_B.png" id="2_0tpjc"]
+
+[node name="Bridge_Gap_01_B" type="StaticBody2D" unique_id=1923800506]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_7nnhf")
+simplify = 4.0
+terrain_texture = ExtResource("2_0tpjc")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1491243332]
+texture = ExtResource("2_0tpjc")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1551638771]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=1226206588]
+polygon = PackedVector2Array(462, 1, 372, 6, 360, 6, 260, 19, 253, 19, 0, 68, 0, 327, 120, 327, 120, 155, 125, 161, 126, 161, 154, 115, 154, 114, 330, 87, 340, 87, 375, 133, 376, 133, 411, 83, 411, 81, 462, 79, 462, 78, 587, 81, 594, 81, 625, 130, 625, 132, 657, 87, 657, 86, 842, 114, 847, 114, 875, 175, 875, 177, 880, 168, 881, 168, 881, 327, 1000, 327, 1000, 68, 837, 35, 837, 34, 705, 14, 705, 13, 587, 3, 587, 2, 462, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=1970770924]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=1077086219]
+position = Vector2(1000, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1934603015]
+polygon = PackedVector2Array(462, 1, 372, 6, 360, 6, 260, 19, 253, 19, 0, 68, 0, 327, 120, 327, 120, 155, 125, 161, 126, 161, 154, 115, 154, 114, 330, 87, 340, 87, 375, 133, 376, 133, 411, 83, 411, 81, 462, 79, 462, 78, 587, 81, 594, 81, 625, 130, 625, 132, 657, 87, 657, 86, 842, 114, 847, 114, 875, 175, 875, 177, 880, 168, 881, 168, 881, 327, 1000, 327, 1000, 68, 837, 35, 837, 34, 705, 14, 705, 13, 587, 3, 587, 2, 462, 0)
+metadata/auto_baked = true

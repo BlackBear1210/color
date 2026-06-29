@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_co446"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/이미지/계단(검)1.png" id="2_gdkb5"]
+
+[node name="계단(검)1" type="StaticBody2D" unique_id=638101613]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_co446")
+simplify = 4.0
+terrain_texture = ExtResource("2_gdkb5")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1799805627]
+texture = ExtResource("2_gdkb5")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=2008096073]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=1290935610]
+polygon = PackedVector2Array(700, 88, 560, 88, 560, 177, 420, 177, 420, 265, 280, 265, 280, 353, 140, 353, 140, 442, 0, 442, 0, 549, 840, 549, 840, 0, 700, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=204652530]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=914475985]
+position = Vector2(840, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=157867393]
+polygon = PackedVector2Array(700, 88, 560, 88, 560, 177, 420, 177, 420, 265, 280, 265, 280, 353, 140, 353, 140, 442, 0, 442, 0, 549, 840, 549, 840, 0, 700, 0)
+metadata/auto_baked = true

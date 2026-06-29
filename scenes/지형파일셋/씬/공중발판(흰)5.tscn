@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/terrain_image.gd" id="1_ade5x"]
+[ext_resource type="Texture2D" path="res://scenes/지형파일셋/이미지/공중발판(흰)5.png" id="2_1v72r"]
+
+[node name="공중발판(흰)5" type="StaticBody2D" unique_id=1693637708]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_ade5x")
+color_state = 1
+simplify = 4.0
+terrain_texture = ExtResource("2_1v72r")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=298789627]
+texture = ExtResource("2_1v72r")
+centered = false
+
+[node name="DeathDetector" type="Area2D" parent="." unique_id=1734288622]
+collision_layer = 64
+collision_mask = 0
+monitoring = false
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="DeathDetector" unique_id=728767253]
+polygon = PackedVector2Array(23, 7, 0, 29, 0, 30, 12, 36, 13, 36, 21, 50, 21, 70, 31, 75, 33, 75, 38, 87, 38, 96, 46, 99, 49, 99, 52, 105, 52, 108, 87, 135, 87, 145, 198, 192, 198, 193, 265, 208, 265, 209, 360, 216, 392, 216, 446, 208, 451, 208, 496, 193, 499, 193, 529, 169, 529, 167, 557, 155, 559, 155, 566, 145, 567, 145, 569, 97, 572, 97, 566, 94, 566, 70, 551, 61, 551, 29, 501, 4, 501, 0, 23, 0)
+metadata/auto_baked = true
+
+[node name="Entry" type="Marker2D" parent="." unique_id=2119423664]
+
+[node name="Exit" type="Marker2D" parent="." unique_id=104867791]
+position = Vector2(572, 0)
+
+[node name="AutoCol_0" type="CollisionPolygon2D" parent="." unique_id=1260680901]
+polygon = PackedVector2Array(23, 7, 0, 29, 0, 30, 12, 36, 13, 36, 21, 50, 21, 70, 31, 75, 33, 75, 38, 87, 38, 96, 46, 99, 49, 99, 52, 105, 52, 108, 87, 135, 87, 145, 198, 192, 198, 193, 265, 208, 265, 209, 360, 216, 392, 216, 446, 208, 451, 208, 496, 193, 499, 193, 529, 169, 529, 167, 557, 155, 559, 155, 566, 145, 567, 145, 569, 97, 572, 97, 566, 94, 566, 70, 551, 61, 551, 29, 501, 4, 501, 0, 23, 0)
+metadata/auto_baked = true
