@@ -13,7 +13,7 @@ extends AnimatableBody2D
 @export var move_vertical: bool = false
 
 var _start_position: Vector2
-var _move_dir: float = 1.0
+var _elapsed: float = 0.0
 
 @onready var kill_area: Area2D = $KillArea
 
@@ -29,17 +29,19 @@ func _physics_process(delta: float) -> void:
 	if rotate_speed != 0.0:
 		rotation_degrees += rotate_speed * delta
 
-	# 왕복 이동 (move_vertical 에 따라 축 선택)
+	# ▼ 2026-06-29 (버그수정): 기존엔 끝점에서 속도를 한 프레임에 +→- 로 순간 반전시켰는데,
+	#   AnimatableBody2D(sync_to_physics=true)가 다른 바디를 밀어주려고 매 프레임 이동량으로
+	#   속도를 추정하다 보니, 이 불연속 반전 프레임에서 추정이 어긋나 끝점에서 떨리는
+	#   현상이 있었다(지형과 안 겹쳐도 재현됨 → 충돌 문제가 아니라 반전 방식 자체가 원인).
+	#   → 사인파로 이동시켜 끝점에서 속도가 자연스럽게 0으로 줄어들게 한다(불연속 제거).
 	if move_distance > 0.0:
-		# ▼ 2026-06-22: 세로면 y, 가로면 x 축으로 왕복. 시작점 기준 거리로 방향 반전.
+		_elapsed += delta
+		var angular_speed := move_speed / move_distance   # 중심에서 속도가 move_speed가 되도록
+		var offset := sin(_elapsed * angular_speed) * move_distance
 		if move_vertical:
-			global_position.y += move_speed * _move_dir * delta
-			if abs(global_position.y - _start_position.y) >= move_distance:
-				_move_dir *= -1.0
+			global_position.y = _start_position.y + offset
 		else:
-			global_position.x += move_speed * _move_dir * delta
-			if abs(global_position.x - _start_position.x) >= move_distance:
-				_move_dir *= -1.0
+			global_position.x = _start_position.x + offset
 
 
 func _on_kill_area_entered(body: Node) -> void:

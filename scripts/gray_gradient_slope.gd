@@ -42,6 +42,15 @@ func _ready() -> void:
 	collision_mask = 0
 	# 총알(bullet.gd)이 회색 경사로를 식별해 paint_at() 을 호출하도록 그룹 등록
 	add_to_group("gray_slopes")
+
+	# ▼ 2026-06-29 (버그수정): GrayGradientSlope.tscn 의 ShaderMaterial 서브리소스에
+	#   resource_local_to_scene 이 빠져 있어서, 같은 씬을 여러 개 배치하면 전부 '같은'
+	#   ShaderMaterial 객체를 공유했다. 한 경사로를 칠하면 그 머티리얼을 공유하는 다른
+	#   모든 경사로의 비주얼도 같이 바뀌어버려, 칠한 색과 무관하게 엉뚱한 색이 보이는
+	#   원인이었다. → 인스턴스마다 머티리얼을 복제해 독립시킨다.
+	if _overlay and _overlay.material:
+		_overlay.material = _overlay.material.duplicate()
+
 	_push_to_shader(0)
 
 ## bullet.gd 가 회색 경사로에 총알이 닿을 때 호출.

@@ -120,7 +120,38 @@ func _spawn_splat() -> void:
 ##   (회색 경사로는 '플레이어 색'으로 칠해야 해서 지정색이 필요)
 func _spawn_mark(terrain_body: Node = null, paint_col: int = -1) -> void:
 	var col: int = bullet_color if paint_col < 0 else paint_col
-	var pos: Vector2 = global_position + direction * 25.0
+
+	# ▼ 2026-06-29 (버그수정): 위치 오프셋과 회전 정렬이 서로 다른 방향(궤적 vs 법선)을 써서
+	#   벽처럼 궤적과 표면 법선이 어긋나는 경우 마크가 안쪽으로 박혀 보이던 문제.
+	#   → 법선(impact_dir)을 먼저 한 번만 구해서 위치/회전 둘 다 동일하게 사용한다.
+	var poly_node: CollisionPolygon2D = null
+	var spr: Sprite2D = null
+	if terrain_body:
+		poly_node = _find_collision_polygon(terrain_body)
+		# ▼ 클리핑은 '지형 비주얼(Sprite2D 텍스처 알파)' 우선.
+		#   ① 먼저 맞은 물리 바디의 자식 Sprite2D(TerrainImage 형) 를 찾고,
+		#   ② 없으면(stage_1 처럼 비주얼/물리가 분리된 경우) paint_surface 그룹에서
+		#      '탄착점을 덮는' 지형 그림을 찾는다.
+		spr = _find_terrain_sprite(terrain_body)
+		if spr == null:
+			spr = _find_surface_sprite(global_position)
+
+	# ▼ 2026-06-29 (버그수정 2차): body_entered 가 발동하는 순간의 global_position 은
+	#   "표면에 닿은 지점"이 아니라 Area2D 가 겹침을 감지한 위치라 이미 폴리곤 안쪽으로
+	#   파고든 상태일 수 있다. 거기서 또 법선 방향으로 25px 를 밀어넣으면 깊이가 누적되어
+	#   더 깊숙이 박힌다. → 폴리곤 위 '실제 표면 접점'을 구해 그 점을 기준으로 깊이를 넣는다.
+	var impact_dir   := direction
+	var surface_point := global_position
+	if poly_node:
+		var closed := poly_node.build_mode == CollisionPolygon2D.BUILD_SOLIDS
+		var proj := _project_to_surface(poly_node.polygon, poly_node.global_transform, global_position, direction, closed)
+		surface_point = proj.point
+		impact_dir    = proj.normal
+	elif spr and spr.texture:
+		# 폴리곤이 없는(텍스처 전용) 표면은 알파 그라디언트로 법선을 근사
+		impact_dir = _normal_from_texture_alpha(spr, global_position, direction)
+
+	var pos: Vector2 = surface_point + impact_dir * 25.0
 
 	# 반경 내 다른 색 페인트만 제거. 같은 색이 이미 있으면 새로 만들지 않고 그대로 둔다.
 	# ▼ 2026-06-28 (안전장치): 같은 자리에 같은 색 PaintMark 가 무한 스택되는 걸 막는다.
@@ -136,35 +167,15 @@ func _spawn_mark(terrain_body: Node = null, paint_col: int = -1) -> void:
 	var mark := PAINT_MARK.instantiate()
 	mark.paint_color      = col
 	mark.global_position  = pos
-
-	# ① 1차: 플레이어 기준 (총알 방향)
-	# ② 2차: 실제 지형 폴리곤 엣지 법선으로 보정 (페인트가 표면을 따라 눕도록)
-	var impact_dir := direction
-	if terrain_body:
-		var poly_node := _find_collision_polygon(terrain_body)
-		if poly_node:
-			impact_dir = _get_surface_normal(
-				poly_node.polygon,
-				poly_node.global_transform,
-				global_position,
-				direction
-			)
-		# ▼ 2026-06-28: 클리핑은 '지형 비주얼(Sprite2D 텍스처 알파)' 우선.
-		#   ① 먼저 맞은 물리 바디의 자식 Sprite2D(TerrainImage 형) 를 찾고,
-		#   ② 없으면(stage_1 처럼 비주얼/물리가 분리된 경우) paint_surface 그룹에서
-		#      '탄착점을 덮는' 지형 그림을 찾는다. 둘 다 없으면 폴리곤 클립으로 폴백.
-		var spr := _find_terrain_sprite(terrain_body)
-		if spr == null:
-			spr = _find_surface_sprite(global_position)
-		if spr and spr.texture:
-			mark.setup_terrain_clip_tex(
-				spr.texture, spr.global_transform, spr.texture.get_size(),
-				spr.centered, spr.offset
-			)
-		elif poly_node:
-			mark.setup_terrain_clip(poly_node.polygon, poly_node.global_transform)
-
 	mark.impact_direction = impact_dir
+
+	if spr and spr.texture:
+		mark.setup_terrain_clip_tex(
+			spr.texture, spr.global_transform, spr.texture.get_size(),
+			spr.centered, spr.offset
+		)
+	elif poly_node:
+		mark.setup_terrain_clip(poly_node.polygon, poly_node.global_transform)
 
 	var overlay := get_tree().current_scene.find_child("PaintOverlay", true, false)
 	var parent: Node = overlay if overlay else get_tree().current_scene
@@ -186,7 +197,12 @@ func _find_collision_polygon(node: Node) -> CollisionPolygon2D:
 	for poly in all_polys:
 		var xf := poly.global_transform
 		var n   := poly.polygon.size()
-		for i in n:
+		# ▼ 2026-06-29: build_mode=1(SEGMENTS, 열린 선)은 마지막 점과 첫 점을 잇지 않는다.
+		#   닫힌 폴리곤(SOLIDS)처럼 (i+1)%n 으로 강제로 닫으면 존재하지 않는 가짜 변이
+		#   생겨 그 변이 "가장 가까운 변"으로 잘못 뽑히는 경우가 있었다(stage_2 동굴).
+		var closed := poly.build_mode == CollisionPolygon2D.BUILD_SOLIDS
+		var edge_count := n if closed else n - 1
+		for i in edge_count:
 			var a: Vector2 = xf * poly.polygon[i]
 			var b: Vector2 = xf * poly.polygon[(i + 1) % n]
 			var edge    := b - a
@@ -239,36 +255,165 @@ func _find_surface_sprite(world_pos: Vector2) -> Sprite2D:
 				best = s
 	return best
 
-## 충돌 지점에서 가장 가까운 폴리곤 엣지의 법선을 반환.
+## 점이 (월드 좌표) 폴리곤 내부인지 판정 (레이캐스팅/짝홀 판정).
+func _point_in_polygon(point: Vector2, world_pts: PackedVector2Array) -> bool:
+	var inside := false
+	var n := world_pts.size()
+	var j := n - 1
+	for i in n:
+		var pi: Vector2 = world_pts[i]
+		var pj: Vector2 = world_pts[j]
+		if (pi.y > point.y) != (pj.y > point.y):
+			var slope := (point.y - pi.y) / (pj.y - pi.y)
+			var x_intersect := pi.x + slope * (pj.x - pi.x)
+			if point.x < x_intersect:
+				inside = not inside
+		j = i
+	return inside
+
+## 엣지 방향에서 지형 안쪽을 향하는 법선을 구함.
+## ▼ 2026-06-29 (버그수정 3차): 기존엔 fallback(총알 진입 방향)과의 내적 부호로만 안/밖을
+##   판단했는데, 총알이 표면에 거의 평행하게(스치듯) 맞으면 이 부호 판정이 불안정해서
+##   가끔 반대로 뒤집혔다 → 페인트가 지형 밖(빈 공간, 텍스처 알파 0)에 찍혀 안 보이는
+##   원인이었다(stage_2 동굴). 폴리곤이 닫혀 있으면 '점이 실제로 폴리곤 안에 있는지'를
+##   직접 테스트해서 훨씬 안정적으로 방향을 정한다. 열린 체인(SEGMENTS)은 안/밖 개념이
+##   없으므로 기존 fallback 내적 방식을 그대로 쓴다.
+func _normal_for_edge(edge_dir: Vector2, fallback: Vector2,
+		surface_point: Vector2 = Vector2.INF, world_pts: PackedVector2Array = PackedVector2Array()) -> Vector2:
+	var normal := Vector2(-edge_dir.y, edge_dir.x)
+	if not world_pts.is_empty() and surface_point.is_finite():
+		var probe := surface_point + normal * 2.0
+		if not _point_in_polygon(probe, world_pts):
+			normal = -normal
+		return normal
+	if normal.dot(fallback) < 0.0:
+		normal = -normal
+	return normal
+
+## 탄착점에서 가장 가까운 폴리곤 엣지 위의 '실제 표면 접점'과 그 법선을 함께 반환.
 ## fallback(총알 방향)과 같은 방향인 법선을 선택 → 지형 안쪽을 향하도록 보정.
-func _get_surface_normal(polygon: PackedVector2Array,
+## ▼ 2026-06-29: 탄착점이 꼭짓점(엣지의 끝) 근처면 인접 엣지의 법선과 블렌딩해
+##   "어느 엣지가 더 가깝냐"에 따라 법선이 툭 끊겨 튀는 현상(코너 스냅)을 줄인다.
+## ▼ 2026-06-29 (버그수정 2차): 단순히 법선만 반환하면 호출 쪽에서 이미 폴리곤 안쪽으로
+##   파고든 impact_pos 를 기준점으로 써서 깊이가 누적되는 문제가 있었다. 표면 위의
+##   '투영점(point)'을 같이 돌려줘서, 그 점을 기준으로만 깊이를 더하도록 한다.
+func _project_to_surface(polygon: PackedVector2Array,
 		terrain_xform: Transform2D,
 		impact_pos: Vector2,
-		fallback: Vector2) -> Vector2:
-	var closest_dist := INF
-	var result       := fallback
-
+		fallback: Vector2,
+		closed: bool = true) -> Dictionary:
 	var n := polygon.size()
-	for i in n:
+	if n < 2:
+		return {"point": impact_pos, "normal": fallback}
+
+	# ▼ 2026-06-29: build_mode=1(SEGMENTS, 열린 선)은 마지막 점과 첫 점을 잇지 않는다.
+	#   강제로 닫으면 존재하지 않는 가짜 변이 "가장 가까운 변"으로 잘못 뽑힐 수 있다
+	#   (stage_2 동굴에서 마크가 엉뚱한 곳에 생기던 원인).
+	var edge_count := n if closed else n - 1
+	if edge_count < 1:
+		return {"point": impact_pos, "normal": fallback}
+
+	var edge_dirs: Array[Vector2] = []
+	edge_dirs.resize(edge_count)
+
+	var best_i := -1
+	var best_t := 0.0
+	var best_edge_len := 0.0
+	var best_a := Vector2.ZERO
+	var closest_dist := INF
+
+	for i in edge_count:
 		var a: Vector2 = terrain_xform * polygon[i]
 		var b: Vector2 = terrain_xform * polygon[(i + 1) % n]
 		var edge    := b - a
 		var edge_len := edge.length()
 		if edge_len < 0.001:
+			edge_dirs[i] = Vector2.ZERO
 			continue
 		var edge_dir := edge / edge_len
-		var t        := clampf((impact_pos - a).dot(edge_dir), 0.0, edge_len)
-		var dist     := (impact_pos - (a + edge_dir * t)).length()
+		edge_dirs[i] = edge_dir
 
+		var t    := clampf((impact_pos - a).dot(edge_dir), 0.0, edge_len)
+		var dist := (impact_pos - (a + edge_dir * t)).length()
 		if dist < closest_dist:
-			closest_dist = dist
-			var normal := Vector2(-edge_dir.y, edge_dir.x)
-			# fallback(총알 방향)과 내적이 음수면 반전 → 항상 지형 안쪽 방향
-			if normal.dot(fallback) < 0.0:
-				normal = -normal
-			result = normal
+			closest_dist  = dist
+			best_i        = i
+			best_t        = t
+			best_edge_len = edge_len
+			best_a        = a
 
-	return result
+	if best_i == -1:
+		return {"point": impact_pos, "normal": fallback}
+
+	# 닫힌 폴리곤이면 점-내부 판정용 월드 좌표 배열을 한 번만 만들어 둔다.
+	var world_pts := PackedVector2Array()
+	if closed:
+		world_pts.resize(n)
+		for i in n:
+			world_pts[i] = terrain_xform * polygon[i]
+
+	var surface_point: Vector2 = best_a + edge_dirs[best_i] * best_t
+	var normal := _normal_for_edge(edge_dirs[best_i], fallback, surface_point, world_pts)
+
+	# 꼭짓점까지 남은 거리 (엣지 양 끝 중 가까운 쪽). 열린 선의 양 끝(체인의 시작/끝)은
+	# 블렌딩할 인접 변이 없으므로 건너뛴다.
+	var dist_to_vertex := minf(best_t, best_edge_len - best_t)
+	var blend_radius    := minf(best_edge_len * 0.3, 20.0)
+	if blend_radius > 0.001 and dist_to_vertex < blend_radius:
+		var prev_ok := closed or best_i > 0
+		var next_ok := closed or best_i < edge_count - 1
+		var to_prev := best_t < best_edge_len * 0.5
+		if (to_prev and prev_ok) or (not to_prev and next_ok):
+			var adj_i := (best_i - 1 + edge_count) % edge_count if to_prev else (best_i + 1) % edge_count
+			if edge_dirs[adj_i] != Vector2.ZERO:
+				var adj_normal := _normal_for_edge(edge_dirs[adj_i], fallback, surface_point, world_pts)
+				var w := 1.0 - dist_to_vertex / blend_radius   # 꼭짓점일수록 1.0
+				normal = (normal * (1.0 - w) + adj_normal * w).normalized()
+
+	return {"point": surface_point, "normal": normal}
+
+## ▼ 2026-06-29 신규: 폴리곤(충돌체)이 없는 텍스처 전용 표면에서, 그림의 알파 그라디언트로
+##   법선을 근사한다. (예: stage_1 처럼 비주얼만 있고 충돌은 별도 박스로 처리되는 지형)
+##   알파가 진해지는 방향 = 지형 안쪽 → fallback과 내적이 음수면 반전.
+static var _alpha_image_cache: Dictionary = {}
+
+func _get_cached_image(tex: Texture2D) -> Image:
+	if _alpha_image_cache.has(tex):
+		return _alpha_image_cache[tex]
+	var img := tex.get_image()
+	if img:
+		_alpha_image_cache[tex] = img
+	return img
+
+func _alpha_at(img: Image, px: Vector2i, size: Vector2i) -> float:
+	if px.x < 0 or px.y < 0 or px.x >= size.x or px.y >= size.y:
+		return 0.0
+	return img.get_pixelv(px).a
+
+func _normal_from_texture_alpha(sprite: Sprite2D, world_pos: Vector2, fallback: Vector2) -> Vector2:
+	var img := _get_cached_image(sprite.texture)
+	if img == null:
+		return fallback
+
+	var tex_size: Vector2 = sprite.texture.get_size()
+	var local: Vector2 = sprite.to_local(world_pos)
+	var top_left: Vector2 = (sprite.offset - tex_size * 0.5) if sprite.centered else sprite.offset
+	var px := local - top_left
+
+	var size_i := Vector2i(tex_size)
+	var step := 4
+	var p := Vector2i(px)
+	var gx := _alpha_at(img, p + Vector2i(step, 0), size_i) - _alpha_at(img, p - Vector2i(step, 0), size_i)
+	var gy := _alpha_at(img, p + Vector2i(0, step), size_i) - _alpha_at(img, p - Vector2i(0, step), size_i)
+	var grad_local := Vector2(gx, gy)
+	if grad_local.length() < 0.01:
+		return fallback
+
+	# 로컬(텍스처) 공간의 그라디언트를 월드 방향으로 회전만 적용해 변환
+	var dir_world: Vector2 = sprite.global_transform.basis_xform(grad_local).normalized()
+	if dir_world.dot(fallback) < 0.0:
+		dir_world = -dir_world
+	return dir_world
 
 func _safe_free() -> void:
 	if is_inside_tree():

@@ -23,7 +23,10 @@ void vertex() {
 }
 
 void fragment() {
-	vec4 tex_color = texture(TEXTURE, UV);
+	// ▼ 2026-06-29 (버그수정): COLOR 는 Godot 가 "텍스처 × modulate"를 이미 곱해서 채워준 값이다.
+	//   기존엔 여기서 texture(TEXTURE, UV)로 원본 텍스처를 다시 샘플링해 그대로 COLOR에 덮어써서
+	//   modulate(틴트 색)가 무시되고 항상 텍스처 원본 색(흰 물방울)으로만 보였다.
+	//   → COLOR는 그대로 두고, 클리핑 판정에만 별도로 지형 텍스처 알파를 읽는다.
 	if (enabled == 1) {
 		vec2 local = inv_x * world_pos.x + inv_y * world_pos.y + inv_o;   // 월드 → 지형 로컬
 		vec2 uv = (local - tex_offset) / tex_size + vec2(0.5) * centered; // 지형 로컬 → 텍스처 UV
@@ -34,5 +37,4 @@ void fragment() {
 			discard;                                          // 지형이 안 그려진(투명) 자리
 		}
 	}
-	COLOR = tex_color;
 }

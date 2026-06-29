@@ -30,10 +30,11 @@ void vertex() {
 }
 
 void fragment() {
-	vec4 tex_color = texture(TEXTURE, UV);
+	// ▼ 2026-06-29 (버그수정): COLOR 는 이미 "텍스처 × modulate"가 곱해진 값인데,
+	//   texture(TEXTURE, UV)로 다시 샘플링해 그대로 덮어쓰면 modulate 틴트가 사라진다
+	//   (paint_clip_alpha.gdshader 와 동일한 버그).
 	// vert_count 가 0 이면 클리핑 없이 그대로 표시
 	if (vert_count > 0 && !point_in_polygon(world_pos)) {
 		discard;
 	}
-	COLOR = tex_color;
 }

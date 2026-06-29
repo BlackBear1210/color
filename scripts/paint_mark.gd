@@ -84,6 +84,13 @@ func _ready() -> void:
 	add_to_group("runtime_paint")
 	add_to_group("paint_bodies")
 
+	# ▼ 2026-06-29: 일부 스테이지(예: stage_2 동굴)는 지형 StaticBody 가 자체 Sprite2D를
+	#   들고 있고, 그 바디가 PaintOverlay 보다 트리 상 나중에(=위에) 그려져서 페인트가
+	#   지형 그림에 덮여 가려지는 문제가 있었다. z_index 를 지형보다 확실히 높게 고정해
+	#   씬 트리 순서와 무관하게 항상 지형 그림 위에 그려지도록 한다.
+	z_index = 10
+	z_as_relative = false
+
 	# ① 루트를 지형 표면 각도에 맞춰 먼저 회전 (local +Y = 지형 방향)
 	rotation = impact_direction.angle() - PI / 2.0
 
@@ -223,37 +230,36 @@ func _build_spray(c: int) -> void:
 		ch.queue_free()
 	var col := Color(1, 1, 1, 1) if c == ColorDefs.WHITE else Color(0, 0, 0, 1)
 
-	# ▼ 2026-06-28 (중요 수정): 페인트를 지형 '안쪽(+Y)'에 깊숙이 찍는다.
-	#   루트 원점(local 0)은 표면에서 이미 SPAWN_DEPTH(25px) 안쪽이고, 지형 내부는 +Y 방향.
-	#   (이전 버그) 물방울을 SURFACE_LOCAL(-25, 표면 바깥쪽)에 찍어 알파 클립에 거의 다 잘려
-	#             가장자리만 얇게 보였다 → +Y(안쪽)로 옮겨 '안쪽까지' 칠하고 잘 보이게 함.
+	# ▼ 2026-06-29 (재수정): 두꺼운/불투명한 벽 텍스처는 알파 클립이 깊이를 막아주지 못해
+	#   블롭이 SURFACE_LOCAL(-25)보다 한참 안쪽(+20~80px)까지 퍼지면 "벽 속에 칠해진" 것처럼
+	#   보였다. → 모든 블롭을 SURFACE_LOCAL 기준 가까운 범위로 당겨와 표면 위주로만 칠한다.
 
 	# ① 단단한 중심 패치 — 큰 블롭 4~5개를 가까이 겹쳐 '꽉 찬' 칠해진 영역을 만든다(직관적 가시성).
 	var core := randi_range(4, 5)
 	for i in core:
 		var cx := randf_range(-16.0, 16.0)
-		var cy := randf_range(-8.0, 22.0)                  # 표면 안쪽 위주
+		var cy := SURFACE_LOCAL + randf_range(-4.0, 14.0)  # 표면 바로 위~14px 안쪽
 		_add_drop(col, Vector2(cx, cy), randf_range(0.42, 0.62), 1.0)
 
 	# ② 중간 물방울 — 패치 주변을 메워 경계를 자연스럽게
 	for i in randi_range(5, 8):
 		var mx := randf_range(-1.0, 1.0)
 		var ox := mx * mx * signf(mx) * 42.0
-		var oy := randf_range(-14.0, 46.0)
+		var oy := SURFACE_LOCAL + randf_range(-8.0, 20.0)
 		_add_drop(col, Vector2(ox, oy), randf_range(0.16, 0.30), randf_range(0.9, 1.0))
 
 	# ③ 분사 흩뿌림 — 바깥으로 튄 작은 방울(스프레이 느낌)
 	for i in randi_range(7, 11):
 		var rr := randf_range(-1.0, 1.0)
 		var sx := rr * rr * signf(rr) * 66.0
-		var sy := randf_range(-20.0, 54.0)
+		var sy := SURFACE_LOCAL + randf_range(-12.0, 26.0)
 		_add_drop(col, Vector2(sx, sy), randf_range(0.05, 0.12), randf_range(0.8, 1.0))
 
-	# ④ 흘러내림(드립) 2~3개 — 중력 방향(월드 수직)으로 길게
+	# ④ 흘러내림(드립) 2~3개 — 표면 근처에서 시작해 중력 방향(월드 수직)으로 길게
 	for i in randi_range(2, 3):
-		var drip := _add_drop(col, Vector2(randf_range(-30.0, 30.0), randf_range(2.0, 12.0)), randf_range(0.09, 0.14), 0.95)
+		var drip := _add_drop(col, Vector2(randf_range(-30.0, 30.0), SURFACE_LOCAL + randf_range(0.0, 8.0)), randf_range(0.09, 0.14), 0.95)
 		drip.rotation = -rotation                          # 루트 회전 상쇄 → 항상 월드 수직(중력)
-		drip.scale.y *= randf_range(3.0, 6.0)              # 세로로 길게 늘려 흘러내린 모양
+		drip.scale.y *= randf_range(2.0, 3.5)              # 세로로 길게(과도하게 깊이 들어가지 않게 축소)
 
 ## 물방울 1개 생성(지형 텍스처 알파가 있으면 그에 클립). 생성한 Sprite2D 반환.
 func _add_drop(col: Color, pos: Vector2, sc: float, a: float) -> Sprite2D:
