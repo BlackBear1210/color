@@ -4,18 +4,33 @@
 [ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="2_bg"]
 [ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
 [ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/기둥(검)2.tscn" id="5_5iwxc"]
 [ext_resource type="PackedScene" path="res://scenes/effects/Atmosphere.tscn" id="5_atmo"]
-[ext_resource type="PackedScene" uid="uid://c17u16eb61p5x" path="res://scenes/platforms/Platform.tscn" id="6_plat"]
-[ext_resource type="PackedScene" uid="uid://cxhoh8flfddit" path="res://scenes/obstacles/ThornObstacle.tscn" id="7_thorn"]
 [ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="8_gear"]
 [ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="9_portal"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/경사로(검)1.tscn" id="9_sthpy"]
 [ext_resource type="PackedScene" uid="uid://dnpu8j7j150to" path="res://scenes/obstacles/FireWall.tscn" id="10_fire"]
-[ext_resource type="PackedScene" path="res://scenes/지형파일셋/회색경사로/GrayGradientSlope.tscn" id="11_slope"]
-[ext_resource type="Texture2D" uid="uid://dbyksed0plijy" path="res://scenes/world_1/map2/Platform_Thorn_01.png" id="12_thorntex"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/경사로(검)2.tscn" id="10_p704j"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(흰)1.tscn" id="11_gychd"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(흰)2.tscn" id="12_kok06"]
 [ext_resource type="PackedScene" uid="uid://dkoh57nmxstto" path="res://scenes/obstacles/Checkpoint.tscn" id="13_cp"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)5.tscn" id="13_q8dq7"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/회색경사로(회)1.tscn" id="14_gychd"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="16_770g7"]
+[ext_resource type="PackedScene" uid="uid://ca5iibwkhmmdg" path="res://scenes/지형파일셋/씬/단차(검)1.tscn" id="17_gpcq3"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)1.tscn" id="18_q8dq7"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/천장(흰)2.tscn" id="20_k5hhe"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/천장(흰)3.tscn" id="21_w4uj4"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/다리(흰)1.tscn" id="22_ar3tb"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(흰)4.tscn" id="23_0p1n2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/계단(흰)1.tscn" id="24_stnno"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)4.tscn" id="25_7oiul"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/선반(흰)3.tscn" id="26_hgxcx"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/벽(검)1.tscn" id="27_2m5kx"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/다리(검)1.tscn" id="28_76iex"]
 
 [sub_resource type="RectangleShape2D" id="kz_shape"]
-size = Vector2(9000, 400)
+size = Vector2(15007.5, 400)
 
 [node name="stage_3" type="Node2D" unique_id=177490666]
 script = ExtResource("1_stage")
@@ -35,103 +50,50 @@ visible = false
 [node name="MapPhysics" type="Node2D" parent="." unique_id=252072991]
 
 [node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=318071670]
+position = Vector2(343, 47)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=1452471906]
-position = Vector2(3500, 1080)
+position = Vector2(6305.5, 2082)
 shape = SubResource("kz_shape")
 
-[node name="G1" parent="MapPhysics" unique_id=2074300774 instance=ExtResource("6_plat")]
-position = Vector2(650, 605)
-scale = Vector2(6.5, 2.25)
-collision_layer = 2
-collision_mask = 0
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=759009900]
+position = Vector2(6276.25, -257)
+shape = SubResource("kz_shape")
 
-[node name="G2" parent="MapPhysics" unique_id=75831418 instance=ExtResource("6_plat")]
-position = Vector2(1710, 605)
-scale = Vector2(1.9, 2.25)
-collision_layer = 2
-collision_mask = 0
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=1699845654]
+position = Vector2(10268, 628)
+rotation = 1.5583264
+shape = SubResource("kz_shape")
 
-[node name="G3" parent="MapPhysics" unique_id=1171186387 instance=ExtResource("6_plat")]
-position = Vector2(2380, 605)
-scale = Vector2(2.6, 2.25)
-collision_layer = 2
-collision_mask = 0
-
-[node name="G4" parent="MapPhysics" unique_id=1242781633 instance=ExtResource("6_plat")]
-position = Vector2(3220, 605)
-scale = Vector2(3.6, 2.25)
-collision_layer = 2
-collision_mask = 0
-
-[node name="W1" parent="MapPhysics" unique_id=1010099191 instance=ExtResource("6_plat")]
-position = Vector2(3940, 545)
-scale = Vector2(1.6, 1.25)
-collision_layer = 4
-collision_mask = 0
-color_state = 1
-
-[node name="B1" parent="MapPhysics" unique_id=1790399992 instance=ExtResource("6_plat")]
-position = Vector2(4320, 585)
-scale = Vector2(1.4, 1.25)
-collision_layer = 2
-collision_mask = 0
-
-[node name="W2" parent="MapPhysics" unique_id=494860422 instance=ExtResource("6_plat")]
-position = Vector2(4700, 545)
-scale = Vector2(1.6, 1.25)
-collision_layer = 4
-collision_mask = 0
-color_state = 1
-
-[node name="G5" parent="MapPhysics" unique_id=1709859126 instance=ExtResource("6_plat")]
-position = Vector2(5340, 605)
-scale = Vector2(3.6, 2.25)
-collision_layer = 2
-collision_mask = 0
-
-[node name="GraySlope" parent="MapPhysics" unique_id=795455714 instance=ExtResource("11_slope")]
-position = Vector2(5800, 304)
-
-[node name="HL" parent="MapPhysics" unique_id=1303880270 instance=ExtResource("6_plat")]
-position = Vector2(6582, 344)
-scale = Vector2(2.7, 2)
-collision_layer = 2
-collision_mask = 0
+[node name="기둥(검)2" parent="MapPhysics/KillZone" unique_id=875875638 instance=ExtResource("5_5iwxc")]
+position = Vector2(7008.9995, -93)
+rotation = 1.5815872
+scale = Vector2(0.22666582, 2.005041)
 
 [node name="Obstacles" type="Node2D" parent="." unique_id=860488414]
 
-[node name="Thorn1" parent="Obstacles" unique_id=1360602702 instance=ExtResource("7_thorn")]
-position = Vector2(1631, 467)
-scale = Vector2(0.45, 0.45)
-thorn_texture = ExtResource("12_thorntex")
-
-[node name="Thorn2" parent="Obstacles" unique_id=936014096 instance=ExtResource("7_thorn")]
-position = Vector2(2279, 480)
-scale = Vector2(0.45, 0.45)
-thorn_texture = ExtResource("12_thorntex")
-
 [node name="Checkpoint1" parent="Obstacles" unique_id=1508862226 instance=ExtResource("13_cp")]
-position = Vector2(2520, 560)
+position = Vector2(3109, 432)
 
 [node name="Checkpoint2" parent="Obstacles" unique_id=2087325627 instance=ExtResource("13_cp")]
-position = Vector2(5050, 560)
+position = Vector2(7215, 360)
 
 [node name="GearH" parent="Obstacles" unique_id=162501029 instance=ExtResource("8_gear")]
-position = Vector2(3209, 249)
-rotate_speed = 120.0
+position = Vector2(6198, 67)
+rotate_speed = 200.0
 move_distance = 230.0
 move_speed = 110.0
+move_vertical = true
 
 [node name="GearV" parent="Obstacles" unique_id=153581819 instance=ExtResource("8_gear")]
-position = Vector2(5340, 540)
+position = Vector2(6661, 357)
 rotate_speed = 120.0
 move_distance = 150.0
 move_speed = 110.0
 move_vertical = true
 
 [node name="Portal" parent="Obstacles" unique_id=330647810 instance=ExtResource("9_portal")]
-position = Vector2(6720, 232)
+position = Vector2(10015, 413)
 
 [node name="Visual" type="Polygon2D" parent="Obstacles/Portal" unique_id=78953839]
 color = Color(0.85, 0.1, 0.75, 0.55)
@@ -145,15 +107,17 @@ offset_bottom = -90.0
 theme_override_font_sizes/font_size = 22
 text = "포탈(클리어)"
 horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="FireWall" parent="Obstacles" unique_id=1288450103 instance=ExtResource("10_fire")]
-position = Vector2(-320, 0)
+position = Vector2(-314, -428)
+scale = Vector2(2.8120668, 1.9543194)
 start_delay = 1.4
 track_start_x = 200.0
 goal_x = 6720.0
 
 [node name="Portal2(테스트용)" parent="Obstacles" unique_id=2028490783 instance=ExtResource("9_portal")]
-position = Vector2(27, 463)
+position = Vector2(-64, 551)
 next_stage_path = "res://scenes/world_1/stage_3/stage_3.tscn"
 
 [node name="Visual" type="Polygon2D" parent="Obstacles/Portal2(테스트용)" unique_id=132141585]
@@ -170,5 +134,86 @@ text = "포탈(테스트용)"
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
+[node name="경사로(검)1" parent="Obstacles" unique_id=561061527 instance=ExtResource("9_sthpy")]
+position = Vector2(-163, 432)
+
+[node name="경사로(검)2" parent="Obstacles" unique_id=197582643 instance=ExtResource("10_p704j")]
+position = Vector2(933, 170.00003)
+rotation = 0.769862
+
+[node name="공중발판(흰)1" parent="Obstacles" unique_id=1325427122 instance=ExtResource("11_gychd")]
+position = Vector2(2019, 614.9999)
+
+[node name="공중발판(흰)2" parent="Obstacles" unique_id=558729199 instance=ExtResource("12_kok06")]
+position = Vector2(2913, 430)
+
+[node name="공중발판(검)5" parent="Obstacles" unique_id=1842953658 instance=ExtResource("13_q8dq7")]
+position = Vector2(3381, 337)
+
+[node name="회색경사로(회)1" parent="Obstacles" unique_id=244733673 instance=ExtResource("14_gychd")]
+position = Vector2(7471, 353)
+
 [node name="Player" parent="." unique_id=1610849315 instance=ExtResource("3_player")]
-position = Vector2(200, 470)
+position = Vector2(186, 460)
+
+[node name="회색경사로(회)1" parent="." unique_id=360815235 instance=ExtResource("14_gychd")]
+position = Vector2(2522, 606)
+rotation = -1.0475591
+scale = Vector2(0.33236998, 0.544678)
+
+[node name="바닥(검)1" parent="." unique_id=1130590042 instance=ExtResource("16_770g7")]
+position = Vector2(5904, 327.00003)
+scale = Vector2(1.0081735, 0.7788171)
+
+[node name="단차(검)1" parent="." unique_id=709286474 instance=ExtResource("17_gpcq3")]
+position = Vector2(7055.9995, 354)
+
+[node name="공중발판(검)1" parent="." unique_id=1950715732 instance=ExtResource("18_q8dq7")]
+position = Vector2(1423, 798)
+scale = Vector2(0.40229213, 0.7025713)
+
+[node name="공중발판(흰)2" parent="." unique_id=1493682545 instance=ExtResource("12_kok06")]
+position = Vector2(1744, 681)
+scale = Vector2(0.40718585, 0.41656524)
+
+[node name="천장(흰)2" parent="." unique_id=1470083805 instance=ExtResource("20_k5hhe")]
+position = Vector2(6, -34)
+
+[node name="천장(흰)3" parent="." unique_id=1008996097 instance=ExtResource("21_w4uj4")]
+position = Vector2(1007, -27)
+scale = Vector2(1.2333797, 0.5678599)
+
+[node name="다리(흰)1" parent="." unique_id=1351869007 instance=ExtResource("22_ar3tb")]
+position = Vector2(4657.9995, 359.99997)
+rotation = -0.0042134873
+scale = Vector2(0.4208649, 0.32241625)
+
+[node name="단차(검)2" parent="." unique_id=1744566663 instance=ExtResource("17_gpcq3")]
+position = Vector2(4285, 453)
+scale = Vector2(1.0090306, 0.9140796)
+
+[node name="공중발판(흰)4" parent="." unique_id=1700973874 instance=ExtResource("23_0p1n2")]
+position = Vector2(4048, 404.99997)
+scale = Vector2(0.1823464, 0.2681001)
+
+[node name="계단(흰)1" parent="." unique_id=1177256253 instance=ExtResource("24_stnno")]
+position = Vector2(5064.0005, 283.99997)
+rotation = -0.034269996
+
+[node name="공중발판(검)4" parent="." unique_id=1937274675 instance=ExtResource("25_7oiul")]
+position = Vector2(3840, 715.00006)
+scale = Vector2(1.3674581, 0.29336965)
+
+[node name="선반(흰)3" parent="." unique_id=1803924104 instance=ExtResource("26_hgxcx")]
+position = Vector2(8289, 629)
+
+[node name="벽(검)2" parent="." unique_id=1930358000 instance=ExtResource("27_2m5kx")]
+position = Vector2(8675, 502)
+scale = Vector2(0.08593714, 0.13092273)
+
+[node name="벽(검)1" parent="." unique_id=1573948396 instance=ExtResource("27_2m5kx")]
+position = Vector2(8414, 512)
+scale = Vector2(0.095982455, 0.12342331)
+
+[node name="다리(검)1" parent="." unique_id=777191836 instance=ExtResource("28_76iex")]
+position = Vector2(9106, 439)
