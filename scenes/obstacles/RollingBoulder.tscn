@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3]
+
+; 굴러오는 바위. 텍스처 없이 Polygon2D 로 울퉁불퉁한 돌 모양을 그려서 바로 사용 가능
+; (나중에 실제 바위 그림으로 바꾸려면 BoulderVisual 을 Sprite2D 로 교체).
+
+[ext_resource type="Script" path="res://scripts/obstacles/rolling_boulder.gd" id="1_boulder"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 40.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kill"]
+radius = 46.0
+
+[node name="RollingBoulder" type="CharacterBody2D"]
+script = ExtResource("1_boulder")
+
+[node name="BoulderVisual" type="Polygon2D" parent="."]
+color = Color(0.32, 0.28, 0.26, 1)
+polygon = PackedVector2Array(0, -40, 28, -28, 40, 0, 28, 28, 0, 40, -28, 28, -40, 0, -28, -28)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="KillArea" type="Area2D" parent="."]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillArea"]
+shape = SubResource("CircleShape2D_kill")
