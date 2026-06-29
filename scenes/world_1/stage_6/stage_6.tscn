@@ -1,0 +1,230 @@
+[gd_scene format=3 uid="uid://68oodhumcid1"]
+
+[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="1_qfk0c"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="2_aok34"]
+[ext_resource type="PackedScene" path="res://scenes/effects/Atmosphere.tscn" id="3_uq3hd"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/경사로(검)3.tscn" id="4_1o3ug"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(흰)2.tscn" id="5_w6kof"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/다리(흰)1.tscn" id="6_3wwg4"]
+[ext_resource type="PackedScene" uid="uid://ca5iibwkhmmdg" path="res://scenes/지형파일셋/씬/단차(검)1.tscn" id="7_n0mow"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(흰)1.tscn" id="8_fb7tf"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/발판(검)1.tscn" id="9_4dj3j"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/기둥(검)2.tscn" id="10_kax6v"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="11_im4m1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/계단(흰)1.tscn" id="12_jadup"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)4.tscn" id="13_3b8bd"]
+[ext_resource type="PackedScene" uid="uid://d1werbcqh73xs" path="res://scenes/obstacles/BlockSpawner.tscn" id="14_88m4x"]
+[ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="15_fohik"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="16_sk0tx"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/천장(검)1.tscn" id="17_xoi6a"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i75pi"]
+size = Vector2(9481, 240)
+
+[node name="Stage6" type="Node2D" unique_id=453599493]
+
+[node name="Background" parent="." unique_id=452582276 instance=ExtResource("1_qfk0c")]
+
+[node name="Hud" parent="." unique_id=700869523 instance=ExtResource("2_aok34")]
+
+[node name="Atmosphere" parent="." unique_id=1411098896 instance=ExtResource("3_uq3hd")]
+
+[node name="MapPhysics" type="Area2D" parent="." unique_id=1920575681]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=1104059774]
+position = Vector2(-9, 123)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=634814769]
+position = Vector2(4689, 1317)
+shape = SubResource("RectangleShape2D_i75pi")
+
+[node name="경사로(검)3" parent="MapPhysics" unique_id=1731756218 instance=ExtResource("4_1o3ug")]
+position = Vector2(96, 864)
+
+[node name="이동하는 발판" type="Label" parent="MapPhysics" unique_id=1065161223]
+offset_left = 952.0
+offset_top = 1072.0
+offset_right = 1084.0
+offset_bottom = 1108.0
+theme_override_font_sizes/font_size = 29
+text = "이동하는 발판  
+"
+
+[node name="이동하는 발판2" type="Label" parent="MapPhysics" unique_id=662386232]
+offset_left = 1352.0
+offset_top = 1072.0
+offset_right = 1550.0
+offset_bottom = 1156.0
+theme_override_font_sizes/font_size = 29
+text = "이동하는 발판  
+"
+
+[node name="공중발판(흰)2" parent="MapPhysics" unique_id=558729199 instance=ExtResource("5_w6kof")]
+position = Vector2(1672, 1064.0001)
+scale = Vector2(0.6037955, 0.5659001)
+
+[node name="이동하는 발판3" type="Label" parent="MapPhysics" unique_id=1935894345]
+offset_left = 2064.0
+offset_top = 1056.0
+offset_right = 2404.0
+offset_bottom = 1140.0
+theme_override_font_sizes/font_size = 29
+text = "이동하는 발판  (수직 이동)
+  "
+
+[node name="다리(흰)1" parent="MapPhysics" unique_id=1351869007 instance=ExtResource("6_3wwg4")]
+position = Vector2(2456.0002, 712.00006)
+rotation = -0.20153359
+scale = Vector2(0.7803511, 0.8151595)
+
+[node name="단차(검)1" parent="MapPhysics" unique_id=709286474 instance=ExtResource("7_n0mow")]
+position = Vector2(2408, 1176)
+scale = Vector2(0.82661545, 0.7726519)
+
+[node name="바닥(흰)1" parent="MapPhysics" unique_id=2076133545 instance=ExtResource("8_fb7tf")]
+position = Vector2(2872, 1263.9999)
+rotation = -0.32685688
+scale = Vector2(0.2755174, 0.3396738)
+
+[node name="발판(검)1" parent="MapPhysics" unique_id=364006765 instance=ExtResource("9_4dj3j")]
+position = Vector2(3200.0002, 1144.0001)
+rotation = -0.20958452
+scale = Vector2(0.7975557, 0.55958134)
+
+[node name="이동하는 발판4" type="Label" parent="MapPhysics" unique_id=1588195751]
+offset_left = 3616.0
+offset_top = 1008.0
+offset_right = 3956.0
+offset_bottom = 1092.0
+theme_override_font_sizes/font_size = 29
+text = "이동하는 발판 (가로 이동) 
+"
+
+[node name="기둥(검)2" parent="MapPhysics" unique_id=875875638 instance=ExtResource("10_kax6v")]
+position = Vector2(4096, 1024)
+scale = Vector2(0.45262104, 1.0337331)
+
+[node name="바닥(검)1" parent="MapPhysics" unique_id=1130590042 instance=ExtResource("11_im4m1")]
+position = Vector2(4448, 1232)
+scale = Vector2(2.1732404, 1.4784697)
+
+[node name="이동하는 발판5" type="Label" parent="MapPhysics" unique_id=862954517]
+offset_left = 7640.0
+offset_top = 744.0
+offset_right = 7980.0
+offset_bottom = 828.0
+theme_override_font_sizes/font_size = 29
+text = "이동하는 발판 (수직이동)  
+"
+
+[node name="단차(검)2" parent="MapPhysics" unique_id=1737048247 instance=ExtResource("7_n0mow")]
+position = Vector2(8136, 1264)
+scale = Vector2(0.49625, 1.1871655)
+
+[node name="계단(흰)1" parent="MapPhysics" unique_id=1177256253 instance=ExtResource("12_jadup")]
+position = Vector2(6720, 824)
+
+[node name="바닥(검)4" parent="MapPhysics" unique_id=1799958832 instance=ExtResource("13_3b8bd")]
+position = Vector2(6311.9204, 836.5664)
+scale = Vector2(0.18479425, 0.32598385)
+
+[node name="바닥(검)5" parent="MapPhysics" unique_id=1148917002 instance=ExtResource("13_3b8bd")]
+position = Vector2(5808, 855.99994)
+scale = Vector2(0.2173277, 0.30339167)
+
+[node name="바닥(검)6" parent="MapPhysics" unique_id=1189739690 instance=ExtResource("13_3b8bd")]
+position = Vector2(5272, 863.99994)
+scale = Vector2(0.24643111, 0.40258318)
+
+[node name="바닥(검)7" parent="MapPhysics" unique_id=349073236 instance=ExtResource("13_3b8bd")]
+position = Vector2(4720, 887.99994)
+scale = Vector2(0.28981587, 0.3746823)
+
+[node name="Obstacle" type="Node2D" parent="." unique_id=587874630]
+
+[node name="BlockSpawner" parent="Obstacle" unique_id=132949653 instance=ExtResource("14_88m4x")]
+position = Vector2(2424, 384)
+
+[node name="BlockSpawner2" parent="Obstacle" unique_id=1698590483 instance=ExtResource("14_88m4x")]
+position = Vector2(3576, 400)
+
+[node name="BlockSpawner3" parent="Obstacle" unique_id=2130244108 instance=ExtResource("14_88m4x")]
+position = Vector2(4616, 744)
+
+[node name="BlockSpawner4" parent="Obstacle" unique_id=970205870 instance=ExtResource("14_88m4x")]
+position = Vector2(5000, 680)
+
+[node name="BlockSpawner5" parent="Obstacle" unique_id=1807457446 instance=ExtResource("14_88m4x")]
+position = Vector2(5392, 656)
+
+[node name="BlockSpawner6" parent="Obstacle" unique_id=578915278 instance=ExtResource("14_88m4x")]
+position = Vector2(6056, 632)
+
+[node name="BlockSpawner7" parent="Obstacle" unique_id=555713103 instance=ExtResource("14_88m4x")]
+position = Vector2(6528, 584)
+
+[node name="BlockSpawner8" parent="Obstacle" unique_id=1542872530 instance=ExtResource("14_88m4x")]
+position = Vector2(5696, 608)
+
+[node name="BlockSpawner9" parent="Obstacle" unique_id=2074709746 instance=ExtResource("14_88m4x")]
+position = Vector2(5144, 608)
+
+[node name="BlockSpawner10" parent="Obstacle" unique_id=1477667063 instance=ExtResource("14_88m4x")]
+position = Vector2(6232, 488)
+rotation = 3.1415927
+scale = Vector2(22.204737, -36.585445)
+
+[node name="BlockSpawner11" parent="Obstacle" unique_id=1117316683 instance=ExtResource("14_88m4x")]
+position = Vector2(4768, 560)
+
+[node name="Portal" parent="." unique_id=1982963341 instance=ExtResource("15_fohik")]
+position = Vector2(8240, 1184)
+next_stage_path = "res://scenes/world_1/stage_2/stage_2.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Portal" unique_id=121391238]
+position = Vector2(172, 24)
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(90, 0, 87, 23, 78, 45, 64, 64, 45, 78, 23, 87, 0, 90, -23, 87, -45, 78, -64, 64, -78, 45, -87, 23, -90, 0, -87, -23, -78, -45, -64, -64, -45, -78, -23, -87, 0, -90, 23, -87, 45, -78, 64, -64, 78, -45, 87, -23)
+
+[node name="Label" type="Label" parent="Portal" unique_id=497273195]
+offset_left = -50.0
+offset_top = -130.0
+offset_right = 50.0
+offset_bottom = -90.0
+theme_override_font_sizes/font_size = 22
+text = "포탈"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Portal(임시 테스트용)" parent="Portal" unique_id=1267196579 instance=ExtResource("15_fohik")]
+position = Vector2(-8040, -416)
+next_stage_path = "res://scenes/world_1/stage_2/stage_2.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Portal/Portal(임시 테스트용)" unique_id=1300105230]
+position = Vector2(-1, 1)
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(90, 0, 87, 23, 78, 45, 64, 64, 45, 78, 23, 87, 0, 90, -23, 87, -45, 78, -64, 64, -78, 45, -87, 23, -90, 0, -87, -23, -78, -45, -64, -64, -45, -78, -23, -87, 0, -90, 23, -87, 45, -78, 64, -64, 78, -45, 87, -23)
+
+[node name="Label" type="Label" parent="Portal/Portal(임시 테스트용)" unique_id=1665988277]
+offset_left = -50.0
+offset_top = -130.0
+offset_right = 50.0
+offset_bottom = -90.0
+theme_override_font_sizes/font_size = 22
+text = "포탈(테스트용)"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Player" parent="." unique_id=591392999 instance=ExtResource("16_sk0tx")]
+position = Vector2(344, 864)
+
+[node name="기둥(검)2" parent="." unique_id=1851136978 instance=ExtResource("10_kax6v")]
+position = Vector2(-296, 88)
+scale = Vector2(0.9182759, 1.8191458)
+
+[node name="천장(검)1" parent="." unique_id=398323215 instance=ExtResource("17_xoi6a")]
+position = Vector2(-184, -56)
+scale = Vector2(11.261978, 1.2489471)
+
+[node name="BlockSpawner" parent="." unique_id=1833922357 instance=ExtResource("14_88m4x")]
+position = Vector2(5864, 592)
