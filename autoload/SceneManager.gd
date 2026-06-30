@@ -13,6 +13,20 @@ const STAGES: Dictionary = {
 	2:  "res://scenes/world_1/stage_2/stage_2.tscn",
 	3:  "res://scenes/world_1/stage_3/stage_3.tscn",
 	4:  "res://scenes/world_1/stage_4/stage_4.tscn",   # ▼ 2026-06-28 신규
+	# ▼ 2026-06-30 stage 5~15 등록(Claude). 미등록이라 스테이지선택에 1~4만 떴고,
+	#   포탈로 5+ 진입 시 _stage_num_from_path 가 0 을 반환해 current_stage(=STAGE n 표시)가 갱신 안 됐다.
+	#   ※ stage_6 은 다른 작업자 맵, 그 외(5·7~15)는 Claude 가 제작. 경로만 등록하면 인식/선택/기록 모두 정상화.
+	5:  "res://scenes/world_1/stage_5/stage_5.tscn",
+	6:  "res://scenes/world_1/stage_6/stage_6.tscn",
+	7:  "res://scenes/world_1/stage_7/stage_7.tscn",
+	8:  "res://scenes/world_1/stage_8/stage_8.tscn",
+	9:  "res://scenes/world_1/stage_9/stage_9.tscn",
+	10: "res://scenes/world_1/stage_10/stage_10.tscn",
+	11: "res://scenes/world_1/stage_11/stage_11.tscn",
+	12: "res://scenes/world_1/stage_12/stage_12.tscn",
+	13: "res://scenes/world_1/stage_13/stage_13.tscn",
+	14: "res://scenes/world_1/stage_14/stage_14.tscn",
+	15: "res://scenes/world_1/stage_15/stage_15.tscn",
 }
 const MAIN_MENU := "res://scenes/ui/MainMenu.tscn"
 const STAGE_SELECT := "res://scenes/ui/StageSelect.tscn"

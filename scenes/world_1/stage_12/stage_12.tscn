@@ -1,0 +1,203 @@
+[gd_scene format=3 uid="uid://b1y343tyssqd4"]
+
+; ▼ 2026-06-30 stage_12 "★무너지는 길"(Claude). 난이도 6 · 횡스크롤(역주행 불가, 특별).
+;   차별점: 지나온 길이 뒤에서 무너져 돌아갈 수 없음(인디아나존스/언차티드).
+;   구현 방식: '붕괴선' = FireWall(H5, 구현됨)을 왼쪽에서 전진시켜 강제 전진 + T4 무너지는발판(미구현→Placeholder).
+;     붕괴선에 닿으면 사망 → 멈추거나 뒤로 가면 잡힘. 검정 스파인은 전방 통과 가능(reach_sim 검증).
+;   실제 구현: H5 불벽(붕괴선) · H3 낙하블럭(천장 붕괴) · H2 톱니 · H1 가시. 미구현: T4 → Placeholder.
+;   윗면 y=400, 가로 간격 ≤190, 낙사 y=820.
+[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
+[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="2_bg"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="10_g1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)2.tscn" id="11_g2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/발판(검)2.tscn" id="12_p2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)1.tscn" id="13_air1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/가시/가시1.tscn" id="15_thorn"]
+[ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="20_gear"]
+[ext_resource type="PackedScene" uid="uid://dnpu8j7j150to" path="res://scenes/obstacles/FireWall.tscn" id="23_fire"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/BlockSpawner.tscn" id="21_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/obstacles/FallingBlock.tscn" id="22_fall"]
+[ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="16_portal"]
+[ext_resource type="PackedScene" uid="uid://dkoh57nmxstto" path="res://scenes/obstacles/Checkpoint.tscn" id="17_cp"]
+[ext_resource type="PackedScene" uid="uid://bph0ldr4plc01" path="res://scenes/obstacles/Placeholder.tscn" id="18_ph"]
+
+[sub_resource type="RectangleShape2D" id="kz"]
+size = Vector2(16000, 300)
+
+[node name="stage_12" type="Node2D"]
+script = ExtResource("1_stage")
+camera_limit_left = -300
+camera_limit_top = -220
+camera_limit_right = 7900
+camera_limit_bottom = 880
+camera_zoom = 1.5
+
+[node name="Background" parent="." instance=ExtResource("2_bg")]
+
+[node name="Hud" parent="." instance=ExtResource("4_hud")]
+
+[node name="MapPhysics" type="Node2D" parent="."]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
+position = Vector2(3700, 820)
+shape = SubResource("kz")
+
+[node name="B1바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(-100, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B2발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(880, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B3바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(1430, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B4발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(2170, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B5바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(2720, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B6공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(3700, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B7바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(4120, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B8발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(4855, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B9바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(5400, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B10공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(6382, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B11바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(6820, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="가시1" parent="Obstacles" instance=ExtResource("15_thorn")]
+position = Vector2(1620, 348)
+scale = Vector2(0.25, 0.25)
+
+[node name="톱니H" parent="Obstacles" instance=ExtResource("20_gear")]
+position = Vector2(5150, 250)
+rotate_speed = 230.0
+move_distance = 170.0
+move_speed = 125.0
+
+[node name="천장붕괴_낙하블럭" parent="Obstacles" instance=ExtResource("21_spawn")]
+position = Vector2(4500, 90)
+block_scene = ExtResource("22_fall")
+spawn_interval = 1.4
+
+; 붕괴선 = 불벽을 왼쪽에서 전진(역주행 불가, 강제 전진)
+[node name="붕괴선_FireWall" parent="Obstacles" instance=ExtResource("23_fire")]
+position = Vector2(-360, -520)
+scale = Vector2(2.4, 1.9)
+start_delay = 1.4
+track_start_x = 150.0
+goal_x = 7100.0
+
+[node name="Checkpoint1" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(2720, 330)
+
+[node name="Checkpoint2" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(5400, 330)
+
+[node name="Portal" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(7150, 330)
+next_stage_path = "res://scenes/world_1/stage_13/stage_13.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal"]
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(60, 0, 58, 16, 52, 30, 42, 42, 30, 52, 16, 58, 0, 60, -16, 58, -30, 52, -42, 42, -52, 30, -58, 16, -60, 0, -58, -16, -52, -30, -42, -42, -30, -52, -16, -58, 0, -60, 16, -58, 30, -52, 42, -42, 52, -30, 58, -16)
+
+[node name="Label" type="Label" parent="Obstacles/Portal"]
+offset_left = -60.0
+offset_top = -96.0
+offset_right = 60.0
+offset_bottom = -66.0
+theme_override_font_sizes/font_size = 18
+text = "탈출 포탈"
+horizontal_alignment = 1
+
+; ══ T4 무너지는발판(연쇄) 자리표시 — 지나가면 사라지는 다리 ══
+[node name="PH_붕괴다리A" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(1060, 360)
+code = "T4"
+obstacle_name = "무너지는발판(다리)"
+note = "밟고 지나가면 곧 무너져 사라짐 → 역주행 불가. 멈추지 말 것."
+box_size = Vector2(330, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴다리B" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(2350, 360)
+code = "T4"
+obstacle_name = "무너지는발판(낙하 콤보)"
+note = "위 낙하블럭 피하며 무너지는 발판 질주."
+box_size = Vector2(330, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴큰갭" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(3815, 320)
+code = "T4"
+obstacle_name = "무너지는발판(큰 갭)"
+note = "무너지기 전에 점프로 건너기."
+box_size = Vector2(250, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴질주" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(5035, 360)
+code = "T4"
+obstacle_name = "무너지는발판(최후 질주)"
+note = "톱니 피하며 끝까지 멈춤 없이."
+box_size = Vector2(330, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴선설명" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(150, 150)
+code = "특별-COLLAPSE"
+obstacle_name = "붕괴선(역주행 불가)"
+note = "현재는 FireWall 로 강제 전진을 표현.
+원하면 '지나온 발판을 실제로 제거'하는 붕괴선 스크립트로 교체 가능."
+box_size = Vector2(180, 120)
+box_color = Color(1, 0.4, 0.1, 1)
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(60, 330)
+
+; ▼ 2026-06-30 임시 테스트 포탈(Claude) — 플레이어 옆(왼쪽 ~150px, 스폰 자동발동 방지). 초록색=테스트용.
+;   왼쪽으로 걸어 들어가면 클리어 팝업→다음 스테이지로 점프(시퀀스 빠른 테스트용). 출시 전 삭제.
+[node name="테스트포탈" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(-90, 330)
+next_stage_path = "res://scenes/world_1/stage_13/stage_13.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/테스트포탈"]
+color = Color(0.2, 0.9, 0.4, 0.6)
+polygon = PackedVector2Array(45, 0, 32, 32, 0, 45, -32, 32, -45, 0, -32, -32, 0, -45, 32, -32)
+
+[node name="Label" type="Label" parent="Obstacles/테스트포탈"]
+offset_left = -95.0
+offset_top = -80.0
+offset_right = 95.0
+offset_bottom = -56.0
+theme_override_font_sizes/font_size = 16
+text = "테스트→다음"
+horizontal_alignment = 1

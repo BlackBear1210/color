@@ -1,0 +1,183 @@
+[gd_scene format=3 uid="uid://bsbbfryr85f4e"]
+
+[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
+[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="2_bg"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="10_g1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)2.tscn" id="11_g2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/발판(검)2.tscn" id="12_p2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)1.tscn" id="13_air1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/가시/가시1.tscn" id="15_thorn"]
+[ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="16_portal"]
+[ext_resource type="PackedScene" uid="uid://dkoh57nmxstto" path="res://scenes/obstacles/Checkpoint.tscn" id="17_cp"]
+[ext_resource type="PackedScene" uid="uid://bph0ldr4plc01" path="res://scenes/obstacles/Placeholder.tscn" id="18_ph"]
+[ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="20_gear"]
+
+[sub_resource type="RectangleShape2D" id="kz"]
+size = Vector2(16000, 300)
+
+[node name="stage_7" type="Node2D" unique_id=463578897]
+script = ExtResource("1_stage")
+camera_limit_left = -300
+camera_limit_top = -220
+camera_limit_right = 7900
+camera_limit_bottom = 880
+camera_zoom = 1.5
+
+[node name="Background" parent="." unique_id=213880664 instance=ExtResource("2_bg")]
+
+[node name="Hud" parent="." unique_id=1019652719 instance=ExtResource("4_hud")]
+
+[node name="MapPhysics" type="Node2D" parent="." unique_id=269815546]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=769635166]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=597068600]
+position = Vector2(3700, 820)
+shape = SubResource("kz")
+
+[node name="B1바닥" parent="MapPhysics" unique_id=763199593 instance=ExtResource("11_g2")]
+position = Vector2(-100, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B2발판" parent="MapPhysics" unique_id=467600181 instance=ExtResource("12_p2")]
+position = Vector2(880, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B3바닥" parent="MapPhysics" unique_id=367168091 instance=ExtResource("10_g1")]
+position = Vector2(1430, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B4발판" parent="MapPhysics" unique_id=390130862 instance=ExtResource("12_p2")]
+position = Vector2(2170, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B5바닥" parent="MapPhysics" unique_id=685529243 instance=ExtResource("11_g2")]
+position = Vector2(2720, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B6공중발판" parent="MapPhysics" unique_id=571623783 instance=ExtResource("13_air1")]
+position = Vector2(3700, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B7바닥" parent="MapPhysics" unique_id=1843523350 instance=ExtResource("10_g1")]
+position = Vector2(4120, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B8발판" parent="MapPhysics" unique_id=857410774 instance=ExtResource("12_p2")]
+position = Vector2(4855, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B9바닥" parent="MapPhysics" unique_id=1876042002 instance=ExtResource("11_g2")]
+position = Vector2(5400, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B10공중발판" parent="MapPhysics" unique_id=1428564207 instance=ExtResource("13_air1")]
+position = Vector2(6382, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B11바닥" parent="MapPhysics" unique_id=2035842540 instance=ExtResource("10_g1")]
+position = Vector2(6820, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="Obstacles" type="Node2D" parent="." unique_id=1302476440]
+
+[node name="가시1" parent="Obstacles" unique_id=1217710445 instance=ExtResource("15_thorn")]
+position = Vector2(1620, 348)
+scale = Vector2(0.25, 0.25)
+
+[node name="가시2" parent="Obstacles" unique_id=1875759831 instance=ExtResource("15_thorn")]
+position = Vector2(5600, 348)
+scale = Vector2(0.25, 0.25)
+
+[node name="톱니H" parent="Obstacles" unique_id=21469741 instance=ExtResource("20_gear")]
+position = Vector2(3293, 200)
+rotate_speed = 200.0
+move_distance = 160.0
+move_speed = 110.0
+
+[node name="Checkpoint1" parent="Obstacles" unique_id=276315848 instance=ExtResource("17_cp")]
+position = Vector2(2863, 391)
+
+[node name="Checkpoint2" parent="Obstacles" unique_id=522815788 instance=ExtResource("17_cp")]
+position = Vector2(5515, 379)
+
+[node name="Portal" parent="Obstacles" unique_id=1846399190 instance=ExtResource("16_portal")]
+position = Vector2(7150, 330)
+next_stage_path = "res://scenes/world_1/stage_8/stage_8.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal" unique_id=1584342627]
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(60, 0, 58, 16, 52, 30, 42, 42, 30, 52, 16, 58, 0, 60, -16, 58, -30, 52, -42, 42, -52, 30, -58, 16, -60, 0, -58, -16, -52, -30, -42, -42, -30, -52, -16, -58, 0, -60, 16, -58, 30, -52, 42, -42, 52, -30, 58, -16)
+
+[node name="Label" type="Label" parent="Obstacles/Portal" unique_id=435365592]
+offset_left = -60.0
+offset_top = -96.0
+offset_right = 60.0
+offset_bottom = -66.0
+theme_override_font_sizes/font_size = 18
+text = "포탈"
+horizontal_alignment = 1
+
+[node name="PH_붕괴_B2" parent="Obstacles" unique_id=431136747 instance=ExtResource("18_ph")]
+position = Vector2(1060, 360)
+code = "T4"
+obstacle_name = "무너지는발판"
+note = "밟으면 0.4초 후 붕괴 → 2초 뒤 복구. 멈추면 추락."
+box_size = Vector2(330, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴_B4" parent="Obstacles" unique_id=2087016410 instance=ExtResource("18_ph")]
+position = Vector2(2350, 360)
+code = "T4"
+obstacle_name = "무너지는발판(연속)"
+note = "연속 붕괴 구간 — 멈추지 말고 건너기."
+box_size = Vector2(330, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴_B6" parent="Obstacles" unique_id=170705758 instance=ExtResource("18_ph")]
+position = Vector2(3815, 320)
+code = "T4"
+obstacle_name = "무너지는발판(리듬)"
+note = "간격 넓음 — 일정 리듬으로 점프하며 건너기."
+box_size = Vector2(250, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴_B8" parent="Obstacles" unique_id=501390748 instance=ExtResource("18_ph")]
+position = Vector2(5035, 360)
+code = "T4"
+obstacle_name = "무너지는발판(질주)"
+note = "톱니 직후 — 무너지기 전에 통과."
+box_size = Vector2(330, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="PH_붕괴_B10" parent="Obstacles" unique_id=1976365460 instance=ExtResource("18_ph")]
+position = Vector2(6497, 320)
+code = "T4"
+obstacle_name = "무너지는발판(마지막)"
+note = "마지막 붕괴 — 멈춤 없이 끝까지."
+box_size = Vector2(250, 40)
+box_color = Color(0.3, 0.6, 1, 1)
+
+[node name="Player" parent="." unique_id=490220854 instance=ExtResource("3_player")]
+position = Vector2(60, 330)
+
+; ▼ 2026-06-30 임시 테스트 포탈(Claude) — 플레이어 옆(왼쪽 ~150px, 스폰 자동발동 방지). 초록색=테스트용.
+;   왼쪽으로 걸어 들어가면 클리어 팝업→다음 스테이지로 점프(시퀀스 빠른 테스트용). 출시 전 삭제.
+[node name="테스트포탈" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(-90, 330)
+next_stage_path = "res://scenes/world_1/stage_8/stage_8.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/테스트포탈"]
+color = Color(0.2, 0.9, 0.4, 0.6)
+polygon = PackedVector2Array(45, 0, 32, 32, 0, 45, -32, 32, -45, 0, -32, -32, 0, -45, 32, -32)
+
+[node name="Label" type="Label" parent="Obstacles/테스트포탈"]
+offset_left = -95.0
+offset_top = -80.0
+offset_right = 95.0
+offset_bottom = -56.0
+theme_override_font_sizes/font_size = 16
+text = "테스트→다음"
+horizontal_alignment = 1

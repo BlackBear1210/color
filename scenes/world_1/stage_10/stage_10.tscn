@@ -1,0 +1,186 @@
+[gd_scene format=3 uid="uid://cstage10color10"]
+
+; ▼ 2026-06-30 stage_10 "빛의 복도"(Claude). 난이도 6 · 횡스크롤(어둠).
+;   학습목표: 빛의 색 패턴을 읽고 통과(H6 서치라이트). + H2 톱니 / H1 가시.
+;   ※ H6 서치라이트 = 미구현(씬 없음) → Placeholder. 화면 암전 연출도 필요(player.gd 발광 어둠 셰이더 재활용 권장).
+;     빛 안에서 '틀린 색'이면 사망 / 빛 밖은 안전. 검정 스파인은 통과 가능(reach_sim 검증).
+;   윗면 y=400, 가로 간격 ≤190, 낙사 y=820. 테마: 어두운 복도(느린 관찰).
+[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
+[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="2_bg"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="10_g1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)2.tscn" id="11_g2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/발판(검)2.tscn" id="12_p2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)1.tscn" id="13_air1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/가시/가시1.tscn" id="15_thorn"]
+[ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="20_gear"]
+[ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="16_portal"]
+[ext_resource type="PackedScene" uid="uid://dkoh57nmxstto" path="res://scenes/obstacles/Checkpoint.tscn" id="17_cp"]
+[ext_resource type="PackedScene" uid="uid://bph0ldr4plc01" path="res://scenes/obstacles/Placeholder.tscn" id="18_ph"]
+
+[sub_resource type="RectangleShape2D" id="kz"]
+size = Vector2(16000, 300)
+
+[node name="stage_10" type="Node2D"]
+script = ExtResource("1_stage")
+camera_limit_left = -300
+camera_limit_top = -220
+camera_limit_right = 7900
+camera_limit_bottom = 880
+camera_zoom = 1.5
+
+[node name="Background" parent="." instance=ExtResource("2_bg")]
+
+[node name="Hud" parent="." instance=ExtResource("4_hud")]
+
+[node name="MapPhysics" type="Node2D" parent="."]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
+position = Vector2(3700, 820)
+shape = SubResource("kz")
+
+[node name="B1바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(-100, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B2발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(880, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B3바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(1430, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B4발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(2170, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B5바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(2720, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B6공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(3700, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B7바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(4120, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B8발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(4855, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B9바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(5400, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B10공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(6382, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B11바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(6820, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="가시1" parent="Obstacles" instance=ExtResource("15_thorn")]
+position = Vector2(2350, 348)
+scale = Vector2(0.25, 0.25)
+
+[node name="톱니H" parent="Obstacles" instance=ExtResource("20_gear")]
+position = Vector2(4300, 250)
+rotate_speed = 200.0
+move_distance = 170.0
+move_speed = 115.0
+
+[node name="Checkpoint1" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(2720, 330)
+
+[node name="Checkpoint2" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(5400, 330)
+
+[node name="Portal" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(7150, 330)
+next_stage_path = "res://scenes/world_1/stage_11/stage_11.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal"]
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(60, 0, 58, 16, 52, 30, 42, 42, 30, 52, 16, 58, 0, 60, -16, 58, -30, 52, -42, 42, -52, 30, -58, 16, -60, 0, -58, -16, -52, -30, -42, -42, -30, -52, -16, -58, 0, -60, 16, -58, 30, -52, 42, -42, 52, -30, 58, -16)
+
+[node name="Label" type="Label" parent="Obstacles/Portal"]
+offset_left = -60.0
+offset_top = -96.0
+offset_right = 60.0
+offset_bottom = -66.0
+theme_override_font_sizes/font_size = 18
+text = "포탈"
+horizontal_alignment = 1
+
+; ══ H6 서치라이트 자리표시(부채꼴 빛, 색 주기 전환) ══
+[node name="PH_라이트1" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(900, 180)
+code = "H6"
+obstacle_name = "서치라이트(소개)"
+note = "위에서 비추는 부채꼴 빛. 빛 안에서 빛과 다른 색이면 사망.
+색 주기 전환 — 맞는 색일 때 통과. 화면 암전 연출 필요."
+box_size = Vector2(180, 300)
+box_color = Color(1, 0.9, 0.3, 1)
+
+[node name="PH_라이트2" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(3000, 180)
+code = "H6"
+obstacle_name = "서치라이트(교차)"
+note = "2개가 반대 타이밍 — 사이 타이밍에 통과."
+box_size = Vector2(180, 300)
+box_color = Color(1, 0.9, 0.3, 1)
+
+[node name="PH_라이트3" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(3450, 180)
+code = "H6"
+obstacle_name = "서치라이트(교차)"
+note = "교차 2번째."
+box_size = Vector2(180, 300)
+box_color = Color(1, 0.9, 0.3, 1)
+
+[node name="PH_라이트회전" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(5600, 180)
+code = "H6"
+obstacle_name = "서치라이트(회전)"
+note = "쓸고 지나는 회전 빛 — 피해서 이동."
+box_size = Vector2(200, 320)
+box_color = Color(1, 0.9, 0.3, 1)
+
+[node name="PH_암전" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(60, 120)
+code = "연출"
+obstacle_name = "화면 암전"
+note = "맵 전체 어둡게. player.gd 의 energy_darkness 셰이더(풀스크린 어둠) 재활용 가능."
+box_size = Vector2(160, 80)
+box_color = Color(0.5, 0.5, 0.9, 1)
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(60, 330)
+
+; ▼ 2026-06-30 임시 테스트 포탈(Claude) — 플레이어 옆(왼쪽 ~150px, 스폰 자동발동 방지). 초록색=테스트용.
+;   왼쪽으로 걸어 들어가면 클리어 팝업→다음 스테이지로 점프(시퀀스 빠른 테스트용). 출시 전 삭제.
+[node name="테스트포탈" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(-90, 330)
+next_stage_path = "res://scenes/world_1/stage_11/stage_11.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/테스트포탈"]
+color = Color(0.2, 0.9, 0.4, 0.6)
+polygon = PackedVector2Array(45, 0, 32, 32, 0, 45, -32, 32, -45, 0, -32, -32, 0, -45, 32, -32)
+
+[node name="Label" type="Label" parent="Obstacles/테스트포탈"]
+offset_left = -95.0
+offset_top = -80.0
+offset_right = 95.0
+offset_bottom = -56.0
+theme_override_font_sizes/font_size = 16
+text = "테스트→다음"
+horizontal_alignment = 1

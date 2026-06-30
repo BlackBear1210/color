@@ -1,0 +1,194 @@
+[gd_scene format=3 uid="uid://cstage15color15"]
+
+; ▼ 2026-06-30 stage_15 "반사의 방"(Claude). 난이도 7 · 횡스크롤(사고형 퍼즐).
+;   학습목표: 총알을 반사해 못 닿는 곳을 작동(P7 반사경 / P3 색버튼&문 / P1 박스).
+;   ※ P7·P3·P1 모두 미구현 → Placeholder. 실제 구현: H1 가시. 검정 스파인은 통과 가능(reach_sim 검증).
+;     월드2에서 퍼즐 비중이 가장 높음. 조준 각도 계산이 핵심.
+;   윗면 y=400, 가로 간격 ≤190, 낙사 y=820.
+;   포탈 next_stage_path 미설정 = 현재 빌드(1~15)의 마지막 → ALL CLEAR. (16 제작 시 경로 연결)
+[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
+[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="2_bg"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="10_g1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)2.tscn" id="11_g2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/발판(검)2.tscn" id="12_p2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)1.tscn" id="13_air1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/가시/가시1.tscn" id="15_thorn"]
+[ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="16_portal"]
+[ext_resource type="PackedScene" uid="uid://dkoh57nmxstto" path="res://scenes/obstacles/Checkpoint.tscn" id="17_cp"]
+[ext_resource type="PackedScene" uid="uid://bph0ldr4plc01" path="res://scenes/obstacles/Placeholder.tscn" id="18_ph"]
+
+[sub_resource type="RectangleShape2D" id="kz"]
+size = Vector2(16000, 300)
+
+[node name="stage_15" type="Node2D"]
+script = ExtResource("1_stage")
+camera_limit_left = -300
+camera_limit_top = -220
+camera_limit_right = 7900
+camera_limit_bottom = 880
+camera_zoom = 1.5
+
+[node name="Background" parent="." instance=ExtResource("2_bg")]
+
+[node name="Hud" parent="." instance=ExtResource("4_hud")]
+
+[node name="MapPhysics" type="Node2D" parent="."]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
+position = Vector2(3700, 820)
+shape = SubResource("kz")
+
+[node name="B1바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(-100, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B2발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(880, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B3바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(1430, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B4발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(2170, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B5바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(2720, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B6공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(3700, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B7바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(4120, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B8발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(4855, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B9바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(5400, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B10공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(6382, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B11바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(6820, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="가시1" parent="Obstacles" instance=ExtResource("15_thorn")]
+position = Vector2(5600, 348)
+scale = Vector2(0.25, 0.25)
+
+[node name="Checkpoint1" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(2720, 330)
+
+[node name="Checkpoint2" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(5400, 330)
+
+[node name="Portal" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(7150, 330)
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal"]
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(60, 0, 58, 16, 52, 30, 42, 42, 30, 52, 16, 58, 0, 60, -16, 58, -30, 52, -42, 42, -52, 30, -58, 16, -60, 0, -58, -16, -52, -30, -42, -42, -30, -52, -16, -58, 0, -60, 16, -58, 30, -52, 42, -42, 52, -30, 58, -16)
+
+[node name="Label" type="Label" parent="Obstacles/Portal"]
+offset_left = -60.0
+offset_top = -96.0
+offset_right = 60.0
+offset_bottom = -66.0
+theme_override_font_sizes/font_size = 18
+text = "포탈(ALL CLEAR)"
+horizontal_alignment = 1
+
+; ══ P7 반사경 · P3 색버튼&문 · P1 박스 자리표시 ══
+[node name="PH_반사경1" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(900, 250)
+code = "P7"
+obstacle_name = "페인트 반사경"
+note = "총알을 90° 꺾음. 직접 못 쏘는 구석의 타겟을 반사로 맞히기."
+box_size = Vector2(70, 70)
+box_color = Color(0.3, 0.9, 1, 1)
+
+[node name="PH_타겟1" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(1200, 150)
+code = "P3"
+obstacle_name = "타겟(벽 뒤)"
+note = "반사로 맞히면 근처 문이 열림."
+box_size = Vector2(60, 60)
+box_color = Color(1, 0.6, 0.2, 1)
+
+[node name="PH_색버튼" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(2400, 350)
+code = "P3"
+obstacle_name = "색 버튼 & 문"
+note = "같은 색 무게(박스/플레이어)로 눌러 멀리 있는 문 열기."
+box_size = Vector2(90, 40)
+box_color = Color(1, 0.6, 0.2, 1)
+
+[node name="PH_색박스" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(2900, 340)
+code = "P1"
+obstacle_name = "색 박스"
+note = "버튼 위에 올려 문을 계속 열어 두기."
+box_size = Vector2(70, 70)
+box_color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="PH_반사경2A" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(4300, 250)
+code = "P7"
+obstacle_name = "반사경(다중)"
+note = "거울 2개로 두 번 꺾어 타겟 맞히기(1)."
+box_size = Vector2(70, 70)
+box_color = Color(0.3, 0.9, 1, 1)
+
+[node name="PH_반사경2B" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(4700, 150)
+code = "P7"
+obstacle_name = "반사경(다중)"
+note = "다중 반사(2)."
+box_size = Vector2(70, 70)
+box_color = Color(0.3, 0.9, 1, 1)
+
+[node name="PH_종합문" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(6500, 300)
+code = "P3"
+obstacle_name = "출구 문(종합)"
+note = "가시 피하며 반사 퍼즐 풀어 출구 개방."
+box_size = Vector2(80, 200)
+box_color = Color(1, 0.6, 0.2, 1)
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(60, 330)
+
+; ▼ 2026-06-30 임시 테스트 포탈(Claude) — 플레이어 옆(왼쪽 ~150px, 스폰 자동발동 방지). 초록색=테스트용.
+;   왼쪽으로 걸어 들어가면 클리어 팝업→다음 스테이지로 점프(시퀀스 빠른 테스트용). 출시 전 삭제.
+[node name="테스트포탈" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(-90, 330)
+next_stage_path = "res://scenes/world_1/stage_1/stage_1.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/테스트포탈"]
+color = Color(0.2, 0.9, 0.4, 0.6)
+polygon = PackedVector2Array(45, 0, 32, 32, 0, 45, -32, 32, -45, 0, -32, -32, 0, -45, 32, -32)
+
+[node name="Label" type="Label" parent="Obstacles/테스트포탈"]
+offset_left = -95.0
+offset_top = -80.0
+offset_right = 95.0
+offset_bottom = -56.0
+theme_override_font_sizes/font_size = 16
+text = "테스트→다음"
+horizontal_alignment = 1

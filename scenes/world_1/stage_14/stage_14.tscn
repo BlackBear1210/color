@@ -1,0 +1,189 @@
+[gd_scene format=3 uid="uid://cstage14color14"]
+
+; ▼ 2026-06-30 stage_14 "빔 회랑"(Claude). 난이도 7 · 횡스크롤.
+;   학습목표: 색을 맞춰 레이저를 통과한다(H7 색레이저). + H2 톱니.
+;   ※ H7 색레이저 = 미구현 → Placeholder. "같은 색이면 통과 / 반대 색이면 즉사" 빔.
+;     실제 구현: H2 톱니. 검정 스파인은 통과 가능(reach_sim 검증).
+;   윗면 y=400, 가로 간격 ≤190, 낙사 y=820. 정밀한 색 전환 요구.
+[ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
+[ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="2_bg"]
+[ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="10_g1"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)2.tscn" id="11_g2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/발판(검)2.tscn" id="12_p2"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)1.tscn" id="13_air1"]
+[ext_resource type="PackedScene" uid="uid://c3gear1234567" path="res://scenes/obstacles/GearObstacle.tscn" id="20_gear"]
+[ext_resource type="PackedScene" uid="uid://c3portal12345" path="res://scenes/obstacles/Portal.tscn" id="16_portal"]
+[ext_resource type="PackedScene" uid="uid://dkoh57nmxstto" path="res://scenes/obstacles/Checkpoint.tscn" id="17_cp"]
+[ext_resource type="PackedScene" uid="uid://bph0ldr4plc01" path="res://scenes/obstacles/Placeholder.tscn" id="18_ph"]
+
+[sub_resource type="RectangleShape2D" id="kz"]
+size = Vector2(16000, 300)
+
+[node name="stage_14" type="Node2D"]
+script = ExtResource("1_stage")
+camera_limit_left = -300
+camera_limit_top = -220
+camera_limit_right = 7900
+camera_limit_bottom = 880
+camera_zoom = 1.5
+
+[node name="Background" parent="." instance=ExtResource("2_bg")]
+
+[node name="Hud" parent="." instance=ExtResource("4_hud")]
+
+[node name="MapPhysics" type="Node2D" parent="."]
+
+[node name="KillZone" type="Area2D" parent="MapPhysics"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
+position = Vector2(3700, 820)
+shape = SubResource("kz")
+
+[node name="B1바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(-100, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B2발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(880, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B3바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(1430, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B4발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(2170, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B5바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(2720, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B6공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(3700, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B7바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(4120, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B8발판" parent="MapPhysics" instance=ExtResource("12_p2")]
+position = Vector2(4855, 400)
+scale = Vector2(0.5, 0.5)
+
+[node name="B9바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+position = Vector2(5400, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="B10공중발판" parent="MapPhysics" instance=ExtResource("13_air1")]
+position = Vector2(6382, 360)
+scale = Vector2(0.5, 0.5)
+
+[node name="B11바닥" parent="MapPhysics" instance=ExtResource("10_g1")]
+position = Vector2(6820, 400)
+scale = Vector2(0.55, 0.5)
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="톱니H" parent="Obstacles" instance=ExtResource("20_gear")]
+position = Vector2(4300, 250)
+rotate_speed = 240.0
+move_distance = 170.0
+move_speed = 130.0
+
+[node name="Checkpoint1" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(2720, 330)
+
+[node name="Checkpoint2" parent="Obstacles" instance=ExtResource("17_cp")]
+position = Vector2(5400, 330)
+
+[node name="Portal" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(7150, 330)
+next_stage_path = "res://scenes/world_1/stage_15/stage_15.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal"]
+color = Color(0.85, 0.1, 0.75, 0.55)
+polygon = PackedVector2Array(60, 0, 58, 16, 52, 30, 42, 42, 30, 52, 16, 58, 0, 60, -16, 58, -30, 52, -42, 42, -52, 30, -58, 16, -60, 0, -58, -16, -52, -30, -42, -42, -30, -52, -16, -58, 0, -60, 16, -58, 30, -52, 42, -42, 52, -30, 58, -16)
+
+[node name="Label" type="Label" parent="Obstacles/Portal"]
+offset_left = -60.0
+offset_top = -96.0
+offset_right = 60.0
+offset_bottom = -66.0
+theme_override_font_sizes/font_size = 18
+text = "포탈"
+horizontal_alignment = 1
+
+; ══ H7 색레이저 자리표시(세로/가로 빔, 같은 색=통과·반대 색=즉사) ══
+[node name="PH_레이저소개" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(900, 250)
+code = "H7"
+obstacle_name = "색 레이저(소개)"
+note = "지속 빔. 내 색 = 빔 색이면 통과, 반대 색이면 즉사.
+검/흰 빔 색을 보고 즉시 색 전환."
+box_size = Vector2(40, 300)
+box_color = Color(1, 0.2, 0.2, 1)
+
+[node name="PH_레이저흑" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(1750, 250)
+code = "H7"
+obstacle_name = "색 레이저(검)"
+note = "검정으로 전환해 통과."
+box_size = Vector2(40, 300)
+box_color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="PH_레이저백" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(2450, 250)
+code = "H7"
+obstacle_name = "색 레이저(흰)"
+note = "흰색으로 전환해 통과(연속 전환)."
+box_size = Vector2(40, 300)
+box_color = Color(0.95, 0.95, 0.95, 1)
+
+[node name="PH_레이저점멸" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(3300, 250)
+code = "H7"
+obstacle_name = "색 레이저(점멸)"
+note = "꺼지는 타이밍 + 색 맞추기."
+box_size = Vector2(40, 300)
+box_color = Color(1, 0.2, 0.2, 1)
+
+[node name="PH_레이저통로A" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(5050, 250)
+code = "H7"
+obstacle_name = "색 레이저(통로)"
+note = "연속 레이저 색 전환 릴레이(1)."
+box_size = Vector2(40, 300)
+box_color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="PH_레이저통로B" parent="Obstacles" instance=ExtResource("18_ph")]
+position = Vector2(5500, 250)
+code = "H7"
+obstacle_name = "색 레이저(통로)"
+note = "릴레이(2) — 톱니와 겹침."
+box_size = Vector2(40, 300)
+box_color = Color(0.95, 0.95, 0.95, 1)
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(60, 330)
+
+; ▼ 2026-06-30 임시 테스트 포탈(Claude) — 플레이어 옆(왼쪽 ~150px, 스폰 자동발동 방지). 초록색=테스트용.
+;   왼쪽으로 걸어 들어가면 클리어 팝업→다음 스테이지로 점프(시퀀스 빠른 테스트용). 출시 전 삭제.
+[node name="테스트포탈" parent="Obstacles" instance=ExtResource("16_portal")]
+position = Vector2(-90, 330)
+next_stage_path = "res://scenes/world_1/stage_15/stage_15.tscn"
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/테스트포탈"]
+color = Color(0.2, 0.9, 0.4, 0.6)
+polygon = PackedVector2Array(45, 0, 32, 32, 0, 45, -32, 32, -45, 0, -32, -32, 0, -45, 32, -32)
+
+[node name="Label" type="Label" parent="Obstacles/테스트포탈"]
+offset_left = -95.0
+offset_top = -80.0
+offset_right = 95.0
+offset_bottom = -56.0
+theme_override_font_sizes/font_size = 16
+text = "테스트→다음"
+horizontal_alignment = 1
