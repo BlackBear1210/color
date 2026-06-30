@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3]
+
+; 진자 칼날 장애물. 원점(Pivot)을 중심으로 좌우로 흔들리며, 칼날(KillArea)에
+; 닿으면 사망한다. 텍스처 없이 Line2D(줄)+Polygon2D(칼날)로 그려서 별도 그림
+; 에셋이 필요 없다.
+
+[ext_resource type="Script" path="res://scripts/obstacles/pendulum_obstacle.gd" id="1_pendulum"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kill"]
+radius = 30.0
+
+[node name="PendulumBlade" type="Node2D"]
+script = ExtResource("1_pendulum")
+
+[node name="Anchor" type="Polygon2D" parent="."]
+color = Color(0.35, 0.35, 0.38, 1)
+polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[node name="Rod" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 180)
+width = 5.0
+default_color = Color(0.55, 0.55, 0.58, 1)
+
+[node name="Blade" type="Node2D" parent="."]
+position = Vector2(0, 180)
+
+[node name="BladeVisual" type="Polygon2D" parent="Blade"]
+color = Color(0.78, 0.12, 0.12, 1)
+polygon = PackedVector2Array(-34, -8, 34, -8, 0, 46)
+
+[node name="KillArea" type="Area2D" parent="Blade"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Blade/KillArea"]
+shape = SubResource("CircleShape2D_kill")
+position = Vector2(0, 10)

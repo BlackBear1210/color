@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3]
+
+; 색 추적자. 플레이어가 recognize_color 와 같은 색일 때만 인식해서 쫓아온다.
+; Visual 의 색(_update_visual)이 인식 상태를 알려준다: 옅음=못 알아챔, 붉게 진해짐=추적 중.
+
+[ext_resource type="Script" path="res://scripts/obstacles/color_tracker.gd" id="1_tracker"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 22.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kill"]
+radius = 26.0
+
+[node name="ColorTracker" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_tracker")
+
+[node name="Visual" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.5)
+
+[node name="Body" type="Polygon2D" parent="Visual"]
+color = Color(0.15, 0.15, 0.18, 1)
+polygon = PackedVector2Array(0, -22, 16, -10, 16, 10, 0, 22, -16, 10, -16, -10)
+
+[node name="Eye" type="Polygon2D" parent="Visual"]
+color = Color(0.9, 0.15, 0.15, 1)
+polygon = PackedVector2Array(-7, -7, 7, -7, 7, 7, -7, 7)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="KillArea" type="Area2D" parent="."]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillArea"]
+shape = SubResource("CircleShape2D_kill")
