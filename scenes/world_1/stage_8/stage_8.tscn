@@ -1,20 +1,11 @@
 [gd_scene format=3 uid="uid://bsbbfr0r85f4f"]
 
-; ▼ 2026-06-30 stage_8 "★솟아오르는 바닥"(Claude). 난이도 5 · 종(세로) 상승 탈출(특별).
-;   차별점: 아래에서 죽음의 경계가 차오름 → 위로 탈출(두들점프/차오르는 용암).
-;   ※ '차오르는 경계' = 불벽(H5)의 세로 버전(미구현) → Placeholder + 하단 KillZone(임시 바닥).
-;     T6 점프대도 미구현 → Placeholder. 실제 구현: H1 가시. T1 흰 발판(색 전환 상승)은 구현됨.
-;
-;   ★ 수직 설계 규칙(reach_sim 은 횡스크롤 전용이라 수직은 점프 물리로 직접 계산):
-;     점프 상승높이 ≈150px, 수평 도달 ≈320px → 단 사이 상승 125px / 좌우 오프셋 220px(발판 폭 180px라 여유).
-;     지그재그(좌 x≈200 ↔ 우 x≈420)로 번갈아 올라간다.
-;
-;   ★ 카메라(세로 추적): 유효줌 = 1.6 x 0.3 = 0.48 → 세로 가시 절반 ≈675px.
-;     플레이어 y ≈ 310(정상)~1830(시작) → limit_top=-320, limit_bottom=2560 으로 끝까지 추적.
 [ext_resource type="Script" uid="uid://cjyf14ijf2uqg" path="res://scripts/stage.gd" id="1_stage"]
 [ext_resource type="PackedScene" uid="uid://cyoflvgh1pgbk" path="res://scenes/background/Background.tscn" id="2_bg"]
 [ext_resource type="PackedScene" uid="uid://dfmp0o80rhxbr" path="res://scenes/player/Player.tscn" id="3_player"]
 [ext_resource type="PackedScene" uid="uid://ds0k6gh1brc44" path="res://scenes/ui/Hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(검)1.tscn" id="8_qceau"]
+[ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/공중발판(흰)1.tscn" id="9_3vi7w"]
 [ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)1.tscn" id="10_g1"]
 [ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/바닥(검)2.tscn" id="11_g2"]
 [ext_resource type="PackedScene" path="res://scenes/지형파일셋/씬/발판(검)2.tscn" id="12_p2"]
@@ -27,7 +18,7 @@
 [sub_resource type="RectangleShape2D" id="kz"]
 size = Vector2(4000, 240)
 
-[node name="stage_8" type="Node2D"]
+[node name="stage_8" type="Node2D" unique_id=1415445068]
 script = ExtResource("1_stage")
 camera_limit_left = -900
 camera_limit_top = -320
@@ -35,98 +26,103 @@ camera_limit_right = 1700
 camera_limit_bottom = 2560
 camera_zoom = 1.6
 
-[node name="Background" parent="." instance=ExtResource("2_bg")]
+[node name="Background" parent="." unique_id=371105252 instance=ExtResource("2_bg")]
 
-[node name="Hud" parent="." instance=ExtResource("4_hud")]
+[node name="Hud" parent="." unique_id=28968915 instance=ExtResource("4_hud")]
 
-[node name="MapPhysics" type="Node2D" parent="."]
+[node name="MapPhysics" type="Node2D" parent="." unique_id=354215112]
 
-; 하단 KillZone(임시 바닥). 실제로는 '차오르는 경계'가 위로 올라오며 이 역할을 한다(Placeholder 참조).
-[node name="KillZone" type="Area2D" parent="MapPhysics"]
+[node name="KillZone" type="Area2D" parent="MapPhysics" unique_id=271309018]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MapPhysics/KillZone" unique_id=1553146985]
 position = Vector2(400, 2120)
 shape = SubResource("kz")
 
-; ── 지그재그 상승 발판(상승 125 / 좌우 오프셋 220) ──
-[node name="P0시작바닥" parent="MapPhysics" instance=ExtResource("11_g2")]
+[node name="P0시작바닥" parent="MapPhysics" unique_id=2033696942 instance=ExtResource("11_g2")]
 position = Vector2(60, 1900)
 scale = Vector2(0.6, 0.5)
 
-[node name="P1발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(420, 1775)
+[node name="P1발판" parent="MapPhysics" unique_id=277095325 instance=ExtResource("12_p2")]
+position = Vector2(488, 1829)
 scale = Vector2(0.5, 0.5)
 
-[node name="P2발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(200, 1650)
+[node name="P2발판" parent="MapPhysics" unique_id=365791088 instance=ExtResource("12_p2")]
+position = Vector2(77, 1672)
 scale = Vector2(0.5, 0.5)
 
-[node name="P3발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(420, 1525)
+[node name="P3발판" parent="MapPhysics" unique_id=526706443 instance=ExtResource("12_p2")]
+position = Vector2(530, 1607.9999)
+scale = Vector2(0.49040002, 0.30784178)
+
+[node name="P4발판" parent="MapPhysics" unique_id=1912905292 instance=ExtResource("12_p2")]
+position = Vector2(127, 1480.0001)
+scale = Vector2(0.43753377, 0.28619564)
+
+[node name="P5흰발판" parent="MapPhysics" unique_id=1513214057 instance=ExtResource("14_w2")]
+position = Vector2(552.00006, 1397)
+scale = Vector2(0.45839617, 0.24913824)
+
+[node name="P6흰발판" parent="MapPhysics" unique_id=1858373042 instance=ExtResource("14_w2")]
+position = Vector2(67, 1280)
+scale = Vector2(0.5745048, 0.3886482)
+
+[node name="P7발판" parent="MapPhysics" unique_id=197186730 instance=ExtResource("12_p2")]
+position = Vector2(144, 952.99994)
+scale = Vector2(0.6214233, 0.38132122)
+
+[node name="P8발판" parent="MapPhysics" unique_id=1457080260 instance=ExtResource("12_p2")]
+position = Vector2(199, 699)
 scale = Vector2(0.5, 0.5)
 
-[node name="P4발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(200, 1400)
+[node name="P9발판" parent="MapPhysics" unique_id=1730305327 instance=ExtResource("12_p2")]
+position = Vector2(621, 598)
 scale = Vector2(0.5, 0.5)
 
-[node name="P5흰발판" parent="MapPhysics" instance=ExtResource("14_w2")]
-position = Vector2(420, 1275)
+[node name="P10발판" parent="MapPhysics" unique_id=1849726398 instance=ExtResource("12_p2")]
+position = Vector2(155, 449)
 scale = Vector2(0.5, 0.5)
 
-[node name="P6흰발판" parent="MapPhysics" instance=ExtResource("14_w2")]
-position = Vector2(200, 1150)
+[node name="P11발판" parent="MapPhysics" unique_id=834002690 instance=ExtResource("12_p2")]
+position = Vector2(627, 369)
 scale = Vector2(0.5, 0.5)
 
-[node name="P7발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(420, 1025)
-scale = Vector2(0.5, 0.5)
-
-[node name="P8발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(200, 900)
-scale = Vector2(0.5, 0.5)
-
-[node name="P9발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(420, 775)
-scale = Vector2(0.5, 0.5)
-
-[node name="P10발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(200, 650)
-scale = Vector2(0.5, 0.5)
-
-[node name="P11발판" parent="MapPhysics" instance=ExtResource("12_p2")]
-position = Vector2(420, 525)
-scale = Vector2(0.5, 0.5)
-
-[node name="P12정상" parent="MapPhysics" instance=ExtResource("10_g1")]
-position = Vector2(120, 380)
+[node name="P12정상" parent="MapPhysics" unique_id=1519882735 instance=ExtResource("10_g1")]
+position = Vector2(-38, 116)
 scale = Vector2(0.6, 0.5)
 
-[node name="Obstacles" type="Node2D" parent="."]
+[node name="공중발판(검)1" parent="MapPhysics" unique_id=1950715732 instance=ExtResource("8_qceau")]
+position = Vector2(886, 267)
+scale = Vector2(0.19440116, 0.38408935)
 
-; H1 가시(벽 가시 — 좁은 굴뚝 구간)
-[node name="가시벽1" parent="Obstacles" instance=ExtResource("15_thorn")]
-position = Vector2(640, 1075)
+[node name="공중발판(흰)1" parent="MapPhysics" unique_id=1325427122 instance=ExtResource("9_3vi7w")]
+position = Vector2(659.00006, 166)
+scale = Vector2(0.2278007, 0.37569684)
+
+[node name="Obstacles" type="Node2D" parent="." unique_id=541197680]
+
+[node name="가시벽1" parent="Obstacles" unique_id=822705726 instance=ExtResource("15_thorn")]
+position = Vector2(296.00003, 914)
 scale = Vector2(0.2, 0.2)
 
-[node name="가시벽2" parent="Obstacles" instance=ExtResource("15_thorn")]
-position = Vector2(180, 825)
+[node name="가시벽2" parent="Obstacles" unique_id=1563240099 instance=ExtResource("15_thorn")]
+position = Vector2(304, 660)
 scale = Vector2(0.2, 0.2)
 
-[node name="Checkpoint1" parent="Obstacles" instance=ExtResource("17_cp")]
-position = Vector2(380, 1330)
+[node name="Checkpoint1" parent="Obstacles" unique_id=881784381 instance=ExtResource("17_cp")]
+position = Vector2(289, 1250)
 
-[node name="Checkpoint2" parent="Obstacles" instance=ExtResource("17_cp")]
-position = Vector2(380, 705)
+[node name="Checkpoint2" parent="Obstacles" unique_id=693006999 instance=ExtResource("17_cp")]
+position = Vector2(279, 425)
 
-[node name="Portal" parent="Obstacles" instance=ExtResource("16_portal")]
-position = Vector2(420, 310)
+[node name="Portal" parent="Obstacles" unique_id=1823099707 instance=ExtResource("16_portal")]
+position = Vector2(190, 30)
 next_stage_path = "res://scenes/world_1/stage_9/stage_9.tscn"
 
-[node name="Visual" type="Polygon2D" parent="Obstacles/Portal"]
+[node name="Visual" type="Polygon2D" parent="Obstacles/Portal" unique_id=2031549435]
 color = Color(0.85, 0.1, 0.75, 0.55)
 polygon = PackedVector2Array(60, 0, 58, 16, 52, 30, 42, 42, 30, 52, 16, 58, 0, 60, -16, 58, -30, 52, -42, 42, -52, 30, -58, 16, -60, 0, -58, -16, -52, -30, -42, -42, -30, -52, -16, -58, 0, -60, 16, -58, 30, -52, 42, -42, 52, -30, 58, -16)
 
-[node name="Label" type="Label" parent="Obstacles/Portal"]
+[node name="Label" type="Label" parent="Obstacles/Portal" unique_id=436121108]
 offset_left = -70.0
 offset_top = -96.0
 offset_right = 70.0
@@ -135,8 +131,7 @@ theme_override_font_sizes/font_size = 18
 text = "탈출 포탈(정상)"
 horizontal_alignment = 1
 
-; ══ 미구현 기믹 자리표시 ══
-[node name="PH_차오르는경계" parent="Obstacles" instance=ExtResource("18_ph")]
+[node name="PH_차오르는경계" parent="Obstacles" unique_id=12241506 instance=ExtResource("18_ph")]
 position = Vector2(400, 2000)
 code = "특별-RISE"
 obstacle_name = "차오르는 경계(아래→위 추격)"
@@ -145,7 +140,7 @@ note = "불벽(FireWall)의 세로 버전: Area2D 가 위로 일정 속도 상�
 box_size = Vector2(760, 80)
 box_color = Color(1, 0.3, 0.1, 1)
 
-[node name="PH_점프대시작" parent="Obstacles" instance=ExtResource("18_ph")]
+[node name="PH_점프대시작" parent="Obstacles" unique_id=763656303 instance=ExtResource("18_ph")]
 position = Vector2(300, 1850)
 code = "T6"
 obstacle_name = "점프대(첫 상승)"
@@ -153,36 +148,32 @@ note = "닿으면 높이 튕겨 올림. 첫 상승 가속용."
 box_size = Vector2(90, 45)
 box_color = Color(0.4, 1, 0.3, 1)
 
-[node name="PH_점프대릴레이" parent="Obstacles" instance=ExtResource("18_ph")]
-position = Vector2(600, 1000)
+[node name="PH_점프대릴레이" parent="Obstacles" unique_id=1042860257 instance=ExtResource("18_ph")]
+position = Vector2(145, 901)
+scale = Vector2(1.0029801, 1)
 code = "T6"
 obstacle_name = "점프대 릴레이"
 note = "점프대 연타로 빠르게 상승."
 box_size = Vector2(90, 45)
 box_color = Color(0.4, 1, 0.3, 1)
 
-[node name="PH_색발판안내" parent="Obstacles" instance=ExtResource("18_ph")]
-position = Vector2(620, 1212)
+[node name="PH_색발판안내" parent="Obstacles" unique_id=1703016661 instance=ExtResource("18_ph")]
+position = Vector2(678, 1178)
 code = "T1"
 obstacle_name = "흰 발판 구간(색 전환 상승)"
 note = "P5/P6 는 흰 발판 — 흰색으로 전환해야 밟힘. 틀리면 통과·추락(이미 구현됨)."
 box_size = Vector2(150, 90)
 box_color = Color(0.9, 0.9, 0.95, 1)
 
-[node name="Player" parent="." instance=ExtResource("3_player")]
-position = Vector2(300, 1830)
-
-; ▼ 2026-06-30 임시 테스트 포탈(Claude) — 플레이어 옆(왼쪽 ~150px, 스폰 자동발동 방지). 초록색=테스트용.
-;   왼쪽으로 걸어 들어가면 클리어 팝업→다음 스테이지로 점프(시퀀스 빠른 테스트용). 출시 전 삭제.
-[node name="테스트포탈" parent="Obstacles" instance=ExtResource("16_portal")]
+[node name="테스트포탈" parent="Obstacles" unique_id=1700376324 instance=ExtResource("16_portal")]
 position = Vector2(150, 1830)
 next_stage_path = "res://scenes/world_1/stage_9/stage_9.tscn"
 
-[node name="Visual" type="Polygon2D" parent="Obstacles/테스트포탈"]
+[node name="Visual" type="Polygon2D" parent="Obstacles/테스트포탈" unique_id=1749544033]
 color = Color(0.2, 0.9, 0.4, 0.6)
 polygon = PackedVector2Array(45, 0, 32, 32, 0, 45, -32, 32, -45, 0, -32, -32, 0, -45, 32, -32)
 
-[node name="Label" type="Label" parent="Obstacles/테스트포탈"]
+[node name="Label" type="Label" parent="Obstacles/테스트포탈" unique_id=1688505055]
 offset_left = -95.0
 offset_top = -80.0
 offset_right = 95.0
@@ -190,3 +181,6 @@ offset_bottom = -56.0
 theme_override_font_sizes/font_size = 16
 text = "테스트→다음"
 horizontal_alignment = 1
+
+[node name="Player" parent="." unique_id=1516090228 instance=ExtResource("3_player")]
+position = Vector2(300, 1830)
