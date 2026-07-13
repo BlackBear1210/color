@@ -17,6 +17,9 @@ const JUMP_CUT_MULTIPLIER:     float = 0.4   # 점프 키 뗄 때 상승 감속 
 var _coyote_timer:      float = 0.0
 var _jump_buffer_timer: float = 0.0
 
+func _ready() -> void:
+	add_to_group("player")
+
 func _physics_process(delta: float) -> void:
 	# ── 중력 (비대칭: 낙하 시 배수 적용) ─────────────────────────────
 	if not is_on_floor():
