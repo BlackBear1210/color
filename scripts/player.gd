@@ -1,7 +1,7 @@
 extends CharacterBody2D
-## 플레이어 이동/점프.
-## dev_2 의 player.gd 에서 색 전환·사격·사망 판정 등을 제외하고
-## 순수 물리 이동(좌우 이동 + 점프) 로직만 추출한 버전.
+## 플레이어 이동/점프 + 색 상태(검정/흰색) 전환.
+## dev_2 의 player.gd 에서 사격·사망 판정 등을 제외한 이동 로직에,
+## 원본 color 프로젝트의 색 전환 로직만 최소한으로 이식한 버전.
 
 # ── 이동 파라미터 ──────────────────────────────────────────────────────
 @export var move_speed: float    = 390.0
@@ -17,8 +17,14 @@ const JUMP_CUT_MULTIPLIER:     float = 0.4   # 점프 키 뗄 때 상승 감속 
 var _coyote_timer:      float = 0.0
 var _jump_buffer_timer: float = 0.0
 
+# ── 색 상태 (검정/흰색) ─────────────────────────────────────────────────
+# 원본 color 프로젝트의 player_color 를 이식. 총알 색 = 이 색과 동일하게 발사된다.
+@onready var placeholder: Polygon2D = $Placeholder
+var player_color: int = ColorDefs.BLACK
+
 func _ready() -> void:
 	add_to_group("player")
+	_apply_color_visual()
 
 func _physics_process(delta: float) -> void:
 	# ── 중력 (비대칭: 낙하 시 배수 적용) ─────────────────────────────
@@ -48,8 +54,23 @@ func _physics_process(delta: float) -> void:
 
 	_jump_buffer_timer = max(_jump_buffer_timer - delta, 0.0)
 
+	# ── 색 전환 입력 ─────────────────────────────────────────────────
+	if Input.is_action_just_pressed("toggle_color"):
+		_toggle_color()
+
 	# ── 좌우 이동 ────────────────────────────────────────────────────
 	var dir := Input.get_axis("move_left", "move_right")
 	velocity.x = dir * move_speed
 
 	move_and_slide()
+
+## 현재 색 상태 전환 (BLACK ↔ WHITE). gun.gd 가 발사 시 이 색을 그대로 총알에 넘긴다.
+func _toggle_color() -> void:
+	player_color = ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK
+	_apply_color_visual()
+
+## 플레이스홀더 스프라이트가 없으므로 임시로 Polygon2D 색을 현재 색에 맞춰 표시.
+func _apply_color_visual() -> void:
+	if placeholder:
+		placeholder.color = Color(0.05, 0.05, 0.05) if player_color == ColorDefs.BLACK \
+			else Color(0.95, 0.95, 0.95)
