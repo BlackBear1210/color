@@ -151,7 +151,7 @@ func _build_zone01() -> int:
 
 	_row(layer, -6, 48, 14, BLACK)            # 바닥 (고정 검정)
 	_col(layer, -6, 4, 13, BLACK)             # 좌측 벽
-	_col(layer, 48, 4, 13, BLACK)             # 우측 벽
+	# [2026-07-18 사용자 요청] 우측 벽 제거 — zone2 로 이어지는 열린 통로 (world_1 방식과 통일)
 
 	_row(layer, 5, 7, 11, BLACK)              # 고정 검정 단상 (흑 군집 — 왼쪽)
 	_row(layer, 10, 12, 10, UNPAINTED_1)      # 무색 발판 ① 1발
@@ -177,7 +177,7 @@ func _build_zone02() -> int:
 
 	# ── 아래 = 흑 지형 구역 (경계선 row 8 아래) ─────────────────────────
 	_row(layer, -6, 48, 14, BLACK)            # 바닥
-	_col(layer, -6, -4, 13, BLACK)            # 좌측 벽 (위 구역까지)
+	# [2026-07-18 사용자 요청] 좌측 벽 제거 — zone1 에서 이어져 들어오는 열린 입구
 	_col(layer, 48, -4, 13, BLACK)            # 우측 벽
 	_row(layer, 4, 6, 11, BLACK)              # 흑 단상 1
 	_row(layer, 10, 12, 9, BLACK)             # 흑 단상 2 (경계 근처까지 상승)

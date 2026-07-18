@@ -21,6 +21,12 @@ func check(name: String, cond: bool) -> void:
 		fails += 1
 
 func _init() -> void:
+	# [2026-07-18 도형] FAIL 2건(7/17 발견)의 진짜 원인 수정:
+	# 이 테스트는 "프레임 번호"로 진행하는데, 사망 리스폰은 "실시간 0.55초" 타이머다.
+	# 헤드리스가 60fps 보다 빨리 돌면(실측 ~145fps) 검사 프레임이 타이머보다 먼저 와서
+	# 리스폰 전에 검사해 실패했다 — 게임 로직 회귀가 아니라 테스트의 시간 기준 문제.
+	# → 프레임률을 60 으로 고정해 프레임 수 = 시간이 되도록 한다.
+	Engine.max_fps = 60
 	process_frame.connect(_tick)
 
 func _load_zone(path: String) -> void:
@@ -61,13 +67,18 @@ func _tick() -> void:
 			player.set("velocity", Vector2.ZERO)
 			player.set("global_position", Vector2(176, 346))
 		190:
+			# [2026-07-18] 판정 강화: 예전 기준(<160)은 텔레포트 지점(176,346)과 스폰의
+			# 거리가 127 이라 "죽지 않아도 통과"하는 무의미한 검사였다 → <60 으로 조임.
 			check("4) 흑 단상 밟은 백 → 사망·스폰 복귀",
-				player.global_position.distance_to(SPAWN) < 160.0)
+				player.global_position.distance_to(SPAWN) < 60.0)
 			check("4) 사망 후 색 = 스폰 색(흑)", player.get("player_color") == 0)
-		200:
+		225:
 			# 시나리오 5: 스폰(전환 존 밖)에서 색을 바꾸면 잠금이 되돌려야 함
+			# [2026-07-18] 프레임 200 → 225 로 이동: 시나리오 4 리스폰(~f180) 후
+			# 무적(grace 0.6초=36프레임, ~f216)이 끝나기 전에 토글하면 잠금 감시가
+			# (색 복원 오인 방지를 위해) 쉬는 중이라 잠금이 안 걸린다 — grace 이후로 조정.
 			player.call("_toggle_color")
-		230:
+		255:
 			check("5) 전환 존 밖 Shift → 잠금(흑으로 되돌아옴)", player.get("player_color") == 0)
 			print("---")
 			print("결과: %d개 실패" % fails if fails > 0 else "결과: 전부 통과 ✅")

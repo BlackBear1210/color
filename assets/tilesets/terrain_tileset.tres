@@ -1,9 +1,14 @@
 [gd_resource type="TileSet" format=3 uid="uid://dnq5o0y7ehw24"]
 
 [ext_resource type="Texture2D" uid="uid://c2uqhaf2s7k3n" path="res://assets/textures/tiles/placeholder_tiles.svg" id="1_tiles"]
+[ext_resource type="Texture2D" uid="uid://cvvlshxsrw2fx" path="res://assets/textures/normal/placeholder_tiles_n.png" id="2_tiles_n"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_terrain"]
+diffuse_texture = ExtResource("1_tiles")
+normal_texture = ExtResource("2_tiles_n")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_terrain"]
-texture = ExtResource("1_tiles")
+texture = SubResource("CanvasTexture_terrain")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
