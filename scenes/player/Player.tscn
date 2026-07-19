@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://6h6viwi1sfak" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Script" uid="uid://cxyp00fit7cdr" path="res://scripts/gun.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/player_anim.gd" id="3"]
-[ext_resource type="SpriteFrames" path="res://assets/p/player_frames.tres" id="4"]
+[ext_resource type="Script" uid="uid://djtq07snku0ad" path="res://scripts/player_anim.gd" id="3"]
+[ext_resource type="SpriteFrames" uid="uid://ce7va4l5j1ei0" path="res://assets/p/player_frames.tres" id="4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(64, 128)
@@ -22,7 +22,7 @@ shape = SubResource("RectangleShape2D_1")
 color = Color(0.3, 0.7, 1, 1)
 polygon = PackedVector2Array(-32, -128, 32, -128, 32, 0, -32, 0)
 
-[node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
+[node name="CharacterSprite" type="AnimatedSprite2D" parent="." unique_id=274799588]
 sprite_frames = ExtResource("4")
 animation = &"black_idle"
 script = ExtResource("3")
@@ -36,4 +36,3 @@ script = ExtResource("2")
 position = Vector2(24, 0)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=614551773]
-visible = false

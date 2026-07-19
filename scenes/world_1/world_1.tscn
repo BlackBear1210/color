@@ -1,14 +1,14 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://mofxe1w0pvar"]
 
-[ext_resource type="Script" path="res://scripts/proto/world_lab.gd" id="1_qc71u"]
-[ext_resource type="TileSet" path="res://assets/tilesets/terrain_tileset.tres" id="2_b24aa"]
-[ext_resource type="Script" path="res://scripts/proto/paint_system.gd" id="3_mjh8b"]
-[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="4_wfpwd"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="5_a6obp"]
-[ext_resource type="Script" path="res://scripts/proto/brush_cursor_ui.gd" id="6_vk1ok"]
-[ext_resource type="Texture2D" path="res://assets/textures/bg/bg_far.svg" id="7_t8eln"]
-[ext_resource type="Texture2D" path="res://assets/textures/bg/bg_mid.svg" id="8_ienaq"]
-[ext_resource type="Texture2D" path="res://assets/textures/bg/bg_near.svg" id="9_uf8hh"]
+[ext_resource type="Script" uid="uid://ckxn06jbx6j1e" path="res://scripts/proto/world_lab.gd" id="1_qc71u"]
+[ext_resource type="TileSet" uid="uid://dnq5o0y7ehw24" path="res://assets/tilesets/terrain_tileset.tres" id="2_b24aa"]
+[ext_resource type="Script" uid="uid://i7wgqrgj8y04" path="res://scripts/proto/paint_system.gd" id="3_mjh8b"]
+[ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="4_wfpwd"]
+[ext_resource type="Script" uid="uid://1ps87sfol1em" path="res://scripts/proto/brush_cursor_ui.gd" id="6_vk1ok"]
+[ext_resource type="Texture2D" uid="uid://bbmwkc5d7nuit" path="res://assets/textures/bg/bg_far.svg" id="7_t8eln"]
+[ext_resource type="Texture2D" uid="uid://d1tg2kbaed35i" path="res://assets/textures/bg/bg_mid.svg" id="8_ienaq"]
+[ext_resource type="PackedScene" path="res://scenes/경계/color_zone.tscn" id="9_qc71u"]
+[ext_resource type="Texture2D" uid="uid://yqkqe3hq6qy5" path="res://assets/textures/bg/bg_near.svg" id="9_uf8hh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_475c4"]
 size = Vector2(256, 256)
@@ -26,12 +26,8 @@ tile_set = ExtResource("2_b24aa")
 [node name="PaintSystem" type="Node" parent="." unique_id=2082339740]
 script = ExtResource("3_mjh8b")
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=1147093704 instance=ExtResource("4_wfpwd")]
+[node name="Player" parent="." unique_id=1147093704 instance=ExtResource("4_wfpwd")]
 position = Vector2(96, 445)
-scale = Vector2(0.7949601, 0.36771855)
-floor_constant_speed = true
-floor_snap_length = 32.0
-script = ExtResource("5_a6obp")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=697208054]
 
@@ -40,6 +36,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("6_vk1ok")
 
@@ -123,7 +121,7 @@ default_color = Color(0.97, 0.97, 0.97, 0.95)
 [node name="ExitZone" type="Area2D" parent="." unique_id=1907075181]
 position = Vector2(3280, 130)
 
-[node name="@CollisionShape2D@3" type="CollisionShape2D" parent="ExitZone" unique_id=2000495174]
+[node name="_CollisionShape2D_3" type="CollisionShape2D" parent="ExitZone" unique_id=2000495174]
 shape = SubResource("RectangleShape2D_g4bnp")
 
 [node name="ExitVisual" type="Polygon2D" parent="." unique_id=1980855856]
@@ -138,10 +136,10 @@ offset_left = -140.0
 offset_top = 170.0
 offset_right = -140.0
 offset_bottom = 170.0
-theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 17
 text = "붓을 발판에 올리면 필요 횟수(x1~x3) 표시 · E = 먼저 칠한 것부터 회수"
 
 [node name="Label_18" type="Label" parent="." unique_id=1889913914]
@@ -150,10 +148,10 @@ offset_left = 880.0
 offset_top = 330.0
 offset_right = 880.0
 offset_bottom = 330.0
-theme_override_font_sizes/font_size = 15
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 15
 text = "흰 발판: 백 상태로 밟고 기둥을 넘어 오른쪽 통로로 →"
 
 [node name="Label_19" type="Label" parent="." unique_id=1321654245]
@@ -162,10 +160,10 @@ offset_left = 1560.0
 offset_top = 372.0
 offset_right = 1560.0
 offset_bottom = 372.0
-theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
 text = "ZONE 2 →"
 
 [node name="Label_20" type="Label" parent="." unique_id=1676858147]
@@ -174,10 +172,10 @@ offset_left = 1580.0
 offset_top = 490.0
 offset_right = 1580.0
 offset_bottom = 490.0
-theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 13
 text = "회색 복도 = 중립 · 어느 색이든 안전"
 
 [node name="Label_21" type="Label" parent="." unique_id=863773586]
@@ -186,10 +184,10 @@ offset_left = 1898.0
 offset_top = 206.0
 offset_right = 1898.0
 offset_bottom = 206.0
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 18
 text = "▲ 위: 백(白) 지형 — 흑 상태로 밟으면 💀"
 
 [node name="Label_22" type="Label" parent="." unique_id=1376509276]
@@ -198,10 +196,10 @@ offset_left = 1898.0
 offset_top = 280.0
 offset_right = 1898.0
 offset_bottom = 280.0
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 18
 text = "▼ 아래: 흑(黑) 지형 — 백 상태로 밟으면 💀"
 
 [node name="Label_23" type="Label" parent="." unique_id=2024952052]
@@ -210,10 +208,10 @@ offset_left = 2348.0
 offset_top = 128.0
 offset_right = 2348.0
 offset_bottom = 128.0
-theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 17
 text = "전환 존 — 이 안에서만 Shift"
 
 [node name="Label_24" type="Label" parent="." unique_id=693504675]
@@ -222,10 +220,10 @@ offset_left = 2388.0
 offset_top = 300.0
 offset_right = 2388.0
 offset_bottom = 300.0
-theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.82, 0.82, 0.82, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
 text = "회색 = 중립(안전) · 여기서 색을 바꿔라"
 
 [node name="Label_25" type="Label" parent="." unique_id=429400767]
@@ -234,8 +232,23 @@ offset_left = 3232.0
 offset_top = 60.0
 offset_right = 3232.0
 offset_bottom = 60.0
-theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
 text = "🏁 GOAL"
+
+[node name="ColorZone_black" parent="." unique_id=1760727131 instance=ExtResource("9_qc71u")]
+position = Vector2(3218, 550)
+scale = Vector2(7.0114307, 2.2340882)
+zone_color = 0
+
+[node name="ColorZone_white" parent="." unique_id=1997850125 instance=ExtResource("9_qc71u")]
+position = Vector2(2995, -71)
+scale = Vector2(5.9458165, 2.5195906)
+
+[node name="CollisionPolygon2D" parent="ColorZone_white" index="0"]
+polygon = PackedVector2Array(-192, -128, 69.4606, -198.04805, 192, 128, -192, 128)
+
+[editable path="ColorZone_black"]
+[editable path="ColorZone_white"]
