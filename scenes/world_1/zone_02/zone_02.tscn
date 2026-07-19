@@ -1,14 +1,13 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://w48ws7ndpfo7"]
 
-[ext_resource type="Script" path="res://scripts/proto/zone02_lab.gd" id="1_t6y40"]
-[ext_resource type="TileSet" path="res://assets/tilesets/terrain_tileset.tres" id="2_a08fp"]
-[ext_resource type="Script" path="res://scripts/proto/paint_system.gd" id="3_24obf"]
-[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="4_djl78"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="5_x23kc"]
-[ext_resource type="Script" path="res://scripts/proto/brush_cursor_ui.gd" id="6_6che5"]
-[ext_resource type="Texture2D" path="res://assets/textures/bg/bg_far.svg" id="7_glm5l"]
-[ext_resource type="Texture2D" path="res://assets/textures/bg/bg_mid.svg" id="8_o2e3q"]
-[ext_resource type="Texture2D" path="res://assets/textures/bg/bg_near.svg" id="9_6rsll"]
+[ext_resource type="Script" uid="uid://hpc48d00xk72" path="res://scripts/proto/zone02_lab.gd" id="1_t6y40"]
+[ext_resource type="TileSet" uid="uid://dnq5o0y7ehw24" path="res://assets/tilesets/terrain_tileset.tres" id="2_a08fp"]
+[ext_resource type="Script" uid="uid://i7wgqrgj8y04" path="res://scripts/proto/paint_system.gd" id="3_24obf"]
+[ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="4_djl78"]
+[ext_resource type="Script" uid="uid://1ps87sfol1em" path="res://scripts/proto/brush_cursor_ui.gd" id="6_6che5"]
+[ext_resource type="Texture2D" uid="uid://bbmwkc5d7nuit" path="res://assets/textures/bg/bg_far.svg" id="7_glm5l"]
+[ext_resource type="Texture2D" uid="uid://d1tg2kbaed35i" path="res://assets/textures/bg/bg_mid.svg" id="8_o2e3q"]
+[ext_resource type="Texture2D" uid="uid://yqkqe3hq6qy5" path="res://assets/textures/bg/bg_near.svg" id="9_6rsll"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6vxim"]
 size = Vector2(256, 256)
@@ -23,12 +22,8 @@ tile_set = ExtResource("2_a08fp")
 [node name="PaintSystem" type="Node" parent="." unique_id=20483812]
 script = ExtResource("3_24obf")
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=1147093704 instance=ExtResource("4_djl78")]
+[node name="Player" parent="." unique_id=1147093704 instance=ExtResource("4_djl78")]
 position = Vector2(96, 445)
-scale = Vector2(0.7949601, 0.36771855)
-floor_constant_speed = true
-floor_snap_length = 32.0
-script = ExtResource("5_x23kc")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=665258359]
 
@@ -37,6 +32,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("6_6che5")
 
@@ -94,7 +91,7 @@ default_color = Color(0.97, 0.97, 0.97, 0.95)
 [node name="SwitchZone" type="Area2D" parent="." unique_id=1824203872]
 position = Vector2(432, 208)
 
-[node name="@CollisionShape2D@2" type="CollisionShape2D" parent="SwitchZone" unique_id=7854085]
+[node name="_CollisionShape2D_2" type="CollisionShape2D" parent="SwitchZone" unique_id=7854085]
 shape = SubResource("RectangleShape2D_6vxim")
 
 [node name="SwitchZoneVisual" type="Polygon2D" parent="." unique_id=869108178]
@@ -123,10 +120,10 @@ offset_left = -150.0
 offset_top = 206.0
 offset_right = -150.0
 offset_bottom = 206.0
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 18
 text = "▲ 위: 백(白) 지형 — 흑 상태로 밟으면 💀"
 
 [node name="Label_16" type="Label" parent="." unique_id=1978401719]
@@ -135,10 +132,10 @@ offset_left = -150.0
 offset_top = 280.0
 offset_right = -150.0
 offset_bottom = 280.0
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 18
 text = "▼ 아래: 흑(黑) 지형 — 백 상태로 밟으면 💀"
 
 [node name="Label_17" type="Label" parent="." unique_id=1852152516]
@@ -147,10 +144,10 @@ offset_left = 300.0
 offset_top = 128.0
 offset_right = 300.0
 offset_bottom = 128.0
-theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 17
 text = "전환 존 — 이 안에서만 Shift"
 
 [node name="Label_18" type="Label" parent="." unique_id=862900103]
@@ -159,8 +156,8 @@ offset_left = 340.0
 offset_top = 300.0
 offset_right = 340.0
 offset_bottom = 300.0
-theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.82, 0.82, 0.82, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
 text = "회색 = 중립(안전) · 여기서 색을 바꿔라"

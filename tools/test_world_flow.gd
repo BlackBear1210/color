@@ -1,16 +1,28 @@
 extends SceneTree
-## [2026-07-18 도형 · 신규] world_1 심리스 흐름 자동 검증 (헤드리스).
+## [2026-07-19 도형 · v2 재작성] world_1 심리스 흐름 자동 검증 (헤드리스).
 ## 실행: Godot --headless --path . -s res://tools/test_world_flow.gd
+##
+## v2: zone2 가 SwitchZone(수동 전환 잠금) → ColorZone(자동 색 강제 구역)으로
+## 재구축되고 zone3(수직 도시)가 추가되어 시나리오를 전면 갱신했다.
+## ⚠ 구역 안으로 순간이동할 때는 반드시 "공중" 좌표로 넣는다 — 발 딛는 순간보다
+##   먼저 ColorZone 이 공중에서 색을 교정해야 색 사망 판정과 경합하지 않는다
+##   (실제 플레이도 항상 점프/낙하 중에 경계를 넘으므로 같은 조건).
+##
 ## 검증 시나리오:
-##  1. 씬 구성: ProtoCamera / SwitchZone / ExitZone 이 조립되어 있다
-##  2. 시작 구역 = 1 (zone1 규칙: 자유 전환)
-##  3. 복도를 지나 x>1810 → 구역 2 전환 + 체크포인트가 회색 복도로 갱신
-##  4. 구역 2 에서 전환 존 밖 Shift → 잠금(되돌려짐)
-##  5. 카메라 리밋이 REGION_2 로 트윈 완료 (씬 교체 없는 바인식 전환의 실체)
-##  6. 구역 2 에서 반대색(백) 발판을 밟으면 사망 → ★구역 2 체크포인트★ 리스폰
-##     (기존처럼 존 처음(96,445)으로 끌려가지 않는다 = 심리스 유지)
-##  7. 구역 1 로 되돌아가면 구역 1 규칙 복귀 (자유 전환)
-##  8. 골인(ExitZone) 진입 → 월드 클리어 플래그
+##  1. 씬 구성: ProtoCamera / ExitZone / ColorZone 6개, SwitchZone 은 없다(폐기)
+##  2. 시작 구역 = 1 (자유 전환)
+##  3. 복도 → 구역 2 전환 + 체크포인트 = 회색 복도
+##  4. 복도(구역 밖) Shift = 자유 전환 유지
+##  5. zone2 흑 구역(경계 아래)에 들어가면 백이어도 자동으로 흑
+##  6. zone2 백 구역(경계 위) 상층에 착지 → 자동 백 + 사망 없음
+##  7. 카메라 리밋이 REGION 2 로 트윈 완료
+##  8. 다리 → 구역 3 전환 + 체크포인트 = 다리(회색)
+##  9. zone3 밴드 A(흑) → 자동 흑
+## 10. zone3 밴드 B(백) → 자동 백
+## 11. zone3 밴드 C(흑) 회색 발판 → 자동 흑 + 구역 안 수동 토글은 즉시 되돌려짐
+## 12. 카메라 리밋이 REGION 3 로 트윈 완료
+## 13. 구역 1 복귀 → 자유 전환 복귀
+## 14. 옥상 ExitZone 진입 → 월드 클리어
 
 var n := 0
 var fails := 0
@@ -21,6 +33,11 @@ func check(name: String, cond: bool) -> void:
 	print(("PASS  " if cond else "FAIL  ") + name)
 	if not cond:
 		fails += 1
+
+## 순간이동 헬퍼 — 속도를 0 으로 리셋해 이전 시나리오의 낙하 관성을 끊는다
+func warp(pos: Vector2) -> void:
+	player.set("velocity", Vector2.ZERO)
+	player.set("global_position", pos)
 
 func _init() -> void:
 	Engine.max_fps = 60   # 프레임 수 = 시간 이 되도록 고정 (test_color_death 와 동일 이유)
@@ -35,48 +52,76 @@ func _tick() -> void:
 			player = world.get_node("Player")
 		5:
 			check("1) ProtoCamera 조립됨", world.get_node_or_null("ProtoCamera") != null)
-			check("1) SwitchZone/ExitZone 존재",
-				world.get_node_or_null("SwitchZone") != null
-				and world.get_node_or_null("ExitZone") != null)
+			check("1) ExitZone 존재 / SwitchZone 폐기됨",
+				world.get_node_or_null("ExitZone") != null
+				and world.get_node_or_null("SwitchZone") == null)
+			var zones := 0
+			for c in world.get_children():
+				if c is Area2D and c.get("zone_color") != null:
+					zones += 1
+			check("1) ColorZone 6개 (zone2 2개 + zone3 밴드 4개)", zones == 6)
 			check("2) 시작 구역 = 1", world.get("_region") == 1)
 		10:
-			# 복도(회색 바닥)를 지나 구역 경계(x=1750+60)를 넘는다
-			player.set("velocity", Vector2.ZERO)
-			player.set("global_position", Vector2(1830, 440))
-		40:
+			warp(Vector2(1830, 440))            # 회색 복도 (구역 경계 1650+60 너머)
+		30:
 			check("3) 경계 통과 → 구역 2", world.get("_region") == 2)
 			check("3) 체크포인트 = 회색 복도(1800,445)",
 				(world.get("_spawn_pos") as Vector2).distance_to(Vector2(1800, 445)) < 1.0)
-			# 구역 2 + 전환 존 밖에서 Shift → 잠금이 되돌려야 함
-			player.call("_toggle_color")
-		55:
-			check("4) 구역2 전환 존 밖 Shift → 잠금(흑 유지)", player.get("player_color") == 0)
-		90:
-			check("5) 카메라 리밋 = REGION_2 로 트윈 완료",
+			player.call("_toggle_color")        # 복도 = ColorZone 밖 → 자유 전환
+		42:
+			check("4) 복도(구역 밖) Shift = 자유 전환(백 유지)", player.get("player_color") == 1)
+		45:
+			warp(Vector2(2400, 330))            # zone2 흑 구역 공중 (백 상태로 진입)
+		80:
+			check("5) 흑 구역 진입 → 자동 흑", player.get("player_color") == 0)
+			check("5) 흑 구역 바닥 착지 = 생존(리스폰 안 됨)",
+				player.global_position.distance_to(Vector2(2400, 445)) < 60.0)
+		85:
+			warp(Vector2(3200, 120))            # zone2 백 상층 위 공중 (흑 상태로 진입)
+		120:
+			check("6) 백 구역 진입 → 자동 백", player.get("player_color") == 1)
+			check("6) 백 상층 착지 = 생존(리스폰 안 됨)",
+				player.global_position.distance_to(Vector2(3200, 189)) < 60.0)
+			check("7) 카메라 리밋 = REGION 2 트윈 완료",
 				(world.get_node("ProtoCamera").get("_limits") as Rect2).position
 					.distance_to(Vector2(1600, -168)) < 1.0)
-			# 구역 2 의 백 발판(셀 82~84, y6 → top y=192)을 흑 상태로 밟는다
-			player.set("velocity", Vector2.ZERO)
-			player.set("global_position", Vector2(2660, 186))
+		125:
+			warp(Vector2(3700, 168))            # 다리 (회색, 탑 내부 = 밴드 A 범위)
+		155:
+			check("8) 다리 통과 → 구역 3", world.get("_region") == 3)
+			check("8) 체크포인트 = 다리(3400,189)",
+				(world.get("_spawn_pos") as Vector2).distance_to(Vector2(3400, 189)) < 1.0)
 		160:
-			check("6) 백 발판 밟은 흑 → 사망 → 구역2 체크포인트 리스폰",
-				player.global_position.distance_to(Vector2(1800, 445)) < 60.0)
-		170:
-			# 구역 1 로 복귀
-			player.set("velocity", Vector2.ZERO)
-			player.set("global_position", Vector2(400, 440))
-		200:
-			check("7) 구역 1 복귀", world.get("_region") == 1)
-			player.call("_toggle_color")   # 구역 1 은 자유 전환
-		215:
-			check("7) 구역1 Shift = 자유 전환(백 유지)", player.get("player_color") == 1)
-			player.call("_toggle_color")   # 흑으로 원복
+			warp(Vector2(4000, 380))            # 밴드 A(흑) 공중 → 판자촌 바닥
+		190:
+			check("9) 밴드 A(흑) → 자동 흑", player.get("player_color") == 0)
+		195:
+			warp(Vector2(4176, -220))           # 밴드 B(백) 공중 → B3 백 발판
 		225:
-			# 골인 지점 (백 상층 위 공중) 으로 — ExitZone 통과
-			player.set("velocity", Vector2.ZERO)
-			player.set("global_position", Vector2(3280, 150))
-		255:
-			check("8) ExitZone 진입 → 월드 클리어", world.get("_cleared") == true)
+			check("10) 밴드 B(백) → 자동 백", player.get("player_color") == 1)
+		230:
+			warp(Vector2(3728, -404))           # 밴드 C(흑) 공중 → G2 회색 발판
+		260:
+			check("11) 밴드 C(흑) → 자동 흑", player.get("player_color") == 0)
+			player.call("_toggle_color")        # 구역 안 수동 토글 시도
+		268:
+			check("11) 구역 안 토글 → 즉시 되돌려짐(흑 유지·생존)",
+				player.get("player_color") == 0
+				and player.global_position.distance_to(Vector2(3728, -355)) < 60.0)
+			check("12) 카메라 리밋 = REGION 3 트윈 완료",
+				(world.get_node("ProtoCamera").get("_limits") as Rect2).position
+					.distance_to(Vector2(3520, -1080)) < 1.0)
+		275:
+			warp(Vector2(400, 440))             # 구역 1 복귀
+		300:
+			check("13) 구역 1 복귀", world.get("_region") == 1)
+			player.call("_toggle_color")        # 구역 1 은 자유 전환
+		310:
+			check("13) 구역1 Shift = 자유 전환(백 유지)", player.get("player_color") == 1)
+		315:
+			warp(Vector2(4330, -930))           # zone3 옥상 골인 지점
+		350:
+			check("14) ExitZone 진입 → 월드 클리어", world.get("_cleared") == true)
 			print("---")
 			print("결과: %d개 실패" % fails if fails > 0 else "결과: 전부 통과 ✅")
 			quit(1 if fails > 0 else 0)

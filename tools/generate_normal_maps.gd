@@ -16,6 +16,16 @@ const TARGETS := {
 	"res://assets/textures/bg/bg_far.svg": 1.2,
 	"res://assets/textures/bg/bg_mid.svg": 1.6,
 	"res://assets/textures/bg/bg_near.svg": 2.0,
+	# [2026-07-19 도형] 프롭 일러스트 (zone1 시골·복도·zone3 도시 장식) —
+	# zone_visuals.gd 가 런타임에 <이름>_n.png 를 찾아 CanvasTexture 로 감싸므로
+	# 여기 등록해 두면 프롭이 자동으로 빛에 입체 반응한다.
+	"res://assets/textures/props/grass_tuft.svg": 2.2,
+	"res://assets/textures/props/lamp_post.svg": 2.0,
+	"res://assets/textures/props/glow_orb.svg": 1.4,
+	"res://assets/textures/props/ledge_light.svg": 2.4,
+	"res://assets/textures/props/ledge_dark.svg": 2.4,
+	"res://assets/textures/props/shack.svg": 1.8,
+	"res://assets/textures/props/tower_block.svg": 1.6,
 }
 const OUT_DIR := "res://assets/textures/normal"
 
