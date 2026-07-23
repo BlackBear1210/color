@@ -48,6 +48,19 @@ const FALL_SPEED_REF: float = 1300.0
 ## 구역 리밋 전환(팬) 시간(초) — 바인식 "구역이 이어지는" 연출의 핵심
 const LIMIT_TWEEN_TIME: float = 1.1
 
+# ── [2026-07-22 도형 · 신규] 트라우마 방식 화면 흔들림(Camera Shake) ──────
+## GDC 2016 Squirrel Eiserloh "Juicing Your Cameras" 문법:
+##  · 외부에서 add_trauma(0~1) 로 "충격"을 쌓고, 매 프레임 일정 비율로 감쇠시킨다.
+##  · 실제 흔들림 세기 = trauma² (제곱이라 작은 충격은 거의 안 흔들리고 큰 충격만 확 흔들려
+##    자연스럽다). 이 값에 비례해 카메라 offset 을 랜덤하게 튕긴다.
+##  · ★리밋으로 클램프하는 global_position 이 아니라 Camera2D 의 offset 을 쓴다 →
+##    구역 리밋 밖으로 새지 않으면서도 화면만 흔들린다(리밋 로직과 완전히 독립).
+const SHAKE_MAX_OFFSET: float = 14.0   ## trauma=1 일 때 최대 흔들림(px)
+const TRAUMA_DECAY: float = 1.6        ## 초당 트라우마 감쇠량(클수록 빨리 잦아듦)
+var _trauma: float = 0.0
+## Camera2D 는 기본적으로 자기 rotation 을 뷰에 반영하지 않으므로(ignore_rotation=true)
+## 회전 흔들림은 효과가 없다 → offset(위치) 흔들림만 사용해 확실하게 동작시킨다.
+
 var target: CharacterBody2D = null       # 따라갈 플레이어
 var _look_x: float = 0.0                 # 현재 룩어헤드 오프셋 (부드럽게 이동)
 var _face: float = 1.0                   # 마지막 바라본 방향 (+1/-1)
@@ -151,6 +164,24 @@ func _physics_process(delta: float) -> void:
 	if _has_limits:
 		pos = _clamp_to_limits(pos)
 	global_position = pos
+
+	# ── 5) [2026-07-22 도형] 화면 흔들림: 리밋과 무관한 offset 으로만 튕긴다 ─
+	_update_shake(delta)
+
+## 외부(존)에서 충격을 쌓는 공개 API. 예) 착지=약, 회색 페인트=중, 사망=강.
+## 여러 번 불리면 누적되며 1.0 에서 포화한다.
+func add_trauma(amount: float) -> void:
+	_trauma = clampf(_trauma + amount, 0.0, 1.0)
+
+func _update_shake(delta: float) -> void:
+	if _trauma <= 0.0:
+		if offset != Vector2.ZERO:
+			offset = Vector2.ZERO   # 흔들림이 끝나면 offset 을 깔끔히 0 으로 되돌린다
+		return
+	_trauma = maxf(_trauma - TRAUMA_DECAY * delta, 0.0)
+	var s := _trauma * _trauma   # 제곱 곡선: 작은 충격은 은은, 큰 충격만 강하게
+	# 매 프레임 무작위 방향으로 offset 을 튕긴다(고주파 흔들림). 리밋 클램프와 무관.
+	offset = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * SHAKE_MAX_OFFSET * s
 
 ## 카메라가 가야 할 이상적 중심점
 func _desired_center() -> Vector2:

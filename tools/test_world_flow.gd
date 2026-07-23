@@ -124,4 +124,9 @@ func _tick() -> void:
 			check("14) ExitZone 진입 → 월드 클리어", world.get("_cleared") == true)
 			print("---")
 			print("결과: %d개 실패" % fails if fails > 0 else "결과: 전부 통과 ✅")
+			# [2026-07-22 도형] 종료 전 월드 노드 동기 해제로 노드 누수를 줄인다.
+			# ※ 남는 leaked 경고는 프레임워크 SceneTreeTimer(월드 클리어의 1.6초 대기 등
+			#   강제 --quit 시점에 안 끝난 타이머)라 노드 해제로는 못 잡는다 — 무해(실게임 무관).
+			if is_instance_valid(world):
+				world.free()
 			quit(1 if fails > 0 else 0)

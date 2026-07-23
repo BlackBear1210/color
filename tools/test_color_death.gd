@@ -82,4 +82,10 @@ func _tick() -> void:
 			check("5) 전환 존 밖 Shift → 잠금(흑으로 되돌아옴)", player.get("player_color") == 0)
 			print("---")
 			print("결과: %d개 실패" % fails if fails > 0 else "결과: 전부 통과 ✅")
+			# [2026-07-22 도형] 종료 전 로드했던 존을 동기 해제해 노드 누수를 줄인다.
+			# ※ 남는 "ObjectDB instances leaked at exit" 경고는 노드가 아니라 프레임워크
+			#   SceneTreeTimer 1개(강제 --quit 시점에 아직 안 끝난 대기 타이머)라 여기서
+			#   잡을 수 없다 — 헤드리스 강제종료에서만 뜨는 무해한 경고(실게임 무관).
+			if is_instance_valid(zone):
+				zone.free()
 			quit(1 if fails > 0 else 0)

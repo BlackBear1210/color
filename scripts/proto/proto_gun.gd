@@ -25,11 +25,22 @@ const DIST_MAX: float = 420.0       ## 이 거리 이상 = POWER_MAX
 const TRAJ_STEP: float = 1.0 / 60.0   ## 시뮬레이션 시간 간격
 const TRAJ_MAX_TIME: float = 2.0      ## 최대 시뮬레이션 시간 (ProtoBullet lifetime 과 동일)
 const TRAJ_DOT_EVERY: int = 4         ## 몇 스텝마다 점 하나 (점선 간격)
-const TRAJ_DOT_RADIUS: float = 2.5
-## "너무 잘 보이지 않고 흐릿하게" — 중간 회색 + 낮은 알파라 흑/백 어느 지형 위에서도
-## 은은하게만 보인다. 점은 진행할수록 더 옅어진다.
-const TRAJ_COLOR: Color = Color(0.5, 0.5, 0.5, 0.32)
-const TRAJ_ALPHA_END: float = 0.10
+const TRAJ_DOT_RADIUS: float = 3.0    ## [2026-07-22] 2.5 → 3.0 (조금 키워 가독↑)
+## ── [2026-07-22 도형 · 가시성 개선] ────────────────────────────────────
+## 기존엔 "은은하게" 의도로 중간 회색(알파 0.32→0.10)만 썼는데, 실제로 배경(흑/백 지형)에
+## 묻혀 안 보인다는 게 최초 피드백이자 개발 바이블 Chapter 5.3 의 핵심 지적이었다.
+## 원인: 단일 회색은 흑 지형 위에선 어둡고, 백 지형 위에선 밝아 어느 쪽에서도 대비가 약하다.
+## 해결: 점을 "어두운 외곽 링 + 밝은 코어" 2겹으로 그린다 → 흰 배경에선 링이, 검은 배경에선
+##       코어가 보여 **어느 지형 위에서도 대비가 살아난다**(외곽선 트릭). 알파도 크게 올린다.
+const TRAJ_CORE_COLOR: Color = Color(0.95, 0.95, 0.95)  ## 밝은 코어 (검은 지형에서 보임)
+const TRAJ_RING_COLOR: Color = Color(0.05, 0.05, 0.05)  ## 어두운 외곽 링 (흰 지형에서 보임)
+const TRAJ_ALPHA_START: float = 0.85   ## 입 근처 = 또렷
+const TRAJ_ALPHA_END: float = 0.35     ## 먼 쪽 = 옅게(하지만 예전 0.10 보다 훨씬 진하게)
+const TRAJ_RING_EXTRA: float = 1.4     ## 외곽 링이 코어보다 이만큼 큼(px)
+## 점선이 표적을 향해 "흐르는" 애니메이션 속도(점 간격/초) — 발사 방향을 직관적으로 알림
+const TRAJ_FLOW_SPEED: float = 6.0
+## 탄착 마커: 궤적이 지형에 실제로 닿았을 때만 빨간 원으로 "여기 맞음"을 또렷하게 표시
+const TRAJ_HIT_COLOR: Color = Color(1.0, 0.25, 0.2, 0.9)
 
 var paint_system: PaintSystem
 var terrain: TileMapLayer
@@ -37,13 +48,15 @@ var player: Node          # player.gd (player_color 를 읽기만 함)
 
 var _aiming: bool = false
 var _traj_points: PackedVector2Array = PackedVector2Array()   # 전역 좌표
+var _traj_hit: bool = false   ## [2026-07-22] 마지막 궤적이 지형에 닿아 끊겼는지(=탄착 마커 표시 여부)
+var _flow_time: float = 0.0   ## [2026-07-22] 점선 흐름 애니메이션용 시간 누적
 
 func setup(ps: PaintSystem, layer: TileMapLayer, p: Node) -> void:
 	paint_system = ps
 	terrain      = layer
 	player       = p
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("shoot"):
 		_shoot()
 
@@ -53,6 +66,11 @@ func _process(_delta: float) -> void:
 		_aiming = aiming_now
 		if not _aiming:
 			_traj_points = PackedVector2Array()
+		queue_redraw()
+
+	# [2026-07-22 도형] 조준 중에는 점선이 표적 쪽으로 흐르도록 시간을 누적하고 매 프레임 다시 그린다.
+	if _aiming:
+		_flow_time += delta * TRAJ_FLOW_SPEED
 		queue_redraw()
 
 func _physics_process(_delta: float) -> void:
@@ -95,6 +113,7 @@ func _simulate_trajectory() -> PackedVector2Array:
 	var vel := _launch_velocity()
 	points.append(pos)
 
+	_traj_hit = false   # [2026-07-22] 이번 시뮬이 지형에 닿았는지 초기화
 	var steps := int(TRAJ_MAX_TIME / TRAJ_STEP)
 	for i in steps:
 		vel.y += GRAVITY * TRAJ_STEP
@@ -104,6 +123,7 @@ func _simulate_trajectory() -> PackedVector2Array:
 		var hit := space.intersect_ray(query)
 		if hit:
 			points.append(hit["position"])   # 탄착점까지만 — 지형 뒤로는 안 그림
+			_traj_hit = true                  # [2026-07-22] 지형에 닿아 끊김 → 탄착 마커 표시
 			break
 		pos = next
 		points.append(pos)
@@ -115,14 +135,21 @@ func _draw() -> void:
 	# Player 가 비균등 스케일(0.795, 0.368)이라 로컬 좌표로 그리면 점이 찌그러진다.
 	# 전역 변환의 역행렬을 걸어 "월드 좌표 그대로" 그린다 (점 = 항상 동그란 원).
 	draw_set_transform_matrix(get_global_transform().affine_inverse())
-	# 점선: TRAJ_DOT_EVERY 스텝마다 점 하나. 멀어질수록 알파를 낮춰 더 흐릿하게.
 	var n := _traj_points.size()
-	for i in range(0, n, TRAJ_DOT_EVERY):
+	# [2026-07-22 도형] 점선 흐름: 시작 인덱스를 시간에 따라 밀어 점들이 표적 쪽으로 흐르게.
+	var phase := int(_flow_time) % TRAJ_DOT_EVERY
+	for i in range(phase, n, TRAJ_DOT_EVERY):
 		var fade := float(i) / float(n)
-		var col := TRAJ_COLOR
-		col.a = lerpf(TRAJ_COLOR.a, TRAJ_ALPHA_END, fade)
-		draw_circle(_traj_points[i], TRAJ_DOT_RADIUS, col)
-	# 탄착점(마지막 점)은 반지름만 살짝 크게 — 어디서 끊기는지 정도만 암시
-	var end_col := TRAJ_COLOR
-	end_col.a = 0.22
-	draw_circle(_traj_points[n - 1], TRAJ_DOT_RADIUS * 1.6, end_col)
+		var a := lerpf(TRAJ_ALPHA_START, TRAJ_ALPHA_END, fade)
+		# 2겹 그리기: 먼저 어두운 외곽 링(흰 지형에서 보임) → 그 위에 밝은 코어(검은 지형에서 보임).
+		# 두 색이 함께 있어 흑/백 어떤 배경에서도 점의 대비가 유지된다.
+		var ring := TRAJ_RING_COLOR;  ring.a = a
+		var core := TRAJ_CORE_COLOR;  core.a = a
+		draw_circle(_traj_points[i], TRAJ_DOT_RADIUS + TRAJ_RING_EXTRA, ring)
+		draw_circle(_traj_points[i], TRAJ_DOT_RADIUS, core)
+	# 탄착 마커: 지형에 실제로 닿은 경우에만 빨간 원 + 링으로 "여기 맞음"을 또렷하게 표시.
+	# (최대 사거리까지 날아가 안 닿은 경우엔 마커를 그리지 않아 오해를 막는다.)
+	if _traj_hit:
+		var end := _traj_points[n - 1]
+		draw_circle(end, TRAJ_DOT_RADIUS + TRAJ_RING_EXTRA + 2.0, TRAJ_RING_COLOR)  # 어두운 테두리
+		draw_circle(end, TRAJ_DOT_RADIUS + 2.0, TRAJ_HIT_COLOR)                     # 빨간 탄착점

@@ -22,6 +22,8 @@ const PROTO_GUN := preload("res://scripts/proto/proto_gun.gd")
 const PROTO_CAMERA := preload("res://scripts/proto/proto_camera.gd")
 const PROTO_MOTION := preload("res://scripts/proto/proto_motion.gd")
 const ZONE_VISUALS := preload("res://scripts/proto/zone_visuals.gd")
+## [2026-07-22 도형] 이펙트 스포너(색칠 스플래시·착지 먼지·카메라 킥) 런타임 부착용
+const EFFECT_SPAWNER := preload("res://scripts/proto/effect_spawner.gd")
 
 ## 입(페인트를 뱉는 위치) — 플레이어 로컬 좌표 (화면 기준 약 (14, -26))
 const MOUTH_POS := Vector2(18, -70)
@@ -88,6 +90,13 @@ func _ready() -> void:
 	add_child(visuals)
 	visuals.setup(player)
 
+	# 8) ★[2026-07-22 도형] 이펙트 스포너 — 색칠 스플래시·착지 먼지·카메라 킥·회색 히트스톱.
+	#    paint_system 이 이미 쏘고 있던 hit_feedback 시그널을 여기서 구독해 연출로 바꾼다.
+	var fx: EffectSpawner = EFFECT_SPAWNER.new()
+	fx.name = "EffectSpawner"
+	add_child(fx)
+	fx.setup(paint_system, terrain, player, camera)
+
 ## 지형이 실제로 찍힌 범위 → 카메라 리밋 사각형 (월드 좌표)
 func _auto_limit_rect() -> Rect2:
 	var used := terrain.get_used_rect()
@@ -130,6 +139,9 @@ func _die() -> void:
 	_death_count += 1
 	player.velocity = Vector2.ZERO
 	player.set_physics_process(false)        # 물리 정지 = player_anim.gd 가 death 재생 (파일 무수정)
+	# [2026-07-22 도형] 사망 순간 강한 화면 흔들림(가장 큰 트라우마)으로 타격감 부여.
+	if camera:
+		camera.add_trauma(0.6)
 	brush_ui.show_message("💀 반대색 지형을 밟아 사망 (%d회)" % _death_count)
 	await get_tree().create_timer(DEATH_ANIM_TIME).timeout
 	player.global_position = _spawn_pos
