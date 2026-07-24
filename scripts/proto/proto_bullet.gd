@@ -21,6 +21,9 @@ func setup(ps: PaintSystem, color: int, velocity: Vector2, gravity: float) -> vo
 	_gravity      = gravity
 
 func _ready() -> void:
+	# ★[2026-07-24 도형] 레이어 1(실체 지형) + 레이어 4(유령 = 아직 안 칠해진 발판) 둘 다 감지.
+	# 플레이어는 레이어 1만 보므로 유령 발판을 통과하지만, 총알은 유령도 맞힐 수 있어야 한다.
+	collision_mask = 1 | PaintPlatform.유령_레이어비트
 	visual.color = Color(0.05, 0.05, 0.05) if _color == ColorDefs.BLACK else Color(0.95, 0.95, 0.95)
 	body_entered.connect(_on_body_entered)
 	get_tree().create_timer(lifetime).timeout.connect(queue_free)
@@ -31,6 +34,13 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
+		return
+	# ★[2026-07-24 도형] 페인트 시스템 v3 — 플랫폼 단위 색칠 분기 추가.
+	# 기존 타일맵 분기는 그대로 두고 앞에 한 갈래만 얹었다(zone_01/02/world_1 회귀 없음).
+	# 플랫폼은 자기 상태를 스스로 알고 있으므로 PaintSystem 을 거치지 않고 직접 호출한다.
+	if body is PaintPlatform:
+		(body as PaintPlatform).명중(_color, global_position)
+		queue_free()
 		return
 	if body is TileMapLayer:
 		var layer := body as TileMapLayer

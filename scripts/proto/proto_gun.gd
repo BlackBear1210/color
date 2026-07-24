@@ -46,6 +46,11 @@ var paint_system: PaintSystem
 var terrain: TileMapLayer
 var player: Node          # player.gd (player_color 를 읽기만 함)
 
+## ★[2026-07-24 도형] 페인트 v3(플랫폼 단위) 스테이지용 회수 매니저.
+## 설정되면 E 회수를 타일맵(PaintSystem) 대신 이쪽으로 보낸다.
+## 비어 있으면 기존 zone_01/02/world_1 동작 그대로 — 회귀 없음.
+var 페인트매니저: Node = null
+
 var _aiming: bool = false
 var _traj_points: PackedVector2Array = PackedVector2Array()   # 전역 좌표
 var _traj_hit: bool = false   ## [2026-07-22] 마지막 궤적이 지형에 닿아 끊겼는지(=탄착 마커 표시 여부)
@@ -83,7 +88,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	# E = 회수 (액션 미등록: project.godot 무수정 원칙)
 	if event is InputEventKey and event.pressed and not event.echo \
 			and event.physical_keycode == KEY_E:
-		paint_system.recover(terrain)
+		# [2026-07-24 도형] v3 스테이지면 플랫폼 매니저가, 아니면 기존 타일맵이 회수한다.
+		if 페인트매니저 != null:
+			페인트매니저.되돌리기()
+		elif paint_system != null and terrain != null:
+			paint_system.recover(terrain)
 
 ## 입~마우스 거리·방향 → 발사 초속 벡터 (포트리스식: 멀수록 세게).
 func _launch_velocity() -> Vector2:

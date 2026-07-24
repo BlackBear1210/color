@@ -16,6 +16,8 @@ extends Control
 ## 설정(볼륨·전체화면)은 v1 그대로 user://settings.cfg.
 
 const MAIN_SCENE := "res://scenes/world_1/world_1.tscn"   # 시작 → 심리스 월드
+## [2026-07-24 도형] 신규 챕터(스테이지 1~5 + 셰이더/VFX 비교존) 선택 화면
+const CHAPTER_SCENE := "res://scenes/스테이지/스테이지_선택.tscn"
 const SETTINGS_PATH := "user://settings.cfg"
 const PLAYER_FRAMES := "res://assets/p/player_frames.tres"
 const TILESET := "res://assets/tilesets/terrain_tileset.tres"
@@ -44,7 +46,25 @@ func _ready() -> void:
 	$UILayer/SettingsPanel/Panel/VBox/BackButton.pressed.connect(_on_settings_back)
 	volume_slider.value_changed.connect(_on_volume_changed)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
+	# ★[2026-07-24 도형] 신규 챕터(스테이지 1~5, 페인트 v3) 입구를 로비에 추가.
+	#   lobby.tscn 파일은 건드리지 않고, 기존 시작 버튼을 복제해 런타임에 끼워 넣는다
+	#   (씬 파일을 안 고치면 팀원과 병합 충돌이 나지 않는다 — 9차부터 지켜온 방식).
+	_챕터_버튼_추가()
 	_load_settings()
+
+## 시작 버튼 바로 아래에 "챕터 1" 버튼을 하나 더 만든다.
+func _챕터_버튼_추가() -> void:
+	var 메뉴 := $UILayer/Menu
+	var 원본 := $UILayer/Menu/StartButton as Button
+	if 원본 == null:
+		return
+	var b := 원본.duplicate() as Button          # 폰트·테마·크기를 그대로 물려받는다
+	b.name = "ChapterButton"
+	b.text = "챕터 1 (신규)"
+	메뉴.add_child(b)
+	메뉴.move_child(b, 원본.get_index() + 1)
+	b.pressed.connect(func() -> void:
+		StageTransition.change_scene(self, CHAPTER_SCENE))
 
 	_build_diorama()
 	_add_atmosphere()

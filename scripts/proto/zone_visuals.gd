@@ -26,6 +26,11 @@ const VIGNETTE_STRENGTH: float = 0.32
 
 const NORMAL_DIR := "res://assets/textures/normal/"
 
+## [2026-07-25 도형] 환경광을 씬마다 다르게 줄 수 있게 열어둔다.
+## 새 스테이지(stage_lab)는 배경·프롭이 많아 기본값(0.82)이면 전체가 너무 어둡다.
+## setup() 전에 `visuals.환경광 = Color(...)` 로 덮어쓰면 된다. 기존 존은 그대로 AMBIENT.
+var 환경광: Color = AMBIENT
+
 var _player: Node2D
 var _light: PointLight2D
 
@@ -40,7 +45,7 @@ func setup(p_player: Node2D) -> void:
 func _add_ambient() -> void:
 	var cm := CanvasModulate.new()
 	cm.name = "Ambient"
-	cm.color = AMBIENT
+	cm.color = 환경광
 	add_child(cm)
 
 ## 2) 플레이어를 따라다니는 원형 광원 (GradientTexture2D 라디얼 = 외부 에셋 0)
