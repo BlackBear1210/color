@@ -19,6 +19,9 @@ uniform int   seed_count = 0;
 uniform vec2  seeds[MAX_SEEDS];        // 씨앗 위치 (월드 좌표)
 uniform float seed_r[MAX_SEEDS];       // 각 씨앗의 현재 번짐 반지름 (월드 px)
 uniform int   seed_color[MAX_SEEDS];   // 0=검정, 1=흰색
+// 반대색 짝을 찾는 방향. 0=가로 오프셋(왼쪽=검정/오른쪽=흰색 — brick·grass·rock·soil),
+// 1=세로 오프셋(위=검정/아래=흰색 — wood). 시트마다 배치 규칙이 달라 씨앗별로 저장한다.
+uniform int   seed_axis[MAX_SEEDS];
 uniform float max_r = 55.0;            // 씨앗이 다 자랐을 때의 반지름 (테스트_월드_24x24.gd 의 목표_반지름과 동일하게 맞출 것)
 
 // ── 번짐 모양 튜닝 (ink_spread.gdshader 와 같은 알고리즘, 월드 px 단위로 환산한 값) ──
@@ -59,6 +62,8 @@ void fragment() {
 	vec4 base = texture(TEXTURE, UV);
 
 	// ── 가장 가까운 씨앗까지의 거리 (여러 씨앗 중 가장 가까운 것이 이 픽셀을 칠함) ──
+	// ★cb/cw 계산보다 먼저 구해야 한다 — 반대색 짝을 어느 축으로 찾을지가
+	//   "이 픽셀 주변에서 가장 가까운 씨앗이 어느 시트에서 만들어졌는지"에 달려있다.
 	float d = 1e9;
 	int nearest = -1;
 	for (int i = 0; i < MAX_SEEDS; i++) {
@@ -69,14 +74,24 @@ void fragment() {
 			nearest = i;
 		}
 	}
+
+	// ── zone_04 와 같은 트릭: 이 타일(base)과 그 반대색 짝(there)을 같이 샘플링 ──
+	// ⚠ 시트마다 배치 규칙이 다르다 — brick·grass·rock·soil 은 가로(axis=0),
+	//   wood 는 세로(axis=1). 가장 가까운 씨앗이 어느 축인지로 판단한다.
+	//   ★무색(안 칠한) 상태는 여전히 "원래 그려진 타일 색 그대로"다 — 회색으로 안 바꾼다.
+	int axis = (nearest >= 0) ? seed_axis[nearest] : 0;
+	vec2 other_uv = (axis == 1) ? UV + vec2(0.0, 0.5) : UV + vec2(0.5, 0.0);
+	other_uv = fract(other_uv);
+	vec4 there = texture(TEXTURE, other_uv);
+	bool here_is_black = (axis == 1) ? (UV.y < 0.5) : (UV.x < 0.5);
+	vec4 cb = here_is_black ? base : there;   // 검정 버전
+	vec4 cw = here_is_black ? there : base;   // 흰색 버전
+
 	// 경계를 노이즈로 흔든다 → 원이 아니라 "번진 잉크" 모양 (zone_04 와 같은 방식)
 	d += (fbm(world_pos * noise_scale) - 0.5) * noise_amount;
 	float mask = (seed_count == 0) ? 0.0 : (1.0 - smoothstep(0.0, edge_soft, d));
 
-	vec3 target = vec3(0.08);
-	if (nearest >= 0 && seed_color[nearest] == 1) {
-		target = vec3(0.95);
-	}
+	vec3 target = (nearest >= 0 && seed_color[nearest] == 1) ? cw.rgb : cb.rgb;
 
 	vec3 col = mix(base.rgb, target, mask);
 
