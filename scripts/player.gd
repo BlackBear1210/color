@@ -39,10 +39,18 @@ const JUMP_CUT_MULTIPLIER:     float = 0.4   # 점프 키 뗄 때 상승 감속 
 ## 상승 가속도에만 곱해지는 배수. 1.0=기본. 크게 하면 상승이 더 빨리 감속돼
 ## "훅 튀었다 정점에서 멎는" 느낌, 작게 하면 "둥실 오래 떠오르는" 느낌이 된다.
 ## 높이·거리는 그대로 유지한 채(재계산으로 자동 보정) 상승 구간의 "체감 속도"만 바뀐다.
-@export_range(0.1, 5.0) var 상승_배수: float = 1.0:
+@export_range(0.1, 10.0) var 상승_배수: float = 1.0:
 	set(v):
 		상승_배수 = maxf(v, 0.05)
 		if is_inside_tree(): _점프_재계산()
+## 낙하 중 매초 하강 배수가 얼마나 더 세지는지. 0이면 기존과 동일(하강 배수 항상 FALL_GRAVITY_MULTIPLIER 고정).
+## 값을 주면 "떨어질수록 점점 더 빨리 떨어지는" 느낌이 생긴다.
+## ⚠ _점프_재계산() 공식은 하강 배수가 FALL_GRAVITY_MULTIPLIER로 고정이라고 가정하므로,
+##   이 값을 0보다 크게 주면 실제 착지 지점이 점프_거리_칸으로 계산한 값보다 조금 더 가까워진다
+##   (후반부 하강이 계산보다 더 빨라지니까).
+@export_range(0.0, 10.0) var 낙하_가속_증가율: float = 0.0
+## 위 증가율로 커지는 하강 배수의 상한. 무한정 커지는 걸 막는 안전장치.
+@export_range(0.1, 20.0) var 낙하_최대_배수: float = 6.0
 
 func _점프_재계산() -> void:
 	var 높이 := 점프_높이_칸 * 타일_크기
@@ -53,6 +61,7 @@ func _점프_재계산() -> void:
 
 var _coyote_timer:      float = 0.0
 var _jump_buffer_timer: float = 0.0
+var _fall_timer:        float = 0.0  ## 낙하가 시작된 뒤 경과 시간(낙하 가속용, 착지/상승 시 0으로 리셋)
 
 # ── 색 상태 (검정/흰색) ─────────────────────────────────────────────────
 # 원본 color 프로젝트의 player_color 를 이식. 총알 색 = 이 색과 동일하게 발사된다.
@@ -65,10 +74,16 @@ func _ready() -> void:
 	_점프_재계산()   # 씬 로드 중엔 계산을 건너뛰었으니 여기서 최종값으로 한 번 확정
 
 func _physics_process(delta: float) -> void:
-	# ── 중력 (비대칭: 상승/낙하 각각 배수 적용) ───────────────────────
+	# ── 중력 (비대칭: 상승/낙하 각각 배수 적용, 낙하는 시간이 지날수록 점점 가속) ─
 	if not is_on_floor():
-		var grav := gravity * FALL_GRAVITY_MULTIPLIER if velocity.y > 0.0 else gravity * 상승_배수
-		velocity.y += grav * delta
+		if velocity.y > 0.0:
+			_fall_timer += delta
+			var fall_mult := minf(FALL_GRAVITY_MULTIPLIER + 낙하_가속_증가율 * _fall_timer, 낙하_최대_배수)
+			velocity.y += gravity * fall_mult * delta
+		else:
+			velocity.y += gravity * 상승_배수 * delta
+	else:
+		_fall_timer = 0.0
 
 	# ── 가변 점프 높이: 버튼 뗄 때 상승 속도 감소 ───────────────────
 	if Input.is_action_just_released("jump") and velocity.y < 0.0:
