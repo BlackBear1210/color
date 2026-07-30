@@ -7,14 +7,16 @@ class_name ProtoBullet
 
 @export var lifetime: float = 2.0
 
-var _paint_system: PaintSystem
+## PaintSystem(v2, 타일 셀 단위) 또는 TilePaintMap(아틀라스 좌표 단위) 둘 중 하나.
+## 두 클래스가 on_hit(layer, cell, color) 시그니처를 공유하므로 타입을 좁히지 않는다.
+var _paint_system: Node
 var _color: int = ColorDefs.BLACK
 var _velocity: Vector2 = Vector2.RIGHT * 900.0
 var _gravity: float = 1400.0
 
 @onready var visual: Polygon2D = $Visual
 
-func setup(ps: PaintSystem, color: int, velocity: Vector2, gravity: float) -> void:
+func setup(ps: Node, color: int, velocity: Vector2, gravity: float) -> void:
 	_paint_system = ps
 	_color        = color
 	_velocity     = velocity
@@ -42,7 +44,7 @@ func _on_body_entered(body: Node2D) -> void:
 		(body as PaintPlatform).명중(_color, global_position)
 		queue_free()
 		return
-	if body is TileMapLayer:
+	if body is TileMapLayer and _paint_system != null:
 		var layer := body as TileMapLayer
 		# 탄착점이 셀 경계에 걸칠 수 있어 진행 방향으로 살짝 안쪽 지점도 함께 검사
 		var dir := _velocity.normalized()

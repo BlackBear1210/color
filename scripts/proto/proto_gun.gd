@@ -42,7 +42,8 @@ const TRAJ_FLOW_SPEED: float = 6.0
 ## 탄착 마커: 궤적이 지형에 실제로 닿았을 때만 빨간 원으로 "여기 맞음"을 또렷하게 표시
 const TRAJ_HIT_COLOR: Color = Color(1.0, 0.25, 0.2, 0.9)
 
-var paint_system: PaintSystem
+## PaintSystem(v2) 또는 TilePaintMap — on_hit/recover 이름을 공유하므로 타입을 좁히지 않는다.
+var paint_system: Node
 var terrain: TileMapLayer
 var player: Node          # player.gd (player_color 를 읽기만 함)
 
@@ -56,7 +57,7 @@ var _traj_points: PackedVector2Array = PackedVector2Array()   # 전역 좌표
 var _traj_hit: bool = false   ## [2026-07-22] 마지막 궤적이 지형에 닿아 끊겼는지(=탄착 마커 표시 여부)
 var _flow_time: float = 0.0   ## [2026-07-22] 점선 흐름 애니메이션용 시간 누적
 
-func setup(ps: PaintSystem, layer: TileMapLayer, p: Node) -> void:
+func setup(ps: Node, layer: TileMapLayer, p: Node) -> void:
 	paint_system = ps
 	terrain      = layer
 	player       = p

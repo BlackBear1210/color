@@ -27,6 +27,7 @@ const PROTO_GUN := preload("res://scripts/proto/proto_gun.gd")
 const PROTO_CAMERA := preload("res://scripts/proto/proto_camera.gd")
 const PROTO_MOTION := preload("res://scripts/proto/proto_motion.gd")
 const PAINT_MANAGER := preload("res://scripts/proto/paint_manager.gd")
+const TILE_PAINT_MAP := preload("res://scripts/proto/tile_paint_map.gd")
 const PAINT_FX := preload("res://scripts/proto/paint_fx.gd")
 const STAGE_HUD := preload("res://scripts/proto/stage_hud.gd")
 const SHOOT_ANIM := preload("res://scripts/proto/player_shoot_anim.gd")
@@ -57,10 +58,21 @@ const 페이드_시간: float = 0.55
 @export_enum("검정", "흰색") var 시작색: int = 0
 ## 스테이지 시작 시 화면 중앙에 띄울 안내 문구 (레벨이 무엇을 가르치는지)
 @export_multiline var 안내문: String = ""
+## ★타일맵 페인트 모드 — 지형을 PaintPlatform 노드가 아니라 TileMapLayer 로 그린 스테이지.
+## 켜면 TilePaintMap 이 타일의 아틀라스 좌표로 색을 인지해 플랫폼을 자동 검출한다.
+@export var 타일맵_페인트: bool = false
+## 필요횟수 = ceil(플랫폼 긴 변 칸수 / 이 값). 작을수록 많이 쏴야 한다.
+@export var 타일_필요횟수_나눗값: int = 4
+## 이 칸수를 넘는 덩어리는 칠할 수 없는 고정 지형으로 본다. 0 = 제한 없음.
+@export var 타일_고정_타일수: int = 0
+## 명중 결과(progress/painted/wasted/blocked…)를 화면 중앙에 띄운다 — 레벨 튜닝·디버그 전용.
+## ⚠ 기본 끔. 켜면 쏠 때마다 중앙 메시지가 갱신되어 **화면이 번쩍이는 것처럼 보인다**.
+@export var 타일_명중_표시: bool = false
 
 var player: CharacterBody2D
 var camera: Node
 var 매니저: PaintManager
+var 타일페인트: TilePaintMap
 var 이펙트: PaintFX
 var hud: StageHUD
 
@@ -91,6 +103,16 @@ func _ready() -> void:
 	매니저.name = "페인트매니저"
 	add_child(매니저)
 
+	# ── 2.5) ★타일맵 페인트 — 아틀라스 좌표로 색을 인지해 플랫폼을 자동 검출 ──
+	# 이게 켜지면 디자이너는 TileMapLayer 로 맵을 찍기만 하면 되고,
+	# 플랫폼 노드를 하나하나 배치하거나 새 씬으로 복붙할 필요가 없다.
+	if 타일맵_페인트:
+		타일페인트 = TILE_PAINT_MAP.new()
+		타일페인트.name = "타일페인트"
+		타일페인트.필요횟수_나눗값 = 타일_필요횟수_나눗값
+		타일페인트.칠하기_최대_타일수 = 타일_고정_타일수
+		add_child(타일페인트)          # _ready() 에서 부모(=이 스테이지)를 훑어 자동 등록
+
 	# ── 3) 기존 총 제거 → 프로토 총(포물선 + 조준 궤적) 부착 ─────────
 	var 구총 := player.get_node_or_null("Gun")
 	if 구총:
@@ -101,8 +123,10 @@ func _ready() -> void:
 	player.add_child(gun)
 	# 플랫폼 스테이지에는 타일맵이 없다 → PaintSystem/TileMapLayer 는 null.
 	# 대신 E 회수를 페인트매니저로 넘긴다(proto_gun.gd 2026-07-24 분기).
-	gun.setup(null, null, player)
-	gun.페인트매니저 = 매니저
+	# ★타일맵 페인트 모드면 총알의 TileMapLayer 명중을 TilePaintMap 이 받고,
+	#   E 회수도 그쪽으로 보낸다 (on_hit / 되돌리기 이름이 같아 총 코드는 그대로).
+	gun.setup(타일페인트, null, player)
+	gun.페인트매니저 = 타일페인트 if 타일페인트 != null else 매니저
 
 	# ── 4) 카메라 v2 (룩어헤드·플랫폼 스냅) ─────────────────────────
 	var 구카메라 := player.get_node_or_null("Camera2D") as Camera2D
@@ -159,6 +183,27 @@ func _ready() -> void:
 	if 안내문 != "":
 		hud.메시지(안내문)
 
+	# ── 8.5) ★타일맵 페인트 디버그 — 명중 결과를 눈으로 볼 수 있게 한다 ──────
+	# 이게 없으면 blocked/wasted 처럼 "아무 일도 안 일어나는" 판정이 화면에 전혀 안 보여
+	# 색칠 자체가 고장난 것처럼 오해하게 된다(실제로 그 혼란이 있었다).
+	if 타일페인트 != null and 타일_명중_표시:
+		var 통계: Dictionary = 타일페인트.통계()
+		hud.메시지("타일 플랫폼 %d개 (칠가능 %d)" % [통계["전체"], 통계["칠가능"]])
+		타일페인트.명중됨.connect(_타일_명중_표시)
+
+const _결과_이름 := {
+	"progress": "🎨 칠하는 중",
+	"painted": "✅ 칠해짐",
+	"wasted": "· 같은 색이라 변화 없음",
+	"mixed_gray": "🩶 회색이 됐다 (영구)",
+	"blocked": "🚫 칠할 수 없는 지형",
+	"miss": "· 빈 곳",
+}
+
+func _타일_명중_표시(결과: String, _색: int, _월드좌표: Vector2) -> void:
+	if hud:
+		hud.메시지(_결과_이름.get(결과, 결과))
+
 	# ── 9) 장애물·트리거 연결 ────────────────────────────────────────
 	_트리거_연결()
 
@@ -166,6 +211,12 @@ func _ready() -> void:
 	_어둠에서_밝아짐()
 
 ## 지형·장애물이 실제로 놓인 범위 → 카메라 리밋
+##
+## ⚠[수정] 예전엔 PaintPlatform 만 훑었다. 그래서 지형이 **타일맵으로 그려진**
+##   스테이지(stage_1-1 등)에서는 플랫폼 1~2개만 잡혀 리밋이 화면보다 작아지고,
+##   proto_camera._clamp_to_limits() 가 "리밋이 화면보다 작으면 중앙 고정" 분기를 타서
+##   **카메라가 플레이어를 아예 안 따라가는** 것처럼 보였다.
+##   → TileMapLayer 가 실제로 쓰는 범위도 함께 합친다.
 func _자동_리밋() -> Rect2:
 	var 사각 := Rect2()
 	var 첫번째 := true
@@ -179,9 +230,32 @@ func _자동_리밋() -> Rect2:
 			첫번째 = false
 		else:
 			사각 = 사각.merge(r)
+	for layer in _모든_타일맵(self):
+		var 쓰는범위 := layer.get_used_rect()
+		if 쓰는범위.size.x <= 0 or 쓰는범위.size.y <= 0:
+			continue
+		var 타일 := Vector2(layer.tile_set.tile_size) if layer.tile_set else Vector2(16, 16)
+		var r2 := Rect2(
+			layer.to_global(Vector2(쓰는범위.position) * 타일),
+			Vector2(쓰는범위.size) * 타일 * layer.global_scale)
+		if 첫번째:
+			사각 = r2
+			첫번째 = false
+		else:
+			사각 = 사각.merge(r2)
 	if 첫번째:
 		return Rect2(-640, -360, 1280, 720)
 	return _여백_적용(사각)
+
+## 씬 안의 모든 TileMapLayer (깊이 무관)
+func _모든_타일맵(뿌리: Node) -> Array[TileMapLayer]:
+	var out: Array[TileMapLayer] = []
+	for 자식 in 뿌리.get_children():
+		var l := 자식 as TileMapLayer
+		if l != null:
+			out.append(l)
+		out.append_array(_모든_타일맵(자식))
+	return out
 
 func _여백_적용(r: Rect2) -> Rect2:
 	return Rect2(r.position - Vector2(카메라여백, 카메라여백),
