@@ -299,13 +299,15 @@ func _반대색_밟았나() -> void:
 	if _사망중 or _클리어됨 or _무적 > 0.0 or player == null or not player.is_on_floor():
 		return
 	var 색: int = player.get("player_color")
-	var 밟은 := _발밑_플랫폼()
-	if 밟은 and 밟은.반대색인가(색):
+	if _발밑_위험한가(색):
 		죽기("💀 반대색 지형을 밟았다")
 
-## 발밑 검사 — 중앙 + 좌우 발끝 3점 레이캐스트.
+## 발밑이 위험한(반대색) 지형인가 — 중앙 + 좌우 발끝 3점 레이캐스트.
 ## (플레이어 원점 = 발바닥. 스케일이 비균등이라 로컬 오프셋 대신 월드 오프셋을 쓴다)
-func _발밑_플랫폼() -> PaintPlatform:
+## ★[2026-07-31] PaintPlatform 노드 지형과 TilePaintMap(타일맵) 지형을 둘 다 본다 —
+##   전에는 PaintPlatform 만 캐스팅해서 타일맵 페인트 스테이지(stage_1-1 등)에서는
+##   반대색을 밟아도 죽지 않는 구멍이 있었다.
+func _발밑_위험한가(색: int) -> bool:
 	var space := get_world_2d().direct_space_state
 	for dx in [0.0, -14.0, 14.0]:
 		var 시작 := player.global_position + Vector2(dx, -6.0)
@@ -313,11 +315,19 @@ func _발밑_플랫폼() -> PaintPlatform:
 		q.collision_mask = 1
 		q.exclude = [player.get_rid()]
 		var hit := space.intersect_ray(q)
-		if hit and hit.has("collider"):
-			var p := hit["collider"] as PaintPlatform
-			if p:
-				return p
-	return null
+		if not hit or not hit.has("collider"):
+			continue
+		var p := hit["collider"] as PaintPlatform
+		if p:
+			if p.반대색인가(색):
+				return true
+			continue
+		var layer := hit["collider"] as TileMapLayer
+		if layer != null and 타일페인트 != null:
+			var 셀 := layer.local_to_map(layer.to_local(hit["position"] as Vector2))
+			if 타일페인트.반대색인가(layer, 셀, 색):
+				return true
+	return false
 
 func _위험물_접촉(body: Node2D) -> void:
 	if body == player and not _사망중 and _무적 <= 0.0:

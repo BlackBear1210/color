@@ -29,7 +29,9 @@ extends Node
 ##   · 필요횟수 = 플랫폼의 긴 변(칸) / 나눗값  → 크면 더 많이 맞혀야 한다
 ##   · 진행 중에 다른 색이 오면 회색이 아니라 "새 색으로 리셋"
 ##   · 완성된 플랫폼에 반대색 → 영구 회색 (회수 큐에서 제외)
-##   · E 회수 = 색과 무관하게 "가장 먼저 칠한 플랫폼"부터 원래 타일로 FIFO 복구
+##   · E 회수 = 색과 무관하게, 완성 여부와도 무관하게 "가장 먼저 손댄 플랫폼"부터
+##     FIFO 로 원래 타일로 복구. **진행 중(필요횟수를 아직 못 채운) 플랫폼도 첫 명중 순간
+##     바로 큐에 들어가므로 회수 대상이다** — 완성된 것만 되돌릴 수 있는 게 아니다.
 ##
 ## ▣ 탄약(오토로드 "탄약", ammo_manager.gd)과의 연결
 ##   · 플랫폼이 "완성"되는 순간(= painted 또는 회색으로 덮이는 mixed_gray) 1발씩 소모.
@@ -302,7 +304,10 @@ func _명중_처리(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 		p.맞은 = 0                             # 다른 색이 오면 새 색으로 리셋 (zone_04 규칙 3)
 		_시드_비우기(p)
 	p.진행색 = color
+	var 새로_손댐 := p.맞은 == 0              # ★완성 전이라도 "손댄" 순간 바로 회수 큐에 넣는다
 	p.맞은 += 1
+	if 새로_손댐 and not _큐.has(p):
+		_큐.append(p)
 
 	_오버레이_준비(p)
 	_시드_추가(p, cell)
@@ -313,7 +318,6 @@ func _명중_처리(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 			return "blocked"
 		p.칠해짐 = true
 		_목표반지름_갱신(p, true)               # 마지막 한 방 = 전체로 확 번짐
-		_큐.append(p)
 		_유니폼_갱신(p)                         # 첫 프레임부터 올바른 마스크로 그려지게
 		_애니_시작()
 		상태변경.emit()
@@ -463,13 +467,15 @@ func _회색으로(p: 플랫폼) -> void:
 	_애니_시작()
 
 # ── 회수 (E) ────────────────────────────────────────────────────────────────
-## 가장 먼저 칠한 플랫폼부터 원래 모습으로 되돌린다. 회색은 큐에 없으므로 안 돌아온다.
+## 가장 먼저 "손댄"(완성이든 진행 중이든) 플랫폼부터 원래 모습으로 되돌린다.
+## 회색은 큐에 없으므로 안 돌아온다.
 ## 원본 레이어를 한 번도 수정하지 않았으므로, 오버레이만 지우면 완벽하게 복구된다.
 func 되돌리기() -> bool:
 	while not _큐.is_empty():
 		var p = _큐.pop_front()
 		if p.회색:
 			continue
+		var 완성했었나 := p.칠해짐          # 진행 중이었으면 탄약을 쓴 적이 없으니 환급도 없다
 		if p.오버레이 != null and is_instance_valid(p.오버레이):
 			p.오버레이.queue_free()
 		p.오버레이 = null
@@ -478,7 +484,8 @@ func 되돌리기() -> bool:
 		p.맞은 = 0
 		p.진행색 = -1
 		p.칠해짐 = false
-		탄약.환급(1)                            # 완성할 때 쓴 1발을 즉시 돌려준다
+		if 완성했었나:
+			탄약.환급(1)                        # 완성할 때 쓴 1발을 즉시 돌려준다
 		상태변경.emit()
 		return true
 	return false
@@ -493,6 +500,17 @@ func 큐_크기() -> int:
 
 func 플랫폼_수() -> int:
 	return _플랫폼들.size()
+
+## 지금 이 셀을 밟았을 때 죽는 색인가 (stage_lab 의 사망 판정이 사용 — paint_platform.gd 의
+## 반대색인가() 와 같은 이름·의미).
+## ⚠ PaintPlatform 과 달리 "무색" 개념이 없다 — 타일은 안 칠해도 원래색(흑/백)을 갖고 있어서
+##   칠하기 전에도 위험할 수 있다. 회색·규칙을 모르는 셀(플랫폼이 없음)은 누구에게나 안전.
+func 반대색인가(layer: TileMapLayer, cell: Vector2i, 플레이어색: int) -> bool:
+	var p = _찾기(layer, cell)
+	if p == null or p.회색:
+		return false
+	var 색: int = p.진행색 if p.칠해짐 else p.원래색
+	return 색 != 플레이어색
 
 ## 이 색으로 쏘면 앞으로 몇 발 더 필요한가. 칠할 수 없으면 -1.
 func remaining_hits(layer: TileMapLayer, cell: Vector2i, color: int) -> int:
