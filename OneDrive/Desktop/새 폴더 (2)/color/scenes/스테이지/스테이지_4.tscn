@@ -1,0 +1,1005 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/proto/stage_lab.gd" id="1_mhp57"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/shanty.svg" id="2_5ts7a"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/highrise.svg" id="3_nux8j"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/crane.svg" id="4_xad26"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/wire_pole.svg" id="5_02qsg"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/water_tank.svg" id="6_kls00"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/pipe_cluster.svg" id="7_vuknq"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/reed.svg" id="8_haqwt"]
+[ext_resource type="Script" path="res://scripts/proto/paint_platform.gd" id="9_eu51h"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/grass_tuft.svg" id="10_oyukl"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/hang_moss.svg" id="11_2tnqe"]
+[ext_resource type="Texture2D" path="res://assets/textures/props/lamp_post.svg" id="12_cud8n"]
+[ext_resource type="Script" path="res://scripts/proto/light_flicker.gd" id="13_rcsnr"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/움직이는발판.tscn" id="14_ivax5"]
+[ext_resource type="Script" path="res://scripts/장애물/움직이는발판.gd" id="15_8m4u6"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/회전톱.tscn" id="16_178fi"]
+[ext_resource type="Script" path="res://scripts/장애물/회전톱.gd" id="17_i1bj8"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/가시.tscn" id="18_5t06e"]
+[ext_resource type="Script" path="res://scripts/장애물/가시.gd" id="19_1gi4b"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="20_3mckb"]
+[ext_resource type="Script" path="res://scripts/장애물/체크포인트.gd" id="21_sl2a5"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/통로.tscn" id="22_0ubyq"]
+[ext_resource type="Script" path="res://scripts/장애물/통로.gd" id="23_gwduo"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/낙하지대.tscn" id="24_oue2y"]
+[ext_resource type="Script" path="res://scripts/장애물/낙하지대.gd" id="25_wofqw"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="26_wm6af"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="27_sq4f6"]
+
+[sub_resource type="Shader" id="Shader_j0ibc"]
+code = "
+shader_type canvas_item;
+// 폴리곤이 월드 좌표로 찍혀 있으므로 VERTEX = 월드 좌표
+varying vec2 wpos;
+uniform vec4 rect = vec4(0.0, 0.0, 1.0, 1.0);   // x, y, w, h (월드)
+uniform vec3 c_tl : source_color = vec3(0.36);  // 좌상 = 시작 바이옴 하늘 위
+uniform vec3 c_bl : source_color = vec3(0.15);  // 좌하 = 시작 바이옴 하늘 아래
+uniform vec3 c_tr : source_color = vec3(0.24);  // 우상 = 끝 바이옴
+uniform vec3 c_br : source_color = vec3(0.08);
+void vertex() { wpos = VERTEX; }
+float hash(vec2 p){ return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
+void fragment() {
+	float tx = clamp((wpos.x - rect.x) / max(rect.z, 1.0), 0.0, 1.0);
+	float ty = clamp((wpos.y - rect.y) / max(rect.w, 1.0), 0.0, 1.0);
+	// 세로는 위→아래, 가로는 시작 바이옴→끝 바이옴. smoothstep 으로 전환 구간을 완만하게.
+	float tb = smoothstep(0.12, 0.88, tx);
+	vec3 top = mix(c_tl, c_tr, tb);
+	vec3 bot = mix(c_bl, c_br, tb);
+	vec3 col = mix(top, bot, pow(ty, 0.85));
+	// 아주 미세한 그레인 — 평평한 그라데이션의 밴딩(줄무늬)을 깬다
+	col += (hash(floor(wpos * 0.5)) - 0.5) * 0.012;
+	COLOR = vec4(col, 1.0);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b0yfa"]
+shader = SubResource("Shader_j0ibc")
+shader_parameter/rect = Vector4(-1592, -644, 5360, 2056)
+shader_parameter/c_tl = Color(0.27, 0.27, 0.28, 1)
+shader_parameter/c_bl = Color(0.09, 0.09, 0.1, 1)
+shader_parameter/c_tr = Color(0.24, 0.24, 0.26, 1)
+shader_parameter/c_br = Color(0.08, 0.08, 0.09, 1)
+
+[sub_resource type="Shader" id="Shader_8h7k2"]
+code = "
+shader_type canvas_item;
+varying vec2 wpos;
+uniform vec4 rect = vec4(0.0, 0.0, 1.0, 1.0);
+void vertex() { wpos = VERTEX; }
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float vnoise(vec2 p){
+	vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash(i), hash(i + vec2(1,0)), f.x),
+	           mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y);
+}
+void fragment() {
+	// 큰 덩어리 + 잔 알갱이 = 거칠게 파낸 암반 질감
+	float n = vnoise(wpos * 0.0035) * 0.62 + vnoise(wpos * 0.017) * 0.26 + vnoise(wpos * 0.09) * 0.12;
+	// 위에서 아래로 어두워짐 (빛은 위에서 들어온다)
+	float tx = clamp((wpos.x - rect.x) / max(rect.z, 1.0), 0.0, 1.0);
+	float ty = clamp((wpos.y - rect.y) / max(rect.w, 1.0), 0.0, 1.0);
+	float v = 0.115 + n * 0.075 - ty * 0.045;
+	// ★[2026-07-25] 가장자리를 알파로 흐리게 — 안 그러면 뒷벽 끝에 직선 이음매가 보인다
+	//   (첫 스크린샷에서 화면 중간에 가로로 딱 떨어지는 경계선이 생겼다)
+	float edge = smoothstep(0.0, 0.10, tx) * smoothstep(1.0, 0.90, tx)
+	           * smoothstep(0.0, 0.09, ty) * smoothstep(1.0, 0.88, ty);
+	COLOR = vec4(vec3(v), edge);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gho8b"]
+shader = SubResource("Shader_8h7k2")
+shader_parameter/rect = Vector4(-1492, -204, 5160, 1256)
+
+[sub_resource type="Shader" id="Shader_bm00u"]
+code = "
+shader_type canvas_item;
+varying vec2 wpos;
+uniform vec4 rect = vec4(0.0, 0.0, 1.0, 1.0);
+void vertex() { wpos = VERTEX; }
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float vnoise(vec2 p){
+	vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash(i), hash(i + vec2(1,0)), f.x),
+	           mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y);
+}
+void fragment() {
+	float ty = clamp((wpos.y - rect.y) / max(rect.w, 1.0), 0.0, 1.0);
+	// 아주 느리게 흐르는 안개 띠
+	float n = vnoise(vec2(wpos.x * 0.004 + TIME * 0.012, wpos.y * 0.010));
+	float a = smoothstep(0.45, 0.95, ty) * (0.10 + n * 0.14);
+	COLOR = vec4(vec3(0.62, 0.62, 0.65), a);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wuk30"]
+shader = SubResource("Shader_bm00u")
+shader_parameter/rect = Vector4(-1592, -644, 5360, 2056)
+
+[sub_resource type="Gradient" id="Gradient_uqsm1"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_452ro"]
+gradient = SubResource("Gradient_uqsm1")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="Gradient" id="Gradient_gevmc"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_wyts7"]
+gradient = SubResource("Gradient_gevmc")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="Gradient" id="Gradient_q0wu8"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_15ql5"]
+gradient = SubResource("Gradient_q0wu8")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="스테이지_4" type="Node2D" unique_id=715051980]
+script = ExtResource("1_mhp57")
+"스테이지이름" = "스테이지 4 — 회색의 대가"
+"다음스테이지" = "res://scenes/스테이지/스테이지_5.tscn"
+"안내문" = "여기서부터는 아래로 떨어지면 죽는다.  톱은 규칙적으로 움직인다 — 패턴을 읽자."
+
+[node name="배경" type="Node2D" parent="." unique_id=1369753824]
+
+[node name="배경_하늘" type="Parallax2D" parent="배경" unique_id=1427212636]
+z_index = -40
+scroll_scale = Vector2(0.05, 0.05)
+
+[node name="Sky" type="Polygon2D" parent="배경/배경_하늘" unique_id=952615778]
+material = SubResource("ShaderMaterial_b0yfa")
+polygon = PackedVector2Array(-1592, -644, 3768, -644, 3768, 1412, -1592, 1412)
+
+[node name="배경_뒷벽" type="Polygon2D" parent="배경" unique_id=1114807770]
+z_index = -8
+material = SubResource("ShaderMaterial_gho8b")
+polygon = PackedVector2Array(-1492, -204, 3668, -204, 3668, 1052, -1492, 1052)
+
+[node name="배경_원경" type="Parallax2D" parent="배경" unique_id=1387503152]
+z_index = -30
+scroll_scale = Vector2(0.2, 1)
+
+[node name="P_shanty_0" type="Sprite2D" parent="배경/배경_원경" unique_id=782836716]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(-1148.89, 140.60631)
+scale = Vector2(1.2317472, 1.2317472)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_shanty_1" type="Sprite2D" parent="배경/배경_원경" unique_id=999091494]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(-871.0298, 191.87415)
+scale = Vector2(1.25105, 1.25105)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_shanty_2" type="Sprite2D" parent="배경/배경_원경" unique_id=1278078410]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(-520.26154, 145.40193)
+scale = Vector2(1.2670563, 1.2670563)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_highrise_3" type="Sprite2D" parent="배경/배경_원경" unique_id=1984513084]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(-143.35074, -173.62186)
+scale = Vector2(1.2461635, 1.2461635)
+texture = ExtResource("3_nux8j")
+centered = false
+flip_h = true
+
+[node name="P_highrise_4" type="Sprite2D" parent="배경/배경_원경" unique_id=1814573933]
+modulate = Color(0.58, 0.58, 0.58, 0.12779836)
+position = Vector2(-1.813591, -122.819305)
+scale = Vector2(1.1810441, 1.1810441)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_highrise_5" type="Sprite2D" parent="배경/배경_원경" unique_id=160870734]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(78.19882, -277.76373)
+scale = Vector2(1.466558, 1.466558)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_highrise_6" type="Sprite2D" parent="배경/배경_원경" unique_id=660845809]
+modulate = Color(0.58, 0.58, 0.58, 0.24410158)
+position = Vector2(227.81496, -151.47238)
+scale = Vector2(1.2472385, 1.2472385)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_highrise_7" type="Sprite2D" parent="배경/배경_원경" unique_id=1430506900]
+modulate = Color(0.58, 0.58, 0.58, 0.9408862)
+position = Vector2(457.78366, -176.41556)
+scale = Vector2(1.326552, 1.326552)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_highrise_8" type="Sprite2D" parent="배경/배경_원경" unique_id=1144783425]
+modulate = Color(0.58, 0.58, 0.58, 0.45980483)
+position = Vector2(578.05524, -249.04742)
+scale = Vector2(1.3955808, 1.3955808)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_highrise_9" type="Sprite2D" parent="배경/배경_원경" unique_id=927566781]
+modulate = Color(0.58, 0.58, 0.58, 0.8097494)
+position = Vector2(775.11926, -160.36905)
+scale = Vector2(1.297015, 1.297015)
+texture = ExtResource("3_nux8j")
+centered = false
+flip_h = true
+
+[node name="P_highrise_10" type="Sprite2D" parent="배경/배경_원경" unique_id=636328090]
+modulate = Color(0.58, 0.58, 0.58, 0.63615537)
+position = Vector2(899.2374, -39.68213)
+scale = Vector2(0.96356815, 0.96356815)
+texture = ExtResource("3_nux8j")
+centered = false
+flip_h = true
+
+[node name="P_shanty_11" type="Sprite2D" parent="배경/배경_원경" unique_id=920141276]
+modulate = Color(0.58, 0.58, 0.58, 0.6660983)
+position = Vector2(1029.3398, 188.6546)
+scale = Vector2(1.1555524, 1.1555524)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_highrise_12" type="Sprite2D" parent="배경/배경_원경" unique_id=1661233192]
+modulate = Color(0.58, 0.58, 0.58, 0.8270688)
+position = Vector2(1222.7981, -163.25797)
+scale = Vector2(1.209516, 1.209516)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_highrise_13" type="Sprite2D" parent="배경/배경_원경" unique_id=495625809]
+modulate = Color(0.58, 0.58, 0.58, 0.4440518)
+position = Vector2(1405.2842, -133.95883)
+scale = Vector2(1.1685312, 1.1685312)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_crane_14" type="Sprite2D" parent="배경/배경_원경" unique_id=1452958926]
+modulate = Color(0.58, 0.58, 0.58, 0.9636847)
+position = Vector2(1469.6044, 55.927948)
+scale = Vector2(1.4391762, 1.4391762)
+texture = ExtResource("4_xad26")
+centered = false
+
+[node name="P_highrise_15" type="Sprite2D" parent="배경/배경_원경" unique_id=1603346554]
+modulate = Color(0.58, 0.58, 0.58, 0.27304402)
+position = Vector2(1677.7645, -166.73178)
+scale = Vector2(1.3211268, 1.3211268)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_highrise_16" type="Sprite2D" parent="배경/배경_원경" unique_id=842818497]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(1868.8741, -64.22302)
+scale = Vector2(1.0903901, 1.0903901)
+texture = ExtResource("3_nux8j")
+centered = false
+flip_h = true
+
+[node name="P_shanty_17" type="Sprite2D" parent="배경/배경_원경" unique_id=2035292247]
+modulate = Color(0.58, 0.58, 0.58, 0.098053664)
+position = Vector2(2038.4291, 173.3561)
+scale = Vector2(1.1100237, 1.1100237)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_highrise_18" type="Sprite2D" parent="배경/배경_원경" unique_id=1823291842]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(2194.7131, -19.273926)
+scale = Vector2(0.9737453, 0.9737453)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_crane_19" type="Sprite2D" parent="배경/배경_원경" unique_id=1159220035]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(2418.2888, 86.3819)
+scale = Vector2(1.2566987, 1.2566987)
+texture = ExtResource("4_xad26")
+centered = false
+
+[node name="P_crane_20" type="Sprite2D" parent="배경/배경_원경" unique_id=172128124]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(2741.3794, 113.37927)
+scale = Vector2(1.1436535, 1.1436535)
+texture = ExtResource("4_xad26")
+centered = false
+flip_h = true
+
+[node name="P_crane_21" type="Sprite2D" parent="배경/배경_원경" unique_id=110047052]
+modulate = Color(0.58, 0.58, 0.58, 1)
+position = Vector2(3024.8232, 48.046814)
+scale = Vector2(1.2924535, 1.2924535)
+texture = ExtResource("4_xad26")
+centered = false
+
+[node name="배경_중경" type="Parallax2D" parent="배경" unique_id=2032366429]
+z_index = -20
+scroll_scale = Vector2(0.42, 1)
+
+[node name="P_wire_pole_0" type="Sprite2D" parent="배경/배경_중경" unique_id=1375039609]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(-1047.6564, 132.29648)
+scale = Vector2(1.0502195, 1.0502195)
+texture = ExtResource("5_02qsg")
+centered = false
+
+[node name="P_water_tank_1" type="Sprite2D" parent="배경/배경_중경" unique_id=77942054]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(-745.67773, 228.73245)
+scale = Vector2(1.1762171, 1.1762171)
+texture = ExtResource("6_kls00")
+centered = false
+
+[node name="P_shanty_2" type="Sprite2D" parent="배경/배경_중경" unique_id=684627809]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(-319.36877, 254.2032)
+scale = Vector2(0.9532136, 0.9532136)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_highrise_3" type="Sprite2D" parent="배경/배경_중경" unique_id=2084495815]
+modulate = Color(0.36, 0.36, 0.36, 0.06827077)
+position = Vector2(-148.5248, -42.85196)
+scale = Vector2(1.0964813, 1.0964813)
+texture = ExtResource("3_nux8j")
+centered = false
+flip_h = true
+
+[node name="P_wire_pole_4" type="Sprite2D" parent="배경/배경_중경" unique_id=1727399096]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(73.08067, 47.727264)
+scale = Vector2(1.2143979, 1.2143979)
+texture = ExtResource("5_02qsg")
+centered = false
+
+[node name="P_highrise_5" type="Sprite2D" parent="배경/배경_중경" unique_id=1073624982]
+modulate = Color(0.36, 0.36, 0.36, 0.19378895)
+position = Vector2(158.66965, 18.442108)
+scale = Vector2(0.9376651, 0.9376651)
+texture = ExtResource("3_nux8j")
+centered = false
+flip_h = true
+
+[node name="P_shanty_6" type="Sprite2D" parent="배경/배경_중경" unique_id=220332800]
+modulate = Color(0.36, 0.36, 0.36, 0.9695659)
+position = Vector2(356.84494, 241.84366)
+scale = Vector2(1.0955658, 1.0955658)
+texture = ExtResource("2_5ts7a")
+centered = false
+
+[node name="P_shanty_7" type="Sprite2D" parent="배경/배경_중경" unique_id=2002213480]
+modulate = Color(0.36, 0.36, 0.36, 0.40125054)
+position = Vector2(502.0399, 276.7187)
+scale = Vector2(1.0016421, 1.0016421)
+texture = ExtResource("2_5ts7a")
+centered = false
+
+[node name="P_wire_pole_8" type="Sprite2D" parent="배경/배경_중경" unique_id=1786609590]
+modulate = Color(0.36, 0.36, 0.36, 0.85108846)
+position = Vector2(758.41895, 121.65463)
+scale = Vector2(1.0324744, 1.0324744)
+texture = ExtResource("5_02qsg")
+centered = false
+
+[node name="P_shanty_9" type="Sprite2D" parent="배경/배경_중경" unique_id=1410310666]
+modulate = Color(0.36, 0.36, 0.36, 0.62311006)
+position = Vector2(860.63763, 278.80148)
+scale = Vector2(0.9899136, 0.9899136)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_wire_pole_10" type="Sprite2D" parent="배경/배경_중경" unique_id=595958398]
+modulate = Color(0.36, 0.36, 0.36, 0.61880076)
+position = Vector2(1175.334, 91.24518)
+scale = Vector2(1.2028377, 1.2028377)
+texture = ExtResource("5_02qsg")
+centered = false
+flip_h = true
+
+[node name="P_water_tank_11" type="Sprite2D" parent="배경/배경_중경" unique_id=135316936]
+modulate = Color(0.36, 0.36, 0.36, 0.8607026)
+position = Vector2(1344.0482, 305.5314)
+scale = Vector2(0.88933575, 0.88933575)
+texture = ExtResource("6_kls00")
+centered = false
+
+[node name="P_water_tank_12" type="Sprite2D" parent="배경/배경_중경" unique_id=1265182276]
+modulate = Color(0.36, 0.36, 0.36, 0.4241476)
+position = Vector2(1482.229, 275.91815)
+scale = Vector2(0.9075237, 0.9075237)
+texture = ExtResource("6_kls00")
+centered = false
+
+[node name="P_water_tank_13" type="Sprite2D" parent="배경/배경_중경" unique_id=750726555]
+modulate = Color(0.36, 0.36, 0.36, 0.97237885)
+position = Vector2(1655.9998, 281.26428)
+scale = Vector2(1.0981313, 1.0981313)
+texture = ExtResource("6_kls00")
+centered = false
+flip_h = true
+
+[node name="P_wire_pole_14" type="Sprite2D" parent="배경/배경_중경" unique_id=1075032488]
+modulate = Color(0.36, 0.36, 0.36, 0.19483948)
+position = Vector2(1897.8506, 118.70416)
+scale = Vector2(0.94266915, 0.94266915)
+texture = ExtResource("5_02qsg")
+centered = false
+flip_h = true
+
+[node name="P_highrise_15" type="Sprite2D" parent="배경/배경_중경" unique_id=1135709511]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(1932.1041, -53.730316)
+scale = Vector2(1.1120131, 1.1120131)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_wire_pole_16" type="Sprite2D" parent="배경/배경_중경" unique_id=1280966626]
+modulate = Color(0.36, 0.36, 0.36, 0.065666355)
+position = Vector2(2202.7827, 160.94537)
+scale = Vector2(0.9091864, 0.9091864)
+texture = ExtResource("5_02qsg")
+centered = false
+flip_h = true
+
+[node name="P_highrise_17" type="Sprite2D" parent="배경/배경_중경" unique_id=2028689440]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(2375.5476, 23.658539)
+scale = Vector2(0.9628069, 0.9628069)
+texture = ExtResource("3_nux8j")
+centered = false
+
+[node name="P_shanty_18" type="Sprite2D" parent="배경/배경_중경" unique_id=1775437176]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(2780.4595, 259.41583)
+scale = Vector2(0.91417944, 0.91417944)
+texture = ExtResource("2_5ts7a")
+centered = false
+flip_h = true
+
+[node name="P_shanty_19" type="Sprite2D" parent="배경/배경_중경" unique_id=1028810091]
+modulate = Color(0.36, 0.36, 0.36, 1)
+position = Vector2(3022.8691, 266.81982)
+scale = Vector2(0.9164912, 0.9164912)
+texture = ExtResource("2_5ts7a")
+centered = false
+
+[node name="배경_근경" type="Parallax2D" parent="배경" unique_id=432350909]
+z_index = -12
+scroll_scale = Vector2(0.68, 1)
+
+[node name="P_wire_pole_0" type="Sprite2D" parent="배경/배경_근경" unique_id=2064158797]
+modulate = Color(0.22, 0.22, 0.22, 1)
+position = Vector2(-1063.2496, 287.11508)
+scale = Vector2(0.6682905, 0.6682905)
+texture = ExtResource("5_02qsg")
+centered = false
+flip_h = true
+
+[node name="P_wire_pole_1" type="Sprite2D" parent="배경/배경_근경" unique_id=660160328]
+modulate = Color(0.22, 0.22, 0.22, 1)
+position = Vector2(-633.9543, 238.30621)
+scale = Vector2(0.80791616, 0.80791616)
+texture = ExtResource("5_02qsg")
+centered = false
+flip_h = true
+
+[node name="P_wire_pole_2" type="Sprite2D" parent="배경/배경_근경" unique_id=1338184583]
+modulate = Color(0.22, 0.22, 0.22, 1)
+position = Vector2(-105.700676, 257.9306)
+scale = Vector2(0.7862541, 0.7862541)
+texture = ExtResource("5_02qsg")
+centered = false
+flip_h = true
+
+[node name="P_wire_pole_3" type="Sprite2D" parent="배경/배경_근경" unique_id=1110307775]
+modulate = Color(0.22, 0.22, 0.22, 0.13712329)
+position = Vector2(85.121475, 225.53903)
+scale = Vector2(0.8654157, 0.8654157)
+texture = ExtResource("5_02qsg")
+centered = false
+
+[node name="P_pipe_cluster_4" type="Sprite2D" parent="배경/배경_근경" unique_id=1239115007]
+modulate = Color(0.22, 0.22, 0.22, 0.9986068)
+position = Vector2(225.31557, 346.6072)
+scale = Vector2(0.65753007, 0.65753007)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_pipe_cluster_5" type="Sprite2D" parent="배경/배경_근경" unique_id=1964218112]
+modulate = Color(0.22, 0.22, 0.22, 0.33553442)
+position = Vector2(439.9035, 299.45844)
+scale = Vector2(0.82676476, 0.82676476)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_6" type="Sprite2D" parent="배경/배경_근경" unique_id=1320649854]
+modulate = Color(0.22, 0.22, 0.22, 0.8710129)
+position = Vector2(691.95917, 283.08176)
+scale = Vector2(0.9745573, 0.9745573)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_7" type="Sprite2D" parent="배경/배경_근경" unique_id=53694382]
+modulate = Color(0.22, 0.22, 0.22, 0.62466997)
+position = Vector2(908.8845, 327.51923)
+scale = Vector2(0.82014734, 0.82014734)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_wire_pole_8" type="Sprite2D" parent="배경/배경_근경" unique_id=170065486]
+modulate = Color(0.22, 0.22, 0.22, 0.6436748)
+position = Vector2(1150.8965, 248.6903)
+scale = Vector2(0.787433, 0.787433)
+texture = ExtResource("5_02qsg")
+centered = false
+
+[node name="P_water_tank_9" type="Sprite2D" parent="배경/배경_근경" unique_id=814228669]
+modulate = Color(0.22, 0.22, 0.22, 0.8338144)
+position = Vector2(1282.2242, 321.497)
+scale = Vector2(0.9556383, 0.9556383)
+texture = ExtResource("6_kls00")
+centered = false
+
+[node name="P_wire_pole_10" type="Sprite2D" parent="배경/배경_근경" unique_id=1817505141]
+modulate = Color(0.22, 0.22, 0.22, 0.4062313)
+position = Vector2(1539.0969, 282.84793)
+scale = Vector2(0.66503775, 0.66503775)
+texture = ExtResource("5_02qsg")
+centered = false
+
+[node name="P_wire_pole_11" type="Sprite2D" parent="배경/배경_근경" unique_id=1922665035]
+modulate = Color(0.22, 0.22, 0.22, 0.9938561)
+position = Vector2(1815.2366, 222.72836)
+scale = Vector2(0.8635225, 0.8635225)
+texture = ExtResource("5_02qsg")
+centered = false
+
+[node name="P_wire_pole_12" type="Sprite2D" parent="배경/배경_근경" unique_id=1874809860]
+modulate = Color(0.22, 0.22, 0.22, 0.1599268)
+position = Vector2(1970.102, 208.11801)
+scale = Vector2(0.9148587, 0.9148587)
+texture = ExtResource("5_02qsg")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_13" type="Sprite2D" parent="배경/배경_근경" unique_id=669642880]
+modulate = Color(0.22, 0.22, 0.22, 1)
+position = Vector2(2161.0393, 324.86884)
+scale = Vector2(0.82623327, 0.82623327)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_14" type="Sprite2D" parent="배경/배경_근경" unique_id=1436621192]
+modulate = Color(0.22, 0.22, 0.22, 1)
+position = Vector2(2623.1907, 359.43646)
+scale = Vector2(0.6974857, 0.6974857)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_water_tank_15" type="Sprite2D" parent="배경/배경_근경" unique_id=776127428]
+modulate = Color(0.22, 0.22, 0.22, 1)
+position = Vector2(3162.8853, 381.49374)
+scale = Vector2(0.7207963, 0.7207963)
+texture = ExtResource("6_kls00")
+centered = false
+
+[node name="배경_전경" type="Parallax2D" parent="배경" unique_id=1587502153]
+z_index = 12
+scroll_scale = Vector2(1.15, 1)
+
+[node name="P_reed_0" type="Sprite2D" parent="배경/배경_전경" unique_id=1625107925]
+modulate = Color(0.15, 0.15, 0.15, 1)
+position = Vector2(-801.33765, 422.26926)
+scale = Vector2(1.8993171, 1.8993171)
+texture = ExtResource("8_haqwt")
+centered = false
+flip_h = true
+
+[node name="P_reed_1" type="Sprite2D" parent="배경/배경_전경" unique_id=1057707705]
+modulate = Color(0.15, 0.15, 0.15, 0.9987696)
+position = Vector2(208.91452, 499.11957)
+scale = Vector2(1.2440557, 1.2440557)
+texture = ExtResource("8_haqwt")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_2" type="Sprite2D" parent="배경/배경_전경" unique_id=1306310441]
+modulate = Color(0.15, 0.15, 0.15, 0.59272057)
+position = Vector2(794.95215, 338.72125)
+scale = Vector2(1.7699096, 1.7699096)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_3" type="Sprite2D" parent="배경/배경_전경" unique_id=1181965470]
+modulate = Color(0.15, 0.15, 0.15, 0.551312)
+position = Vector2(1215.1124, 302.55942)
+scale = Vector2(1.8112028, 1.8112028)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_pipe_cluster_4" type="Sprite2D" parent="배경/배경_전경" unique_id=1342800454]
+modulate = Color(0.15, 0.15, 0.15, 0.99125355)
+position = Vector2(1703.611, 310.01257)
+scale = Vector2(1.9148694, 1.9148694)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_5" type="Sprite2D" parent="배경/배경_전경" unique_id=796164622]
+modulate = Color(0.15, 0.15, 0.15, 1)
+position = Vector2(2958.3289, 313.71066)
+scale = Vector2(1.8237605, 1.8237605)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="배경_안개" type="Parallax2D" parent="배경" unique_id=1450994814]
+z_index = -6
+scroll_scale = Vector2(0.85, 0.85)
+
+[node name="Fog" type="Polygon2D" parent="배경/배경_안개" unique_id=575345243]
+material = SubResource("ShaderMaterial_wuk30")
+polygon = PackedVector2Array(-1592, -644, 3768, -644, 3768, 1412, -1592, 1412)
+
+[node name="지형" type="Node2D" parent="." unique_id=479304115]
+
+[node name="발판_00" type="AnimatableBody2D" parent="지형" unique_id=1844798342]
+position = Vector2(80, 448)
+script = ExtResource("9_eu51h")
+"크기_칸" = Vector2i(17, 4)
+"시작상태" = 1
+"칠하기_허용" = false
+"무색일때_통과" = false
+
+[node name="발판_01" type="AnimatableBody2D" parent="지형" unique_id=80165718]
+position = Vector2(512, 416)
+script = ExtResource("9_eu51h")
+"재질" = "나무"
+"크기_칸" = Vector2i(4, 2)
+
+[node name="발판_02" type="AnimatableBody2D" parent="지형" unique_id=101537591]
+position = Vector2(704, 384)
+script = ExtResource("9_eu51h")
+"재질" = "나무"
+"크기_칸" = Vector2i(4, 2)
+
+[node name="발판_03" type="AnimatableBody2D" parent="지형" unique_id=1921923738]
+position = Vector2(848, 384)
+script = ExtResource("9_eu51h")
+"크기_칸" = Vector2i(3, 2)
+"시작상태" = 3
+"칠하기_허용" = false
+"무색일때_통과" = false
+
+[node name="발판_04" type="AnimatableBody2D" parent="지형" unique_id=1019431055]
+position = Vector2(1008, 432)
+script = ExtResource("9_eu51h")
+"크기_칸" = Vector2i(7, 3)
+"시작상태" = 2
+"무색일때_통과" = false
+
+[node name="발판_05" type="AnimatableBody2D" parent="지형" unique_id=806357784]
+position = Vector2(1456, 416)
+script = ExtResource("9_eu51h")
+"크기_칸" = Vector2i(9, 4)
+"시작상태" = 1
+"칠하기_허용" = false
+"무색일때_통과" = false
+
+[node name="발판_06" type="AnimatableBody2D" parent="지형" unique_id=1544200898]
+position = Vector2(1776, 288)
+script = ExtResource("9_eu51h")
+"크기_칸" = Vector2i(5, 2)
+"시작상태" = 2
+"무색일때_통과" = false
+
+[node name="발판_07" type="AnimatableBody2D" parent="지형" unique_id=1277778532]
+position = Vector2(1776, 416)
+script = ExtResource("9_eu51h")
+"재질" = "나무"
+"크기_칸" = Vector2i(5, 2)
+
+[node name="발판_08" type="AnimatableBody2D" parent="지형" unique_id=1951757463]
+position = Vector2(2160, 416)
+script = ExtResource("9_eu51h")
+"크기_칸" = Vector2i(13, 4)
+"시작상태" = 1
+"칠하기_허용" = false
+"무색일때_통과" = false
+
+[node name="지형장식" type="Node2D" parent="." unique_id=1571960704]
+
+[node name="P_pipe_cluster_0" type="Sprite2D" parent="지형장식" unique_id=356169729]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(-223.36786, 236.06938)
+scale = Vector2(0.7546531, 0.7546531)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_1" type="Sprite2D" parent="지형장식" unique_id=281017764]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(-74.06903, 276.72665)
+scale = Vector2(0.5513667, 0.5513667)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_grass_tuft_2" type="Sprite2D" parent="지형장식" unique_id=544453323]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(117.59063, 366.54346)
+scale = Vector2(0.78678966, 0.78678966)
+texture = ExtResource("10_oyukl")
+centered = false
+flip_h = true
+
+[node name="P_grass_tuft_3" type="Sprite2D" parent="지형장식" unique_id=57105666]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(171.06236, 367.05273)
+scale = Vector2(0.76720226, 0.76720226)
+texture = ExtResource("10_oyukl")
+centered = false
+flip_h = true
+
+[node name="Hang_4" type="Sprite2D" parent="지형장식" unique_id=1087813500]
+modulate = Color(0.18, 0.18, 0.18, 1)
+z_index = -3
+position = Vector2(492.3025, 444)
+scale = Vector2(0.8518096, 0.8518096)
+texture = ExtResource("11_2tnqe")
+centered = false
+
+[node name="Hang_5" type="Sprite2D" parent="지형장식" unique_id=1445070073]
+modulate = Color(0.18, 0.18, 0.18, 1)
+z_index = -3
+position = Vector2(706.17084, 412)
+scale = Vector2(0.56480724, 0.56480724)
+texture = ExtResource("11_2tnqe")
+centered = false
+
+[node name="P_pipe_cluster_6" type="Sprite2D" parent="지형장식" unique_id=562906231]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(815.4622, 185.29309)
+scale = Vector2(0.8485346, 0.8485346)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_grass_tuft_7" type="Sprite2D" parent="지형장식" unique_id=1035005222]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(940.4515, 372.5035)
+scale = Vector2(0.5575578, 0.5575578)
+texture = ExtResource("10_oyukl")
+centered = false
+flip_h = true
+
+[node name="P_pipe_cluster_8" type="Sprite2D" parent="지형장식" unique_id=2124559844]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(1399.5798, 224.91289)
+scale = Vector2(0.65043557, 0.65043557)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_pipe_cluster_9" type="Sprite2D" parent="지형장식" unique_id=957753969]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(1526.2374, 244.50046)
+scale = Vector2(0.55249774, 0.55249774)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="Hang_10" type="Sprite2D" parent="지형장식" unique_id=695168219]
+modulate = Color(0.18, 0.18, 0.18, 1)
+z_index = -3
+position = Vector2(1464.0796, 476)
+scale = Vector2(0.7120124, 0.7120124)
+texture = ExtResource("11_2tnqe")
+centered = false
+
+[node name="P_pipe_cluster_11" type="Sprite2D" parent="지형장식" unique_id=1944273084]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(1767.2686, 134.50104)
+scale = Vector2(0.62249476, 0.62249476)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="Hang_12" type="Sprite2D" parent="지형장식" unique_id=652644763]
+modulate = Color(0.18, 0.18, 0.18, 1)
+z_index = -3
+position = Vector2(1801.6882, 316)
+scale = Vector2(0.68748546, 0.68748546)
+texture = ExtResource("11_2tnqe")
+centered = false
+
+[node name="P_pipe_cluster_13" type="Sprite2D" parent="지형장식" unique_id=758399953]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(1688.1274, 261.7334)
+scale = Vector2(0.62633306, 0.62633306)
+texture = ExtResource("7_vuknq")
+centered = false
+flip_h = true
+
+[node name="Hang_14" type="Sprite2D" parent="지형장식" unique_id=1610107926]
+modulate = Color(0.18, 0.18, 0.18, 1)
+z_index = -3
+position = Vector2(1722.7073, 444)
+scale = Vector2(0.7852504, 0.7852504)
+texture = ExtResource("11_2tnqe")
+centered = false
+
+[node name="P_pipe_cluster_15" type="Sprite2D" parent="지형장식" unique_id=145266827]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(2173.5527, 227.06104)
+scale = Vector2(0.6396948, 0.6396948)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="P_pipe_cluster_16" type="Sprite2D" parent="지형장식" unique_id=1707624420]
+modulate = Color(0.22, 0.22, 0.22, 1)
+z_index = -2
+position = Vector2(2310.81, 226.84749)
+scale = Vector2(0.64076257, 0.64076257)
+texture = ExtResource("7_vuknq")
+centered = false
+
+[node name="Hang_17" type="Sprite2D" parent="지형장식" unique_id=889933194]
+modulate = Color(0.18, 0.18, 0.18, 1)
+z_index = -3
+position = Vector2(2120.8718, 476)
+scale = Vector2(0.93922985, 0.93922985)
+texture = ExtResource("11_2tnqe")
+centered = false
+
+[node name="조명" type="Node2D" parent="." unique_id=133912295]
+
+[node name="P_lamp_post_0" type="Sprite2D" parent="조명" unique_id=1222661840]
+modulate = Color(0.3, 0.3, 0.3, 1)
+z_index = -1
+position = Vector2(272, 204)
+texture = ExtResource("12_cud8n")
+centered = false
+
+[node name="가로등_0" type="PointLight2D" parent="조명" unique_id=125027840]
+position = Vector2(316, 235)
+color = Color(1, 0.94, 0.78, 1)
+energy = 1.15
+texture = SubResource("GradientTexture2D_452ro")
+texture_scale = 2.34375
+script = ExtResource("13_rcsnr")
+
+[node name="P_lamp_post_2" type="Sprite2D" parent="조명" unique_id=589664417]
+modulate = Color(0.3, 0.3, 0.3, 1)
+z_index = -1
+position = Vector2(1372, 172)
+texture = ExtResource("12_cud8n")
+centered = false
+flip_h = true
+
+[node name="가로등_1" type="PointLight2D" parent="조명" unique_id=110712221]
+position = Vector2(1384, 203)
+color = Color(1, 0.94, 0.78, 1)
+energy = 1.15
+texture = SubResource("GradientTexture2D_wyts7")
+texture_scale = 2.34375
+script = ExtResource("13_rcsnr")
+
+[node name="P_lamp_post_4" type="Sprite2D" parent="조명" unique_id=2055963659]
+modulate = Color(0.3, 0.3, 0.3, 1)
+z_index = -1
+position = Vector2(2052, 172)
+texture = ExtResource("12_cud8n")
+centered = false
+
+[node name="가로등_2" type="PointLight2D" parent="조명" unique_id=1298213022]
+position = Vector2(2096, 203)
+color = Color(1, 0.94, 0.78, 1)
+energy = 1.15
+texture = SubResource("GradientTexture2D_15ql5")
+texture_scale = 2.34375
+script = ExtResource("13_rcsnr")
+
+[node name="장애물" type="Node2D" parent="." unique_id=704658135]
+
+[node name="움직이는발판_00" type="AnimatableBody2D" parent="장애물" unique_id=814902879 instance=ExtResource("14_ivax5")]
+position = Vector2(1216, 384)
+script = ExtResource("15_8m4u6")
+"이동거리" = 128.0
+"왕복시간" = 5.0
+"재질" = "나무"
+"크기_칸" = Vector2i(4, 2)
+
+[node name="회전톱_01" type="Area2D" parent="장애물" unique_id=1298669707 instance=ExtResource("16_178fi")]
+position = Vector2(752, 304)
+script = ExtResource("17_i1bj8")
+
+[node name="회전톱_02" type="Area2D" parent="장애물" unique_id=576419997 instance=ExtResource("16_178fi")]
+position = Vector2(1520, 304)
+script = ExtResource("17_i1bj8")
+"반지름" = 30.0
+"이동거리" = 192.0
+"이동방향" = 1
+"왕복시간" = 3.4
+
+[node name="가시_03" type="Area2D" parent="장애물" unique_id=903920729 instance=ExtResource("18_5t06e")]
+position = Vector2(1040, 373)
+script = ExtResource("19_1gi4b")
+
+[node name="체크포인트_04" type="Area2D" parent="장애물" unique_id=407131122 instance=ExtResource("20_3mckb")]
+position = Vector2(1392, 352)
+script = ExtResource("21_sl2a5")
+
+[node name="체크포인트_05" type="Area2D" parent="장애물" unique_id=801394091 instance=ExtResource("20_3mckb")]
+position = Vector2(2032, 352)
+script = ExtResource("21_sl2a5")
+
+[node name="통로_06" type="Area2D" parent="장애물" unique_id=71266544 instance=ExtResource("22_0ubyq")]
+position = Vector2(2224, 352)
+script = ExtResource("23_gwduo")
+"폭" = 128
+"높이" = 156
+"속빛" = Color(0.24, 0.24, 0.26, 1)
+
+[node name="통로_07" type="Area2D" parent="장애물" unique_id=531618016 instance=ExtResource("22_0ubyq")]
+position = Vector2(48, 384)
+script = ExtResource("23_gwduo")
+"역할" = 1
+"폭" = 128
+"높이" = 156
+"속빛" = Color(0.27, 0.27, 0.28, 1)
+
+[node name="낙하지대_08" type="Area2D" parent="장애물" unique_id=302401026 instance=ExtResource("24_oue2y")]
+position = Vector2(1120, 768)
+script = ExtResource("25_wofqw")
+"폭" = 3400
+
+[node name="스폰" type="Marker2D" parent="." unique_id=786445246]
+position = Vector2(112, 384)
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1147093704 instance=ExtResource("26_wm6af")]
+position = Vector2(112, 384)
+scale = Vector2(0.7949601, 0.36771855)
+floor_constant_speed = true
+floor_snap_length = 32.0
+script = ExtResource("27_sq4f6")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=24541109]
+layer = 10
