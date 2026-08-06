@@ -33,6 +33,7 @@ class_name 송풍기
 	set(v): 켜짐 = v; queue_redraw()
 
 var _회전: float = 0.0
+var _디버그_누적: float = 0.0   ## [디버그전용] "바람이 안 먹히는 것 같다" 제보 원인 확인용
 
 
 func _ready() -> void:
@@ -98,6 +99,13 @@ func _process(delta: float) -> void:
 	if 켜짐:
 		_회전 += delta * 14.0
 		queue_redraw()
+
+	if OS.is_debug_build():
+		_디버그_누적 += delta
+		if _디버그_누적 >= 1.0:
+			_디버그_누적 = 0.0
+			print("[송풍기:%s] 켜짐=%s 방향각=%.0f° 사거리=%.0f 바람폭=%.0f 세기=%.0f" %
+				[name, 켜짐, rad_to_deg(global_rotation), 사거리, 바람폭, 세기])
 
 
 # ── 페인트코어와의 약속 — 색칠할 수 없다 ────────────────────────────────────

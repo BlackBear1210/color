@@ -114,11 +114,11 @@ func _잎_만들기(단계: int, 색: int) -> void:
 	잎.position = _잎_위치(단계)
 	잎.collision_layer = 1
 	잎.collision_mask = 0
-	잎.set_meta("잎색", 색)
 	var c := CollisionShape2D.new()
 	var r := RectangleShape2D.new()
 	r.size = 잎_크기
 	c.shape = r
+	c.one_way_collision = true   # 아래에서 위로 점프할 땐 통과, 위에서 떨어질 땐 착지
 	잎.add_child(c)
 	# 잎도 "밟으면 죽는지"를 스스로 답할 수 있어야 한다 (월드.gd 의 발밑 판정이 물어본다)
 	잎.set_script(preload("res://scripts/스마트월드/식물_잎.gd"))

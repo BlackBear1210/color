@@ -8,19 +8,10 @@
 
 config_version=5
 
-[addons]
-
-ss2d/version="3.3.1"
-
 [application]
 
 config/name="dev_4"
-; [2026-08-06 도형] F5 로 실행하면 바로 스마트월드 1-1 이 뜬다.
-;   이전 값: res://scenes/lobby/lobby.tscn (로비 → 스테이지 선택)
-;   스마트월드가 본편 라인이 되었으므로 메인 씬을 여기로 옮겼다.
-;   로비는 지웠거나 못 쓰게 된 게 아니다 — ESC 메뉴의 "로비로 돌아가기" 로 그대로 갈 수 있고,
-;   에디터에서 lobby.tscn 을 열고 F6(현재 씬 실행)로도 확인할 수 있다.
-run/main_scene="res://scenes/스마트월드/스마트월드_1-1.tscn"
+run/main_scene="res://scenes/lobby/lobby.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -28,10 +19,6 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/rmsmartshape/plugin.cfg")
 
 [input]
 
@@ -75,3 +62,11 @@ interact={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+
+[addons]
+
+ss2d/version="3.3.1"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/rmsmartshape/plugin.cfg")

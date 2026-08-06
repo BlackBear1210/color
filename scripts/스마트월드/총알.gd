@@ -27,6 +27,11 @@ var _코어: 페인트코어 = null
 var _끝남: bool = false
 var _꼬리: PackedVector2Array = PackedVector2Array()
 
+## [디버그전용] 바람에 노출된 구간을 통째로 비교하려고 진입 시점 값을 기억해둔다.
+var _바람_프레임: int = 0
+var _바람_시작속도: Vector2 = Vector2.ZERO
+var _바람_시작위치: Vector2 = Vector2.ZERO
+
 
 func 시작(시작점: Vector2, 방향: Vector2, 속력: float, 색상: int, 코어: 페인트코어) -> void:
 	global_position = 시작점
@@ -64,6 +69,10 @@ func _physics_process(delta: float) -> void:
 	for n in get_tree().get_nodes_in_group("송풍기"):
 		var 힘: Vector2 = n.바람(global_position)
 		if 힘 != Vector2.ZERO:
+			if _바람_프레임 == 0:
+				_바람_시작속도 = _속도
+				_바람_시작위치 = global_position
+			_바람_프레임 += 1
 			_속도 += 힘 * delta
 	var 이전 := global_position
 	var 다음 := 이전 + _속도 * delta
@@ -108,6 +117,11 @@ func _칠할대상_찾기(맞은것: Object) -> Node:
 
 func _소멸(대상: Node, 지점: Vector2) -> void:
 	_끝남 = true
+	if OS.is_debug_build() and _바람_프레임 > 0:
+		var 방향변화 := rad_to_deg(_바람_시작속도.angle_to(_속도))
+		print("[총알] 바람 노출 종료 — %d프레임 노출, 시작속도=%s(%.1f°) 종료속도=%s(%.1f°) 방향변화=%.1f° 이동거리=%s" %
+			[_바람_프레임, _바람_시작속도, rad_to_deg(_바람_시작속도.angle()),
+			 _속도, rad_to_deg(_속도.angle()), 방향변화, _바람_시작위치.distance_to(지점)])
 	if _코어:
 		_코어.명중_처리(대상, 색, 지점)
 	queue_free()

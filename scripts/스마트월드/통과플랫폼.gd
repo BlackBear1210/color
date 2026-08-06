@@ -102,6 +102,13 @@ func 되돌리기() -> bool:
 	return true
 
 
+## 사망/스테이지 리셋 전용 — 되돌리기() 와 달리 회색이어도 강제로 무색화한다.
+func 강제_초기화() -> void:
+	_상태색 = -1
+	_맞은횟수 = 0
+	queue_redraw()
+
+
 func _draw() -> void:
 	var 본체 := Color(0.22, 0.23, 0.26)
 	match _상태색:

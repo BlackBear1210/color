@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="8_56iml"]
 [ext_resource type="Texture2D" uid="uid://3yt7th5dt6mn" path="res://assets/textures/props/bush.svg" id="9_32mtk"]
 [ext_resource type="Texture2D" uid="uid://c462dq24uhoh6" path="res://assets/textures/props/crane.svg" id="10_b3cvt"]
-[ext_resource type="PackedScene" path="res://scenes/경계/color_zone.tscn" id="11_735a7"]
+[ext_resource type="PackedScene" uid="uid://dbx4jl52hqdb5" path="res://scenes/경계/color_zone.tscn" id="11_735a7"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i5ved"]
 shader = ExtResource("2_1no2l")
@@ -7997,7 +7997,6 @@ tile_map_data = PackedByteArray("AAAAAEEAAAACAAIAAAAAAEIAAAACAAMAAAAAAEMAAAACAAQ
 tile_set = SubResource("TileSet_awmir")
 
 [node name="Player" parent="." unique_id=1147093704 instance=ExtResource("8_56iml")]
-"점프_높이_칸" = 10.0
 "점프_거리_칸" = 20.0
 "상승_배수" = 4.563
 "낙하_가속_증가율" = 3.284
@@ -8018,15 +8017,16 @@ offset_bottom = 23.0
 [node name="ColorZone" parent="." unique_id=1373068713 instance=ExtResource("11_735a7")]
 position = Vector2(835, 627)
 
-[node name="CollisionPolygon2D" parent="ColorZone" index="0"]
+[node name="CollisionPolygon2D" parent="ColorZone" index="0" unique_id=1139868301]
 position = Vector2(-5, 94)
+scale = Vector2(1.0752516, 1.0111055)
 polygon = PackedVector2Array(59, -243, 126.78613, -184.38794, 192, -128, 192, 128, -192, 128, -222, -215)
 
 [node name="ColorZone2" parent="." unique_id=1859330500 instance=ExtResource("11_735a7")]
 position = Vector2(1506, 351)
 zone_color = 0
 
-[node name="CollisionPolygon2D" parent="ColorZone2" index="0"]
+[node name="CollisionPolygon2D" parent="ColorZone2" index="0" unique_id=1139868301]
 position = Vector2(-395, 324)
 polygon = PackedVector2Array(-192, -128, 192, -128, 178, 795, -192, 128)
 

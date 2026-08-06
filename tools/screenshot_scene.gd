@@ -31,17 +31,7 @@ func _tick() -> void:
 			if player:
 				player.set("velocity", Vector2.ZERO)
 				player.set("global_position", Vector2(float(args[2]), float(args[3])))
-				# [2026-08-06] 카메라 노드 이름이 씬마다 다르다.
-				#   v3 스테이지 = "ProtoCamera" / 스마트월드 = "카메라"
-				#   하나만 찾으면 스마트월드에서 카메라가 안 따라와 엉뚱한 곳이 찍힌다.
 				var cam := _scene.get_node_or_null("ProtoCamera")
-				if cam == null:
-					cam = _scene.get_node_or_null("카메라")
-				if cam == null:
-					for c in _scene.get_children():
-						if c is Camera2D and c.has_method("setup"):
-							cam = c
-							break
 				if cam:
 					cam.call("setup", player)
 	elif _n == 100:
