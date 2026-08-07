@@ -43,6 +43,38 @@ static func 밝기_저장(값: float) -> void:
 	cfg.save(파일)
 
 
+# ============================================================================
+# [2026-08-07 도형] 전체화면
+# ----------------------------------------------------------------------------
+# ⚠ 로비(`scenes/lobby/lobby.gd`)는 예전부터 **`user://settings.cfg`** 라는
+#   다른 파일에 전체화면을 저장해 왔다. 여기서 `user://설정.cfg` 에 따로 저장하면
+#   **로비에서 켠 전체화면이 인게임 메뉴에서는 꺼진 것으로 보이는** 어긋남이 생긴다.
+#   → 전체화면만은 **로비와 같은 파일·같은 키**를 읽고 쓴다. (밝기는 여기 파일 그대로)
+# ============================================================================
+const 로비_설정파일 := "user://settings.cfg"
+const 로비_구역 := "video"
+
+
+static func 전체화면_불러오기() -> bool:
+	var cfg := ConfigFile.new()
+	if cfg.load(로비_설정파일) != OK:
+		# 파일이 없으면 지금 창 상태를 그대로 읽어 온다 (체크박스가 거짓말하지 않게)
+		return DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	return bool(cfg.get_value(로비_구역, "fullscreen", false))
+
+
+static func 전체화면_저장(켬: bool) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(로비_설정파일)              # 실패해도 무시 — 로비의 다른 값(볼륨)은 보존된다
+	cfg.set_value(로비_구역, "fullscreen", 켬)
+	cfg.save(로비_설정파일)
+
+
+static func 전체화면_적용(켬: bool) -> void:
+	DisplayServer.window_set_mode(
+		DisplayServer.WINDOW_MODE_FULLSCREEN if 켬 else DisplayServer.WINDOW_MODE_WINDOWED)
+
+
 ## 씬 안의 CanvasModulate 를 찾아 밝기를 적용한다.
 ## `기준색` 은 스테이지가 원래 의도한 색 — 밝기 1.0 일 때의 값이다.
 ## (매번 곱하면 값이 계속 줄어들기 때문에, 항상 기준색에서 다시 계산해야 한다)

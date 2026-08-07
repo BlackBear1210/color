@@ -42,6 +42,8 @@ var _배경: ColorRect
 var _판: PanelContainer
 var _설정판: VBoxContainer
 var _밝기_라벨: Label
+var _전체화면: CheckBox        ## [2026-08-07] 인게임에서도 창/전체화면을 바꿀 수 있게
+var _종료확인: ConfirmationDialog = null
 var _열림: bool = false
 
 
@@ -125,6 +127,14 @@ func _UI_만들기() -> void:
 	세로.add_child(_버튼("계속하기", _토글))
 	세로.add_child(_버튼("설정", _설정_토글))
 	세로.add_child(_버튼("로비로 돌아가기", _로비로))
+	# ★[2026-08-07 도형 요청] "esc를 누르면 설정이 나와서 끌 수 있게"
+	#   게임을 끄는 길이 로비를 거쳐야만 있었다(로비 → 나가기). 두 번 이동해야 해서
+	#   "끄고 싶은데 못 끄는" 상태였다. 여기서 바로 끌 수 있게 한다.
+	세로.add_child(HSeparator.new())
+	var 종료버튼 := _버튼("게임 종료", _종료_확인)
+	# 실수로 누르면 작업이 날아가므로 색으로 구분한다 (한 번 더 묻기도 한다)
+	종료버튼.add_theme_color_override("font_color", Color(1.0, 0.72, 0.72))
+	세로.add_child(종료버튼)
 
 	# ── 설정 패널 (평소엔 접혀 있음) ──
 	_설정판 = VBoxContainer.new()
@@ -147,8 +157,17 @@ func _UI_만들기() -> void:
 	슬라이더.value_changed.connect(_밝기_바뀜)
 	_설정판.add_child(슬라이더)
 
+	# ── [2026-08-07] 전체화면 토글 ──
+	# 로비 설정에만 있던 항목이라, 인게임에서 창 모드를 바꾸려면 로비까지 나가야 했다.
+	# 로비와 **같은 파일**(user://settings.cfg)을 읽고 쓰므로 설정이 서로 어긋나지 않는다.
+	_전체화면 = CheckBox.new()
+	_전체화면.text = "전체화면"
+	_전체화면.set_pressed_no_signal(게임설정.전체화면_불러오기())
+	_전체화면.toggled.connect(_전체화면_바뀜)
+	_설정판.add_child(_전체화면)
+
 	var 안내 := Label.new()
-	안내.text = "밝기는 자동 저장됩니다 (user://설정.cfg)"
+	안내.text = "설정은 자동 저장됩니다 · ESC 로 닫기"
 	안내.add_theme_font_size_override("font_size", 13)
 	안내.modulate = Color(1, 1, 1, 0.6)
 	_설정판.add_child(안내)
@@ -177,6 +196,36 @@ func _밝기_바뀜(값: float) -> void:
 	# 값이 누적돼 화면이 점점 어두워진다.
 	게임설정.밝기_적용(_모듈레이트, _기준색, _밝기)
 	게임설정.밝기_저장(_밝기)
+
+
+## [2026-08-07] 전체화면 토글 — 즉시 반영 + 저장.
+func _전체화면_바뀜(켬: bool) -> void:
+	게임설정.전체화면_적용(켬)
+	게임설정.전체화면_저장(켬)
+
+
+## [2026-08-07] 게임 종료 — 한 번 더 묻는다.
+## 실수로 눌러 진행 상황이 날아가는 게 가장 흔한 불만이라 확인 창을 둔다.
+## ⚠ 다이얼로그도 `PROCESS_MODE_ALWAYS` 여야 한다. 트리가 멈춰 있어서
+##   기본 모드면 버튼이 안 눌린다(메뉴 자신과 같은 함정 — 2026-08-02 기록).
+func _종료_확인() -> void:
+	if _종료확인 == null:
+		_종료확인 = ConfirmationDialog.new()
+		_종료확인.title = "게임 종료"
+		_종료확인.dialog_text = "게임을 종료할까요?\n저장되지 않은 진행은 사라집니다."
+		_종료확인.ok_button_text = "종료"
+		_종료확인.cancel_button_text = "취소"
+		_종료확인.process_mode = Node.PROCESS_MODE_ALWAYS
+		_종료확인.confirmed.connect(_정말_종료)
+		add_child(_종료확인)
+	_종료확인.popup_centered()
+
+
+func _정말_종료() -> void:
+	# 종료 전에 일시정지를 푼다. 안 풀면 종료 처리 중 트리가 멈춰 있어
+	# 정리 콜백(_notification NOTIFICATION_WM_CLOSE_REQUEST 등)이 안 도는 경우가 있다.
+	get_tree().paused = false
+	get_tree().quit()
 
 
 func _로비로() -> void:
