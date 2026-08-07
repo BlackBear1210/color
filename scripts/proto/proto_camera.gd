@@ -61,6 +61,14 @@ var _trauma: float = 0.0
 ## Camera2D 는 기본적으로 자기 rotation 을 뷰에 반영하지 않으므로(ignore_rotation=true)
 ## 회전 흔들림은 효과가 없다 → offset(위치) 흔들림만 사용해 확실하게 동작시킨다.
 
+## ── [2026-08-07 도형] 구역별 시선 보정 ──────────────────────────────────────
+## 홀로우 나이트 문법: 구역마다 카메라가 플레이어를 잡는 위치를 조금씩 달리해
+## "이 구역에서는 위를 더 보여준다 / 아래를 더 보여준다" 를 디자이너가 정할 수 있게 한다.
+## [카메라_연출.gd](카메라_연출.gd) 가 구역을 섞으면서 이 값도 같이 섞어 넣는다.
+## ★기본값 0 이라 이 기능을 안 쓰는 기존 씬(zone_01/02, world_1, 스테이지 1~5)은
+##   동작이 조금도 바뀌지 않는다.
+var 구역_오프셋: Vector2 = Vector2.ZERO
+
 var target: CharacterBody2D = null       # 따라갈 플레이어
 var _look_x: float = 0.0                 # 현재 룩어헤드 오프셋 (부드럽게 이동)
 var _face: float = 1.0                   # 마지막 바라본 방향 (+1/-1)
@@ -185,9 +193,10 @@ func _update_shake(delta: float) -> void:
 
 ## 카메라가 가야 할 이상적 중심점
 func _desired_center() -> Vector2:
+	# [2026-08-07] 구역_오프셋 을 더한다. 기본값 0 이라 기존 씬은 결과가 같다.
 	return Vector2(
-		target.global_position.x + _look_x,
-		_ground_y - EYE_LIFT + _fall_look)
+		target.global_position.x + _look_x + 구역_오프셋.x,
+		_ground_y - EYE_LIFT + _fall_look + 구역_오프셋.y)
 
 ## 뷰포트 절반 크기를 고려해 카메라 중심을 리밋 안으로 (리밋이 화면보다 작으면 중앙 고정)
 func _clamp_to_limits(pos: Vector2) -> Vector2:

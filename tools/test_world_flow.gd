@@ -74,14 +74,27 @@ func _tick() -> void:
 			warp(Vector2(2400, 330))            # zone2 흑 구역 공중 (백 상태로 진입)
 		80:
 			check("5) 흑 구역 진입 → 자동 흑", player.get("player_color") == 0)
+			# ★[2026-08-07 도형] 판정을 **좌표 일치**에서 **의도(생존)** 로 바꿨다.
+			#   원래는 (2400, 445) 근처인지를 봤는데, 신우님이 Player.tscn 의 콜리전을
+			#   키 47px → 97px 로 키우면서 착지 y 가 445 → 289 로 바뀌어 실패했다.
+			#   그런데 이 검사의 **목적은 "죽어서 리스폰됐는가"** 지 "몇 px 에 섰는가" 가 아니다.
+			#   좌표를 박아 두면 캐릭터를 손볼 때마다 멀쩡한 테스트가 깨진다.
+			#   → 리스폰됐는지만 본다: 리스폰되면 체크포인트(1800, 445)로 끌려간다.
+			var 체크포인트: Vector2 = world.get("_spawn_pos")
+			var 리스폰됨: bool = player.global_position.distance_to(체크포인트) < 80.0
+			print("      · 착지 %s / 체크포인트 %s"
+				% [str(player.global_position.round()), str(체크포인트.round())])
 			check("5) 흑 구역 바닥 착지 = 생존(리스폰 안 됨)",
-				player.global_position.distance_to(Vector2(2400, 445)) < 60.0)
+				not 리스폰됨 and bool(player.call("is_on_floor")))
 		85:
 			warp(Vector2(3200, 120))            # zone2 백 상층 위 공중 (흑 상태로 진입)
 		120:
 			check("6) 백 구역 진입 → 자동 백", player.get("player_color") == 1)
+			# 위와 같은 이유로 좌표가 아니라 "리스폰 안 됨 + 땅에 서 있음" 으로 본다
+			var 체크포인트2: Vector2 = world.get("_spawn_pos")
 			check("6) 백 상층 착지 = 생존(리스폰 안 됨)",
-				player.global_position.distance_to(Vector2(3200, 189)) < 60.0)
+				player.global_position.distance_to(체크포인트2) >= 80.0
+				and bool(player.call("is_on_floor")))
 			check("7) 카메라 리밋 = REGION 2 트윈 완료",
 				(world.get_node("ProtoCamera").get("_limits") as Rect2).position
 					.distance_to(Vector2(1600, -168)) < 1.0)

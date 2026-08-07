@@ -15,9 +15,35 @@ extends Control
 ## Backdrop(Node2D) 아래에 런타임 조립한다 (존 조립과 같은 방식).
 ## 설정(볼륨·전체화면)은 v1 그대로 user://settings.cfg.
 
-const MAIN_SCENE := "res://scenes/world_1/world_1.tscn"   # 시작 → 심리스 월드
-## [2026-07-24 도형] 신규 챕터(스테이지 1~5 + 셰이더/VFX 비교존) 선택 화면
+# ════════════════════════════════════════════════════════════════════════════
+# [2026-08-07 도형] 로비 메뉴 재구성
+# ----------------------------------------------------------------------------
+# 도형님 지시:
+#   "f5를 눌렀을때 로비에서 나머지 스테이지는 따로 파일에 모아두고
+#    이제 시작을 누르면 동현 테스트 월드 제작에 있는 씬들이 시작되게 하고
+#    스마트월드를 누르면 스마트월드1과 스마트월드2까지 실행이 될 수 있게 변경"
+#
+# 바뀐 메뉴 구성
+#   시작            → 동현 테스트월드 라인 (타일맵 스테이지)
+#   스마트월드      → 스마트월드 1 → (통로) → 스마트월드 2
+#   기타 스테이지   → 예전 스테이지 1~5 / zone 선택 화면 (한 칸 아래로 내림)
+#   설정 / 나가기   → 기존 그대로
+#
+# ⚠ lobby.tscn 파일은 **건드리지 않는다.** 버튼은 전부 런타임에 복제해서 끼운다
+#   (9차부터 지켜온 방식 — 씬 파일을 안 고치면 팀원과 병합 충돌이 나지 않는다).
+# ════════════════════════════════════════════════════════════════════════════
+
+## ★"시작" — 동현님이 만든 타일맵 스테이지. 1-1 과 1-2 가 한 씬에 이어 붙어 있고,
+##   중간에서 카메라 구역이 바인식으로 전환된다(`카메라_연출.gd`).
+const MAIN_SCENE := "res://scenes/world_1/stage_1-1, 1-2.tscn"
+## 재질 실험용 씬 (동현 테스트 월드 제작 폴더). 시작 화면 아래 별도 버튼.
+const 테스트월드_SCENE := "res://scenes/world_1/동현 테스트 월드 제작/테스트월드제작.tscn"
+## ★"스마트월드" — SS2D 지형 라인. 1 편으로 들어가면 통로로 2 편까지 이어진다.
+const 스마트월드_SCENE := "res://scenes/스마트월드/스마트월드_1.tscn"
+## [2026-07-24 도형] 예전 챕터(스테이지 1~5 + 셰이더/VFX 비교존) 선택 화면
 const CHAPTER_SCENE := "res://scenes/스테이지/스테이지_선택.tscn"
+## 구 심리스 월드 (zone1~3). 지금은 "기타" 로 내려갔다.
+const 구_월드_SCENE := "res://scenes/world_1/world_1.tscn"
 const SETTINGS_PATH := "user://settings.cfg"
 const PLAYER_FRAMES := "res://assets/p/player_frames.tres"
 const TILESET := "res://assets/tilesets/terrain_tileset.tres"
@@ -52,18 +78,44 @@ func _ready() -> void:
 	_챕터_버튼_추가()
 	_load_settings()
 
-## 시작 버튼 바로 아래에 "챕터 1" 버튼을 하나 더 만든다.
+## 시작 버튼 바로 아래에 진입 메뉴들을 만든다.
+##
+## ★[2026-08-07 도형] 메뉴를 재구성했다.
+##   버튼은 `StartButton` 을 **복제**해서 만든다 → 폰트·테마·크기가 저절로 같아지고
+##   lobby.tscn 을 수정하지 않아 다른 작업자와 병합 충돌이 안 난다.
+##
+##   시작 버튼의 글자도 여기서 바꾼다("시작" → "시작 — 스테이지 1-1 / 1-2").
+##   씬 파일을 안 고치고 텍스트만 바꾸는 게 목적이다.
 func _챕터_버튼_추가() -> void:
 	var 메뉴 := $UILayer/Menu
 	var 원본 := $UILayer/Menu/StartButton as Button
 	if 원본 == null:
 		return
-	var b := 원본.duplicate() as Button          # 폰트·테마·크기를 그대로 물려받는다
-	b.name = "ChapterButton"
-	b.text = "챕터 1 (신규)"
-	메뉴.add_child(b)
-	메뉴.move_child(b, 원본.get_index() + 1)
-	b.pressed.connect(func() -> void:
+
+	# "시작" 이 무엇을 시작하는지 글자로 알려 준다 (버튼이 늘어나면 필수)
+	원본.text = "시작  ·  스테이지 1-1 / 1-2"
+
+	var 순서 := 원본.get_index()
+
+	# ── ★스마트월드 ── 1 편으로 들어가면 통로로 2 편까지 이어진다
+	순서 += 1
+	var 스마트 := _메뉴버튼(원본, "SmartWorldButton", "스마트월드  ·  1 → 2", 메뉴, 순서)
+	스마트.pressed.connect(func() -> void:
+		# 스마트월드는 자체 페이드(장면전환.gd)를 쓰므로 로비의 잉크 와이프로 들어간다.
+		# 들어간 뒤 스테이지 → 스테이지 이동은 통로가 알아서 어둡게/밝게 처리한다.
+		StageTransition.change_scene(self, 스마트월드_SCENE))
+
+	# ── 테스트월드 제작 (재질 실험 씬) ──
+	순서 += 1
+	var 테스트 := _메뉴버튼(원본, "TestWorldButton", "테스트월드 제작 (재질 실험)", 메뉴, 순서)
+	테스트.pressed.connect(func() -> void:
+		StageTransition.change_scene(self, 테스트월드_SCENE))
+
+	# ── 기타 스테이지 (예전 챕터 1 · zone) ──
+	# 도형님 요청 "나머지 스테이지는 따로 모아두고" → 메뉴에서 한 칸 아래로 내렸다.
+	순서 += 1
+	var 기타 := _메뉴버튼(원본, "ChapterButton", "기타 스테이지 (구 챕터 1)", 메뉴, 순서)
+	기타.pressed.connect(func() -> void:
 		StageTransition.change_scene(self, CHAPTER_SCENE))
 
 	_build_diorama()
@@ -71,6 +123,21 @@ func _챕터_버튼_추가() -> void:
 	# 창 크기가 바뀌어도 디오라마가 화면을 덮도록 (cover 스케일)
 	get_viewport().size_changed.connect(_fit_backdrop)
 	_fit_backdrop()
+
+## 시작 버튼을 복제해 메뉴 버튼 하나를 만든다 (테마·폰트를 그대로 물려받는다).
+func _메뉴버튼(원본: Button, 이름: String, 글자: String,
+		메뉴: Node, 위치: int) -> Button:
+	var b := 원본.duplicate() as Button
+	b.name = 이름
+	b.text = 글자
+	# duplicate() 는 **연결된 시그널까지 복제하지 않는다**(Godot 4 기본).
+	# 그래도 혹시 모를 중복 연결을 막기 위해 pressed 를 명시적으로 끊고 시작한다.
+	for c in b.pressed.get_connections():
+		b.pressed.disconnect(c["callable"])
+	메뉴.add_child(b)
+	메뉴.move_child(b, 위치)
+	return b
+
 
 func _process(delta: float) -> void:
 	_time += delta
