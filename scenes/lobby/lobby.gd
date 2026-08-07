@@ -66,6 +66,7 @@ var _light: PointLight2D
 var _bg_layers: Array = []           # [Sprite2D, 기준위치, 드리프트 속도] 목록
 
 func _ready() -> void:
+	# ★[2026-08-08] 시작 버튼의 목적지가 스마트월드 1 편으로 바뀌었다(§_챕터_버튼_추가).
 	$UILayer/Menu/StartButton.pressed.connect(_on_start)
 	$UILayer/Menu/SettingsButton.pressed.connect(func() -> void: settings_panel.visible = true)
 	$UILayer/Menu/QuitButton.pressed.connect(func() -> void: get_tree().quit())
@@ -92,18 +93,36 @@ func _챕터_버튼_추가() -> void:
 	if 원본 == null:
 		return
 
-	# "시작" 이 무엇을 시작하는지 글자로 알려 준다 (버튼이 늘어나면 필수)
-	원본.text = "시작  ·  스테이지 1-1 / 1-2"
+	# ★[2026-08-08] "시작" 이 이제 스마트월드 1 편이다.
+	#   예전에는 시작 = 타일맵 씬(`stage_1-1, 1-2`)이었는데, 그 지형이 통째로
+	#   스마트월드 1·2 편으로 옮겨졌다(`tools/스마트월드_체인.gd`).
+	#   같은 레벨이 두 군데서 굴러가면 어느 쪽을 고쳐야 하는지 알 수 없게 된다.
+	#   → 시작은 **스마트월드 1 편**. 타일맵 원본은 아래 "원본 타일맵" 으로 내렸다.
+	원본.text = "시작  ·  %s" % 챕터.표시이름(1)
 
 	var 순서 := 원본.get_index()
 
-	# ── ★스마트월드 ── 1 편으로 들어가면 통로로 2 편까지 이어진다
+	# ── 스테이지 바로가기 ──
+	# 챕터표를 읽어 **자동으로** 만든다. 스테이지를 추가해도 로비를 고칠 필요가 없다.
+	# (예전에는 버튼이 코드에 박혀 있어서 3 편을 만들면 로비도 같이 고쳐야 했다)
+	for 정보 in 챕터.스테이지표:
+		var 번호: int = int(정보["번호"])
+		if 번호 == 1:
+			continue                     # 1 편은 위의 "시작" 버튼이 담당한다
+		순서 += 1
+		var b := _메뉴버튼(원본, "Stage%dButton" % 번호,
+			"      ↳ %s" % 챕터.표시이름(번호), 메뉴, 순서)
+		# ★람다가 도는 시점에는 반복 변수가 끝값이 되어 있을 수 있다 → 지금 값을 묶어 둔다
+		var 경로 := 챕터.씬경로(번호)
+		b.pressed.connect(func() -> void:
+			StageTransition.change_scene(self, 경로))
+
+	# ── 원본 타일맵 씬 (대조용) ──
+	# 변환이 원본과 같은지 눈으로 확인할 때 쓴다. 레벨 디자인의 출처이기도 하다.
 	순서 += 1
-	var 스마트 := _메뉴버튼(원본, "SmartWorldButton", "스마트월드  ·  1 → 2", 메뉴, 순서)
-	스마트.pressed.connect(func() -> void:
-		# 스마트월드는 자체 페이드(장면전환.gd)를 쓰므로 로비의 잉크 와이프로 들어간다.
-		# 들어간 뒤 스테이지 → 스테이지 이동은 통로가 알아서 어둡게/밝게 처리한다.
-		StageTransition.change_scene(self, 스마트월드_SCENE))
+	var 원본씬 := _메뉴버튼(원본, "TileMapButton", "원본 타일맵 (대조용)", 메뉴, 순서)
+	원본씬.pressed.connect(func() -> void:
+		StageTransition.change_scene(self, MAIN_SCENE))
 
 	# ── 테스트월드 제작 (재질 실험 씬) ──
 	순서 += 1
@@ -328,8 +347,11 @@ void fragment() {
 	$UILayer.add_child(rect)   # UI 레이어 맨 위 = 화면 전체 질감 통일
 
 # ══ 메뉴 / 설정 (v1 그대로) ═════════════════════════════════════════════
+## "시작" — ★[2026-08-08] 목적지가 스마트월드 1 편으로 바뀌었다.
+## 여기서 들어가면 통로를 따라 2 → 3 → 4 편까지 끊김 없이 이어진다
+## (챕터가 넘어가는 3 → 4 구간에서는 배경·BGM 이 같이 바뀐다).
 func _on_start() -> void:
-	StageTransition.change_scene(self, MAIN_SCENE)
+	StageTransition.change_scene(self, 스마트월드_SCENE)
 
 func _on_settings_back() -> void:
 	settings_panel.visible = false

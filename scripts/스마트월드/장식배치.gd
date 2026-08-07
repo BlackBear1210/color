@@ -1,0 +1,266 @@
+extends RefCounted
+## ============================================================================
+## [2026-08-08 신규] 장식 자동 배치기 — 지형 표면에 "밀착" 시킨다
+## ----------------------------------------------------------------------------
+## ▣ 도형님 지시 그대로
+##   "장식 오브젝트들이 공중에 뜨거나 묻히지 않도록, 지형 노드(StaticBody2D)의
+##    표면 좌표를 감지해 자연스럽게 밀착되어 스폰되도록 처리할 것."
+##   "경사면에 배치되는 오브젝트는 지형의 각도(Normal Vector)에 맞춰
+##    Transform2D.rotation 이 꺾이도록 계산할 것."
+##   "천장이나 높은 플랫폼의 하단면을 감지하여, 아래로 길게 늘어지는 사슬이나
+##    전선이 스폰되는 부착점(Anchor)을 찾을 것."
+##
+## ▣ 왜 좌표를 손으로 안 적나
+##   지형이 SS2D 곡선이라 **수식으로 지면 높이를 알 수 없다.** 손으로 적으면
+##   지형 점을 하나만 끌어도 장식이 전부 공중에 뜨거나 땅에 파묻힌다.
+##   → 씬을 실제로 띄우고 **레이캐스트로 표면을 잰다.**
+##     (`tools/스마트월드_체인.gd` 가 통로를 놓을 때 쓰는 것과 같은 방법)
+##
+## ▣ 언제 도나 — **씬을 굽는 순간에 한 번**
+##   런타임에 매번 돌리면 시작이 느려지고, 무엇보다 **매번 배치가 달라진다.**
+##   레벨 디자인은 재현 가능해야 하므로 씨앗을 고정해 굽고 씬에 저장한다.
+##
+## ▣ 배치 규칙 (레인월드를 그대로 베끼지 않고 우리 게임에 맞춘 부분)
+##   · **밟는 면 위에는 큰 것을 놓지 않는다.** 플레이어가 헷갈리면 안 된다.
+##     지형인지 장식인지 구분이 안 되는 순간 색칠 퍼즐이 망가진다.
+##     → 지면 장식은 키를 `최대_지면높이`(38px)로 제한한다. 발목 아래다.
+##   · **전경은 드물게, 크게.** 자주 나오면 시야를 가려 짜증만 난다.
+##   · **챕터마다 종류가 다르다.** 1=이끼/버섯/갈대, 2=이끼/얼룩/잔해,
+##     3=파이프/잔해/전선. 배경이 바뀌었다는 걸 장식이 같이 말해줘야 한다.
+## ============================================================================
+class_name 장식배치
+
+const 장식_S := preload("res://scripts/스마트월드/장식.gd")
+const 덩굴_S := preload("res://scripts/스마트월드/덩굴.gd")
+
+## 지면 장식의 최대 키(px). 이보다 크면 발판처럼 보여 퍼즐이 헷갈린다.
+const 최대_지면높이: float = 38.0
+## 표면을 훑는 간격(px). 촘촘하면 장식이 다닥다닥 붙어 지저분해진다.
+const 훑는간격: float = 96.0
+## 천장 부착점을 찾을 때 위로 쏘는 최대 거리(px).
+const 천장_탐색거리: float = 900.0
+## 덩굴이 늘어질 최소 여유 높이(px). 이보다 좁으면 덩굴이 바닥에 처박힌다.
+const 덩굴_최소여유: float = 150.0
+
+
+## 챕터별로 무엇을 깔지. 값은 **가중치**다(클수록 자주 나온다).
+const 챕터_지면 := {
+	1: { 장식.종류_.이끼: 4, 장식.종류_.버섯: 3, 장식.종류_.갈대: 3, 장식.종류_.잔해: 1 },
+	2: { 장식.종류_.이끼: 3, 장식.종류_.얼룩: 3, 장식.종류_.잔해: 3, 장식.종류_.갈대: 2 },
+	3: { 장식.종류_.잔해: 4, 장식.종류_.얼룩: 3, 장식.종류_.이끼: 1 },
+}
+## 천장에서 늘어지는 것.
+const 챕터_천장 := {
+	1: [벨레덩굴.종류_.덩굴, 벨레덩굴.종류_.덩굴, 벨레덩굴.종류_.사슬],
+	2: [벨레덩굴.종류_.덩굴, 벨레덩굴.종류_.사슬, 벨레덩굴.종류_.사슬],
+	3: [벨레덩굴.종류_.전선, 벨레덩굴.종류_.사슬, 벨레덩굴.종류_.전선],
+}
+
+
+## 한 스테이지에 장식을 통째로 깐다.
+##   월드   : 레이캐스트에 쓸, **이미 트리에 들어가 있는** 스테이지 루트
+##   부모   : 장식을 담을 노드 (보통 "장식" 이라는 빈 Node2D)
+##   범위   : 훑을 월드 영역
+##   챕터번호 / 시드 / 밀도(0~1)
+## 반환: { "지면": int, "천장": int, "전경": int }
+static func 깔기(월드: Node2D, 부모: Node2D, 범위: Rect2,
+		챕터번호: int, 시드: int, 밀도: float = 0.55) -> Dictionary:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 시드
+	var 공간 := 월드.get_viewport().world_2d.direct_space_state
+	var 셈 := { "지면": 0, "천장": 0, "전경": 0 }
+
+	var x := 범위.position.x
+	while x <= 범위.end.x:
+		var 걸음 := 훑는간격 * rng.randf_range(0.75, 1.35)
+		x += 걸음
+
+		# ★한 x 에는 밟을 수 있는 면이 여러 개다(천장 위 · 발판 위 · 진짜 바닥).
+		#   위에서 하나만 잡으면 **천장의 지붕**을 지면으로 착각한다 —
+		#   그러면 "그 위에 아무것도 없다"가 되어 덩굴이 한 개도 안 걸린다(실제로 그랬다).
+		var 면들 := 표면들_찾기(공간, x, 범위.position.y, 범위.end.y)
+		if 면들.is_empty():
+			continue
+
+		# ── 지면 장식 ── 어느 층이든 골고루. 발판 위에도 이끼가 껴야 자연스럽다.
+		if rng.randf() < 밀도:
+			_지면_장식(부모, 면들[rng.randi() % 면들.size()], 챕터번호, rng)
+			셈["지면"] += 1
+
+		# ── 천장에서 늘어지는 것 ── 지면보다 훨씬 드물게 (밀도의 40%)
+		#   ★맨 아래 면(진짜 바닥)에서 위를 봐야 머리 위 천장이 잡힌다.
+		if rng.randf() < 밀도 * 0.4:
+			var 바닥: Dictionary = 면들[면들.size() - 1]
+			var 바닥y: float = 바닥["위치"].y
+			var 천장 := 천장_찾기(공간, x, 바닥y)
+			if not 천장.is_empty():
+				var 여유: float = 바닥y - 천장["위치"].y
+				if 여유 > 덩굴_최소여유:
+					_천장_덩굴(부모, 천장, 여유, 챕터번호, rng)
+					셈["천장"] += 1
+
+	# ── 전경 파이프 ── ★아주 드물게, 아주 크게 (§배치 규칙)
+	var 전경수 := maxi(int(범위.size.x / 3200.0), 1)
+	for i in 전경수:
+		var px := 범위.position.x + 범위.size.x * (float(i) + rng.randf()) / float(전경수)
+		var 지면2 := 표면_찾기(공간, px, 범위.position.y, 범위.end.y)
+		var py: float = 지면2.get("위치", Vector2(px, 범위.end.y)).y - rng.randf_range(60.0, 260.0)
+		var 파이프 := 장식_S.new()
+		파이프.name = "전경파이프_%d" % i
+		파이프.종류 = 장식.종류_.녹슨파이프
+		파이프.층 = 장식.층_.전경
+		파이프.크기 = Vector2(rng.randf_range(700.0, 1600.0), rng.randf_range(46.0, 92.0))
+		파이프.씨앗 = rng.randi()
+		파이프.position = Vector2(px - 파이프.크기.x * 0.5, py)
+		# 아주 살짝 기울인다 — 완벽한 수평은 인공적이라 오히려 눈에 걸린다
+		파이프.rotation = rng.randf_range(-0.05, 0.05)
+		부모.add_child(파이프)
+		셈["전경"] += 1
+
+	return 셈
+
+
+# ============================================================================
+# 표면 감지
+# ============================================================================
+## x 위치에서 위→아래로 훑으며 **밟을 수 있는 면을 전부** 찾는다(위에서 아래 순서).
+## 반환: [{ "위치": Vector2, "법선": Vector2 }, ...] — 마지막 원소가 가장 아래(진짜 바닥).
+##
+## ▣ 왜 하나만 찾으면 안 되나 (2026-08-08 에 실제로 겪은 버그)
+##   레인월드식 지형은 "덩어리에서 파낸 공간"이라 한 x 에 면이 3~4 개 있다:
+##     천장 지붕 → 천장 아랫면 → 발판 윗면 → 진짜 바닥
+##   위에서 한 번만 쏘면 **천장의 지붕**이 잡힌다. 그걸 지면으로 여기면
+##     · 장식이 플레이어가 갈 수 없는 천장 위에만 깔리고
+##     · "그 위에는 아무것도 없다"가 되어 늘어지는 덩굴이 **한 개도** 안 걸린다
+##   → 물체를 뚫고 내려가며 층을 전부 모은다.
+static func 표면들_찾기(공간: PhysicsDirectSpaceState2D, x: float,
+		위y: float, 아래y: float) -> Array:
+	var 결과: Array = []
+	var y := 위y
+	var 안전 := 0
+	while y < 아래y and 안전 < 24:
+		안전 += 1
+		var q := PhysicsRayQueryParameters2D.create(
+			Vector2(x, y), Vector2(x, 아래y), 1)
+		q.collide_with_areas = false
+		var r := 공간.intersect_ray(q)
+		if r.is_empty():
+			break
+		var 법선: Vector2 = r.get("normal", Vector2.UP)
+		# ★위를 향한 면만 지면으로 인정한다.
+		#   벽이나 천장 아랫면에 이끼를 세워 놓으면 공중에 뜬 것처럼 보인다.
+		#   0.55 ≈ 56° — 그보다 가파르면 '벽'이다(플레이어도 그 위에 못 선다).
+		if 법선.y < -0.55:
+			결과.append({ "위치": r["position"], "법선": 법선 })
+		# 맞은 물체 속을 빠져나가 다음 층으로
+		y = r["position"].y + 4.0
+		var 속안전 := 0
+		while 속안전 < 400 and _속인가(공간, x, y):
+			y += 8.0
+			속안전 += 1
+		y += 2.0
+	return 결과
+
+
+## 그 점이 지형 안쪽인가. 층을 뚫고 내려갈 때 쓴다.
+static func _속인가(공간: PhysicsDirectSpaceState2D, x: float, y: float) -> bool:
+	var q := PhysicsPointQueryParameters2D.new()
+	q.position = Vector2(x, y)
+	q.collide_with_areas = false
+	q.collide_with_bodies = true
+	q.collision_mask = 1
+	return not 공간.intersect_point(q, 1).is_empty()
+
+
+## 가장 위쪽 지면 하나만. (예전 호출부 호환 · 단순한 용도)
+static func 표면_찾기(공간: PhysicsDirectSpaceState2D, x: float,
+		위y: float, 아래y: float) -> Dictionary:
+	var 면들 := 표면들_찾기(공간, x, 위y, 아래y)
+	return 면들[0] if not 면들.is_empty() else {}
+
+
+## 아래에서 위로 쏴서 **천장 아랫면**을 찾는다 (덩굴·사슬이 매달릴 부착점).
+static func 천장_찾기(공간: PhysicsDirectSpaceState2D, x: float, 바닥y: float) -> Dictionary:
+	# 바닥에서 살짝 띄워 시작한다 — 바닥 자신에 맞으면 의미가 없다
+	var 시작 := Vector2(x, 바닥y - 24.0)
+	var q := PhysicsRayQueryParameters2D.create(
+		시작, Vector2(x, 바닥y - 천장_탐색거리), 1)
+	q.collide_with_areas = false
+	var r := 공간.intersect_ray(q)
+	if r.is_empty():
+		return {}
+	var 법선: Vector2 = r.get("normal", Vector2.DOWN)
+	# 아래를 향한 면만 천장으로 인정한다
+	if 법선.y < 0.55:
+		return {}
+	return { "위치": r["position"], "법선": 법선 }
+
+
+# ============================================================================
+# 배치
+# ============================================================================
+## 지면 장식 하나. **법선에 맞춰 기울인다** — 경사면에 수직으로 서 있으면
+## 붙어 있지 않고 꽂아 놓은 것처럼 보인다.
+static func _지면_장식(부모: Node2D, 지면: Dictionary, 챕터번호: int,
+		rng: RandomNumberGenerator) -> void:
+	var 종류 := _가중_고르기(챕터_지면.get(챕터번호, 챕터_지면[1]), rng)
+	var n := 장식_S.new()
+	n.name = "장식_%d" % 부모.get_child_count()
+	n.종류 = 종류
+	# 대부분 중경. 가끔 배경으로 보내 깊이를 만든다.
+	n.층 = 장식.층_.배경 if rng.randf() < 0.25 else 장식.층_.중경
+	n.크기 = Vector2(
+		rng.randf_range(60.0, 190.0),
+		rng.randf_range(14.0, 최대_지면높이))
+	n.씨앗 = rng.randi()
+	n.position = 지면["위치"]
+	# ★법선 각도. 법선이 Vector2.UP(0,−1)일 때 회전 0 이 되도록 잡는다.
+	#   `atan2(-법선.x, ...)` 이 아니라 아래 식이어야 왼/오 경사가 각각 맞게 꺾인다.
+	var 법선: Vector2 = 지면["법선"]
+	n.rotation = 법선.angle() + PI * 0.5
+	부모.add_child(n)
+
+
+## 천장에서 늘어지는 덩굴/사슬/전선 하나.
+static func _천장_덩굴(부모: Node2D, 천장: Dictionary, 여유: float,
+		챕터번호: int, rng: RandomNumberGenerator) -> void:
+	var 목록: Array = 챕터_천장.get(챕터번호, 챕터_천장[1])
+	var 종류: int = 목록[rng.randi() % 목록.size()]
+
+	var v := 덩굴_S.new()
+	v.name = "덩굴_%d" % 부모.get_child_count()
+	v.종류 = 종류
+	v.position = 천장["위치"]
+	# ★바닥에 닿지 않게 길이를 정한다. 닿으면 파고들어 그림이 깨진다
+	#   (벨레 덩굴은 지형 충돌을 안 본다 — 그래야 싸다).
+	var 목표길이 := 여유 * rng.randf_range(0.30, 0.62)
+	v.마디길이 = rng.randf_range(18.0, 30.0)
+	v.마디수 = clampi(int(목표길이 / v.마디길이), 4, 20)
+	v.굵기 = rng.randf_range(3.0, 7.0)
+	match 종류:
+		벨레덩굴.종류_.전선:
+			v.산들바람 = 25.0            # 전선은 거의 안 흔들린다
+			v.몸색 = Color(0.09, 0.09, 0.11)
+		벨레덩굴.종류_.사슬:
+			v.산들바람 = 18.0
+			v.몸색 = Color(0.30, 0.29, 0.27)
+		_:
+			v.산들바람 = rng.randf_range(45.0, 90.0)
+	v.z_index = -4 if rng.randf() < 0.35 else 6
+	부모.add_child(v)
+
+
+## 가중치 사전에서 하나 고르기. { 값: 가중치 }
+static func _가중_고르기(표: Dictionary, rng: RandomNumberGenerator) -> int:
+	var 합 := 0
+	for k in 표:
+		합 += int(표[k])
+	if 합 <= 0:
+		return 0
+	var r := rng.randi_range(1, 합)
+	var 누적 := 0
+	for k in 표:
+		누적 += int(표[k])
+		if r <= 누적:
+			return int(k)
+	return int(표.keys()[0])

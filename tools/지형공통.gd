@@ -35,6 +35,10 @@ extends RefCounted
 class_name 지형공통
 
 const 지형_S := preload("res://scripts/스마트월드/지형.gd")
+## ★[2026-08-07 추가] 스마트 지형 물리 제어 규칙.
+##   여기서 만드는 **밟는 지형의 윗면**은 전부 이걸 통과시킨다.
+##   자세한 근거는 `scripts/스마트월드/지형규칙.gd` 머리말 참고.
+const 규칙 := preload("res://scripts/스마트월드/지형규칙.gd")
 const 타일폴더 := "res://assets/textures/smartshape/"
 
 # ============================================================================
@@ -138,37 +142,44 @@ static func 재질_준비(종류: String, 경로: String = "", 강제재생성: 
 ## ★평평한 바닥 (스테이지 1-2 용 — 도형님 요청 "바닥이 일자로 가고").
 ## 완전한 직선이면 죽은 그림이라, **1~3px 짜리 미세한 요철**만 준다.
 ## 눈에는 직선으로 보이지만 타일 테두리가 살아나서 "그린 것"처럼 보인다.
+##
+## ⚠[2026-08-07] 간격 기본값을 규칙 1(최소 64px)에 묶었다. 예전엔 그냥 64 였는데,
+##   호출부가 값을 줄이면 조용히 규칙을 깰 수 있었다 → 아래에서 강제로 걸러낸다.
 static func 평바닥_점들(x0: float, x1: float, y: float, 바닥y: float,
-		거칠기: float = 2.5, 간격: float = 64.0) -> PackedVector2Array:
-	var 점들 := PackedVector2Array()
+		거칠기: float = 2.5, 간격: float = 규칙.최소_수평간격) -> PackedVector2Array:
+	var 윗면 := PackedVector2Array()
 	var x := x0
-	var i := 0
 	while x <= x1:
 		# 사인 2 개를 아주 작은 진폭으로 겹친다 — 규칙적인 물결로 보이지 않게
 		var dy := sin(x * 0.031) * 거칠기 + sin(x * 0.0077 + 1.3) * 거칠기 * 0.7
-		점들.append(Vector2(x, y + dy))
-		x += 간격
-		i += 1
-	점들.append(Vector2(x1, y))
-	점들.append(Vector2(x1, 바닥y))
-	점들.append(Vector2(x0, 바닥y))
-	return 점들
+		윗면.append(Vector2(x, y + dy))
+		x += maxf(간격, 규칙.최소_수평간격)
+	윗면.append(Vector2(x1, y))
+	# ★규칙 1·2·4 를 여기서 한 번에 건다. 요철이 2.5px 뿐이라 보통은 통과하지만,
+	#   호출부가 거칠기를 크게 주면 이 한 줄이 절벽을 막아준다.
+	return 규칙.닫기(규칙.정리(윗면), 바닥y)
 
 
 ## 굽이치는 바닥 (스테이지 1-1 의 자연 지형).
 ## 사인 3 개를 겹쳐서 규칙성을 없앤다. 노이즈보다 예측 가능하고, 같은 식을
 ## `높이함수` 로 다시 불러 프롭을 지면에 정확히 붙일 수 있다.
+##
+## ⚠⚠[2026-08-07 · 여기가 "못 오르는 절벽"의 진짜 원인이었다]
+##   예전 기본 간격은 **40px** 이었다. 규칙 1(최소 64px)을 그 자체로 어기고 있었고,
+##   더 나쁜 건 사인 진폭이 크면 40px 사이에 100px 넘는 단차가 생겨 **경사 68°** 짜리
+##   벽이 만들어졌다는 점이다(floor_max_angle 45° → 밟는 순간 미끄러진다).
+##   씬을 열어 보면 지형이 멀쩡히 그려져 있어 눈으로는 절대 안 보인다.
+##   → 간격을 규칙 1 로 올리고, 결과를 `정리()` 에 통과시킨다.
+##     **모양은 높이함수가 정하고, 오를 수 있는지는 규칙이 정한다.**
 static func 굽은바닥_점들(x0: float, x1: float, 높이함수: Callable,
-		바닥y: float, 간격: float = 40.0) -> PackedVector2Array:
-	var 점들 := PackedVector2Array()
+		바닥y: float, 간격: float = 규칙.최소_수평간격) -> PackedVector2Array:
+	var 윗면 := PackedVector2Array()
 	var x := x0
 	while x <= x1:
-		점들.append(Vector2(x, float(높이함수.call(x))))
-		x += 간격
-	점들.append(Vector2(x1, float(높이함수.call(x1))))
-	점들.append(Vector2(x1, 바닥y))
-	점들.append(Vector2(x0, 바닥y))
-	return 점들
+		윗면.append(Vector2(x, float(높이함수.call(x))))
+		x += maxf(간격, 규칙.최소_수평간격)
+	윗면.append(Vector2(x1, float(높이함수.call(x1))))
+	return 규칙.닫기(규칙.정리(윗면), 바닥y)
 
 
 ## ★천장 매스 — 위에서 아래로 내려오는 암반 덩어리.
@@ -268,6 +279,13 @@ static func 벽_점들(폭: float, 높이: float, 거칠기: float = 7.0,
 static func 지형_노드(이름: String, 위치: Vector2, 점들: PackedVector2Array,
 		재질경로: String, 칠하기: bool, 유령: bool,
 		필요횟수: int = 0, 콜리전두께: float = 24.0) -> 스마트지형:
+	# ★[2026-08-07] 규칙 4 — 꼬인 다각형을 **만드는 순간** 잡는다.
+	#   꼬인 채로 저장되면 `Geometry2D.offset_polygon()` 이 빈 배열을 돌려주고,
+	#   그러면 "그림은 멀쩡한데 밟을 수 없는 지형"이 조용히 만들어진다.
+	#   실행해 보기 전에는 절대 못 찾는 종류의 버그라 여기서 미리 경고한다.
+	if 규칙.자기교차_있나(점들):
+		push_warning("지형공통(%s): 다각형이 스스로 교차한다 — 콜리전이 깨질 수 있다" % 이름)
+
 	var 지형: 스마트지형 = 지형_S.new()
 	지형.name = 이름
 	지형.position = 위치

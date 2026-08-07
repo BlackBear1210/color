@@ -5,7 +5,7 @@ extends SceneTree
 ## 실행:
 ##   Godot --headless --path . -s res://tools/레벨검사.gd -- <씬경로> [--지도]
 ## 예:
-##   Godot --headless --path . -s res://tools/레벨검사.gd -- res://scenes/스마트월드/스마트월드_1-2.tscn --지도
+##   Godot --headless --path . -s res://tools/레벨검사.gd -- res://scenes/스마트월드/_원본/원본_폐수로.tscn --지도
 ##
 ## ============================================================================
 ## ▣ 왜 필요한가
