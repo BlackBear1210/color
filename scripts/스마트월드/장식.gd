@@ -54,7 +54,15 @@ enum 층_ { 먼배경, 배경, 중경, 전경 }
 ## 살아 있는 것(이끼·버섯·갈대)이 아주 느리게 숨쉬는 정도. 0 이면 정지.
 @export_range(0.0, 1.0) var 생기: float = 0.35
 
+## ★[2026-08-10 추가] 플레이어에서 이 거리 밖이면 다시 그리기를 쉰다(px).
+## 화면 대각선(약 2,200px)보다 넉넉히 잡는다 — `덩굴.gd` 의 `활성_거리` 와 같은 이유.
+## 스테이지가 최대 22,000px 라 장식이 70개 넘게 깔리는데, 화면 밖 장식까지
+## 매 프레임 queue_redraw() 하는 건 낭비다(실측: 스테이지 진입 시 지속 프레임드랍의 원인).
+@export_range(500.0, 8000.0) var 활성_거리: float = 2400.0
+
 var _t: float = 0.0
+var _플레이어: Node2D = null
+var _쉬는중: bool = false
 
 
 func _ready() -> void:
@@ -87,8 +95,25 @@ func _층_적용() -> void:
 
 
 func _process(delta: float) -> void:
+	# ── 멀면 통째로 쉰다 ── (`덩굴.gd` 와 같은 문법)
+	_플레이어 = _플레이어_찾기()
+	if _플레이어 and is_instance_valid(_플레이어):
+		var 거리 := global_position.distance_to(_플레이어.global_position)
+		if 거리 > 활성_거리:
+			if not _쉬는중:
+				_쉬는중 = true
+				queue_redraw()      # 멈추기 전 마지막 모습을 한 번 반영해 둔다
+			return
+		_쉬는중 = false
+
 	_t += delta
 	queue_redraw()
+
+
+func _플레이어_찾기() -> Node2D:
+	if _플레이어 and is_instance_valid(_플레이어):
+		return _플레이어
+	return get_tree().get_first_node_in_group("player") as Node2D
 
 
 func _draw() -> void:
