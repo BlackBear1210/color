@@ -22,6 +22,11 @@ const 총_스크립트 := preload("res://scripts/스마트월드/총.gd")
 const 메뉴_스크립트 := preload("res://scripts/스마트월드/일시정지_메뉴.gd")
 ## [2026-08-06 추가] 낙하 거리 기반 즉사 판정기
 const 낙하감시_스크립트 := preload("res://scripts/스마트월드/낙하_감시.gd")
+## [2026-08-17 추가] 점(pip) 방식 페인트 HUD + 그 어댑터.
+## ⚠ class_name 이 아니라 경로 preload 로 잡는다 — 새 스크립트의 전역 클래스 이름은
+##   에디터가 한 번 훑기 전까지 등록되지 않아서, 헤드리스 검사가 통째로 죽는다.
+const 페인트HUD_스크립트 := preload("res://scripts/ui/페인트_HUD.gd")
+const 페인트HUD어댑터_코어 := preload("res://scripts/ui/페인트_HUD_어댑터_코어.gd")
 
 @export var 스테이지_이름: String = "스마트월드 테스트"
 ## 카메라가 벗어나지 않을 범위. 비워두면(size 0) 리밋 없이 자유롭게 따라간다.
@@ -57,7 +62,6 @@ var _카메라: ProtoCamera = null
 var _총: 페인트총 = null
 var _낙하: 낙하감시 = null
 
-var _hud_탄약: Label = null
 var _hud_안내: Label = null
 var _무적: float = 0.0                 ## 리스폰 직후 잠깐 무적 (즉사 반복 방지)
 var _안전점: Vector2 = Vector2.ZERO    ## 자동 체크포인트 (마지막으로 안전하게 서 있던 곳)
@@ -130,9 +134,9 @@ func _ready() -> void:
 
 	_HUD_만들기()
 	_메뉴_만들기()
-	if _코어:
-		_코어.탄약_변경.connect(_HUD_갱신)
-		_HUD_갱신(_코어.남은_탄약, _코어.최대_탄약)
+	# [2026-08-17] 탄약_변경 시그널 연결을 뺐다. 점 HUD 는 매 프레임 코어를 읽으므로
+	# 시그널이 필요 없고, 시그널만 믿으면 **회수줄이 바뀌었는데 탄약 수는 그대로인 순간**
+	# (예: 회색화 직후)에 화면이 안 따라오는 구멍이 생긴다.
 
 
 func _physics_process(delta: float) -> void:
@@ -494,21 +498,44 @@ func _발밑에_땅있나() -> bool:
 
 
 # ── HUD ────────────────────────────────────────────────────────────────────
+## ★[2026-08-17 전면 교체] 글씨 HUD → 점(pip) HUD.
+##
+## 예전에는 `"페인트 8 / 12 (회수대기 3) [회색으로 잠김 2발]"` 한 줄이었다. 문제가 셋:
+##   ① 퍼즐의 핵심 자원을 문장으로 읽게 만든다.
+##   ② "회수대기 3" 의 3 은 발 수가 아니라 **대상 개수**였다(회수_대기수() = 줄 길이).
+##      옆 숫자들은 발 단위라 플레이어는 "3발"로 오해한다.
+##   ③ FIFO 순서가 안 보여서 E 가 "무엇이 풀릴지 모르고 누르는 키"였다.
+## → `페인트_HUD.gd` 가 세 가지를 한꺼번에 해결한다. 여기서는 붙이기만 한다.
+##   스마트월드 6개 씬이 전부 이 파일을 쓰므로 이 한 줄로 전부 적용된다.
 func _HUD_만들기() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "HUD"
-	add_child(layer)
+	if _코어:
+		var 새HUD: CanvasLayer = 페인트HUD_스크립트.new()
+		새HUD.name = "페인트HUD"
+		add_child(새HUD)
+		새HUD.연결(_플레이어, 페인트HUD어댑터_코어.new(_코어, 새HUD))
 
-	_hud_탄약 = Label.new()
-	_hud_탄약.position = Vector2(28, 22)
-	_hud_탄약.add_theme_font_size_override("font_size", 26)
-	_hud_탄약.add_theme_color_override("font_color", Color(0.95, 0.95, 0.92))
-	_hud_탄약.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-	_hud_탄약.add_theme_constant_override("outline_size", 6)
-	layer.add_child(_hud_탄약)
+	# ── ⚠ 씬에 구워져 저장된 옛 HUD 치우기 (§5-1 지뢰의 실물) ──────────────
+	# `스마트월드_1.tscn` · `스마트월드_2.tscn` 에는 예전 빌더가 owner 를 트리 전체에
+	# 박는 바람에 **런타임에 만든 HUD 가 씬 파일에 통째로 저장돼 있다.**
+	# 그래서 지금까지 HUD 가 항상 두 벌이었다 — 씬에 구워진 쪽은 갱신이 안 되니
+	# 스크린샷에서 "페인트 12 / 12 (회수대기 0)" 이 계속 굳어 있었다.
+	# 씬 파일을 고치는 건 위험하므로(디자이너 편집본이 날아갈 수 있다) 여기서 치운다.
+	# 노드를 재사용해야 한다 — queue_free() 는 지연 삭제라 같은 이름으로 새로 만들면
+	# Godot 이 "HUD2" 로 이름을 바꿔 버린다.
+	var layer := get_node_or_null("HUD") as CanvasLayer
+	if layer != null:
+		for 자식 in layer.get_children():
+			layer.remove_child(자식)
+			자식.free()
+	else:
+		layer = CanvasLayer.new()
+		layer.name = "HUD"
+		add_child(layer)
 
+	# 탄약 글씨 라벨은 없앴다 — 점 HUD 가 대신한다. 조작 안내만 남긴다.
+	# 점 줄이 y≈34 에 깔리므로 안내문은 그 아래로 내린다.
 	_hud_안내 = Label.new()
-	_hud_안내.position = Vector2(28, 60)
+	_hud_안내.position = Vector2(28, 58)
 	_hud_안내.add_theme_font_size_override("font_size", 17)
 	_hud_안내.add_theme_color_override("font_color", Color(0.80, 0.80, 0.78))
 	_hud_안내.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
@@ -536,11 +563,3 @@ func _메뉴_만들기() -> void:
 		메뉴.연결(어둠, 어둠.color)
 
 
-func _HUD_갱신(남은: int, 최대: int) -> void:
-	if _hud_탄약 == null or _코어 == null:
-		return
-	var 잠김 := _코어.잠긴_발수()
-	var 문구 := "페인트 %d / %d   (회수대기 %d)" % [남은, 최대, _코어.회수_대기수()]
-	if 잠김 > 0:
-		문구 += "   [회색으로 잠김 %d발 — 스테이지 이동 시 회수]" % 잠김
-	_hud_탄약.text = 문구

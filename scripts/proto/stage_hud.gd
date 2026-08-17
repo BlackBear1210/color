@@ -23,6 +23,8 @@ var _player: Node
 var _매니저: PaintManager
 var 스테이지이름: String = ""
 var 사망수: int = 0
+## 좌상단 "↩ 회수대기 N" 을 띄울지. 타일맵 페인트 스테이지에서는 꺼야 한다(위 _draw 주석 참고).
+var 회수대기_표시: bool = true
 
 var _팝업들: Array[Dictionary] = []      ## { pos:Vector2(월드), text:String, color:Color, age:float }
 var _메시지: String = ""
@@ -105,7 +107,10 @@ func _draw() -> void:
 
 	# ── 좌상단: 스테이지 이름 · 사망 횟수 · 회수 대기 수 ──
 	var 머리 := "%s    💀 %d" % [스테이지이름, 사망수]
-	if _매니저:
+	# ⚠[2026-08-17] 타일맵 페인트 스테이지에서는 색칠을 TilePaintMap 이 하고 이 매니저의
+	#   큐는 **항상 비어 있다** → "회수대기 0" 이 굳어 있어 거짓말이 된다.
+	#   그쪽은 점 HUD(페인트_HUD.gd)가 회수 상태를 대신 보여주므로 여기서는 감춘다.
+	if _매니저 and 회수대기_표시:
 		머리 += "    ↩ 회수대기 %d" % _매니저.큐_크기()
 	_글자_외곽(폰트, Vector2(18, 30), 머리, 18, Color(0.95, 0.95, 0.95))
 

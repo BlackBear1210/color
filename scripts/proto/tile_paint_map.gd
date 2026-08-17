@@ -39,6 +39,37 @@ class_name TilePaintMap
 
 signal 상태변경                                     ## HUD 갱신용
 signal 명중됨(결과: String, 색: int, 월드좌표: Vector2)
+## [2026-08-17] 탄약이 바뀔 때. HUD 는 매 프레임 읽지만, 소리·연출을 붙일 자리로 남겨둔다.
+signal 탄약_변경(남은: int, 최대: int)
+
+# ── 탄약 (2026-08-17 신규) ──────────────────────────────────────────────────
+## ▣ 왜 이제서야 넣나
+##   이 시스템은 원래 탄약이 없었다. `proto_gun` 은 아무한테도 안 물어보고 그냥 쐈고,
+##   그래서 좌상단 HUD 에 **탄약 줄이 아예 안 나왔다**(그릴 값이 없었다).
+##   규칙은 `페인트_코어.gd`(스마트월드)를 그대로 따른다 — 같은 게임인데 스테이지마다
+##   자원 규칙이 다르면 플레이어가 두 번 배워야 한다.
+##
+## ▣ 숫자를 고를 때 알아야 할 것
+##   E 로 회수하면 발이 돌아오므로, 탄약은 "총 사용량 제한"이 아니라
+##   **동시에 칠해둘 수 있는 양의 상한**이다.
+##   `stage_1-1, 1-2` 실측: 칠할 수 있는 플랫폼 103 개, 전부 칠하면 440 발,
+##   가장 큰 플랫폼 하나가 12 발을 먹는다. 그래서 12 발이면 큰 것 하나도 못 칠한다.
+##
+## ★0 이하 = 무제한(예전 동작). `zone_*` 등 탄약을 안 쓰는 경로는 손댈 필요가 없다.
+@export var 최대_탄약: int = 14:
+	set(v):
+		최대_탄약 = maxi(v, 0)
+		남은_탄약 = 최대_탄약
+		탄약_변경.emit(남은_탄약, 최대_탄약)
+
+var 남은_탄약: int = 14
+## 회색이 되어 잠긴 총 발수. 스테이지를 다시 시작해야 돌아온다.
+var _잠긴_발수: int = 0
+## ★[2026-08-17] 지금 날아가는 중인 발 수 — **HUD 표시 전용**(규칙 판정에 쓰지 않는다).
+## 탄약은 쏘는 순간 깎이고 착탄해야 결과가 나오므로, HUD 가 `남은_탄약` 을 그대로 그리면
+## 한 발에 두 번 바뀐다(쏨 → 꺼짐 → 착탄 → 켜짐). 빗나가면 깜빡임만 남는다.
+## → HUD 는 `남은_탄약 + 비행중` 을 그려서 **착탄하는 순간 한 번만** 바뀌게 한다.
+var _비행중: int = 0
 
 ## 한 버전(384px)이 차지하는 칸 수 = 384 / 16
 const 반칸: int = 24
@@ -103,6 +134,8 @@ class 플랫폼:
 var _플랫폼들: Array = []
 var _셀_찾기: Dictionary = {}          ## "레이어경로|셀" → 플랫폼
 var _큐: Array = []                    ## 칠한 순서 (앞이 가장 오래된 것)
+## [2026-08-17] HUD 호버 조회용 레이어 목록 캐시. `등록()` 이 돌면 비운다.
+var _레이어_캐시: Array[TileMapLayer] = []
 
 # ── 색 인지 ─────────────────────────────────────────────────────────────────
 ## 이 소스의 흑/백이 나뉘는 축. 규칙을 모르는 소스면 -1.
@@ -172,6 +205,7 @@ func _모든_타일맵(뿌리: Node) -> Array[TileMapLayer]:
 func 등록(layer: TileMapLayer) -> void:
 	if layer.tile_set == null:
 		return
+	_레이어_캐시.clear()        # 플랫폼이 새로 생기면 HUD 호버 캐시도 무효다
 	var 남은 := {}
 	for cell in layer.get_used_cells():
 		var 색 := 셀_색(layer, cell)
@@ -236,12 +270,31 @@ func _찾기(layer: TileMapLayer, cell: Vector2i):
 const 탐색_반경: int = 2
 
 func on_hit(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
+	_비행_해제()                       # 이 발은 결판났다 (HUD 표시용 계수)
 	var 실제셀 := _가까운_셀(layer, cell)
 	var 결과 := _명중_처리(layer, 실제셀, color)
+	_탄약_정산(layer, 실제셀, 결과)
 	var 타일 := Vector2(layer.tile_set.tile_size) if layer.tile_set else Vector2(16, 16)
 	var 월드 := layer.to_global((Vector2(실제셀) + Vector2(0.5, 0.5)) * 타일)
 	명중됨.emit(결과, color, 월드)
 	return 결과
+
+
+## 명중 결과에 따라 페인트를 돌려주거나 잠근다 (페인트_코어.gd 규칙 5·6 과 동일).
+##   painted / progress → 그대로 대상에 묶인다 (E 로 회수 가능)
+##   wasted / blocked / miss → 아무 일도 안 일어났으니 **그 자리에서 환급**
+##   mixed_gray → 원래 색에 든 발 + 방금 덮은 1발이 **함께 잠긴다**
+func _탄약_정산(layer: TileMapLayer, cell: Vector2i, 결과: String) -> void:
+	if not 탄약을_쓰나():
+		return
+	match 결과:
+		"wasted", "blocked", "miss":
+			_환급(1)
+		"mixed_gray":
+			# ⚠ `_회색으로()` 는 `맞은` 을 건드리지 않는다 → 여기서 아직 원래 발수가 들어 있다.
+			var p = _찾기(layer, cell)
+			var 들어간: int = int(p.맞은) if p != null else 0
+			_잠긴_발수 += 들어간 + 1
 
 ## ★총알이 준 셀이 빈 칸이면 주변에서 "등록된 타일"을 가까운 순으로 찾는다.
 ##
@@ -464,15 +517,42 @@ func 되돌리기() -> bool:
 			continue
 		if p.오버레이 != null and is_instance_valid(p.오버레이):
 			p.오버레이.queue_free()
-		p.오버레이 = null
-		_시드_비우기(p)
-		p.젖음 = 0.0
-		p.맞은 = 0
-		p.진행색 = -1
-		p.칠해짐 = false
+		# ★[2026-08-17] 그 플랫폼에 들어갔던 발을 통째로 돌려준다 (규칙 4).
+		#   `_플랫폼_비우기` 가 `맞은` 을 0 으로 만들기 **전에** 읽어야 한다.
+		_환급(int(p.맞은))
+		_플랫폼_비우기(p)
 		상태변경.emit()
 		return true
 	return false
+
+
+## ★[2026-08-17] 스테이지 재시도(사망) — 칠한 것·진행 중·회색을 **전부** 되돌리고
+## 페인트를 모두 회수한다. `페인트_코어.리셋()` 과 같은 규칙이다.
+##
+## ⚠ 탄약만 채우고 지형을 남기면 **죽을 때마다 페인트가 공짜로 생긴다.**
+##   반대로 지형만 되돌리고 탄약을 안 채우면 몇 번 죽는 것만으로 탄약이 말라
+##   스테이지를 깰 수 없게 된다. 둘은 반드시 같이 가야 한다.
+func 리셋() -> void:
+	for p in _플랫폼들:
+		_플랫폼_비우기(p)
+	_큐.clear()
+	탄약_리셋()
+	상태변경.emit()
+	_애니_시작()
+
+
+## 플랫폼 하나를 손대기 전 상태로. 원본 레이어는 건드리지 않으므로
+## 우리가 얹은 오버레이만 치우면 완전히 되돌아간다.
+func _플랫폼_비우기(p: 플랫폼) -> void:
+	if p.오버레이 != null and is_instance_valid(p.오버레이):
+		p.오버레이.queue_free()
+	p.오버레이 = null
+	_시드_비우기(p)
+	p.젖음 = 0.0
+	p.맞은 = 0
+	p.진행색 = -1
+	p.칠해짐 = false
+	p.회색 = false
 
 ## PaintSystem(v2) 과 같은 이름 — proto_gun 의 기존 호출 경로도 그대로 동작한다.
 func recover(_layer: TileMapLayer = null) -> bool:
@@ -493,6 +573,151 @@ func remaining_hits(layer: TileMapLayer, cell: Vector2i, color: int) -> int:
 	if p.맞은 > 0 and p.진행색 == color:
 		return p.필요 - p.맞은
 	return p.필요
+
+# ── [2026-08-17 추가] 탄약 ──────────────────────────────────────────────────
+# `총.gd`(스마트월드)가 `페인트코어` 에게 묻는 것과 **같은 이름**을 쓴다.
+# 그래서 `proto_gun` 은 덕 타이핑 한 줄만 얹으면 되고, 탄약이 없는 경로
+# (zone_01/02/world_1 의 PaintSystem)는 이 함수들이 없으므로 예전처럼 그냥 쏜다.
+
+## 이 스테이지가 탄약을 쓰나. 0 이하면 무제한(예전 동작).
+func 탄약을_쓰나() -> bool:
+	return 최대_탄약 > 0
+
+
+func 쏠_수_있나() -> bool:
+	return (not 탄약을_쓰나()) or 남은_탄약 > 0
+
+
+## 발사 순간 1발 차감. 명중 결과에 따라 `_탄약_정산()` 이 되돌려줄 수 있다.
+func 발사_소모() -> bool:
+	if not 탄약을_쓰나():
+		return true
+	if 남은_탄약 <= 0:
+		return false
+	남은_탄약 -= 1
+	_비행중 += 1                      # 착탄할 때까지 HUD 는 이 발을 계속 보여준다
+	탄약_변경.emit(남은_탄약, 최대_탄약)
+	return true
+
+
+## 총알이 아무것도 못 맞히고 사라졌을 때 (proto_bullet 이 부른다).
+## 빗나간 페인트는 손해가 아니다 — "맞혀야만 잠긴다" 가 규칙이다.
+func 빗나감() -> void:
+	_비행_해제()
+	if 탄약을_쓰나():
+		_환급(1)
+
+
+## 스테이지 시작 · 사망 재시도. 잠긴 발까지 전부 돌아온다.
+func 탄약_리셋() -> void:
+	_잠긴_발수 = 0
+	# 씬을 갈아끼우면 날아가던 총알이 결과를 못 알리고 사라진다 → 여기서 털어준다.
+	_비행중 = 0
+	남은_탄약 = 최대_탄약
+	탄약_변경.emit(남은_탄약, 최대_탄약)
+
+
+func 잠긴_발수() -> int:
+	return _잠긴_발수
+
+
+## 지금 날아가는 중인 발 수. **HUD 표시 전용**.
+func 비행중() -> int:
+	return _비행중
+
+
+## 발 하나가 결판났다. 0 아래로 안 내려가게 막는다
+## (도구·테스트가 `발사_소모` 없이 `on_hit` 을 부를 수 있다).
+func _비행_해제() -> void:
+	_비행중 = maxi(_비행중 - 1, 0)
+
+
+func _환급(수량: int) -> void:
+	if 수량 <= 0 or not 탄약을_쓰나():
+		return
+	남은_탄약 = mini(남은_탄약 + 수량, 최대_탄약)
+	탄약_변경.emit(남은_탄약, 최대_탄약)
+
+
+# ── [2026-08-17 추가] 페인트 HUD 전용 조회 ─────────────────────────────────
+# 전부 **읽기만** 한다. 색칠 규칙에 관여하지 않으므로 기존 검사에 영향이 없다.
+# 이 시스템에는 탄약(전역 자원)이 없다 — 그래서 HUD 는 탄약 줄을 안 그리고
+# **회수 대기 묶음 · 회색 개수 · E 마커 · 호버 발수**만 보여준다.
+
+## 회수 대기줄 사본. 앞이 먼저 칠한 것(FIFO).
+## 원소 = { "대상": 플랫폼, "발수": int, "좌표": Vector2 }
+## ★회색 플랫폼은 큐에 남아 있어도 `되돌리기()` 가 건너뛰므로 여기서도 뺀다.
+##   (안 빼면 "E 를 누르면 이게 돌아온다"고 거짓말하는 마커가 뜬다)
+func 회수줄_요약() -> Array:
+	var 결과: Array = []
+	for p in _큐:
+		if p == null or not is_instance_valid(p) or p.회색:
+			continue
+		결과.append({ "대상": p, "발수": maxi(int(p.맞은), 1), "좌표": 대상_좌표(p) })
+	return 결과
+
+
+## 칠하는 중이지만 아직 완성이 안 된 플랫폼들. 원소 형식은 `회수줄_요약()` 과 같다.
+## ★이 시스템은 완성된 것만 `_큐` 에 넣는다. `stage_1-1` 은 플랫폼 하나에 11발이
+##   필요하므로, 이게 없으면 HUD 가 11발 동안 아무 반응도 안 한다.
+func 진행줄_요약() -> Array:
+	var 결과: Array = []
+	for p in _플랫폼들:
+		if p.고정 or p.회색 or p.칠해짐 or p.맞은 <= 0:
+			continue
+		결과.append({ "대상": p, "발수": int(p.맞은), "좌표": 대상_좌표(p) })
+	return 결과
+
+
+## 그 플랫폼에 지금까지 들어간 발 수.
+func 대상_발수(대상: Variant) -> int:
+	if 대상 == null or not is_instance_valid(대상):
+		return 0
+	return maxi(int(대상.맞은), 0)
+
+
+## 마커를 띄울 월드 좌표 = 플랫폼 바운딩박스의 한가운데.
+func 대상_좌표(대상: Variant) -> Vector2:
+	if 대상 == null or not is_instance_valid(대상):
+		return Vector2.ZERO
+	var layer: TileMapLayer = 대상.레이어
+	if layer == null or not is_instance_valid(layer):
+		return Vector2.ZERO
+	# `map_to_local` 은 **셀의 중심**을 준다 → 양 끝 셀 중심의 중점이 곧 바운딩박스 중심.
+	# (타일 크기를 직접 곱하지 않으므로 타일셋이 바뀌어도 안 깨진다)
+	var a := layer.map_to_local(대상.최소)
+	var b := layer.map_to_local(대상.최대)
+	return layer.to_global((a + b) * 0.5)
+
+
+## 회색이 된 플랫폼 수. 발 단위 자원이 없으니 "잠긴 발수" 대신 이 개수를 보여준다.
+func 회색_수() -> int:
+	var n := 0
+	for p in _플랫폼들:
+		if p.회색:
+			n += 1
+	return n
+
+
+## 이 월드 좌표 아래에 있는 플랫폼. 없으면 null.
+## 등록된 레이어마다 셀로 환산해 찾는다 — 플랫폼을 전부 훑는 것보다 싸고 정확하다.
+## ⚠ 레이어 목록을 **캐시한다.** stage_1-1, 1-2 는 플랫폼이 수백 개라
+##   호출할 때마다 전부 훑으면 마우스를 움직이는 동안 프레임이 눈에 띄게 떨어진다.
+func 대상_아래(월드: Vector2) -> Variant:
+	if _레이어_캐시.is_empty():
+		for p in _플랫폼들:
+			var l: TileMapLayer = p.레이어
+			if l != null and is_instance_valid(l) and not _레이어_캐시.has(l):
+				_레이어_캐시.append(l)
+	for layer in _레이어_캐시:
+		if not is_instance_valid(layer):
+			continue
+		var cell: Vector2i = layer.local_to_map(layer.to_local(월드))
+		var 찾음 = _찾기(layer, cell)
+		if 찾음 != null:
+			return 찾음
+	return null
+
 
 ## 자동 검출 결과 요약 (레벨 검증용)
 func 통계() -> Dictionary:
