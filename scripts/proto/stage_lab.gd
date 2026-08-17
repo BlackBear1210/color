@@ -30,6 +30,11 @@ const PAINT_MANAGER := preload("res://scripts/proto/paint_manager.gd")
 const TILE_PAINT_MAP := preload("res://scripts/proto/tile_paint_map.gd")
 const PAINT_FX := preload("res://scripts/proto/paint_fx.gd")
 const STAGE_HUD := preload("res://scripts/proto/stage_hud.gd")
+## [2026-08-17] 점(pip) 방식 페인트 HUD + 타일맵용 어댑터.
+## ⚠ class_name 이 아니라 경로 preload 로 잡는다 (새 스크립트의 전역 클래스 이름은
+##   에디터가 훑기 전까지 등록되지 않아 헤드리스 검사가 죽는다).
+const 페인트HUD_스크립트 := preload("res://scripts/ui/페인트_HUD.gd")
+const 페인트HUD어댑터_타일 := preload("res://scripts/ui/페인트_HUD_어댑터_타일.gd")
 const SHOOT_ANIM := preload("res://scripts/proto/player_shoot_anim.gd")
 const ZONE_VISUALS := preload("res://scripts/proto/zone_visuals.gd")
 
@@ -65,6 +70,14 @@ const 페이드_시간: float = 0.55
 @export var 타일_필요횟수_나눗값: int = 4
 ## 이 칸수를 넘는 덩어리는 칠할 수 없는 고정 지형으로 본다. 0 = 제한 없음.
 @export var 타일_고정_타일수: int = 0
+## ★[2026-08-17 신규] 타일맵 페인트 스테이지의 페인트 총량. **0 = 무제한**(예전 동작).
+##
+## E 로 회수하면 발이 돌아오므로, 이 값은 "총 사용량 제한"이 아니라
+## **동시에 칠해둘 수 있는 양의 상한**이다.
+## `stage_1-1, 1-2` 실측 참고: 칠할 수 있는 플랫폼 103개 / 전부 칠하면 440발 /
+## 가장 큰 플랫폼 하나가 12발. 그래서 12 이하로 두면 큰 것 하나도 못 칠한다.
+## 밸런스를 만지려면 **여기 숫자만** 바꾸면 된다(에디터에서도 보인다).
+@export var 타일_최대_탄약: int = 14
 ## 명중 결과(progress/painted/wasted/blocked…)를 화면 중앙에 띄운다 — 레벨 튜닝·디버그 전용.
 ## ⚠ 기본 끔. 켜면 쏠 때마다 중앙 메시지가 갱신되어 **화면이 번쩍이는 것처럼 보인다**.
 @export var 타일_명중_표시: bool = false
@@ -111,6 +124,7 @@ func _ready() -> void:
 		타일페인트.name = "타일페인트"
 		타일페인트.필요횟수_나눗값 = 타일_필요횟수_나눗값
 		타일페인트.칠하기_최대_타일수 = 타일_고정_타일수
+		타일페인트.최대_탄약 = 타일_최대_탄약     # setter 가 잔량도 같이 채운다
 		add_child(타일페인트)          # _ready() 에서 부모(=이 스테이지)를 훑어 자동 등록
 
 	# ── 3) 기존 총 제거 → 프로토 총(포물선 + 조준 궤적) 부착 ─────────
@@ -194,6 +208,29 @@ func _ready() -> void:
 	hud.setup(player, 매니저)
 	if 안내문 != "":
 		hud.메시지(안내문)
+
+	# ── 8.2) ★[2026-08-17] 페인트 HUD (점 방식) — 타일맵 페인트 스테이지 전용 ──
+	#
+	# 왜 타일맵 모드에만 붙이나:
+	#   `StageHUD` 는 `매니저`(PaintManager) 를 보고 회수 대기·E 마커를 그린다.
+	#   그런데 타일맵 모드에서는 색칠을 `타일페인트`(TilePaintMap)가 처리하고
+	#   매니저 큐는 **항상 비어 있다.** 그래서 stage_1-1, 1-2 에서는 StageHUD 의
+	#   회수 관련 표시가 전부 죽어 있었다(회수대기 0 고정 · E 마커 안 뜸).
+	#   → 그 빈자리를 점 HUD 가 채운다.
+	#
+	#   PaintPlatform 을 쓰는 옛 스테이지(스테이지_1~5)는 StageHUD 가 지금도 제대로
+	#   동작하므로 **건드리지 않는다** — 회귀를 만들 이유가 없다.
+	#
+	# ⚠ 이 시스템에는 탄약(전역 자원)이 없다. 타일 어댑터의 `탄약()` 이 빈 사전을
+	#   돌려주므로 점 HUD 가 12칸 줄을 스스로 건너뛰고 회수 묶음만 그린다.
+	if 타일페인트 != null:
+		hud.회수대기_표시 = false          # 매니저 큐가 항상 0 이라 거짓말이 된다
+		var 점HUD: CanvasLayer = 페인트HUD_스크립트.new()
+		점HUD.name = "페인트HUD"
+		# StageHUD 가 좌상단 한 줄(스테이지 이름·사망 수)을 이미 쓰고 있다 → 그 아래로 내린다.
+		점HUD.여백 = Vector2(30, 64)
+		add_child(점HUD)
+		점HUD.연결(player, 페인트HUD어댑터_타일.new(타일페인트))
 
 	# ── 8.5) ★타일맵 페인트 디버그 — 명중 결과를 눈으로 볼 수 있게 한다 ──────
 	# 이게 없으면 blocked/wasted 처럼 "아무 일도 안 일어나는" 판정이 화면에 전혀 안 보여
@@ -411,6 +448,12 @@ func 죽기(사유: String) -> void:
 	if player.get("player_color") != _스폰색:
 		player.call("_toggle_color")
 	player.set_physics_process(true)
+	# ★[2026-08-17] 사망 = 스테이지 재시도 → 칠한 지형과 페인트를 **함께** 되돌린다.
+	#   (스마트월드 `_리스폰()` → `코어.리셋()` 과 같은 규칙)
+	#   탄약만 채우면 죽을 때마다 페인트가 공짜로 생기고,
+	#   지형만 되돌리면 탄약이 말라 스테이지를 못 깬다. 둘은 같이 가야 한다.
+	if 타일페인트 != null and 타일페인트.탄약을_쓰나():
+		타일페인트.리셋()
 	_무적 = 부활무적
 	_사망중 = false
 	if camera and camera.has_method("setup"):

@@ -13,6 +13,8 @@ var _paint_system: Node
 var _color: int = ColorDefs.BLACK
 var _velocity: Vector2 = Vector2.RIGHT * 900.0
 var _gravity: float = 1400.0
+## 페인트 시스템에 명중을 넘겼나. 안 넘겼으면 수명이 다할 때 페인트를 환급한다.
+var _명중함: bool = false
 
 @onready var visual: Polygon2D = $Visual
 
@@ -28,7 +30,7 @@ func _ready() -> void:
 	collision_mask = 1 | PaintPlatform.유령_레이어비트
 	visual.color = Color(0.05, 0.05, 0.05) if _color == ColorDefs.BLACK else Color(0.95, 0.95, 0.95)
 	body_entered.connect(_on_body_entered)
-	get_tree().create_timer(lifetime).timeout.connect(queue_free)
+	get_tree().create_timer(lifetime).timeout.connect(_소멸)
 
 func _physics_process(delta: float) -> void:
 	_velocity.y += _gravity * delta
@@ -51,5 +53,18 @@ func _on_body_entered(body: Node2D) -> void:
 		var cell := layer.local_to_map(layer.to_local(global_position))
 		if layer.get_cell_source_id(cell) == -1:
 			cell = layer.local_to_map(layer.to_local(global_position + dir * 10.0))
+		_명중함 = true          # 결과(칠함/낭비/막힘)에 따른 정산은 페인트 쪽이 한다
 		_paint_system.on_hit(layer, cell, _color)
+	_소멸()
+
+
+## ★[2026-08-17] 페인트 시스템에 아무것도 못 넘기고 사라졌다 = 빗나감 → 페인트를 돌려준다.
+## 수명이 다했을 때도, 칠할 수 없는 물체에 부딪혔을 때도 여기로 온다.
+##
+## 예전에는 `queue_free` 로 조용히 사라졌다. 탄약이 생긴 지금 그대로 두면
+## **허공에 쏠 때마다 손해**가 되어 "맞혀야만 잠긴다" 규칙이 깨진다.
+## ⚠ 덕 타이핑 — 탄약이 없는 PaintSystem(v2) 에는 `빗나감()` 이 없어 그냥 넘어간다.
+func _소멸() -> void:
+	if not _명중함 and _paint_system != null and _paint_system.has_method("빗나감"):
+		_paint_system.빗나감()
 	queue_free()

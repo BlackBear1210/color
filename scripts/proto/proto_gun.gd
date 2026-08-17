@@ -103,6 +103,14 @@ func _launch_velocity() -> Vector2:
 	return to_mouse.normalized() * lerpf(POWER_MIN, POWER_MAX, t)
 
 func _shoot() -> void:
+	# ★[2026-08-17] 탄약 검사. 예전에는 아무한테도 안 묻고 그냥 쐈다.
+	# ⚠ 덕 타이핑으로 확인한다 — 이 총은 zone_01/02/world_1 의 `PaintSystem` 도 쓰는데
+	#   그쪽엔 탄약이 없다. 메서드 유무로 갈라야 **그 스테이지들이 안 깨진다.**
+	if paint_system != null and paint_system.has_method("쏠_수_있나"):
+		if not paint_system.쏠_수_있나():
+			return
+		paint_system.발사_소모()
+
 	var color: int = player.get("player_color")
 	var bullet := BULLET_SCENE.instantiate()
 	bullet.setup(paint_system, color, _launch_velocity(), GRAVITY)
