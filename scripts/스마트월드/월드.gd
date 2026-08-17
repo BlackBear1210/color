@@ -402,10 +402,14 @@ func _등장_연출() -> void:
 	var 배수 := 1.22 if 챕터전환 else 장면전환.나올때_줌
 	var 시간 := 2.4 if 챕터전환 else 1.5
 
-	var 원래 := _카메라.zoom
-	_카메라.zoom = 원래 * 배수
+	# ★[2026-08-17] `zoom` 이 아니라 `연출_줌배수` 를 트윈한다.
+	#   zoom 을 직접 건드리면 카메라연출가(구역 카메라)나 카메라공간(굴뚝)이
+	#   같은 프레임에 zoom 을 다시 써서 이 연출이 사라진다. 자세한 근거는
+	#   `proto_camera.gd` 의 `연출_줌배수` 주석 참고.
+	#   배수가 1 로 돌아오면 그 순간의 구역/공간 줌이 자연스럽게 이어받는다.
+	_카메라.연출_줌배수 = 배수
 	var tw := create_tween()
-	tw.tween_property(_카메라, "zoom", 원래, 시간) \
+	tw.tween_property(_카메라, "연출_줌배수", 1.0, 시간) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 

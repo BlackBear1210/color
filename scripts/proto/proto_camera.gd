@@ -47,6 +47,11 @@ const FALL_LOOKDOWN_MAX: float = 130.0
 const FALL_SPEED_REF: float = 1300.0
 ## 구역 리밋 전환(팬) 시간(초) — 바인식 "구역이 이어지는" 연출의 핵심
 const LIMIT_TWEEN_TIME: float = 1.1
+## ── [2026-08-17 도형] 수직 공간(굴뚝·갱도) 모드에서 쓰는 수직 추적 반응(1/s) ──
+## 평소(V_RESPONSE=6)는 "착지했을 때만 따라가는" 플랫폼 스냅용이라 느리다.
+## 굴뚝은 **오르는 것 자체가 플레이**라서, 올라가는 몸을 화면이 바로 따라와야
+## "내가 올라가고 있다"가 읽힌다. 느리면 플레이어가 화면 위로 튀어나간다.
+const V_RESPONSE_수직: float = 11.0
 
 # ── [2026-07-22 도형 · 신규] 트라우마 방식 화면 흔들림(Camera Shake) ──────
 ## GDC 2016 Squirrel Eiserloh "Juicing Your Cameras" 문법:
@@ -74,16 +79,70 @@ var _look_x: float = 0.0                 # 현재 룩어헤드 오프셋 (부드
 var _face: float = 1.0                   # 마지막 바라본 방향 (+1/-1)
 var _ground_y: float = 0.0               # 마지막으로 밟았던 지면 y (플랫폼 스냅 기준)
 var _fall_look: float = 0.0              # 낙하 룩다운 오프셋 (부드럽게)
-var _limits: Rect2 = Rect2()             # 현재 적용 중인 리밋 (트윈 대상)
+var _limits: Rect2 = Rect2()             # 현재 적용 중인 **기준** 리밋 (트윈 대상)
 var _has_limits: bool = false
 var _limit_tween: Tween = null
 var _zoom_tween: Tween = null
+
+## ============================================================================
+## [2026-08-17 도형 · 신규] ★"카메라 공간" 덮어쓰기 — 굴뚝/갱도 같은 좁은 수직 공간
+## ----------------------------------------------------------------------------
+## ▣ 왜 층을 하나 더 두는가
+##   지금 카메라 값을 정하는 주인은 두 곳이다.
+##     · `월드.gd`      : 스테이지 전체 리밋·줌을 한 번 넣는다
+##     · `카메라_연출.gd`: 매 물리 프레임 x 구역을 섞어 리밋·줌을 **다시 넣는다**
+##   여기에 "굴뚝에 들어가면 화면을 조인다"를 그냥 얹으면, 다음 프레임에
+##   연출가가 자기 값으로 덮어써서 **한 프레임 조였다 풀렸다** 하며 떨린다.
+##   → 위 두 곳이 넣는 값을 **기준(base)** 으로 두고, 공간 값을 그 위에 **혼합**한다.
+##     혼합 비율(_공간_혼합)만 트윈하므로 누가 기준을 갱신해도 싸우지 않는다.
+##
+## ▣ 왜 여기서는 시간 트윈을 쓰는가 (카메라_연출.gd 는 위치 보간이라고 못박아 뒀는데)
+##   x 구역 전환은 **경계가 없는 연속 이동**이라 위치로 보간해야 조작과 화면이 같이 간다.
+##   반면 굴뚝 진입은 **문을 통과하는 이산 사건**이다(Area2D 가 한 번 발동한다).
+##   이산 사건을 위치로 보간하려면 "얼마나 들어왔나"를 다시 정의해야 하는데,
+##   굴뚝 입구는 아래로도 옆으로도 들어올 수 있어 그 축이 하나로 안 정해진다.
+##   → 사건에는 시간 트윈이 맞다. 대신 **되돌아 나오면 즉시 반대 방향으로 트윈**해서
+##     "화면이 혼자 흘러가 조작과 어긋나는" Vane 식 실패를 막는다.
+##
+## ▣ 포탈 감각이 안 나는 이유
+##   씬을 갈지 않고, 화면을 끊지 않고, 값만 0→1 로 흐른다. 플레이어 입장에서는
+##   "굴뚝에 몸이 들어가니 화면이 굴뚝에 맞게 조여든다" = 공간이 그렇게 생긴 것으로 읽힌다.
+## ============================================================================
+## 이 공간을 넣은 노드 이름(중첩 방지용 열쇠). 빈 문자열이면 활성 공간이 없다.
+var _공간_이름: String = ""
+var _공간_리밋: Rect2 = Rect2()
+var _공간_줌: float = 1.0
+var _공간_시선: Vector2 = Vector2.ZERO
+var _공간_수직: bool = false
+## 0 = 기준값 그대로 / 1 = 공간값 그대로. 그 사이는 섞인다.
+var _공간_혼합: float = 0.0
+var _공간_트윈: Tween = null
+
+## 기준 줌 — `set_region_zoom` 이 쓰는 값. 실제 `zoom` 은 매 프레임 여기서 계산된다.
+## ⚠ 0 이면 "아직 아무도 안 정했다"는 뜻이라 zoom 을 건드리지 않는다
+##   (ProtoCamera 를 줌 설정 없이 쓰는 기존 씬 zone_01/02 · world_1 에서 화면이 0 배가 되면 안 된다).
+var _기준_줌: float = 0.0
+
+## ★연출용 줌 배수 — **전환 연출(장면전환.gd · 월드.gd 등장연출)이 트윈하는 손잡이.**
+##   [2026-08-17] 예전에는 그 두 곳이 `zoom` 을 직접 트윈했다. 그런데 카메라연출가가
+##   매 프레임 `set_region_zoom` 으로 zoom 을 다시 써 버리므로, 구역 연출이 있는 씬에서는
+##   "짜잔" 줌아웃이 **조용히 사라졌다**(첫 프레임에 지워진다).
+##   배수를 따로 두면 구역 줌 · 공간 줌 · 연출 줌이 곱셈으로 공존한다.
+var 연출_줌배수: float = 1.0
 
 func _ready() -> void:
 	# 스무딩은 우리가 직접 계산하므로 내장 스무딩은 끔 (이중 지연 방지)
 	position_smoothing_enabled = false
 	# 플레이어 이동(_physics_process)이 끝난 뒤에 따라가도록 우선순위를 뒤로
 	process_physics_priority = 100
+	# [2026-08-17] 씬에서 이미 zoom 을 정해 둔 카메라라면 그 값을 기준으로 삼는다.
+	# (안 하면 set_region_zoom 을 부르지 않는 기존 씬에서 zoom 계산이 0 이 된다)
+	if _기준_줌 <= 0.0 and zoom.x > 0.0:
+		_기준_줌 = zoom.x
+	# 카메라 공간(카메라_공간.gd)이 트리 어디에 있어도 나를 찾을 수 있게 한다.
+	# get_viewport().get_camera_2d() 는 make_current 타이밍에 따라 null 이 될 수 있어서
+	# 그룹을 보조 경로로 둔다.
+	add_to_group("주카메라")
 	make_current()
 
 ## 대상 지정 + 첫 프레임 순간이동 스냅 (씬 시작 시 카메라가 날아오는 것 방지)
@@ -92,9 +151,12 @@ func setup(p_target: CharacterBody2D) -> void:
 	_ground_y = target.global_position.y
 	_face = 1.0
 	_look_x = LOOK_BASE
-	global_position = _desired_center()
-	if _has_limits:
-		global_position = _clamp_to_limits(global_position)
+	# [2026-08-17] 리스폰으로 이 함수가 다시 불릴 수 있다. 그때 공간 혼합이 남아 있으면
+	# 스냅 위치가 공간 기준이라야 한 프레임 튀지 않는다 → 현재 혼합값을 그대로 넘긴다.
+	var 공간s := smoothstep(0.0, 1.0, _공간_혼합)
+	global_position = _desired_center(공간s)
+	if _has_limits or 공간s > 0.0:
+		global_position = _clamp_to_limits(global_position, _유효_리밋(공간s))
 
 ## 리밋 사각형 지정. animate=true 면 이전 리밋에서 새 리밋으로 트윈(구역 전환 팬)
 func set_limit_rect(rect: Rect2, animate: bool = false) -> void:
@@ -118,20 +180,98 @@ func set_limit_rect(rect: Rect2, animate: bool = false) -> void:
 ## 구역별 줌 (GDC "Scroll Back" / Hollow Knight 식 구역별 카메라 변주).
 ## 높은 구역에 들어설 때 살짝 줌아웃하면 "새 지역이 눈앞에 펼쳐진다"는 연출이 된다.
 ## 리밋 트윈과 같은 시간으로 함께 흘러가야 한 호흡의 전환으로 읽힌다.
+##
+## ★[2026-08-17] 이제 `zoom` 을 직접 쓰지 않고 **기준 줌**만 정한다.
+##   실제 zoom 은 매 프레임 `기준 × 공간혼합 × 연출배수` 로 계산된다(§_줌_적용).
+##   이렇게 바꾼 이유는 위 `연출_줌배수` 주석 참고 — 세 주인이 zoom 을 서로 덮어썼다.
 func set_region_zoom(target_zoom: float, animate: bool = false) -> void:
 	if _zoom_tween:
 		_zoom_tween.kill()
 		_zoom_tween = null
 	if not animate:
-		zoom = Vector2.ONE * target_zoom
+		_기준_줌 = target_zoom
+		_줌_적용()          # 즉시 반영 — 첫 프레임부터 올바른 화면이어야 한다
 		return
 	_zoom_tween = create_tween()
-	_zoom_tween.tween_property(self, "zoom", Vector2.ONE * target_zoom, LIMIT_TWEEN_TIME) \
+	_zoom_tween.tween_property(self, "_기준_줌", target_zoom, LIMIT_TWEEN_TIME) \
 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+
+
+# ============================================================================
+# [2026-08-17 도형] 카메라 공간 API — `카메라_공간.gd`(Area2D) 가 부른다
+# ============================================================================
+## 좁은 수직 공간(굴뚝·갱도)에 들어섰다. 리밋·줌·시선을 이 공간 값으로 **흘러가듯** 바꾼다.
+##   리밋   : 월드 좌표. **화면보다 좁게** 주면 `_clamp_to_limits` 가 카메라를 가운데 고정한다
+##            → 플레이어가 굴뚝 안에서 좌우로 움직여도 화면이 벽 바깥을 절대 안 비춘다.
+##   줌     : 절대값(작을수록 넓게 보인다). 공간 노드가 `기준 줌 × 배수` 로 계산해 넘긴다.
+##   시선   : 이 공간에서 화면 중심을 옮길 양. 오를 때는 위(−y)를 더 보여준다.
+##   수직   : true 면 룩어헤드를 끄고 플랫폼 스냅 대신 몸을 바로 따라간다(§_desired_center)
+##   시간   : 혼합 0→1 에 걸리는 초. 0 이면 즉시(테스트용).
+##   이름   : 중첩 방지 열쇠. 다른 공간이 활성이면 새 공간이 이긴다(마지막이 이긴다).
+func 공간_들어감(리밋: Rect2, 줌: float, 시선: Vector2, 수직: bool,
+		시간: float, 이름: String = "공간") -> void:
+	_공간_이름 = 이름
+	_공간_리밋 = 리밋
+	_공간_줌 = 줌
+	_공간_시선 = 시선
+	_공간_수직 = 수직
+	_공간_혼합_트윈(1.0, 시간)
+
+
+## 공간을 벗어났다. 기준값으로 되돌아간다(= 줌 아웃되며 전경이 펼쳐진다).
+## ⚠ 이름이 다르면 무시한다 — 굴뚝 안에 작은 공간이 겹쳐 있을 때
+##   바깥 공간을 빠져나온 신호가 안쪽 공간을 지워버리면 안 된다.
+func 공간_나감(시간: float, 이름: String = "공간") -> void:
+	if _공간_이름 != 이름:
+		return
+	_공간_혼합_트윈(0.0, 시간)
+
+
+## 공간 안에서 시선만 계속 갱신한다 (예: 올라갈수록 위를 더 보여주기).
+## 혼합 비율은 건드리지 않으므로 진입 연출 중에 불려도 안전하다.
+func 공간_시선_갱신(시선: Vector2) -> void:
+	_공간_시선 = 시선
+
+
+## 지금 공간이 얼마나 적용됐나 (0~1). 테스트·디버그에서 읽는다.
+func 공간_혼합() -> float:
+	return _공간_혼합
+
+
+## 지금의 기준 줌(구역/월드가 정한 값). 0 이면 아직 아무도 정하지 않았다.
+## ★`카메라_공간.gd` 가 "기준 × 배수" 를 계산할 때 쓴다 —
+##   공간 노드가 `_기준_줌` 을 직접 읽으면, 나중에 줌 계산 구조를 바꿀 때
+##   호출부까지 같이 고쳐야 한다. 창구를 하나 둔다.
+func 기준_줌() -> float:
+	return _기준_줌
+
+
+func _공간_혼합_트윈(목표: float, 시간: float) -> void:
+	if _공간_트윈:
+		_공간_트윈.kill()
+		_공간_트윈 = null
+	if 시간 <= 0.0:
+		_공간_혼합 = 목표
+		_줌_적용()
+		return
+	# ★남은 거리에 비례해 시간을 줄인다. 절반쯤 들어갔다 되돌아 나올 때
+	#   전체 시간을 다시 쓰면 화면이 몸보다 한참 늦게 따라와 "끌려가는" 느낌이 난다.
+	var 남음: float = absf(목표 - _공간_혼합)
+	_공간_트윈 = create_tween()
+	_공간_트윈.tween_property(self, "_공간_혼합", 목표, 시간 * maxf(남음, 0.15)) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _physics_process(delta: float) -> void:
 	if target == null or not is_instance_valid(target):
 		return
+
+	# ── 0) [2026-08-17] 줌 먼저 확정한다 ────────────────────────────────
+	# ★순서가 중요하다. 리밋 클램프는 "화면 반폭 = 뷰포트/줌" 을 쓰기 때문에,
+	#   줌을 나중에 적용하면 이 프레임의 클램프가 **한 프레임 전 줌**으로 계산된다.
+	#   좁은 굴뚝에서는 그 한 프레임이 화면이 옆으로 튀는 것으로 보인다.
+	_줌_적용()
+	# 공간 혼합 계수 — 시작·끝의 기울기가 0 인 곡선이라 이음매가 안 보인다.
+	var 공간s := smoothstep(0.0, 1.0, _공간_혼합)
 
 	# ── 1) 룩어헤드: 이동 방향 앞쪽으로 카메라 중심을 민다 ─────────────
 	var vx := target.velocity.x
@@ -159,18 +299,24 @@ func _physics_process(delta: float) -> void:
 	if not target.is_on_floor() and target.velocity.y > 300.0:
 		fall_target = FALL_LOOKDOWN_MAX * clampf(target.velocity.y / FALL_SPEED_REF, 0.0, 1.0)
 	_fall_look = lerpf(_fall_look, fall_target, 1.0 - exp(-4.0 * delta))
+	# ★수직 공간에서는 낙하 룩다운을 끈다. 굴뚝은 **위로 가는 곳**이라
+	#   떨어질 때 아래를 보여주면 시선이 목표(출구)에서 떨어져 나간다.
+	if _공간_수직:
+		_fall_look *= 1.0 - 공간s
 
 	# ── 3) 목표점으로 지수 스무딩 (프레임률 독립) ───────────────────────
-	var desired := _desired_center()
+	var desired := _desired_center(공간s)
 	var kx := 1.0 - exp(-H_RESPONSE * delta)
-	var ky := 1.0 - exp(-V_RESPONSE * delta)
+	# 수직 공간에서는 세로 반응을 올린다 (등반이 곧 플레이라서 — §V_RESPONSE_수직)
+	var v반응 := lerpf(V_RESPONSE, V_RESPONSE_수직, 공간s if _공간_수직 else 0.0)
+	var ky := 1.0 - exp(-v반응 * delta)
 	var pos := global_position
 	pos.x = lerpf(pos.x, desired.x, kx)
 	pos.y = lerpf(pos.y, desired.y, ky)
 
 	# ── 4) 구역 리밋으로 클램프 (리밋 자체가 트윈되므로 전환도 부드러움) ─
-	if _has_limits:
-		pos = _clamp_to_limits(pos)
+	if _has_limits or 공간s > 0.0:
+		pos = _clamp_to_limits(pos, _유효_리밋(공간s))
 	global_position = pos
 
 	# ── 5) [2026-07-22 도형] 화면 흔들림: 리밋과 무관한 offset 으로만 튕긴다 ─
@@ -191,22 +337,62 @@ func _update_shake(delta: float) -> void:
 	# 매 프레임 무작위 방향으로 offset 을 튕긴다(고주파 흔들림). 리밋 클램프와 무관.
 	offset = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * SHAKE_MAX_OFFSET * s
 
-## 카메라가 가야 할 이상적 중심점
-func _desired_center() -> Vector2:
+## 카메라가 가야 할 이상적 중심점.
+##   공간s : 카메라 공간이 얼마나 적용됐나(0~1). 0 이면 예전과 완전히 같은 계산이다.
+func _desired_center(공간s: float = 0.0) -> Vector2:
 	# [2026-08-07] 구역_오프셋 을 더한다. 기본값 0 이라 기존 씬은 결과가 같다.
-	return Vector2(
-		target.global_position.x + _look_x + 구역_오프셋.x,
-		_ground_y - EYE_LIFT + _fall_look + 구역_오프셋.y)
+	# [2026-08-17] 공간이 켜지면 구역 시선은 물러나고 공간 시선이 들어온다(합이 항상 1).
+	var 시선 := 구역_오프셋.lerp(_공간_시선, 공간s)
 
-## 뷰포트 절반 크기를 고려해 카메라 중심을 리밋 안으로 (리밋이 화면보다 작으면 중앙 고정)
-func _clamp_to_limits(pos: Vector2) -> Vector2:
+	var x := target.global_position.x + _look_x + 시선.x
+	var y := _ground_y - EYE_LIFT + _fall_look + 시선.y
+
+	# ★수직 모드 — 굴뚝/갱도
+	#   가로: 룩어헤드를 0 으로 접는다. 좁은 통로에서 앞쪽을 미리 보여줄 게 없고,
+	#         오히려 좌우로 흔들려 "벽이 흔들리는" 그림이 된다.
+	#   세로: 플랫폼 스냅(_ground_y)을 버리고 **몸을 바로** 따라간다.
+	#         스냅은 "평지를 달릴 때 화면이 출렁이지 않게" 하는 장치라,
+	#         밟을 지면이 계속 바뀌는 등반에서는 화면이 계단처럼 툭툭 끊긴다.
+	if _공간_수직 and 공간s > 0.0:
+		x = lerpf(x, target.global_position.x + 시선.x, 공간s)
+		y = lerpf(y, target.global_position.y - EYE_LIFT * 0.5 + 시선.y, 공간s)
+	return Vector2(x, y)
+
+
+## 기준 리밋과 공간 리밋을 섞은 **이번 프레임의 리밋**.
+## 리밋이 아직 없는 씬(월드가 리밋을 안 준 경우)에서는 공간 리밋만 쓴다.
+func _유효_리밋(공간s: float) -> Rect2:
+	if 공간s <= 0.0:
+		return _limits
+	if not _has_limits or 공간s >= 1.0:
+		return _공간_리밋
+	return Rect2(_limits.position.lerp(_공간_리밋.position, 공간s),
+		_limits.size.lerp(_공간_리밋.size, 공간s))
+
+
+## 이번 프레임의 zoom = 기준 줌 → 공간 줌 (혼합) × 연출 배수.
+## 곱셈이라 "구역이 정한 넓이 · 공간이 조인 정도 · 전환 연출" 세 개가 서로를 안 지운다.
+func _줌_적용() -> void:
+	if _기준_줌 <= 0.0:
+		return                      # 아무도 줌을 정하지 않은 씬 — 건드리지 않는다
+	var z := _기준_줌
+	if _공간_혼합 > 0.0:
+		z = lerpf(_기준_줌, _공간_줌, smoothstep(0.0, 1.0, _공간_혼합))
+	zoom = Vector2.ONE * maxf(z * 연출_줌배수, 0.01)
+
+
+## 뷰포트 절반 크기를 고려해 카메라 중심을 리밋 안으로.
+## ★리밋이 화면보다 작으면 **중앙 고정** — 이 한 줄이 "굴뚝 벽 바깥을 절대 안 비춘다"의 정체다.
+##   굴뚝 안쪽 폭(320px)은 화면 폭보다 훨씬 좁으므로 카메라 x 가 굴뚝 중심에 못박히고,
+##   플레이어가 좌우 선반을 오가도 화면은 조금도 흐르지 않는다.
+func _clamp_to_limits(pos: Vector2, 리밋: Rect2) -> Vector2:
 	var half := get_viewport_rect().size * 0.5 / zoom
-	if _limits.size.x > half.x * 2.0:
-		pos.x = clampf(pos.x, _limits.position.x + half.x, _limits.end.x - half.x)
+	if 리밋.size.x > half.x * 2.0:
+		pos.x = clampf(pos.x, 리밋.position.x + half.x, 리밋.end.x - half.x)
 	else:
-		pos.x = _limits.get_center().x
-	if _limits.size.y > half.y * 2.0:
-		pos.y = clampf(pos.y, _limits.position.y + half.y, _limits.end.y - half.y)
+		pos.x = 리밋.get_center().x
+	if 리밋.size.y > half.y * 2.0:
+		pos.y = clampf(pos.y, 리밋.position.y + half.y, 리밋.end.y - half.y)
 	else:
-		pos.y = _limits.get_center().y
+		pos.y = 리밋.get_center().y
 	return pos
