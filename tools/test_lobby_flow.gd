@@ -42,8 +42,8 @@ func _tick() -> void:
 			#   버튼이 하나라도 빠지면 그 라인은 게임에서 아예 갈 수 없게 된다
 			#   (가장 조용히 망가지는 종류라 반드시 검사한다).
 			var 메뉴 := current_scene.get_node("UILayer/Menu")
-			for 버튼이름 in ["StartButton", "TileMapButton",
-					"TestWorldButton", "ChapterButton"]:
+			# [2026-08-20] 테스트월드·기타 스테이지 버튼은 목적지 씬이 삭제되어 함께 뺐다.
+			for 버튼이름 in ["StartButton", "TileMapButton"]:
 				check("1-2) 메뉴에 %s 가 있다" % 버튼이름,
 					메뉴.get_node_or_null(버튼이름) != null)
 			# 스테이지 바로가기 — 챕터표를 읽어 기대치를 만든다(표가 늘어도 테스트가 안 깨진다)
@@ -56,7 +56,9 @@ func _tick() -> void:
 
 			# 각 버튼의 목적지 씬이 실제로 존재하는지 (경로 오타 방지)
 			var 로비스크립트 := (load("res://scenes/lobby/lobby.gd") as GDScript)
-			for 키 in ["MAIN_SCENE", "스마트월드_SCENE", "테스트월드_SCENE", "CHAPTER_SCENE"]:
+			# ⚠[2026-08-20] `df03f3d 폐기 라인 정리` 로 테스트월드_SCENE · CHAPTER_SCENE 의
+			# 목적지 씬이 삭제됐다. 상수와 버튼을 lobby.gd 에서 뺐으므로 여기서도 뺀다.
+			for 키 in ["MAIN_SCENE", "스마트월드_SCENE"]:
 				var 경로: String = 로비스크립트.get(키)
 				check("1-3) %s 목적지 씬이 존재한다 (%s)" % [키, 경로.get_file()],
 					ResourceLoader.exists(경로))

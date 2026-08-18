@@ -37,13 +37,18 @@ extends Control
 ##   중간에서 카메라 구역이 바인식으로 전환된다(`카메라_연출.gd`).
 const MAIN_SCENE := "res://scenes/world_1/stage_1-1, 1-2.tscn"
 ## 재질 실험용 씬 (동현 테스트 월드 제작 폴더). 시작 화면 아래 별도 버튼.
-const 테스트월드_SCENE := "res://scenes/world_1/동현 테스트 월드 제작/테스트월드제작.tscn"
+## ⚠[2026-08-20] `df03f3d 폐기 라인 정리` 로 이 씬이 삭제됐다. 메뉴 버튼도 같이 뺐다.
+##   상수만 남겨 두면 `test_lobby_flow` 가 "목적지 씬이 없다" 로 잡는다 —
+##   버튼을 눌러 검은 화면으로 떨어지는 것보다 검사가 먼저 잡는 편이 낫다. 그래서 지운다.
+## const 테스트월드_SCENE := "res://scenes/world_1/동현 테스트 월드 제작/테스트월드제작.tscn"
 ## ★"스마트월드" — SS2D 지형 라인. 1 편으로 들어가면 통로로 2 편까지 이어진다.
 const 스마트월드_SCENE := "res://scenes/스마트월드/스마트월드_1.tscn"
 ## [2026-07-24 도형] 예전 챕터(스테이지 1~5 + 셰이더/VFX 비교존) 선택 화면
-const CHAPTER_SCENE := "res://scenes/스테이지/스테이지_선택.tscn"
+## ⚠[2026-08-20] 같은 커밋에서 구 스테이지 라인(스테이지_1~5 · 스테이지_선택)이 삭제됐다.
+## const CHAPTER_SCENE := "res://scenes/스테이지/스테이지_선택.tscn"
 ## 구 심리스 월드 (zone1~3). 지금은 "기타" 로 내려갔다.
-const 구_월드_SCENE := "res://scenes/world_1/world_1.tscn"
+## ⚠[2026-08-20] 같은 커밋에서 삭제됨. 쓰는 곳이 없어 상수만 남아 있었다.
+## const 구_월드_SCENE := "res://scenes/world_1/world_1.tscn"
 const SETTINGS_PATH := "user://settings.cfg"
 const PLAYER_FRAMES := "res://assets/p/player_frames.tres"
 const TILESET := "res://assets/tilesets/terrain_tileset.tres"
@@ -124,18 +129,11 @@ func _챕터_버튼_추가() -> void:
 	원본씬.pressed.connect(func() -> void:
 		StageTransition.change_scene(self, MAIN_SCENE))
 
-	# ── 테스트월드 제작 (재질 실험 씬) ──
-	순서 += 1
-	var 테스트 := _메뉴버튼(원본, "TestWorldButton", "테스트월드 제작 (재질 실험)", 메뉴, 순서)
-	테스트.pressed.connect(func() -> void:
-		StageTransition.change_scene(self, 테스트월드_SCENE))
-
-	# ── 기타 스테이지 (예전 챕터 1 · zone) ──
-	# 도형님 요청 "나머지 스테이지는 따로 모아두고" → 메뉴에서 한 칸 아래로 내렸다.
-	순서 += 1
-	var 기타 := _메뉴버튼(원본, "ChapterButton", "기타 스테이지 (구 챕터 1)", 메뉴, 순서)
-	기타.pressed.connect(func() -> void:
-		StageTransition.change_scene(self, CHAPTER_SCENE))
+	# ── [2026-08-20] "테스트월드 제작" · "기타 스테이지" 버튼을 뺐다 ──
+	#   `df03f3d 폐기 라인 정리` 에서 그 목적지 씬들(zone_* · 스테이지_* · 테스트월드제작)이
+	#   삭제됐다. 버튼만 남겨 두면 **눌렀을 때 검은 화면으로 떨어진다** —
+	#   씬 전환은 실패해도 예외를 안 던지기 때문에 조용히 망가진다.
+	#   되살리려면 씬을 먼저 복구하고 상수(위 주석 처리된 두 줄)부터 되돌릴 것.
 
 	_build_diorama()
 	_add_atmosphere()
