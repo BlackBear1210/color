@@ -1,0 +1,406 @@
+extends SceneTree
+## ============================================================================
+## [2026-08-18 신규] 빛기둥 · 창문커튼 전수 검사 (헤드리스)
+## ----------------------------------------------------------------------------
+## 실행:
+##   Godot --headless --path . -s res://tools/test_빛창문.gd
+##
+## ▣ 왜 합성 씬을 쓰나 (스마트월드_5.tscn 을 안 열고)
+##   실제 스테이지는 지형·장식이 60 개가 넘어 "왜 죽었는지"를 특정할 수 없다.
+##   여기서는 **빛 하나 · 창 하나 · 플레이어 하나**만 놓고 좌표를 손으로 정해서
+##   정확히 그 상황에서만 죽는지/굳는지 본다. (`test_사망판정.gd` 와 같은 방식)
+##
+## ▣ 검사하는 것
+##   A. 빛기둥 색 계약     — 무색·회색은 아무도 안 죽인다 / 흑·백은 반대색을 죽인다
+##   B. 빛기둥 발판 모드   — 무색이면 **통과**(레이어 0), 색이 들면 **굳는다**(레이어 1)
+##   C. 빛기둥 경계 모드   — 그룹 `빛경계` 등록 + `위험한가()` 가 겹침으로만 참
+##   D. 창문커튼 페인트    — painted / wasted / mixed_gray / blocked / 되돌리기
+##   E. 색섞임_회색=false  — 길을 막는 창이 회색으로 죽지 않는다(소프트락 방지)
+##   F. 창 → 빛 연동      — 창을 칠하면 자식 빛의 색·굳음이 같이 바뀐다
+##   G. ★월드 통합        — `월드.gd _사망_판정()` 이 경계 빛과 굳은 빛을 둘 다 잡는다
+##      이게 이 검사의 핵심이다. A~F 가 다 통과해도 월드가 안 물어보면 게임에서는
+##      아무 일도 안 일어난다(2026-08-07 에 "규칙은 맞는데 안 죽는다"가 그 모양이었다).
+## ============================================================================
+
+const 월드_S := preload("res://scripts/스마트월드/월드.gd")
+const 코어_S := preload("res://scripts/스마트월드/페인트_코어.gd")
+const 빛기둥_S := preload("res://scripts/스마트월드/빛기둥.gd")
+const 창문_S := preload("res://scripts/스마트월드/창문커튼.gd")
+const 플레이어_씬 := preload("res://scenes/player/Player.tscn")
+
+var 실패 := 0
+var 총 := 0
+
+
+func 확인(이름: String, 조건: bool, 덧말: String = "") -> void:
+	총 += 1
+	print(("  PASS  " if 조건 else "  FAIL  ") + 이름 + ("   " + 덧말 if 덧말 != "" else ""))
+	if not 조건:
+		실패 += 1
+
+
+func _init() -> void:
+	Engine.max_fps = 60
+	call_deferred("_실행")
+
+
+func _실행() -> void:
+	print("\n=== 빛기둥 · 창문커튼 검사 ===")
+	await _빛_색계약()
+	await _빛_발판()
+	await _빛_경계()
+	await _창문_페인트()
+	await _창문_빛연동()
+	await _월드_통합()
+	await _실제_스테이지()
+
+	print("---")
+	print("결과: %d / %d 통과%s" % [총 - 실패, 총, "" if 실패 == 0 else "  ← %d개 실패" % 실패])
+	quit(1 if 실패 > 0 else 0)
+
+
+# ============================================================================
+# 공통
+# ============================================================================
+## 월드.gd 가 요구하는 최소 구성(Player + 페인트코어)을 갖춘 스테이지.
+## ⚠ `_physics_process` 를 끈다 — 켜두면 스스로 리스폰해서 세워둔 좌표가 사라진다
+##   (test_사망판정.gd 가 같은 함정에 빠진 적이 있다).
+func _스테이지() -> Node2D:
+	var 월드 := Node2D.new()
+	월드.set_script(월드_S)
+	월드.name = "빛검사월드"
+	월드.set("치명_낙하거리", 0.0)
+	월드.set("낙사_y", 100000.0)
+	월드.set("안전지점_자동저장", false)
+	월드.set("시작_위치", Vector2.ZERO)
+
+	var 코어 := Node.new()
+	코어.set_script(코어_S)
+	코어.name = "페인트코어"
+	코어.add_to_group("페인트코어")
+	월드.add_child(코어)
+
+	var p := 플레이어_씬.instantiate()
+	p.name = "Player"
+	월드.add_child(p)
+
+	root.add_child(월드)
+	월드.set_physics_process(false)
+	return 월드
+
+
+func _빛(부모: Node, 모드: int, 색: int, 위치: Vector2 = Vector2.ZERO) -> Node2D:
+	var b: Node2D = 빛기둥_S.new()
+	b.name = "빛_%d" % 부모.get_child_count()
+	b.set("모드", 모드)
+	b.set("각도", 90.0)              # 아래로
+	b.set("시작폭", 200.0)
+	b.set("끝폭", 200.0)
+	b.set("길이", 600.0)
+	b.set("물드는시간", 0.0)         # 검사에서는 즉시 물들게 한다
+	b.position = 위치
+	부모.add_child(b)
+	b.set("색", 색)                  # ★트리에 넣은 뒤에 색을 준다(_재구성 이 돌아야 한다)
+	return b
+
+
+func _세우기(월드: Node2D, 좌표: Vector2, 색: int) -> void:
+	var p: Node2D = 월드.get_node("Player")
+	p.set("velocity", Vector2.ZERO)
+	p.global_position = 좌표
+	p.set("player_color", 색)
+	await physics_frame
+	await physics_frame
+
+
+func _굳음레이어(빛: Node2D) -> int:
+	var b := 빛.get_node_or_null("굳은빛") as StaticBody2D
+	return -1 if b == null else b.collision_layer
+
+
+# ============================================================================
+# A. 색 계약
+# ============================================================================
+func _빛_색계약() -> void:
+	print("\n[A] 빛기둥 색 계약")
+	var 월드 := _스테이지()
+	var 빛 := _빛(월드, 빛기둥_S.모드_.경계, 빛기둥_S.무색)
+	await physics_frame
+
+	확인("무색 빛은 아무도 안 죽인다(검정)", not 빛.반대색인가(ColorDefs.BLACK))
+	확인("무색 빛은 아무도 안 죽인다(흰색)", not 빛.반대색인가(ColorDefs.WHITE))
+	빛.색_지정(ColorDefs.GRAY)
+	확인("회색 빛은 아무도 안 죽인다", not 빛.반대색인가(ColorDefs.BLACK))
+	빛.색_지정(ColorDefs.WHITE)
+	확인("★흰 빛 + 검정 플레이어 = 반대색이다", 빛.반대색인가(ColorDefs.BLACK))
+	확인("흰 빛 + 흰 플레이어 = 안전하다", not 빛.반대색인가(ColorDefs.WHITE))
+	확인("현재색()이 지정한 색을 돌려준다", 빛.현재색() == ColorDefs.WHITE)
+	월드.queue_free()
+	await process_frame
+
+
+# ============================================================================
+# B. 발판 모드 — 굳음/풀림이 물리 레이어로 나타나는가
+# ============================================================================
+func _빛_발판() -> void:
+	print("\n[B] 빛기둥 발판 모드")
+	var 월드 := _스테이지()
+	var 빛 := _빛(월드, 빛기둥_S.모드_.발판, 빛기둥_S.무색)
+	await physics_frame
+
+	확인("무색 빛은 안 굳는다 (레이어 0 = 통과)", _굳음레이어(빛) == 0,
+		"레이어 %d" % _굳음레이어(빛))
+	빛.색_지정(ColorDefs.BLACK)
+	await physics_frame
+	확인("★검정으로 물들면 굳는다 (레이어 1 = 밟는 지형)", _굳음레이어(빛) == 1,
+		"레이어 %d" % _굳음레이어(빛))
+	빛.색_지정(ColorDefs.GRAY)
+	await physics_frame
+	확인("회색이 되면 다시 풀린다 (레이어 0)", _굳음레이어(빛) == 0)
+	빛.색_지정(빛기둥_S.무색)
+	await physics_frame
+	확인("무색으로 되돌리면 풀린다 (레이어 0)", _굳음레이어(빛) == 0)
+
+	# 콜리전 폴리곤이 실제로 만들어져 있는가 — 레이어만 맞고 모양이 없으면 안 밟힌다
+	var cp := 빛.get_node_or_null("굳은빛/모양") as CollisionPolygon2D
+	확인("굳은빛에 콜리전 폴리곤이 있다 (점 4개)", cp != null and cp.polygon.size() == 4)
+	월드.queue_free()
+	await process_frame
+
+
+# ============================================================================
+# C. 경계 모드 — 그룹 등록 + 겹침으로만 위험
+# ============================================================================
+func _빛_경계() -> void:
+	print("\n[C] 빛기둥 경계 모드")
+	var 월드 := _스테이지()
+	# 빛은 (0,0) 에서 아래로 600px, 폭 200px → x −100~100 · y 0~600
+	var 빛 := _빛(월드, 빛기둥_S.모드_.경계, ColorDefs.WHITE)
+	await physics_frame
+	await physics_frame
+
+	확인("경계 모드는 그룹 `빛경계` 에 등록된다", 빛.is_in_group("빛경계"))
+	확인("경계 모드는 안 굳는다 (통과된다)", _굳음레이어(빛) == 0)
+
+	var p: Node = 월드.get_node("Player")
+	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
+	확인("★흰 빛 안 + 검정 플레이어 = 위험하다", 빛.위험한가(p))
+	await _세우기(월드, Vector2(0, 300), ColorDefs.WHITE)
+	확인("흰 빛 안 + 흰 플레이어 = 안전하다", not 빛.위험한가(p))
+	await _세우기(월드, Vector2(900, 300), ColorDefs.BLACK)
+	확인("빛 밖이면 색이 달라도 안전하다", not 빛.위험한가(p))
+
+	빛.색_지정(빛기둥_S.무색)
+	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
+	확인("무색 빛 안에서는 누구도 안 죽는다", not 빛.위험한가(p))
+	월드.queue_free()
+	await process_frame
+
+
+# ============================================================================
+# D·E. 창문커튼 페인트 규칙
+# ============================================================================
+func _창문_페인트() -> void:
+	print("\n[D] 창문커튼 페인트 규칙")
+	var 월드 := _스테이지()
+	var 창: Node2D = 창문_S.new()
+	창.name = "창"
+	창.set("빛_모드", 2)
+	월드.add_child(창)
+	await physics_frame
+
+	확인("처음에는 무색이다", 창.현재색() == 빛기둥_S.무색)
+	확인("★한 발에 칠해진다", 창.명중(ColorDefs.BLACK, Vector2.ZERO) == "painted")
+	확인("칠한 색이 남는다", 창.현재색() == ColorDefs.BLACK)
+	확인("같은 색을 또 쏘면 낭비다", 창.명중(ColorDefs.BLACK, Vector2.ZERO) == "wasted")
+	확인("★다른 색을 덮으면 회색이 된다", 창.명중(ColorDefs.WHITE, Vector2.ZERO) == "mixed_gray")
+	확인("회색이 남는다", 창.현재색() == ColorDefs.GRAY)
+	확인("회색이 되면 더는 못 칠한다", 창.명중(ColorDefs.BLACK, Vector2.ZERO) == "blocked")
+	확인("회색은 회수해도 안 열린다", not 창.되돌리기())
+	확인("창틀 자체는 아무도 안 죽인다", not 창.반대색인가(ColorDefs.BLACK))
+
+	# ── 회수(E) ──
+	var 창2: Node2D = 창문_S.new()
+	창2.name = "창2"
+	월드.add_child(창2)
+	await physics_frame
+	창2.명중(ColorDefs.WHITE, Vector2.ZERO)
+	확인("★E 회수하면 커튼이 열리고 무색으로 돌아온다",
+		창2.되돌리기() and 창2.현재색() == 빛기둥_S.무색)
+	확인("무색이면 회수할 게 없다", not 창2.되돌리기())
+
+	print("\n[E] 색섞임_회색 = false (길을 막는 창의 소프트락 방지)")
+	var 창3: Node2D = 창문_S.new()
+	창3.name = "창3"
+	창3.set("색섞임_회색", false)
+	월드.add_child(창3)
+	await physics_frame
+	창3.명중(ColorDefs.BLACK, Vector2.ZERO)
+	확인("★덮어 쏘면 회색이 아니라 다시 칠해진다",
+		창3.명중(ColorDefs.WHITE, Vector2.ZERO) == "painted")
+	확인("덮어 쓴 색이 남는다", 창3.현재색() == ColorDefs.WHITE)
+	확인("회색이 되지 않는다 = 영구 소프트락이 없다", 창3.현재색() != ColorDefs.GRAY)
+	월드.queue_free()
+	await process_frame
+
+
+# ============================================================================
+# F. 창 → 빛 연동
+# ============================================================================
+func _창문_빛연동() -> void:
+	print("\n[F] 창 → 빛 연동")
+	var 월드 := _스테이지()
+	var 창: Node2D = 창문_S.new()
+	창.name = "창"
+	창.set("빛_모드", 2)                 # 발판
+	창.set("커튼_시간", 0.05)
+	월드.add_child(창)
+	await physics_frame
+
+	var 빛 := 창.get_node_or_null("빛") as Node2D
+	확인("창이 자식 빛을 만든다", 빛 != null)
+	if 빛 == null:
+		월드.queue_free()
+		return
+	확인("빛이 씬에 저장되지 않는다 (owner 없음 — §5-1 세그폴트 방지)", 빛.owner == null)
+	확인("처음에는 빛이 무색이라 안 굳는다", _굳음레이어(빛) == 0)
+
+	창.명중(ColorDefs.WHITE, Vector2.ZERO)
+	await physics_frame
+	확인("★창을 칠하면 빛이 같은 색이 된다", 빛.현재색() == ColorDefs.WHITE)
+	확인("★창을 칠하면 빛이 굳는다 (레이어 1)", _굳음레이어(빛) == 1,
+		"레이어 %d" % _굳음레이어(빛))
+
+	# 커튼이 실제로 닫히는가 — 0.05 초짜리라 4 프레임이면 충분하다
+	for i in 6:
+		await process_frame
+	확인("커튼이 닫힌다", float(창.get("_닫힘")) > 0.99,
+		"닫힘 %.2f" % float(창.get("_닫힘")))
+
+	창.되돌리기()
+	await physics_frame
+	확인("회수하면 빛도 무색으로 풀린다",
+		빛.현재색() == 빛기둥_S.무색 and _굳음레이어(빛) == 0)
+	월드.queue_free()
+	await process_frame
+
+
+# ============================================================================
+# G. ★월드 통합 — 실제로 게임에서 죽는가
+# ============================================================================
+func _월드_통합() -> void:
+	print("\n[G] 월드 사망 판정 통합")
+	var 월드 := _스테이지()
+	var p: Node = 월드.get_node("Player")
+
+	# ── ① 경계 빛 ── 통과되는 빛. 그룹 `빛경계` 를 월드가 훑어야 잡힌다.
+	var 경계빛 := _빛(월드, 빛기둥_S.모드_.경계, ColorDefs.WHITE, Vector2(0, 0))
+	await physics_frame
+	await physics_frame
+
+	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
+	확인("★흰 경계빛 + 검정 플레이어 → 월드가 죽는다고 판정한다", bool(월드.call("_사망_판정")))
+	await _세우기(월드, Vector2(0, 300), ColorDefs.WHITE)
+	확인("흰 경계빛 + 흰 플레이어 → 안 죽는다", not bool(월드.call("_사망_판정")))
+	경계빛.색_지정(빛기둥_S.무색)
+	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
+	확인("무색으로 풀면 안 죽는다", not bool(월드.call("_사망_판정")))
+	경계빛.queue_free()
+	await process_frame
+
+	# ── ② 굳은 빛(발판) ── 레이어 1 이라 **월드를 한 줄도 안 고쳐도** 지형 판정이 잡는다.
+	var 발판빛 := _빛(월드, 빛기둥_S.모드_.발판, ColorDefs.BLACK, Vector2(0, 0))
+	await physics_frame
+	await physics_frame
+
+	await _세우기(월드, Vector2(0, 300), ColorDefs.WHITE)
+	확인("★검정으로 굳은 빛 + 흰 플레이어 → 죽는다 (지형과 같은 계약)",
+		bool(월드.call("_사망_판정")))
+	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
+	확인("검정으로 굳은 빛 + 검정 플레이어 → 안 죽는다 (딛고 설 수 있다)",
+		not bool(월드.call("_사망_판정")))
+	발판빛.색_지정(빛기둥_S.무색)
+	await _세우기(월드, Vector2(0, 300), ColorDefs.WHITE)
+	확인("무색으로 풀면 몸이 통과한다 → 안 죽는다", not bool(월드.call("_사망_판정")))
+
+	# ── ③ 회귀 방지 ── 빛이 하나도 없는 허공에서 죽으면 안 된다
+	발판빛.queue_free()
+	await process_frame
+	await _세우기(월드, Vector2(4000, 4000), ColorDefs.BLACK)
+	확인("빛이 없는 허공에서는 안 죽는다 (회귀 방지)", not bool(월드.call("_사망_판정")))
+	월드.queue_free()
+	await process_frame
+
+
+# ============================================================================
+# H. ★실제 스테이지 — 합성 씬이 아니라 구운 씬에서 진짜로 작동하는가
+# ============================================================================
+## ▣ 왜 이게 따로 필요한가
+##   G 까지는 **우리가 손으로 조립한** 월드다. 실제 스테이지에는 지형 60 개, 장식 50 개,
+##   통로, 카메라 공간이 같이 있고, 빌더가 배치한 좌표가 한 칸만 어긋나도
+##   "빛은 있는데 아무 데도 안 닿는" 상태가 된다 — 검사로는 안 잡히고 눈으로만 보인다.
+##   ★2026-08-18 에 실제로 이걸로 발견했다: 스크린샷을 찍으려고 플레이어를 지붕 구멍
+##     빛(흰색) 한가운데에 놓았더니, 캡처 시점에는 플레이어가 **입구까지 되돌아가 있었다.**
+##     빛에 닿아 죽고 리스폰된 것이다 — 사망 판정이 실전에서 도는 증거였다.
+##   → 그 우연을 **검사로 고정**한다.
+func _실제_스테이지() -> void:
+	print("\n[H] 실제 스테이지(스마트월드_7)에서의 사망 판정")
+	var 경로 := "res://scenes/스마트월드/스마트월드_7.tscn"
+	if not ResourceLoader.exists(경로):
+		확인("스마트월드_7 씬이 있다", false)
+		return
+	var 스테이지 := (load(경로) as PackedScene).instantiate() as Node2D
+	root.add_child(스테이지)
+	await physics_frame
+	await physics_frame
+
+	확인("스마트월드_7 이 열린다", 스테이지 != null)
+	var 빛들 := get_nodes_in_group("빛경계")
+	확인("★지붕 구멍 빛 3 개가 경계로 등록돼 있다", 빛들.size() == 3,
+		"실제 %d 개" % 빛들.size())
+
+	var 창들 := get_nodes_in_group("창문커튼")
+	확인("지붕창이 1 개 있다", 창들.size() == 1, "실제 %d 개" % 창들.size())
+
+	# ── 자기 사망 방지를 위해 월드의 자동 리스폰을 끈다(좌표를 우리가 정한다) ──
+	스테이지.set_physics_process(false)
+	var p: Node2D = 스테이지.get_node_or_null("Player")
+	확인("Player 가 있다", p != null)
+	if p == null:
+		스테이지.queue_free()
+		return
+
+	# 빌더가 놓은 좌표 그대로 — 첫 번째 구멍 빛은 x=900 의 **흰** 빛이다.
+	p.set("velocity", Vector2.ZERO)
+	p.global_position = Vector2(900, 640)
+	p.set("player_color", ColorDefs.BLACK)
+	await physics_frame
+	await physics_frame
+	확인("★x=900 의 흰 빛 안 + 검정 플레이어 → 죽는다", bool(스테이지.call("_사망_판정")))
+
+	p.set("player_color", ColorDefs.WHITE)
+	await physics_frame
+	확인("같은 자리 + 흰 플레이어 → 산다 (Shift 로 넘는 구간이 성립한다)",
+		not bool(스테이지.call("_사망_판정")))
+
+	# 두 번째 구멍 빛은 x=2200 의 **검정** 빛 — 색이 뒤집혀야 한다.
+	p.global_position = Vector2(2200, 640)
+	await physics_frame
+	await physics_frame
+	확인("★x=2200 의 검정 빛 안 + 흰 플레이어 → 죽는다", bool(스테이지.call("_사망_판정")))
+	p.set("player_color", ColorDefs.BLACK)
+	await physics_frame
+	확인("같은 자리 + 검정 플레이어 → 산다", not bool(스테이지.call("_사망_판정")))
+
+	# 빛과 빛 사이(안전지대)에서는 어느 색이든 안 죽어야 한다 — 회귀 방지
+	p.global_position = Vector2(1550, 640)
+	for 색 in [ColorDefs.BLACK, ColorDefs.WHITE]:
+		p.set("player_color", 색)
+		await physics_frame
+		await physics_frame
+		확인("빛 사이 안전지대(x=1550)에서는 %s 도 안 죽는다"
+			% ("검정" if 색 == ColorDefs.BLACK else "흰색"),
+			not bool(스테이지.call("_사망_판정")))
+
+	스테이지.queue_free()
+	await process_frame
