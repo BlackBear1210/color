@@ -185,9 +185,21 @@ func _굴뚝(a: float) -> void:
 	var 차 := Vector3(0.94, 0.97, 1.06)
 	draw_rect(영역, _c(0.13, a, 차), true)
 
+	# ★[2026-08-19 고도화] 세로 명암 그라데이션 —
+	#   아래(아궁이)는 어둡고 위(굴뚝 입구)는 하늘빛으로 밝아진다.
+	#   "위를 올려다보는 굴뚝" 의 깊이를 만들고, 위에서 내려오는 은은한 빛과 자연스레 이어진다.
+	var 단 := 24
+	for i in 단:
+		var gt := float(i) / float(단)                        # 0 = 맨 위, 1 = 맨 아래
+		var yy := 영역.position.y + 영역.size.y * gt
+		var hh := 영역.size.y / float(단) + 1.0
+		draw_rect(Rect2(영역.position.x, yy, 영역.size.x, hh),
+			_c(lerpf(0.30, 0.10, gt), a * 0.5, 차), true)       # 위 밝게 → 아래 어둡게 (배경 대역 안)
+
 	# 벽돌 — 줄마다 반 칸씩 어긋나게. 어긋남이 없으면 격자무늬처럼 보여 벽돌로 안 읽힌다.
 	var 벽돌h := 54.0 / 밀도
 	var 벽돌w := 132.0 / 밀도
+	var rb := _rng()                                         # ★[고도화] 벽돌 얼룩·결손용 난수(결정적)
 	var 줄 := 0
 	var y := 영역.position.y
 	while y < 영역.end.y:
@@ -196,6 +208,14 @@ func _굴뚝(a: float) -> void:
 		var x := 영역.position.x + 어긋
 		while x < 영역.end.x:
 			draw_line(Vector2(x, y), Vector2(x, y + 벽돌h), _c(0.18, a * 0.40, 차), 2.0)
+			# ★[고도화] 벽돌마다 미세한 명도 변주 + 드물게 빠진(부서진) 벽돌 →
+			#   "같은 벽돌이 하나도 없는" 오래된 굴뚝. 배경이라 판정에는 아무 영향 없다.
+			var 굴림 := rb.randf()
+			if 굴림 < 0.13:
+				draw_rect(Rect2(x + 3.0, y + 3.0, 벽돌w - 6.0, 벽돌h - 6.0), _c(0.05, a * 0.5, 차), true)
+			elif 굴림 < 0.5:
+				draw_rect(Rect2(x + 2.0, y + 2.0, 벽돌w - 4.0, 벽돌h - 4.0),
+					_c(0.16 + 굴림 * 0.08, a * 0.16, 차), true)
 			x += 벽돌w
 		y += 벽돌h
 		줄 += 1
@@ -213,6 +233,23 @@ func _굴뚝(a: float) -> void:
 			var t := float(k) / 5.0
 			draw_rect(Rect2(gx + 폭 * t * 0.18, gy + 길이 * t, 폭 * (1.0 - t * 0.5), 길이 * 0.24),
 				_c(0.07, a * (0.5 - t * 0.08), 차), true)
+
+	# ★[고도화] 상단 옅은 안개 띠 — 위에서 내려오는 은은한 빛이 걸리는 자리.
+	#   가로로 눕는 반투명 띠 몇 가닥이 굴뚝 위쪽 공기에 "부피" 를 준다.
+	var rh := _rng()
+	for i in 4:
+		var hy := 영역.position.y + 영역.size.y * rh.randf_range(0.02, 0.42)
+		draw_rect(Rect2(영역.position.x, hy, 영역.size.x, rh.randf_range(30.0, 80.0)),
+			_c(0.34, a * 0.10, 차), true)
+
+	# ★[고도화] 좌우 안쪽 그늘 — 굴뚝 벽에 가까울수록 어둡게(원근·깊이).
+	var 그늘폭 := 영역.size.x * 0.16
+	for i in 6:
+		var st := float(i) / 6.0
+		var 폭s := 그늘폭 * (1.0 - st)
+		var as2 := a * 0.12 * (1.0 - st)
+		draw_rect(Rect2(영역.position.x, 영역.position.y, 폭s, 영역.size.y), _c(0.04, as2, 차), true)
+		draw_rect(Rect2(영역.end.x - 폭s, 영역.position.y, 폭s, 영역.size.y), _c(0.04, as2, 차), true)
 
 
 # ── 지붕 ────────────────────────────────────────────────────────────────────

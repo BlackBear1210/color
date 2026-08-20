@@ -31,6 +31,9 @@ func _init() -> void:
 		# [씬, 파일명, 플레이어 위치, 플레이어 색, 칠할 창 이름, 칠할 색]
 		["스마트월드_5", "거실_창_전", Vector2(2600, 640), ColorDefs.BLACK, "", -1],
 		["스마트월드_5", "거실_창_후", Vector2(3200, 620), ColorDefs.BLACK, "창문_거실", ColorDefs.BLACK],
+		# ★[2026-08-19] 굴뚝 — 은은한 안개빛(꼭대기)과 벽 구멍 경계 빛 확인용
+		["스마트월드_6", "굴뚝_꼭대기빛", Vector2(490, -3200), ColorDefs.BLACK, "", -1],
+		["스마트월드_6", "굴뚝_벽구멍", Vector2(490, -700), ColorDefs.BLACK, "", -1],
 		["스마트월드_7", "지붕_흰빛", Vector2(900, 640), ColorDefs.WHITE, "", -1],
 		["스마트월드_7", "지붕_검은빛", Vector2(2200, 640), ColorDefs.BLACK, "", -1],
 		["스마트월드_7", "지붕_창_후", Vector2(4500, 60), ColorDefs.WHITE, "창문_지붕", ColorDefs.WHITE],

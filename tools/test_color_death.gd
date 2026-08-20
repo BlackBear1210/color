@@ -21,6 +21,10 @@ func check(name: String, cond: bool) -> void:
 		fails += 1
 
 func _init() -> void:
+	if not _대상_있나(["res://scenes/world_1/zone_01/zone_01.tscn", "res://scenes/world_1/zone_02/zone_02.tscn"]):
+		print("[건너뜀] 폐기된 라인의 씬이 없다 — 커밋 df03f3d 참고")
+		quit(0)
+		return
 	# [2026-07-18 도형] FAIL 2건(7/17 발견)의 진짜 원인 수정:
 	# 이 테스트는 "프레임 번호"로 진행하는데, 사망 리스폰은 "실시간 0.55초" 타이머다.
 	# 헤드리스가 60fps 보다 빨리 돌면(실측 ~145fps) 검사 프레임이 타이머보다 먼저 와서
@@ -89,3 +93,17 @@ func _tick() -> void:
 			if is_instance_valid(zone):
 				zone.free()
 			quit(1 if fails > 0 else 0)
+
+
+## ============================================================================
+## ⚠[2026-08-20] 이 검사는 **폐기된 라인**(zone_01 · zone_02)을 본다 — 스스로 건너뛴다.
+##   커밋 `df03f3d 폐기 라인 정리` 에서 대상 씬이 삭제됐다.
+##   빨간 검사를 상주시키면 팀이 "원래 하나는 실패해" 로 넘기기 시작하고,
+##   그때부터 **진짜 실패도 안 보인다.** 파일은 남긴다(색 강제 시나리오가 참고 자료다).
+##   ★스마트월드의 색 강제는 `test_빛창문` [G]·[H] 가 대신 지키고 있다.
+## ============================================================================
+func _대상_있나(경로들: Array) -> bool:
+	for p in 경로들:
+		if ResourceLoader.exists(String(p)):
+			return true
+	return false
