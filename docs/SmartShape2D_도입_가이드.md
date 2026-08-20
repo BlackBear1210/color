@@ -29,10 +29,10 @@
 - **받은 것: `v3.3.1` 태그의 소스 zip** (2025-12-21 릴리스, 현재 최신)
 - 주의할 점 2가지
   1. 저장소 안에 **Godot 3 전용 브랜치(`Godot3-latest`)** 가 따로 있다. 그걸 받으면 안 된다.
-     우리가 받은 `master`/`v3.3.1` 계열이 Godot 4 용이다.
+	 우리가 받은 `master`/`v3.3.1` 계열이 Godot 4 용이다.
   2. zip 안에 `addons/`, `examples/`, `README.md`, `LICENSE` 가 들어 있는데
-     **프로젝트에 넣어야 하는 건 `addons/rmsmartshape/` 폴더 하나뿐이다.**
-     (`examples/` 는 안 넣었다 — 필요하면 나중에 따로 받아서 열어보면 된다)
+	 **프로젝트에 넣어야 하는 건 `addons/rmsmartshape/` 폴더 하나뿐이다.**
+	 (`examples/` 는 안 넣었다 — 필요하면 나중에 따로 받아서 열어보면 된다)
 - 용량 줄이려고 `addons/rmsmartshape/documentation/imgs/` (9MB, 마크다운 문서용 스크린샷)만
   지웠다. 코드가 참조하지 않는 폴더라 기능에는 영향 없다.
 
