@@ -586,5 +586,3 @@ func _메뉴_만들기() -> void:
 	add_child(메뉴)
 	if 어둠:
 		메뉴.연결(어둠, 어둠.color)
-
-

@@ -27,7 +27,7 @@ extends SceneTree
 ## ============================================================================
 
 const 씬경로 := "res://scenes/world_1/stage_1-1, 1-2.tscn"
-const 장애물폴더 := "res://scenes/스마트월드_장애물/"
+const 장애물폴더 := "res://scenes/집/스마트월드_장애물/"
 const 연출_스크립트 := preload("res://scripts/proto/카메라_연출.gd")
 
 ## 배치된 장애물을 담을 부모 노드 이름. 다시 돌릴 때 통째로 지우고 새로 만든다.

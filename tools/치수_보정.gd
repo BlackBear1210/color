@@ -367,10 +367,10 @@ func _도약_상승높이() -> float:
 
 
 ## 도약대 씬을 그 자리에 심는다. 성공하면 true.
-## ★씬(`scenes/스마트월드_장애물/도약대.tscn`)을 인스턴스한다 —
+## ★씬(`scenes/집/스마트월드_장애물/도약대.tscn`)을 인스턴스한다 —
 ##   코드로 `.new()` 하면 디자이너가 그림을 꽂을 `그림` 슬롯이 없다.
 func _도약대_설치(위치: Vector2) -> bool:
-	const 도약대_씬 := "res://scenes/스마트월드_장애물/도약대.tscn"
+	const 도약대_씬 := "res://scenes/집/스마트월드_장애물/도약대.tscn"
 	if not ResourceLoader.exists(도약대_씬):
 		push_warning("도약대 씬이 없다: %s" % 도약대_씬)
 		return false

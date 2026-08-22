@@ -15,7 +15,7 @@ extends SceneTree
 ##   계열 B: stage_lab  (타일맵)     — proto_bullet.gd → TilePaintMap.노드_명중()
 ## ============================================================================
 
-const 블럭씬 := "res://scenes/스마트월드_장애물/투명블럭.tscn"
+const 블럭씬 := "res://scenes/집/스마트월드_장애물/투명블럭.tscn"
 const 코어 := preload("res://scripts/스마트월드/페인트_코어.gd")
 const 타일페인트 := preload("res://scripts/proto/tile_paint_map.gd")
 
