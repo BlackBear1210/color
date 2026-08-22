@@ -46,6 +46,18 @@ func _on_body_entered(body: Node2D) -> void:
 		(body as PaintPlatform).명중(_color, global_position)
 		queue_free()
 		return
+	# ★[2026-08-22 도형] 하수도 챕터 장애물(투명블럭·통과플랫폼·물저장고…) 분기.
+	#   이 노드들은 PaintPlatform 도 TileMapLayer 도 아니라 **어느 갈래에도 안 걸려서**
+	#   총을 쏴도 아무 일이 없었다. 스마트월드의 `총알.gd` 는 `명중` 메서드 유무로
+	#   대상을 찾으므로, 여기서도 같은 방식으로 찾아 같은 규칙을 태운다.
+	#   → 같은 장애물이 두 스테이지 계열에서 똑같이 동작한다.
+	var 칠할것 := _칠할대상_찾기(body)
+	if 칠할것 != null and _paint_system != null and _paint_system.has_method("노드_명중"):
+		_명중함 = true          # 정산(환급/잠금)은 페인트 쪽이 한다
+		_paint_system.노드_명중(칠할것, _color, global_position)
+		_소멸()
+		return
+
 	if body is TileMapLayer and _paint_system != null:
 		var layer := body as TileMapLayer
 		# 탄착점이 셀 경계에 걸칠 수 있어 진행 방향으로 살짝 안쪽 지점도 함께 검사
@@ -56,6 +68,20 @@ func _on_body_entered(body: Node2D) -> void:
 		_명중함 = true          # 결과(칠함/낭비/막힘)에 따른 정산은 페인트 쪽이 한다
 		_paint_system.on_hit(layer, cell, _color)
 	_소멸()
+
+
+## 콜리전 바디에서 "칠할 수 있는 대상"을 거슬러 올라가 찾는다.
+## `총알.gd` 의 같은 이름 함수와 동일한 규약 — 자식 콜리전에 맞아도 부모가 잡힌다.
+## ⚠ TileMapLayer 는 제외한다. 그쪽은 셀 좌표가 필요해서 아래 전용 갈래로 가야 한다.
+func _칠할대상_찾기(맞은것: Object) -> Node:
+	var n := 맞은것 as Node
+	while n != null:
+		if n is TileMapLayer:
+			return null
+		if n.has_method("명중") and n.has_method("현재색"):
+			return n
+		n = n.get_parent()
+	return null
 
 
 ## ★[2026-08-17] 페인트 시스템에 아무것도 못 넘기고 사라졌다 = 빗나감 → 페인트를 돌려준다.

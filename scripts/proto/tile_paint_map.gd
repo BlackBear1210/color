@@ -130,10 +130,33 @@ class 플랫폼:
 	var 최소: Vector2i = Vector2i.ZERO                          ## 바운딩박스(칸)
 	var 최대: Vector2i = Vector2i.ZERO
 
+## ★[2026-08-22 신규] 타일이 **아닌** 칠할 수 있는 노드 하나가 회수줄에 선 자리.
+##
+## 왜 필요한가: 이 클래스는 원래 TileMapLayer 의 셀 덩어리만 다뤘다. 그런데 하수도
+## 챕터의 장애물(투명블럭·통과플랫폼·물저장고…)은 **독립 노드**라 셀 좌표가 없다.
+## 그렇다고 따로 줄을 세우면 E 회수의 FIFO 순서가 타일과 뒤엉킨다.
+## → `_큐` 에 **같이** 세우고 `되돌리기()` 에서 한 번만 갈라 본다.
+##
+## ⚠ HUD(`회수줄_요약`·`대상_발수`·`대상_좌표`)가 `_큐` 원소에서 **`플랫폼` 의 필드를
+##   그대로 읽는다.** 그래서 이름을 맞춰 두지 않으면 HUD 가 그려지는 순간 죽는다
+##   (2026-08-22 에 실제로 `회색` 접근에서 터졌다).
+class 외부칠:
+	var 노드: Node
+	var 맞은: int = 0
+	## 회색이 된 항목은 `_큐` 에서 빼므로 언제나 false 다. HUD 가 읽으니 필드는 있어야 한다.
+	var 회색: bool = false
+	## E 마커를 띄울 자리. 외부 노드는 레이어·셀이 없어서 **마지막 명중 지점**을 쓴다.
+	var 좌표: Vector2 = Vector2.ZERO
+
 ## 내부 클래스(플랫폼)를 담으므로 타입 힌트 없는 Array 를 쓴다.
 var _플랫폼들: Array = []
 var _셀_찾기: Dictionary = {}          ## "레이어경로|셀" → 플랫폼
 var _큐: Array = []                    ## 칠한 순서 (앞이 가장 오래된 것)
+## ★[2026-08-22] 회색으로 굳은 **외부 노드** 목록.
+## 회색이 되면 회수줄(`_큐`)에서 빠지기 때문에, 이 목록이 없으면 `리셋()` 이
+## 그 노드를 찾을 방법이 없다 — 죽어도 회색이 그대로 남는 버그가 된다.
+## (`페인트_코어.gd` 가 `_회색_목록` 을 따로 드는 것과 같은 이유다.)
+var _외부_회색: Array[Node] = []
 ## [2026-08-17] HUD 호버 조회용 레이어 목록 캐시. `등록()` 이 돌면 비운다.
 var _레이어_캐시: Array[TileMapLayer] = []
 
@@ -513,6 +536,16 @@ func _회색으로(p: 플랫폼) -> void:
 func 되돌리기() -> bool:
 	while not _큐.is_empty():
 		var p = _큐.pop_front()
+		# ★[2026-08-22] 타일이 아닌 노드는 자기가 알아서 되돌린다.
+		#   회색이면 `되돌리기()` 가 false 를 주므로 그냥 다음 항목으로 넘어간다.
+		if p is 외부칠:
+			if not is_instance_valid(p.노드) or not p.노드.has_method("되돌리기"):
+				continue
+			if not p.노드.되돌리기():
+				continue
+			_환급(int(p.맞은))
+			상태변경.emit()
+			return true
 		if p.회색:
 			continue
 		if p.오버레이 != null and is_instance_valid(p.오버레이):
@@ -526,6 +559,64 @@ func 되돌리기() -> bool:
 	return false
 
 
+## ★[2026-08-22 신규] 타일이 아닌 **칠할 수 있는 노드**의 명중 처리.
+##
+## ▣ 왜 필요한가
+##   `on_hit()` 은 TileMapLayer 의 셀만 받는다. 하수도 장애물들은 독립 노드라
+##   여기로 못 들어왔고, 그래서 `proto_bullet.gd` 가 "못 맞혔다"로 처리해
+##   **총을 쏴도 아무 일도 안 일어났다**(2026-08-22 stage_2-1 에서 실제로 겪음).
+##
+## ▣ 규칙은 `페인트_코어.명중_처리()` 를 그대로 따른다
+##   같은 장애물이 스마트월드(월드.gd)와 stage_lab 두 계열에서 **똑같이** 동작해야
+##   레벨 디자이너가 어느 씬에 두든 같은 결과를 얻는다.
+##     painted / progress → 회수줄에 쌓인다 (E 로 회수 가능)
+##     wasted / blocked   → 페인트 1발 환급
+##     mixed_gray         → 줄에서 빼고 발수를 잠근다 (회색은 회수 불가)
+func 노드_명중(대상: Node, 색: int, 월드좌표: Vector2) -> String:
+	_비행_해제()                       # 이 발은 결판났다 (HUD 표시용 계수)
+
+	if 대상 == null or not is_instance_valid(대상) or not 대상.has_method("명중"):
+		_환급(1)
+		return "miss"
+
+	var 결과: String = 대상.명중(색, 월드좌표)
+
+	match 결과:
+		"painted", "progress":
+			# 같은 노드를 여러 발 맞히면 항목 하나에 발수를 쌓는다
+			# (E 한 번에 그 노드에 들어간 발이 통째로 돌아와야 규칙 4와 맞다).
+			var 항목: 외부칠 = _외부_찾기(대상)
+			if 항목 == null:
+				항목 = 외부칠.new()
+				항목.노드 = 대상
+				_큐.append(항목)
+			항목.맞은 += 1
+			항목.좌표 = 월드좌표          # HUD 의 E 마커가 마지막으로 칠한 자리에 뜬다
+		"mixed_gray":
+			# 규칙 3: 회색은 수동 회수 불가 → 줄에서 빼고 발수를 잠근다.
+			var 기존: 외부칠 = _외부_찾기(대상)
+			var 들어간 := 0
+			if 기존 != null:
+				들어간 = 기존.맞은
+				_큐.erase(기존)
+			_잠긴_발수 += 들어간 + 1      # 원래 색 발수 + 방금 덮은 1발
+			if not _외부_회색.has(대상):
+				_외부_회색.append(대상)
+		"wasted", "blocked":
+			_환급(1)
+
+	명중됨.emit(결과, 색, 월드좌표)
+	상태변경.emit()
+	return 결과
+
+
+func _외부_찾기(대상: Node) -> 외부칠:
+	for p in _큐:
+		if p is 외부칠 and p.노드 == 대상:
+			return p
+	return null
+
+
 ## ★[2026-08-17] 스테이지 재시도(사망) — 칠한 것·진행 중·회색을 **전부** 되돌리고
 ## 페인트를 모두 회수한다. `페인트_코어.리셋()` 과 같은 규칙이다.
 ##
@@ -535,6 +626,17 @@ func 되돌리기() -> bool:
 func 리셋() -> void:
 	for p in _플랫폼들:
 		_플랫폼_비우기(p)
+	# ★[2026-08-22] 외부 노드는 `강제_초기화()` 로 되돌린다 — `되돌리기()` 는 회색을
+	#   거부하므로, 그것만 쓰면 회색으로 굳은 장애물이 사망 후에도 남는다.
+	#   (`페인트_코어.리셋()` 이 `_회색_목록` 을 따로 도는 것과 같은 이유다.)
+	for p in _큐:
+		if p is 외부칠 and is_instance_valid(p.노드) and p.노드.has_method("강제_초기화"):
+			p.노드.강제_초기화()
+	# 회색으로 굳은 것은 회수줄에서 빠져 있으므로 따로 훑어야 한다.
+	for n in _외부_회색:
+		if is_instance_valid(n) and n.has_method("강제_초기화"):
+			n.강제_초기화()
+	_외부_회색.clear()
 	_큐.clear()
 	탄약_리셋()
 	상태변경.emit()
@@ -680,6 +782,9 @@ func 대상_발수(대상: Variant) -> int:
 func 대상_좌표(대상: Variant) -> Vector2:
 	if 대상 == null or not is_instance_valid(대상):
 		return Vector2.ZERO
+	# ★[2026-08-22] 외부 노드는 레이어도 셀도 없다 → 명중 지점을 그대로 쓴다.
+	if 대상 is 외부칠:
+		return 대상.좌표
 	var layer: TileMapLayer = 대상.레이어
 	if layer == null or not is_instance_valid(layer):
 		return Vector2.ZERO
@@ -695,6 +800,10 @@ func 회색_수() -> int:
 	var n := 0
 	for p in _플랫폼들:
 		if p.회색:
+			n += 1
+	# ★[2026-08-22] 회색으로 굳은 외부 노드(투명블럭 등)도 같이 센다.
+	for 노드 in _외부_회색:
+		if is_instance_valid(노드):
 			n += 1
 	return n
 
