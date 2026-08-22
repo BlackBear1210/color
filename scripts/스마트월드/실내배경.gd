@@ -31,7 +31,7 @@ extends Node2D
 ## ============================================================================
 class_name 실내배경
 
-enum 방_ { 거실, 굴뚝, 지붕, 하수도 }
+enum 방_ { 거실, 굴뚝, 지붕, 하수도, 이층방, 복도 }
 
 ## 배경이 덮는 영역(월드 좌표). 카메라 리밋보다 넉넉하게 잡는다.
 @export var 영역: Rect2 = Rect2(-800, -1800, 6000, 3200):
@@ -119,6 +119,8 @@ func _방_그리기(방: 방_, 알파: float) -> void:
 		방_.굴뚝:   _굴뚝(알파)
 		방_.지붕:   _지붕(알파)
 		방_.하수도: _하수도(알파)
+		방_.이층방: _이층방(알파)
+		방_.복도:   _복도(알파)
 
 
 func _rng() -> RandomNumberGenerator:
@@ -176,6 +178,94 @@ func _거실(a: float) -> void:
 		if i % 2 == 0:
 			var fh := r.randf_range(90.0, 150.0)
 			draw_rect(Rect2(gx + 60.0, 바닥y - 높이 - 260.0, fh * 1.3, fh), _c(0.27, a * 0.9, 따), false, 6.0)
+
+
+# ── 2층 방 ──────────────────────────────────────────────────────────────────
+## [2026-08-22] 미국·유럽 2층집 침실 벽지. 세로 다마스크 패널 + 굽도리(웨인스코팅)
+## + 액자 + 커튼 친 창 실루엣. 거실보다 조금 밝고 따뜻하게 둬서 "사적인 방"으로 읽히게.
+func _이층방(a: float) -> void:
+	var 따 := Vector3(1.07, 1.0, 0.90)
+	draw_rect(영역, _c(0.22, a, 따), true)
+
+	# 웨인스코팅(허리 아래 나무 패널) 경계선 — 방의 격을 만든다
+	var 허리y := 영역.position.y + 영역.size.y * 0.60
+	# 허리 위 = 벽지(세로 다마스크 패널), 허리 아래 = 나무 패널
+	var 패널폭 := 300.0 / 밀도
+	var x := 영역.position.x
+	while x < 영역.end.x:
+		# 벽지 세로 패널 — 얇은 이중선으로 "무늬 있는 벽지" 를 암시
+		draw_line(Vector2(x, 영역.position.y), Vector2(x, 허리y), _c(0.27, a * 0.7, 따), 3.0)
+		draw_rect(Rect2(x + 패널폭 * 0.44, 영역.position.y, 패널폭 * 0.12, 허리y - 영역.position.y),
+			_c(0.25, a * 0.5, 따), true)
+		# 허리 아래 나무 패널 — 세로 칸막이
+		draw_rect(Rect2(x + 8.0, 허리y + 10.0, 패널폭 - 16.0, 영역.end.y - 허리y - 20.0),
+			_c(0.14, a * 0.9, 따), false, 4.0)
+		x += 패널폭
+	# 허리 몰딩(체어레일) + 걸레받이
+	draw_rect(Rect2(영역.position.x, 허리y - 8.0, 영역.size.x, 16.0), _c(0.30, a, 따), true)
+	draw_rect(Rect2(영역.position.x, 영역.end.y - 56.0, 영역.size.x, 56.0), _c(0.12, a, 따), true)
+	# 크라운 몰딩(천장 가까이)
+	draw_rect(Rect2(영역.position.x, 영역.position.y, 영역.size.x, 26.0), _c(0.28, a * 0.9, 따), true)
+
+	# 액자 몇 개 + 커튼 친 창 실루엣
+	var r := _rng()
+	var 개수 := int(영역.size.x / 1100.0) + 1
+	for i in 개수:
+		var gx := 영역.position.x + 520.0 + float(i) * 1100.0 + r.randf_range(-120.0, 120.0)
+		if i % 2 == 0:
+			# 액자
+			var fh := r.randf_range(120.0, 200.0)
+			draw_rect(Rect2(gx, 영역.position.y + 180.0, fh * 1.25, fh), _c(0.30, a * 0.9, 따), false, 7.0)
+			draw_rect(Rect2(gx + 10.0, 영역.position.y + 190.0, fh * 1.25 - 20.0, fh - 20.0), _c(0.17, a * 0.8, 따), true)
+		else:
+			# 커튼 친 창 — 세로로 늘어진 천 실루엣(밟는 창문커튼 오브젝트와는 무관, 순수 배경)
+			var wy := 영역.position.y + 150.0
+			var wh := 허리y - wy - 30.0
+			draw_rect(Rect2(gx, wy, 220.0, wh), _c(0.09, a, 따), true)
+			for k in 6:
+				var cx := gx + 12.0 + float(k) * 34.0
+				draw_line(Vector2(cx, wy + 8.0), Vector2(cx, wy + wh - 8.0), _c(0.15, a * 0.7, 따), 3.0)
+
+
+# ── 복도 ────────────────────────────────────────────────────────────────────
+## [2026-08-22] 유럽식 복도 — 벽 패널(웨인스코팅) + 늘어선 문 + 걸레받이 + 벽등.
+## 방보다 살짝 차갑고 어둡게 둬서 "방에서 나와 통로로 나섰다" 가 읽히게.
+func _복도(a: float) -> void:
+	var 차 := Vector3(0.96, 0.98, 1.05)
+	draw_rect(영역, _c(0.18, a, 차), true)
+
+	# 벽 상·하 몰딩
+	var 허리y := 영역.position.y + 영역.size.y * 0.55
+	draw_rect(Rect2(영역.position.x, 허리y - 7.0, 영역.size.x, 14.0), _c(0.28, a, 차), true)
+	draw_rect(Rect2(영역.position.x, 영역.end.y - 60.0, 영역.size.x, 60.0), _c(0.11, a, 차), true)
+	draw_rect(Rect2(영역.position.x, 영역.position.y, 영역.size.x, 24.0), _c(0.26, a * 0.9, 차), true)
+
+	# 벽 패널(허리 위) — 넓은 액자형 몰딩 사각형이 일정 간격으로
+	var 칸 := 520.0 / 밀도
+	var x := 영역.position.x + 40.0
+	while x < 영역.end.x - 40.0:
+		draw_rect(Rect2(x, 영역.position.y + 60.0, 칸 - 80.0, 허리y - 영역.position.y - 120.0),
+			_c(0.23, a * 0.7, 차), false, 5.0)
+		x += 칸
+
+	# ── 늘어선 문 ── 복도라는 걸 확정하는 기호. 아주 어둡게(밟는 지형과 안 헷갈리게).
+	var r := _rng()
+	var 문간격 := 1200.0 / maxf(밀도, 0.5)
+	var dx := 영역.position.x + 300.0
+	while dx < 영역.end.x - 200.0:
+		var 문높이 := 영역.end.y - 60.0 - 허리y + 40.0
+		var 문y := 영역.end.y - 60.0 - 문높이
+		draw_rect(Rect2(dx, 문y, 150.0, 문높이), _c(0.08, a, 차), true)          # 문짝
+		draw_rect(Rect2(dx - 10.0, 문y - 14.0, 170.0, 14.0), _c(0.20, a * 0.9, 차), true)  # 문틀 상인방
+		draw_rect(Rect2(dx + 12.0, 문y + 18.0, 126.0, 문높이 * 0.42), _c(0.12, a * 0.6, 차), false, 3.0)  # 문 패널
+		draw_circle(Vector2(dx + 132.0, 문y + 문높이 * 0.55), 5.0, _c(0.34, a, 차))  # 손잡이
+		dx += 문간격
+
+	# 벽등(스콘스) 실루엣 — 은은한 점광 몇 개
+	var lx := 영역.position.x + 620.0
+	while lx < 영역.end.x:
+		draw_circle(Vector2(lx, 허리y - 120.0), 22.0, _c(0.36, a * 0.6, 차))
+		lx += 문간격
 
 
 # ── 굴뚝 ────────────────────────────────────────────────────────────────────

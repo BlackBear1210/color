@@ -130,6 +130,39 @@ var _기준_줌: float = 0.0
 ##   배수를 따로 두면 구역 줌 · 공간 줌 · 연출 줌이 곱셈으로 공존한다.
 var 연출_줌배수: float = 1.0
 
+## ============================================================================
+## [2026-08-22 도형 · 신규] 적응형 줌(C) + 화면 비네트(B) + 전환 "빨림"
+## ----------------------------------------------------------------------------
+## 도형님 요청: "다음 스테이지로 이동할 때 카메라가 플레이어에게 점점 빠르게
+##   가져가서 동굴 뒷편으로 빨려들어가는 느낌이나 점점 어두워지게. 메모의 C+B 적용."
+## → C(적응형 줌)·B(거리 비네트)는 [작업기록_2026-08-19 §3 카메라 인계 메모]의 설계다.
+##
+## ▣ 왜 검사를 안 깨나 (가장 중요한 제약)
+##   `test_카메라공간`·`test_카메라연출` 은 **플레이어 속도 0** 으로 줌을 잰다.
+##   그래서 적응 배수는 **속도 데드존 안(정지)에서 정확히 1.0** 이어야 한다.
+##   아래 `_적응_줌_갱신` 은 속도 0 에서 목표 1.0 이고 초기값도 1.0 이라
+##   정지 상태에서는 배수가 1.0 에서 한 치도 안 움직인다 = 기존 검사 그대로 통과.
+## ============================================================================
+## ── C) 적응형 줌 — 빠르게 달리거나 크게 떨어질 때만 화면을 살짝 넓힌다 ──
+const 적응_최소배수: float = 0.90    ## 최고속+빠른낙하에서 이만큼까지 넓어진다(<1 = 줌아웃)
+const 적응_속도데드존: float = 45.0  ## 이 속도 이하는 '정지' — 배수 1.0 (검사·미세흔들림 보호)
+const 적응_반응: float = 3.0         ## 배수가 목표로 수렴하는 속도(1/s). 낮게 잡아 급변 방지
+var _적응배수: float = 1.0
+
+## ── B) 화면 비네트 — 림보식 가장자리 어둠. 평상시 은은, 전환 때 조여든다 ──
+## HUD(100)·전환(200)보다 아래 CanvasLayer(50)에 둔다 → 카메라 이동과 무관히 화면 고정.
+const 비네트_기본: float = 0.13      ## 평상시 가장자리 어둠(0=없음, 1=완전 검정)
+var _비네트층: CanvasLayer = null
+var _비네트: TextureRect = null
+var _비네트_트윈: Tween = null
+
+## ── 전환 "빨림" — 다음 스테이지로 걸어들 때 화면이 플레이어에게 급격히 당겨진다 ──
+## 0 = 평상시(룩어헤드·반응 그대로) / 1 = 최대(룩어헤드 접힘 + 추적 반응 급상승).
+## `장면전환.gd` 가 통로 진입 암전 동안 0→1 로 트윈해 "빨려드는" 감각을 만든다.
+var _빨림: float = 0.0
+var _빨림_트윈: Tween = null
+
+
 func _ready() -> void:
 	# 스무딩은 우리가 직접 계산하므로 내장 스무딩은 끔 (이중 지연 방지)
 	position_smoothing_enabled = false
@@ -144,6 +177,8 @@ func _ready() -> void:
 	# 그룹을 보조 경로로 둔다.
 	add_to_group("주카메라")
 	make_current()
+	# [2026-08-22] 화면 비네트(B) 설치 — 평상시 은은한 가장자리 어둠.
+	_비네트_설치()
 
 ## 대상 지정 + 첫 프레임 순간이동 스냅 (씬 시작 시 카메라가 날아오는 것 방지)
 func setup(p_target: CharacterBody2D) -> void:
@@ -269,6 +304,8 @@ func _physics_process(delta: float) -> void:
 	# ★순서가 중요하다. 리밋 클램프는 "화면 반폭 = 뷰포트/줌" 을 쓰기 때문에,
 	#   줌을 나중에 적용하면 이 프레임의 클램프가 **한 프레임 전 줌**으로 계산된다.
 	#   좁은 굴뚝에서는 그 한 프레임이 화면이 옆으로 튀는 것으로 보인다.
+	# [2026-08-22] 적응 배수(C)를 줌 적용보다 먼저 갱신한다 — _줌_적용 이 이 값을 읽는다.
+	_적응_줌_갱신(delta)
 	_줌_적용()
 	# 공간 혼합 계수 — 시작·끝의 기울기가 0 인 곡선이라 이음매가 안 보인다.
 	var 공간s := smoothstep(0.0, 1.0, _공간_혼합)
@@ -305,10 +342,14 @@ func _physics_process(delta: float) -> void:
 		_fall_look *= 1.0 - 공간s
 
 	# ── 3) 목표점으로 지수 스무딩 (프레임률 독립) ───────────────────────
-	var desired := _desired_center(공간s)
-	var kx := 1.0 - exp(-H_RESPONSE * delta)
+	# [2026-08-22] 전환 "빨림": 룩어헤드를 접고(당김) 추적 반응을 급격히 올려
+	#   화면이 플레이어에게 빨려들 듯 당겨진다. _빨림=0 이면 예전과 완전히 같다.
+	var desired := _desired_center(공간s, _빨림)
+	var kx := 1.0 - exp(-lerpf(H_RESPONSE, H_RESPONSE * 3.2, _빨림) * delta)
 	# 수직 공간에서는 세로 반응을 올린다 (등반이 곧 플레이라서 — §V_RESPONSE_수직)
 	var v반응 := lerpf(V_RESPONSE, V_RESPONSE_수직, 공간s if _공간_수직 else 0.0)
+	# 전환 빨림 때는 세로도 몸에 바짝 붙여 "빨려드는" 감각을 완성한다
+	v반응 = lerpf(v반응, v반응 * 2.6, _빨림)
 	var ky := 1.0 - exp(-v반응 * delta)
 	var pos := global_position
 	pos.x = lerpf(pos.x, desired.x, kx)
@@ -339,12 +380,13 @@ func _update_shake(delta: float) -> void:
 
 ## 카메라가 가야 할 이상적 중심점.
 ##   공간s : 카메라 공간이 얼마나 적용됐나(0~1). 0 이면 예전과 완전히 같은 계산이다.
-func _desired_center(공간s: float = 0.0) -> Vector2:
+func _desired_center(공간s: float = 0.0, 당김: float = 0.0) -> Vector2:
 	# [2026-08-07] 구역_오프셋 을 더한다. 기본값 0 이라 기존 씬은 결과가 같다.
 	# [2026-08-17] 공간이 켜지면 구역 시선은 물러나고 공간 시선이 들어온다(합이 항상 1).
 	var 시선 := 구역_오프셋.lerp(_공간_시선, 공간s)
 
-	var x := target.global_position.x + _look_x + 시선.x
+	# [2026-08-22] 전환 빨림: 룩어헤드를 접는다(당김 1 이면 카메라가 몸 정중앙을 잡는다).
+	var x := target.global_position.x + _look_x * (1.0 - clampf(당김, 0.0, 1.0)) + 시선.x
 	var y := _ground_y - EYE_LIFT + _fall_look + 시선.y
 
 	# ★수직 모드 — 굴뚝/갱도
@@ -378,7 +420,95 @@ func _줌_적용() -> void:
 	var z := _기준_줌
 	if _공간_혼합 > 0.0:
 		z = lerpf(_기준_줌, _공간_줌, smoothstep(0.0, 1.0, _공간_혼합))
-	zoom = Vector2.ONE * maxf(z * 연출_줌배수, 0.01)
+	# [2026-08-22] 적응 배수(C)도 곱한다. 정지 상태에서는 1.0 이라 기존 값과 동일.
+	zoom = Vector2.ONE * maxf(z * 연출_줌배수 * _적응배수, 0.01)
+
+
+# ============================================================================
+# [2026-08-22 도형] 적응형 줌(C) · 화면 비네트(B) · 전환 빨림 — 구현부
+# ============================================================================
+## 속도·낙하에 따라 화면을 살짝 넓히는 배수를 갱신한다(<1 = 줌아웃 = 더 넓게).
+## ★정지(속도 0)에서는 목표가 정확히 1.0 이고 초기값도 1.0 이라 배수가 안 움직인다
+##   → 속도 0 으로 줌을 재는 카메라 검사 2종이 그대로 통과한다.
+func _적응_줌_갱신(delta: float) -> void:
+	var vx := absf(target.velocity.x)
+	var 아래로 := maxf(target.velocity.y, 0.0)
+	# 데드존 위에서만 반응. 데드존 이하는 넓힘 0 → 목표 배수 1.0.
+	var 속도량 := clampf((vx - 적응_속도데드존) / (390.0 - 적응_속도데드존), 0.0, 1.0)
+	var 낙하량 := clampf((아래로 - 300.0) / (FALL_SPEED_REF - 300.0), 0.0, 1.0)
+	var 넓힘 := maxf(속도량, 낙하량)
+	var 목표 := lerpf(1.0, 적응_최소배수, 넓힘)
+	# 프레임률 독립 지수 수렴 — 급격한 줌 변화로 인한 멀미를 막는다.
+	_적응배수 = lerpf(_적응배수, 목표, 1.0 - exp(-적응_반응 * delta))
+
+
+## 화면 비네트(B) 노드를 만든다. 카메라 이동과 무관히 화면에 고정되도록 CanvasLayer 를 쓴다.
+func _비네트_설치() -> void:
+	if _비네트층 != null and is_instance_valid(_비네트층):
+		return
+	_비네트층 = CanvasLayer.new()
+	_비네트층.name = "비네트"
+	_비네트층.layer = 50                  # 게임 위, HUD(100)·전환(200) 아래
+	add_child(_비네트층)                   # ⚠ owner 안 줌 (런타임 노드 — §규약 6)
+	_비네트 = TextureRect.new()
+	_비네트.name = "가장자리어둠"
+	_비네트.texture = _비네트_텍스처()
+	_비네트.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_비네트.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_비네트.stretch_mode = TextureRect.STRETCH_SCALE
+	_비네트.modulate = Color(1, 1, 1, 비네트_기본)
+	_비네트층.add_child(_비네트)
+
+
+## 가운데는 투명, 가장자리로 갈수록 검은 방사형 그라데이션 텍스처.
+func _비네트_텍스처() -> GradientTexture2D:
+	var g := Gradient.new()
+	# 가운데 45% 까지는 완전히 맑고, 거기서부터 가장자리로 어두워진다.
+	g.set_offset(0, 0.45); g.set_color(0, Color(0, 0, 0, 0))
+	g.set_offset(1, 1.0);  g.set_color(1, Color(0, 0, 0, 1))
+	var t := GradientTexture2D.new()
+	t.gradient = g
+	t.fill = GradientTexture2D.FILL_RADIAL
+	t.fill_from = Vector2(0.5, 0.5)
+	t.fill_to = Vector2(1.0, 0.5)
+	t.width = 256
+	t.height = 256
+	return t
+
+
+## 평상시 비네트 강도 — 전환이 끝난 뒤 이 값으로 되돌린다.
+func 비네트_기본값() -> float:
+	return 비네트_기본
+
+
+## 화면 가장자리 어둠 강도를 부드럽게 바꾼다(0~1). 전환의 "점점 어두워짐" 에 쓴다.
+func 비네트_강도(강도: float, 시간: float) -> void:
+	if _비네트 == null or not is_instance_valid(_비네트):
+		return
+	if _비네트_트윈:
+		_비네트_트윈.kill()
+		_비네트_트윈 = null
+	var a := clampf(강도, 0.0, 1.0)
+	if 시간 <= 0.0:
+		_비네트.modulate.a = a
+		return
+	_비네트_트윈 = create_tween()
+	_비네트_트윈.tween_property(_비네트, "modulate:a", a, 시간).set_trans(Tween.TRANS_SINE)
+
+
+## 전환 "빨림" 정도를 0~1 로 트윈한다. `장면전환.gd` 가 통로 진입 암전 동안 부른다.
+## EASE_IN 이라 처음엔 완만하다 끝에서 확 당겨져 "빨려드는" 가속감이 난다.
+func 전환_빨림(정도: float, 시간: float) -> void:
+	if _빨림_트윈:
+		_빨림_트윈.kill()
+		_빨림_트윈 = null
+	var v := clampf(정도, 0.0, 1.0)
+	if 시간 <= 0.0:
+		_빨림 = v
+		return
+	_빨림_트윈 = create_tween()
+	_빨림_트윈.tween_property(self, "_빨림", v, 시간) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
 
 ## 뷰포트 절반 크기를 고려해 카메라 중심을 리밋 안으로.
