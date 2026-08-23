@@ -1,0 +1,43 @@
+[gd_scene load_steps=10 format=3 uid="uid://ss2dgrasstemplate"]
+
+[ext_resource type="Script" uid="uid://c6kxvfqr4ewu1" path="res://addons/rmsmartshape/shapes/shape_closed.gd" id="1_shape"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="2_point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_pa"]
+[ext_resource type="Resource" uid="uid://2ull2yqns1b1" path="res://assets/smartshape/materials/grass_prototype.tres" id="4_mat"]
+
+[sub_resource type="Resource" id="p0"]
+script = ExtResource("2_point")
+position = Vector2(-160, -90)
+
+[sub_resource type="Resource" id="p1"]
+script = ExtResource("2_point")
+position = Vector2(160, -90)
+
+[sub_resource type="Resource" id="p2"]
+script = ExtResource("2_point")
+position = Vector2(160, 90)
+
+[sub_resource type="Resource" id="p3"]
+script = ExtResource("2_point")
+position = Vector2(-160, 90)
+
+[sub_resource type="Resource" id="pa"]
+script = ExtResource("3_pa")
+_points = {
+0: SubResource("p0"),
+1: SubResource("p1"),
+2: SubResource("p2"),
+3: SubResource("p3")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3)
+_constraints = {
+Vector2i(0, 3): 15
+}
+_next_key = 4
+
+[node name="SmartShapeGrass" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_shape")
+_points = SubResource("pa")
+shape_material = ExtResource("4_mat")
+collision_size = 24.0
