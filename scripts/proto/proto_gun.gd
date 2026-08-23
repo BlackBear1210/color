@@ -116,7 +116,8 @@ func _shoot() -> void:
 	var color: int = player.call("얼굴색", get_global_mouse_position().x - player.global_position.x) \
 		if player.has_method("얼굴색") else player.get("player_color")
 	var bullet := BULLET_SCENE.instantiate()
-	bullet.setup(paint_system, color, _launch_velocity(), GRAVITY)
+	# 총알 경로가 달라도 명중 물감 효과는 Player의 공용 ActionFX로 통일한다.
+	bullet.setup(paint_system, color, _launch_velocity(), GRAVITY, player.get_node_or_null("ActionFX"))
 	get_tree().current_scene.add_child(bullet)
 	bullet.global_position = global_position   # 발사 원점 = 입
 	fired.emit()

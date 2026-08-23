@@ -62,6 +62,8 @@ func _점프_재계산() -> void:
 var _coyote_timer:      float = 0.0
 var _jump_buffer_timer: float = 0.0
 var _fall_timer:        float = 0.0  ## 낙하가 시작된 뒤 경과 시간(낙하 가속용, 착지/상승 시 0으로 리셋)
+var _지난_바닥: bool = false
+var _착지_감시_시작: bool = false
 
 # ── 색 상태 ─────────────────────────────────────────────────────────────
 ## ★[2026-08-23 전면 변경] 색은 **값이 아니라 위치의 함수**가 됐다.
@@ -159,6 +161,10 @@ func _physics_process(delta: float) -> void:
 		velocity.y         = jump_velocity
 		_coyote_timer      = 0.0
 		_jump_buffer_timer = 0.0
+		# 점프가 실제로 성립한 프레임에만 남긴다. 입력 버퍼만으로 먼지가 나오면 조작 피드백이 거짓말이 된다.
+		var 행동효과 := get_node_or_null("ActionFX")
+		if 행동효과 and 행동효과.has_method("점프"):
+			행동효과.점프(얼굴색())
 
 	_jump_buffer_timer = max(_jump_buffer_timer - delta, 0.0)
 
@@ -170,7 +176,16 @@ func _physics_process(delta: float) -> void:
 	var dir := Input.get_axis("move_left", "move_right")
 	velocity.x = dir * move_speed
 
+	var 착지_직전속도 := velocity.y
 	move_and_slide()
+	var 바닥 := is_on_floor()
+	if _착지_감시_시작 and 바닥 and not _지난_바닥:
+		# 첫 물리 프레임의 스폰은 제외하고, 실제 낙하 뒤 착지에만 반응한다.
+		var 행동효과 := get_node_or_null("ActionFX")
+		if 행동효과 and 행동효과.has_method("착지"):
+			행동효과.착지(얼굴색(), maxf(착지_직전속도, 0.0))
+	_지난_바닥 = 바닥
+	_착지_감시_시작 = true
 
 	# 이동이 끝난 자리에서 대표색을 다시 뽑는다. 사망 판정(월드.gd)보다 먼저 와야
 	# 같은 프레임의 판정이 방금 선 자리를 기준으로 이뤄진다.

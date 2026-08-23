@@ -13,16 +13,18 @@ var _paint_system: Node
 var _color: int = ColorDefs.BLACK
 var _velocity: Vector2 = Vector2.RIGHT * 900.0
 var _gravity: float = 1400.0
+var _행동효과: Node = null
 ## 페인트 시스템에 명중을 넘겼나. 안 넘겼으면 수명이 다할 때 페인트를 환급한다.
 var _명중함: bool = false
 
 @onready var visual: Polygon2D = $Visual
 
-func setup(ps: Node, color: int, velocity: Vector2, gravity: float) -> void:
+func setup(ps: Node, color: int, velocity: Vector2, gravity: float, 행동효과: Node = null) -> void:
 	_paint_system = ps
 	_color        = color
 	_velocity     = velocity
 	_gravity      = gravity
+	_행동효과     = 행동효과
 
 func _ready() -> void:
 	# ★[2026-07-24 도형] 레이어 1(실체 지형) + 레이어 4(유령 = 아직 안 칠해진 발판) 둘 다 감지.
@@ -39,6 +41,8 @@ func _physics_process(delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		return
+	# PaintPlatform·타일맵·일반 벽 모두, 총알이 실제 충돌한 한 번의 지점에서만 물감이 튄다.
+	_물감_튐()
 	# ★[2026-07-24 도형] 페인트 시스템 v3 — 플랫폼 단위 색칠 분기 추가.
 	# 기존 타일맵 분기는 그대로 두고 앞에 한 갈래만 얹었다(zone_01/02/world_1 회귀 없음).
 	# 플랫폼은 자기 상태를 스스로 알고 있으므로 PaintSystem 을 거치지 않고 직접 호출한다.
@@ -68,6 +72,11 @@ func _on_body_entered(body: Node2D) -> void:
 		_명중함 = true          # 결과(칠함/낭비/막힘)에 따른 정산은 페인트 쪽이 한다
 		_paint_system.on_hit(layer, cell, _color)
 	_소멸()
+
+
+func _물감_튐() -> void:
+	if _행동효과 and _행동효과.has_method("명중"):
+		_행동효과.명중(global_position, _velocity, _color)
 
 
 ## 콜리전 바디에서 "칠할 수 있는 대상"을 거슬러 올라가 찾는다.

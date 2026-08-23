@@ -24,6 +24,7 @@ var 색: int = ColorDefs.BLACK
 var _속도: Vector2 = Vector2.ZERO
 var _수명: float = 0.0
 var _코어: 페인트코어 = null
+var _행동효과: Node = null
 var _끝남: bool = false
 var _꼬리: PackedVector2Array = PackedVector2Array()
 
@@ -33,11 +34,12 @@ var _바람_시작속도: Vector2 = Vector2.ZERO
 var _바람_시작위치: Vector2 = Vector2.ZERO
 
 
-func 시작(시작점: Vector2, 방향: Vector2, 속력: float, 색상: int, 코어: 페인트코어) -> void:
+func 시작(시작점: Vector2, 방향: Vector2, 속력: float, 색상: int, 코어: 페인트코어, 행동효과: Node = null) -> void:
 	global_position = 시작점
 	_속도 = 방향.normalized() * 속력
 	색 = 색상
 	_코어 = 코어
+	_행동효과 = 행동효과
 
 
 func _ready() -> void:
@@ -83,7 +85,7 @@ func _physics_process(delta: float) -> void:
 			_소멸(null, 이전)          # 반대색 물이 막았다 → 페인트는 사라짐(회수 안 됨)
 			return
 		if 영역.has_method("명중"):
-			_소멸(영역, 이전)
+			_소멸(영역, 이전, true)
 			return
 
 	# ── 2) 단단한 지형: 이전→다음 구간을 레이캐스트 (터널링 방지) ──
@@ -93,7 +95,7 @@ func _physics_process(delta: float) -> void:
 	var 결과 := 공간.intersect_ray(질의)
 	if 결과:
 		var 맞은것: Object = 결과.get("collider")
-		_소멸(_칠할대상_찾기(맞은것), 결과["position"])
+		_소멸(_칠할대상_찾기(맞은것), 결과["position"], true)
 		return
 
 	global_position = 다음
@@ -115,7 +117,7 @@ func _칠할대상_찾기(맞은것: Object) -> Node:
 	return null
 
 
-func _소멸(대상: Node, 지점: Vector2) -> void:
+func _소멸(대상: Node, 지점: Vector2, 물감_튐: bool = false) -> void:
 	_끝남 = true
 	if OS.is_debug_build() and _바람_프레임 > 0:
 		var 방향변화 := rad_to_deg(_바람_시작속도.angle_to(_속도))
@@ -124,6 +126,8 @@ func _소멸(대상: Node, 지점: Vector2) -> void:
 			 _속도, rad_to_deg(_속도.angle()), 방향변화, _바람_시작위치.distance_to(지점)])
 	if _코어:
 		_코어.명중_처리(대상, 색, 지점)
+	if 물감_튐 and _행동효과 and _행동효과.has_method("명중"):
+		_행동효과.명중(지점, _속도, 색)
 	queue_free()
 
 

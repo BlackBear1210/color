@@ -28,6 +28,11 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	if body is TileMapLayer:
 		_paint_gray(body as TileMapLayer)
+	# 기존 TileMap 씬도 총구가 아닌 실제 지형 충돌점에서 물감 조각을 낸다.
+	var 플레이어 := get_tree().get_first_node_in_group("player")
+	var 행동효과 := 플레이어.get_node_or_null("ActionFX") if 플레이어 else null
+	if 행동효과 and 행동효과.has_method("명중"):
+		행동효과.명중(global_position, direction * speed, color)
 	queue_free()
 
 ## 총알이 맞은 셀만 회색으로 칠한다. 같은 (source, atlas 좌표)에 대해 회색 대체 타일을
