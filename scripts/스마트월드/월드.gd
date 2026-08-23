@@ -155,7 +155,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_무적 = maxf(_무적 - delta, 0.0)
 
-	_지대_적용()
+	# [2026-08-23] 색 강제(`_지대_적용`)를 여기서 뺐다 — 이제 player.gd 가 스스로 한다.
 
 	# 사망 판정은 레이캐스트 3발 + 유체 순회라 싸지 않다.
 	# 아래 체크포인트 갱신에서도 같은 답이 필요하므로 **한 프레임에 한 번만** 계산한다.
@@ -192,33 +192,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # ── 색 지대 ────────────────────────────────────────────────────────────────
 ## 식물 B 가 만든 임시 지대 안에 있으면 플레이어 색을 그 색으로 고정한다.
-## 회색 지대는 고정하지 않는다 = 플레이어가 자유롭게 전환할 수 있다(기획).
-func _지대_적용() -> void:
-	var 목표 := -1
-	for n in get_tree().get_nodes_in_group("식물B"):
-		var b := n as 식물B
-		if b == null:
-			continue
-		var c: int = b.지대색()
-		if c < 0 or c == ColorDefs.GRAY:
-			continue
-		if b.안에_있나(_플레이어.global_position):
-			목표 = c                       # 나중에 만난 지대가 이긴다
-
-	# ★[2026-08-20 추가] 빛 경계 — 지붕 구멍·벽 틈·구멍 난 커튼에서 새어 드는 빛.
-	#   `color_zone.gd`(다각형 경계) · 식물 B 지대와 **완전히 같은 층위**다:
-	#   안에 있으면 그 색으로 강제되고, Shift 를 눌러도 이 함수가 같은 프레임에 되돌린다.
-	#   ⚠ 죽이지 않는다. 죽는 것은 그 색으로 **다음 지형을 밟았을 때**다 — 그게 퍼즐이다.
-	for n in get_tree().get_nodes_in_group("빛경계"):
-		if not n.has_method("강제색"):
-			continue
-		var 빛색: int = n.강제색(_플레이어)
-		if 빛색 >= 0:
-			목표 = 빛색                    # 나중에 만난 경계가 이긴다 (지대와 같은 규칙)
-
-	if 목표 >= 0 and _플레이어.get("player_color") != 목표:
-		# player.gd 무수정 원칙 — 흑/백 2색뿐이라 한 번 토글하면 반드시 목표색이 된다
-		_플레이어.call("_toggle_color")
+## ★[2026-08-23 제거됨] 예전에는 여기서 지대·빛경계를 훑어 `_toggle_color()` 로
+##   플레이어 색을 통째로 갈아끼웠다. 그 방식은 몸이 경계선에 걸쳤을 때 답이 없다 —
+##   상체·하체 중 한쪽을 버리는 셈이라 보이는 것과 죽는 것이 어긋났다.
+##
+##   이제 색 강제는 월드가 밀어 넣지 않고 **플레이어가 당겨 간다**:
+##     · 경계 셋(color_zone · 식물B · 빛기둥)이 `강제색(월드좌표)` 만 답한다
+##     · `player.gd` 가 몸을 조각내 조각마다 그 좌표의 색을 뽑는다
+##     · 규칙의 유일한 출처는 `scripts/스마트월드/색경계.gd` 다
+##   이 함수를 되살리지 마라. 되살리면 규칙이 두 군데로 갈라진다.
 
 
 # ── 사망 판정 ──────────────────────────────────────────────────────────────
@@ -289,19 +271,19 @@ func _접촉모양_준비() -> void:
 	_접촉_중심오프셋 = cs.position * 배율
 
 
+## ★★[2026-08-23 부위별 판정] ─────────────────────────────────────────────
+## 색이 몸 전체 하나가 아니라 **위치의 함수**가 됐으므로, 판정도 부위별로 간다.
+##   예전: "몸에 닿은 것 중 반대색이 하나라도 있으면 죽는다" (색은 하나)
+##   지금: "**닿은 그 부위가** 반대색이면 죽는다"
+##
+## 기획이 요구한 두 경우가 이제 정확히 맞는다:
+##   · 상체 흰색으로 검정 천장에 닿음 → 상체 조각이 검정 지형과 겹침 → 죽음
+##   · 하체 검정으로 흰 발판을 밟음   → 하체 조각이 흰 지형과 겹침   → 죽음
+##     (상체가 흰색인 것은 무관하다 — 밟은 것은 하체다)
 func _사망_판정() -> bool:
-	var 색: int = _플레이어.get("player_color")
+	var 대표색: int = _플레이어.get("player_color")
 
-	# 1) 유체 접촉 — 반대색 물/연기에 닿으면 즉사
-	for n in get_tree().get_nodes_in_group("유체"):
-		var f := n as 유체
-		if f == null or not f.켜짐 or not f.반대색인가(색):
-			continue
-		if f.get_overlapping_bodies().has(_플레이어):
-			return true
-
-	# 2) 색 레이저 — 빔 안에서 빔과 다른 색이면 즉사
-	#    (몸 전체가 닿는 판정이라 레이저 노드가 스스로 판단한다)
+	# 1) 색 레이저 — 몸 전체가 닿는 판정이라 레이저가 스스로 판단한다(대표색 사용).
 	for n in get_tree().get_nodes_in_group("색레이저"):
 		var 빔 := n as 색레이저
 		if 빔 and 빔.위험한가(_플레이어):
@@ -311,17 +293,51 @@ func _사망_판정() -> bool:
 	#   **경계는 죽이지 않는다.** 이 게임에서 경계란 "플레이어 색이 강제로 바뀌고
 	#   Shift 로 못 바꾸는 곳" 이다(`scenes/경계/color_zone.gd` 가 원조).
 	#   즉사는 `색레이저.gd` 의 역할이고, 둘을 섞으면 규칙이 무너진다.
-	#   → 색 강제는 아래 `_지대_적용()` 이 한다. `빛기둥.강제색()` 참고.
 
-	# 3) 지형 접촉 — 몸에 닿은 지형 중 반대색이 하나라도 있으면 즉사
-	if 몸통_접촉_사망 and _접촉모양 != null:
-		return _닿은_지형중_반대색있나(색)
+	# 2) 지형·유체 접촉 — 몸 조각마다 그 조각의 색으로 따로 본다.
+	if 몸통_접촉_사망 and _플레이어.has_method("몸_영역들"):
+		for 영역 in _플레이어.몸_영역들(접촉_여유):
+			if _조각이_반대색에_닿았나(영역["폴리곤"], int(영역["색"])):
+				return true
+		return false
 
-	# 3') 대비책 — 콜리전을 못 재서 모양 질의를 못 쓸 때만 예전 발밑 레이를 쓴다.
-	return _발밑_반대색인가(색)
+	# 2') 대비책 — 부위 API 를 못 쓸 때만 예전 방식(몸 전체 한 색)으로 돌아간다.
+	for n in get_tree().get_nodes_in_group("유체"):
+		var f := n as 유체
+		if f == null or not f.켜짐 or not f.반대색인가(대표색):
+			continue
+		if f.get_overlapping_bodies().has(_플레이어):
+			return true
+	if _접촉모양 != null:
+		return _닿은_지형중_반대색있나(대표색)
+	return _발밑_반대색인가(대표색)
 
 
-## 플레이어 몸과 겹치는 지형(레이어 1) 중 반대색이 있는가.
+## 몸 조각 하나가 자기 색과 반대인 것(지형 또는 유체)에 닿았는가.
+## ⚠ 지형(바디, 레이어 1)과 유체(에어리어, 레이어 32)를 **한 번의 질의**로 본다.
+##   둘 다 `반대색인가()` 계약을 지키므로 같은 루프로 처리된다.
+func _조각이_반대색에_닿았나(폴리곤: PackedVector2Array, 색: int) -> bool:
+	if 폴리곤.size() < 3:
+		return false
+	var 모양 := ConvexPolygonShape2D.new()
+	모양.points = 폴리곤              # 이미 월드 좌표다 → 변환은 항등
+	var 질의 := PhysicsShapeQueryParameters2D.new()
+	질의.shape = 모양
+	질의.transform = Transform2D.IDENTITY
+	질의.collision_mask = 1 | 32     # 지형 + 유체. 유령(8)은 무색이라 안전하다
+	질의.collide_with_areas = true
+	질의.collide_with_bodies = true
+	질의.exclude = [_플레이어.get_rid()]
+	# 좁은 통로에서는 벽·바닥·천장에 물줄기까지 한꺼번에 잡힌다. 24 면 넉넉하다.
+	var 결과 := _플레이어.get_world_2d().direct_space_state.intersect_shape(질의, 24)
+	for 항목 in 결과:
+		var 대상 := _반대색_대상_찾기(항목.get("collider"))
+		if 대상 != null and 대상.반대색인가(색):
+			return true
+	return false
+
+
+## 플레이어 몸과 겹치는 지형(레이어 1) 중 반대색이 있는가. (대비책 전용)
 func _닿은_지형중_반대색있나(색: int) -> bool:
 	var 질의 := PhysicsShapeQueryParameters2D.new()
 	질의.shape = _접촉모양

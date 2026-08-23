@@ -63,13 +63,68 @@ var _coyote_timer:      float = 0.0
 var _jump_buffer_timer: float = 0.0
 var _fall_timer:        float = 0.0  ## 낙하가 시작된 뒤 경과 시간(낙하 가속용, 착지/상승 시 0으로 리셋)
 
-# ── 색 상태 (검정/흰색) ─────────────────────────────────────────────────
-# 원본 color 프로젝트의 player_color 를 이식. 총알 색 = 이 색과 동일하게 발사된다.
+# ── 색 상태 ─────────────────────────────────────────────────────────────
+## ★[2026-08-23 전면 변경] 색은 **값이 아니라 위치의 함수**가 됐다.
+##
+## ▣ 왜 바꿨나
+##   경계선이 몸을 가로지를 때 답이 없었다. 상체는 흰 경계, 하체는 검정 경계인데
+##   `player_color` 는 정수 하나뿐이라 둘 중 하나를 골라야 했고, 어느 쪽을 골라도
+##   보이는 것과 죽는 것이 어긋났다.
+##   → 이제 몸을 경계선 그대로 잘라, **조각마다 자기 색**을 갖는다.
+##
+## ▣ 세 가지 값의 역할이 다르다 — 헷갈리면 안 된다
+##   `자유색`      Shift 로 바꾸는 **유일한 상태값**. 경계 밖 조각이 쓰는 색.
+##   `player_color` **대표색**. 총구가 박힌 조각의 색 = 총알 색.
+##                 단일 색 하나만 필요한 곳(색레이저·도약대·색문·HUD·애니메이션)이 읽는다.
+##                 **읽기 전용으로 다뤄라** — 매 물리 프레임 다시 계산된다.
+##   `몸_영역들()`  조각 목록. 지형·유체 접촉 사망 판정이 이걸 쓴다.
 @onready var placeholder: Polygon2D = $Placeholder
-var player_color: int = ColorDefs.BLACK
+
+## Shift 로 바꾸는 단 하나의 상태. 경계에 걸쳐 있으면 바꿀 수 없다.
+var 자유색: int = ColorDefs.BLACK
+
+var _대표색: int = ColorDefs.BLACK
+
+## 대표색 — 총구 부위의 색. 매 물리 프레임 `_대표색_갱신()` 이 다시 채운다.
+##
+## ⚠ **읽으면 대표색, 쓰면 자유색이다.** 왜 이렇게 비대칭이냐면 —
+##   대표색은 경계에서 파생되는 값이라 밖에서 써 봐야 다음 프레임에 덮어써진다.
+##   그런데 이 이름을 읽는 곳이 30군데(색레이저·도약대·색문·HUD·애니메이션·테스트)라
+##   이름을 없애면 전부 깨진다. 그래서 읽기는 그대로 두고, 쓰기는 **원래 의도했을
+##   대상**인 자유색으로 넘긴다. 예전 코드가 `player_color = WHITE` 라고 쓴 것은
+##   언제나 "플레이어를 흰색으로 만들어라" 는 뜻이었지 "파생값을 조작하라" 가 아니었다.
+var player_color: int:
+	get:
+		return _대표색
+	set(v):
+		자유색 = v
+		_대표색 = v
+		_apply_color_visual()
+
+## 몸 콜리전을 실측해 만든 값 (원점=발바닥 기준). `_몸_실측()` 이 한 번만 채운다.
+var _몸_크기: Vector2 = Vector2(44.0, 97.0)
+var _몸_중심오프셋: Vector2 = Vector2(0.0, -48.5)
+
+## 총구가 달린 받침. 대표색을 어디서 뽑을지의 기준점이다.
+@onready var _총받침: Node2D = get_node_or_null("GunRig")
+
+## 원본 640px 캐릭터 시트의 입을 실제 표시 크기(높이 130px)로 환산한 월드 좌표.
+## 씬 인스턴스·런타임 스테이지 조립 경로마다 속성 오버라이드가 달라도, 총구와 대표색
+## 기준점이 무릎으로 내려가지 않도록 Player가 준비될 때마다 이 한 곳에서 확정한다.
+const 입_회전중심 := Vector2(0, -70)
+const 입_앞_오프셋 := Vector2(18, 0)
+
+## 분할 셰이더가 걸린 스프라이트 둘 (검정 시트 / 흰색 시트).
+const _분할_셰이더 := preload("res://shaders/색분할.gdshader")
+var _시트: Array[AnimatedSprite2D] = []
+
 
 func _ready() -> void:
 	add_to_group("player")
+	_몸_실측()
+	_총구_위치_맞추기()
+	_분할_시트_준비()
+	_대표색_갱신()
 	_apply_color_visual()
 	_점프_재계산()   # 씬 로드 중엔 계산을 건너뛰었으니 여기서 최종값으로 한 번 확정
 
@@ -117,13 +172,190 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-## 현재 색 상태 전환 (BLACK ↔ WHITE). gun.gd 가 발사 시 이 색을 그대로 총알에 넘긴다.
-func _toggle_color() -> void:
-	player_color = ColorDefs.WHITE if player_color == ColorDefs.BLACK else ColorDefs.BLACK
-	_apply_color_visual()
+	# 이동이 끝난 자리에서 대표색을 다시 뽑는다. 사망 판정(월드.gd)보다 먼저 와야
+	# 같은 프레임의 판정이 방금 선 자리를 기준으로 이뤄진다.
+	_대표색_갱신()
+	_분할_갱신()
 
-## 플레이스홀더 스프라이트가 없으므로 임시로 Polygon2D 색을 현재 색에 맞춰 표시.
+
+# ── 색 ─────────────────────────────────────────────────────────────────────
+
+## 몸 사각형(월드). 원점은 발바닥이라 중심 오프셋을 더해 만든다.
+func 몸_사각형() -> Rect2:
+	return Rect2(global_position + _몸_중심오프셋 - _몸_크기 * 0.5, _몸_크기)
+
+
+## 이 월드 좌표의 색. 경계가 강제하면 그 색, 아니면 자유색.
+func 색_at(월드좌표: Vector2) -> int:
+	var c := 색경계.강제색_at(get_tree(), 월드좌표)
+	return c if c >= 0 else 자유색
+
+
+## 몸을 색이 같은 조각들로 자른 결과. 원소 = { "폴리곤": PackedVector2Array, "색": int }
+## `여유` 만큼 몸을 부풀린 뒤 자른다 — 자르는 선은 부풀리지 않으므로 조각들이
+## 경계선에서 정확히 맞닿는다(겹치면 선 위에서 양쪽 색으로 다 죽어 버린다).
+func 몸_영역들(여유: float = 0.0) -> Array:
+	var 몸 := 몸_사각형()
+	if 여유 > 0.0:
+		몸 = 몸.grow(여유)
+	return 색경계.몸_영역들(get_tree(), 몸, 자유색)
+
+
+## 몸의 일부라도 경계 안에 있는가. 걸쳐 있으면 색을 바꿀 수 없다.
+func 경계에_걸쳤나() -> bool:
+	for 영역 in 몸_영역들():
+		if 영역["강제"]:
+			return true
+	return false
+
+
+## 색 전환 (BLACK ↔ WHITE).
+## ⚠ **경계에 걸쳐 있으면 아무 일도 일어나지 않는다.** 경계란 "색이 강제되고 못 바꾸는 곳"
+##   이고, 몸이 반쯤 걸친 상태도 그 안에 든다 — 반만 바꾸면 규칙이 애매해진다.
+##   → 레벨을 찍을 때 경계 입구 앞에 색을 미리 맞출 평지(최소 플레이어 폭 44px + 여유)를
+##     둬야 한다. 없으면 걸친 채로 오도 가도 못 하는 자리가 생긴다.
+func _toggle_color() -> void:
+	if 경계에_걸쳤나():
+		return
+	자유색 = ColorDefs.WHITE if 자유색 == ColorDefs.BLACK else ColorDefs.BLACK
+	_대표색_갱신()
+	_apply_color_visual()   # 경계 밖이라 대표색이 안 바뀌는 경우에도 그림은 맞춘다
+
+
+## 대표색 = 실제 얼굴(입)이 있는 조각의 색.
+## 총구는 조준 각도에 따라 회전하므로, 총알의 색을 거기서 직접 읽으면 위·아래를 겨눌 때
+## 색이 바뀐다. 입 높이는 고정하고 좌·우만 조준 방향을 따라 얼굴 쪽으로 옮긴다.
+func _대표색_갱신() -> void:
+	var 새색 := 얼굴색()
+	if 새색 != _대표색:
+		_대표색 = 새색            # ⚠ player_color 로 쓰면 자유색까지 덮어써진다
+		_apply_color_visual()
+
+
+## 총 회전 중심은 입, Marker는 입 바로 앞이다.
+## GunRig가 부모의 비균등 배율을 없앤 뒤에 실행되므로 이 로컬 값은 월드 픽셀과 같다.
+func _총구_위치_맞추기() -> void:
+	if _총받침 == null or not is_instance_valid(_총받침):
+		return
+	var 총 := _총받침.get_node_or_null("Gun") as Node2D
+	if 총 == null:
+		return
+	총.position = 입_회전중심
+	var 총구 := 총.get_node_or_null("Muzzle") as Marker2D
+	if 총구:
+		총구.position = 입_앞_오프셋
+
+
+## 조준하는 쪽의 입 위치. 왼쪽을 겨누면 왼쪽 얼굴, 오른쪽을 겨누면 오른쪽 얼굴을 쓴다.
+## GunRig 아래 좌표는 월드 픽셀과 같아 프로토 총·일반 총이 같은 기준을 공유할 수 있다.
+func 입_월드좌표(방향x: float = 0.0) -> Vector2:
+	var 옆 := 방향x
+	if absf(옆) < 0.01:
+		옆 = get_global_mouse_position().x - global_position.x
+	if absf(옆) < 0.01:
+		var 그림 := get_node_or_null("CharacterSprite") as AnimatedSprite2D
+		옆 = -1.0 if 그림 and 그림.flip_h else 1.0
+	var 부호 := 1.0 if 옆 >= 0.0 else -1.0
+	var 입로컬 := Vector2(입_앞_오프셋.x * 부호, 입_회전중심.y)
+	if _총받침 and is_instance_valid(_총받침):
+		return _총받침.to_global(입로컬)
+	# GunRig가 없는 옛 Player 씬도 총알이 최소한 발바닥·무릎에서 나오지 않게 월드값으로 둔다.
+	return global_position + 입로컬
+
+
+## 총알 색의 유일한 기준. "현재 대표색"의 이전 프레임 값이 아니라 발사 순간의 얼굴색을 준다.
+func 얼굴색(방향x: float = 0.0) -> int:
+	return 색_at(입_월드좌표(방향x))
+
+
+# ── 분할 그림 ───────────────────────────────────────────────────────────────
+
+## ⚠ 그림은 **렌더 프레임**에서 맞춘다.
+##   `_physics_process` 에서만 갱신하면, 물리와 렌더가 어긋나는 순간(로딩 끊김·셰이더
+##   컴파일 등으로 한 렌더 프레임 사이에 물리가 여러 번 도는 때) 스프라이트가 그려지는
+##   자리와 다른 위치로 분할선을 찾아 **몸이 안 갈린 채로 그려진다.**
+##   판정은 물리에서, 그림은 렌더에서 — 각자 자기 프레임의 몸 위치를 쓴다.
+##   (분할선 계산은 물리 질의가 없는 순수 다각형 연산이라 두 번 돌아도 싸다)
+func _process(_delta: float) -> void:
+	_분할_갱신()
+
+
+## 흑·백 시트 두 장에 분할 셰이더를 걸어 둔다.
+## `CharacterSprite`(부모) 와 그 자식 `색겹침` 이 짝이다 — `색겹침.gd` 주석 참고.
+func _분할_시트_준비() -> void:
+	_시트.clear()
+	var 기본 := get_node_or_null("CharacterSprite") as AnimatedSprite2D
+	if 기본 == null:
+		return
+	var 겹침 := 기본.get_node_or_null("색겹침") as AnimatedSprite2D
+	for s in [기본, 겹침]:
+		if s == null:
+			continue
+		var m := ShaderMaterial.new()
+		m.shader = _분할_셰이더
+		s.material = m
+		_시트.append(s)
+
+
+## 몸을 가르는 선과 조각별 색을 셰이더에 넣는다.
+## ⚠ 판정과 **같은 함수**(`색경계.분할선들`)에서 나온 값을 쓴다. 따로 계산하면
+##   보이는 것과 죽는 것이 어긋난다 — 이 규칙이 이번 작업의 전부다.
+func _분할_갱신() -> void:
+	if _시트.is_empty():
+		return
+	var 값 := 분할_셰이더값()
+	for s in _시트:
+		if s == null or not is_instance_valid(s):
+			continue
+		var m := s.material as ShaderMaterial
+		if m == null:
+			continue
+		# 셰이더 파일은 한글을 못 쓰므로, uniform 이름은 영문으로 고정한다.
+		# 값의 뜻은 `색경계.분할_셰이더값()` 딕셔너리와 1:1로 같다.
+		m.set_shader_parameter("split_count", int(값["개수"]))
+		m.set_shader_parameter("line_1", 값["선1"])
+		m.set_shader_parameter("line_2", 값["선2"])
+		m.set_shader_parameter("color_table", 값["색표"])
+		# 시트가 지금 무슨 색을 재생 중인지로 담당 색을 정한다.
+		# (부모는 대표색, 자식은 그 반대라 자동으로 갈린다)
+		m.set_shader_parameter("sheet_color",
+			0.0 if String(s.animation).begins_with("black_") else 1.0)
+
+
+## 평상시 몸과 발사 모션이 반드시 같은 분할표를 쓰도록 공개한다.
+## 발사 전용 시트가 따로 이 계산을 흉내 내면 경계선에서 한 프레임씩 어긋날 수 있다.
+func 분할_셰이더값() -> Dictionary:
+	return 색경계.분할_셰이더값(get_tree(), 몸_사각형(), 자유색)
+
+
+## 몸 콜리전을 한 번만 실측한다.
+## ⚠ 크기를 상수로 박지 않는다 — 2026-08-07 에 키가 47→97px 로 바뀌면서 상수로
+##   박아둔 판정이 전부 어긋난 적이 있다(월드.gd 의 같은 주석 참고).
+func _몸_실측() -> void:
+	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if cs == null:
+		for 자식 in get_children():
+			if 자식 is CollisionShape2D:
+				cs = 자식
+				break
+	if cs == null or cs.shape == null:
+		push_warning("player: 콜리전을 못 찾음 → 몸 크기를 기본값(44×97)으로 쓴다")
+		return
+	var 배율 := cs.global_scale.abs()
+	if cs.shape is RectangleShape2D:
+		_몸_크기 = (cs.shape as RectangleShape2D).size * 배율
+	elif cs.shape is CapsuleShape2D:
+		var cap := cs.shape as CapsuleShape2D
+		_몸_크기 = Vector2(cap.radius * 2.0, cap.height) * 배율
+	else:
+		push_warning("player: 지원하지 않는 콜리전 모양 → 몸 크기를 기본값으로 쓴다")
+		return
+	_몸_중심오프셋 = cs.position * 배율
+
+
+## 플레이스홀더 스프라이트가 없으므로 임시로 Polygon2D 색을 대표색에 맞춰 표시.
+## (몸이 갈린 모습은 5단계의 분할 셰이더가 그린다 — 여기는 대표색만 보여준다)
 func _apply_color_visual() -> void:
 	if placeholder:
-		placeholder.color = Color(0.05, 0.05, 0.05) if player_color == ColorDefs.BLACK \
+		placeholder.color = Color(0.05, 0.05, 0.05) if _대표색 == ColorDefs.BLACK \
 			else Color(0.95, 0.95, 0.95)

@@ -38,7 +38,9 @@ const 페인트HUD어댑터_타일 := preload("res://scripts/ui/페인트_HUD_�
 const SHOOT_ANIM := preload("res://scripts/proto/player_shoot_anim.gd")
 const ZONE_VISUALS := preload("res://scripts/proto/zone_visuals.gd")
 
-## 입(페인트를 뱉는 위치) — 플레이어 로컬 좌표. zone_lab 과 동일 값.
+## 입(페인트를 뱉는 위치) — GunRig 아래의 월드 픽셀 좌표.
+## Player는 비균등 스케일이라 직접 자식으로 붙이면 (18, -70)이 실제로는
+## (14, -26)으로 찌그러져 무릎에서 발사된다. GunRig가 그 배율을 상쇄한다.
 const MOUTH_POS := Vector2(18, -70)
 const 사망모션시간: float = 0.55
 const 부활무적: float = 0.6
@@ -128,13 +130,23 @@ func _ready() -> void:
 		add_child(타일페인트)          # _ready() 에서 부모(=이 스테이지)를 훑어 자동 등록
 
 	# ── 3) 기존 총 제거 → 프로토 총(포물선 + 조준 궤적) 부착 ─────────
-	var 구총 := player.get_node_or_null("Gun")
+	# [2026-08-23] Gun 이 GunRig 아래로 내려갔다. 옛 경로도 함께 본다.
+	var 구총 := player.get_node_or_null("GunRig/Gun")
+	if 구총 == null:
+		구총 = player.get_node_or_null("Gun")
 	if 구총:
 		구총.queue_free()
 	var gun: ProtoGun = PROTO_GUN.new()
 	gun.name = "ProtoGun"
 	gun.position = MOUTH_POS
-	player.add_child(gun)
+	# ★입 좌표는 월드 픽셀 기준이다. Player 아래가 아니라 역스케일 GunRig 아래에
+	# 붙여야 실제 발사 원점도 (18, -70) = 입에 남는다.
+	var 총받침 := player.get_node_or_null("GunRig") as Node2D
+	if 총받침:
+		총받침.add_child(gun)
+	else:
+		# 오래된 Player 씬에는 GunRig가 없을 수 있다. 그 경우만 기존 경로를 유지한다.
+		player.add_child(gun)
 	# 플랫폼 스테이지에는 타일맵이 없다 → PaintSystem/TileMapLayer 는 null.
 	# 대신 E 회수를 페인트매니저로 넘긴다(proto_gun.gd 2026-07-24 분기).
 	# ★타일맵 페인트 모드면 총알의 TileMapLayer 명중을 TilePaintMap 이 받고,

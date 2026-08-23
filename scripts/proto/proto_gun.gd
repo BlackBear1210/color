@@ -63,6 +63,7 @@ func setup(ps: Node, layer: TileMapLayer, p: Node) -> void:
 	player       = p
 
 func _process(delta: float) -> void:
+	_입_원점_맞추기()
 	if Input.is_action_just_pressed("shoot"):
 		_shoot()
 
@@ -111,12 +112,23 @@ func _shoot() -> void:
 			return
 		paint_system.발사_소모()
 
-	var color: int = player.get("player_color")
+	# 대표색 캐시가 아니라 발사 순간 조준 방향의 얼굴색을 사용한다.
+	var color: int = player.call("얼굴색", get_global_mouse_position().x - player.global_position.x) \
+		if player.has_method("얼굴색") else player.get("player_color")
 	var bullet := BULLET_SCENE.instantiate()
 	bullet.setup(paint_system, color, _launch_velocity(), GRAVITY)
 	get_tree().current_scene.add_child(bullet)
 	bullet.global_position = global_position   # 발사 원점 = 입
 	fired.emit()
+
+
+## ProtoGun은 회전하지 않으므로 왼쪽 조준 때도 오른쪽 입에 고정되면 뒤통수에서 쏜다.
+## Player가 계산한 실제 얼굴 좌표를 매 프레임 받아 좌·우 입을 따라간다.
+func _입_원점_맞추기() -> void:
+	if player == null or not player.has_method("입_월드좌표"):
+		return
+	var 방향x: float = get_global_mouse_position().x - player.global_position.x
+	global_position = player.call("입_월드좌표", 방향x)
 
 ## 발사와 동일한 물리로 궤적을 미리 계산. 지형에 닿으면 그 지점에서 자르고,
 ## 마지막에 탄착점을 넣어 점선이 "벽에 닿아 끊긴" 느낌을 준다.

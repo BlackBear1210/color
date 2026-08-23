@@ -49,6 +49,7 @@ func _ready() -> void:
 		return
 	add_to_group("칠할수있음")
 	add_to_group("식물B")
+	add_to_group(색경계.그룹)
 	set_process(true)
 	queue_redraw()
 
@@ -118,6 +119,34 @@ func 지대색() -> int:
 ## 이 점이 덤불 안인가 (총.gd 의 "커서가 안/밖" 판정에 쓴다)
 func 안에_있나(월드좌표: Vector2) -> bool:
 	return global_position.distance_to(월드좌표) <= 반경
+
+
+# ── 색경계 계약 (2026-08-23) ───────────────────────────────────────────────
+# 덤불 지대도 `color_zone` · `빛기둥 경계` 와 **완전히 같은 층위**의 색 경계다.
+# 예전에는 월드.gd 가 세 종류를 각자 훑으며 `_toggle_color()` 를 불렀는데, 그러면
+# 규칙이 세 군데로 갈라진다. 이제 셋 다 아래 두 함수만 답하고, 자르고 색을 정하는
+# 일은 `색경계.gd` 하나가 한다.
+
+## 이 점이 지대 안이면 색, 아니면 -1.
+## ⚠ 회색 지대는 강제하지 않는다(기획) → -1 을 준다.
+func 강제색(월드좌표: Vector2) -> int:
+	var c := 지대색()
+	if c < 0 or c == ColorDefs.GRAY:
+		return -1
+	return c if 안에_있나(월드좌표) else -1
+
+
+## 지대 모양 — 원이라 다각형으로 근사한다. 몸을 자를 선을 찾는 데만 쓰이므로
+## 24각형이면 44px 짜리 몸 기준으로 오차가 1px 아래다.
+func 경계_폴리곤들() -> Array:
+	var c := 지대색()
+	if c < 0 or c == ColorDefs.GRAY:
+		return []
+	var pts := PackedVector2Array()
+	for i in 24:
+		var a := TAU * float(i) / 24.0
+		pts.append(global_position + Vector2(cos(a), sin(a)) * 반경)
+	return [pts]
 
 
 func _process(delta: float) -> void:

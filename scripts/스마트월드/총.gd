@@ -69,7 +69,11 @@ var _흐름: float = 0.0
 func 연결(p_player: Node2D, p_코어: 페인트코어) -> void:
 	플레이어 = p_player
 	코어 = p_코어
-	_gun = 플레이어.get_node_or_null("Gun") as Node2D
+	# [2026-08-23] Gun 이 GunRig(역스케일 노드) 아래로 내려갔다 — `총_받침.gd` 참고.
+	#   예전 씬도 열리게 옛 경로를 대비책으로 남긴다.
+	_gun = 플레이어.get_node_or_null("GunRig/Gun") as Node2D
+	if _gun == null:
+		_gun = 플레이어.get_node_or_null("Gun") as Node2D
 	if _gun:
 		# 구 gun.gd 의 자동 발사를 끈다 — 조준은 우리가 대신 돌려준다.
 		_gun.set_process(false)
@@ -113,7 +117,10 @@ func 발사() -> void:
 		return
 	var 시작 := _muzzle.global_position if _muzzle else 플레이어.global_position
 	var 커서 := get_global_mouse_position()
-	var 색: int = 플레이어.get("player_color")
+	# 발사 순간의 얼굴색을 직접 읽는다. 대표색은 물리 프레임마다 갱신되므로,
+	# 여기서는 이전 프레임 값이 아니라 현재 조준 쪽 입의 색을 써야 한다.
+	var 색: int = 플레이어.call("얼굴색", 커서.x - 플레이어.global_position.x) \
+		if 플레이어.has_method("얼굴색") else 플레이어.get("player_color")
 
 	# ── 덤불 안에서 쏘는 경우 ──
 	var 덤불 := _총구가_속한_덤불(시작)

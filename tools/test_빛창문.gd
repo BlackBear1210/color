@@ -205,19 +205,19 @@ func _빛_경계() -> void:
 	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
 	for i in 6:
 		await process_frame
-	확인("★흰 경계 안 + 검정 플레이어 → 흰색을 강제한다", 빛.강제색(p) == ColorDefs.WHITE)
+	확인("★흰 경계 안 + 검정 플레이어 → 흰색을 강제한다", 빛.강제색(p.global_position) == ColorDefs.WHITE)
 	# ⚠ 빠져나온 뒤에는 **물듦이 빠질 시간**이 필요하다(0.3초쯤). 한 프레임만 기다리면
 	#   아직 가득 찬 상태라 여전히 강제한다 — 검사가 아니라 대기가 모자란 것이다.
 	await _세우기(월드, Vector2(2000, 300), ColorDefs.BLACK)
 	for i in 30:
 		await process_frame
-	확인("빛 밖이면 아무 색도 강제하지 않는다 (−1)", 빛.강제색(p) == -1)
+	확인("빛 밖이면 아무 색도 강제하지 않는다 (−1)", 빛.강제색(p.global_position) == -1)
 
 	빛.색_지정(빛기둥_S.무색)
 	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
 	for i in 6:
 		await process_frame
-	확인("무색 빛은 아무 색도 강제하지 않는다", 빛.강제색(p) == -1)
+	확인("무색 빛은 아무 색도 강제하지 않는다", 빛.강제색(p.global_position) == -1)
 
 	# ── 물듦 연출 ── 가까이 갈수록 몸이 차오른다 (도형님 요청)
 	빛.색_지정(ColorDefs.WHITE)
@@ -227,9 +227,23 @@ func _빛_경계() -> void:
 		await process_frame
 	확인("멀리 있으면 물듦 0", 빛.물듦_진행도() < 0.02, "%.2f" % 빛.물듦_진행도())
 	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)      # 빛 한가운데
+	# ⚠[2026-08-23] **최대값**으로 잰다. 차오름은 경고 연출이라, 색을 다 빼앗기고 나면
+	#   `_경계_물듦_갱신()` 이 곧바로 다시 뺀다("이미 같은 색이면 물들 것이 없다").
+	#   예전에는 색 강제를 테스트가 손으로 불러야 해서 이 구간에서 플레이어가 검정인 채로
+	#   남아 있었고, 10프레임 뒤에도 1.0 이 유지됐다. 지금은 플레이어가 스스로 색을
+	#   당겨가므로 몇 프레임 만에 흰색이 되고 연출이 빠진다 — 정상이다.
+	#   확인해야 할 것은 "지금 가득 차 있나" 가 아니라 "끝까지 차오른 적이 있나" 다.
+	#   그런데 샘플링으로 최고점을 잡는 것도 불안정하다 — 1.0 에 닿는 프레임과
+	#   `await process_frame` 이 돌아오는 시점이 어긋나면 0.93 쯤에서 놓친다.
+	#   → **`강제색()` 이 걸렸는지**로 확인한다. `_강제_걸림` 은 `_물듦_진행` 이 1.0 에
+	#     도달해야만 켜지므로(빛기둥.gd `_경계_물듦_갱신`), 이게 곧 "끝까지 찼다"의 증거다.
+	var 최대_물듦 := 0.0
 	for i in 10:
 		await process_frame
-	확인("★빛 안에서는 몸이 가득 찬다", 빛.물듦_진행도() > 0.98, "%.2f" % 빛.물듦_진행도())
+		최대_물듦 = maxf(최대_물듦, 빛.물듦_진행도())
+	확인("★빛 안에서는 몸이 끝까지 차오른다 (강제가 걸렸다 = 진행도가 1.0 에 닿았다)",
+		빛.강제색(Vector2(0, 300)) == ColorDefs.WHITE, "최고 %.2f" % 최대_물듦)
+	확인("차오르는 동안 연출이 눈에 보인다", 최대_물듦 > 0.5, "최고 %.2f" % 최대_물듦)
 	확인("차오름 오버레이가 생긴다", 빛.get_node_or_null("차오름") != null)
 	확인("오버레이는 씬에 저장되지 않는다 (owner 없음)",
 		빛.get_node_or_null("차오름") == null or 빛.get_node("차오름").owner == null)
@@ -361,7 +375,7 @@ func _월드_통합() -> void:
 		_pl.set("velocity", Vector2.ZERO)
 		_pl.global_position = Vector2(0, 300)   # 중력 낙하로 빔을 벗어나지 않게 고정
 		await physics_frame
-		월드.call("_지대_적용")
+		_pl.call("_대표색_갱신")
 		if int(_pl.get("player_color")) == ColorDefs.WHITE:
 			break
 	확인("★흰 경계빛 안에 있으면 플레이어가 흰색이 된다",
@@ -369,13 +383,13 @@ func _월드_통합() -> void:
 
 	# Shift 로 되돌려도 같은 프레임에 다시 강제된다 = 잠금
 	월드.get_node("Player").call("_toggle_color")
-	월드.call("_지대_적용")
+	_pl.call("_대표색_갱신")
 	확인("★Shift 로 바꿔도 경계가 되돌린다 (색 전환 잠금)",
 		int(월드.get_node("Player").get("player_color")) == ColorDefs.WHITE)
 
 	경계빛.색_지정(빛기둥_S.무색)
 	await _세우기(월드, Vector2(0, 300), ColorDefs.BLACK)
-	월드.call("_지대_적용")
+	_pl.call("_대표색_갱신")
 	확인("무색으로 풀면 색을 안 뺏는다",
 		int(월드.get_node("Player").get("player_color")) == ColorDefs.BLACK)
 	경계빛.queue_free()
@@ -471,7 +485,7 @@ func _실제_스테이지() -> void:
 	for i in 6:
 		await process_frame
 	확인("★x=900 의 흰 경계 안 — 죽지 않는다", not bool(스테이지.call("_사망_판정")))
-	스테이지.call("_지대_적용")
+	p.call("_대표색_갱신")
 	확인("★x=900 의 흰 경계 안 — 플레이어가 흰색이 된다",
 		int(p.get("player_color")) == ColorDefs.WHITE)
 
@@ -480,7 +494,7 @@ func _실제_스테이지() -> void:
 	await physics_frame
 	for i in 6:
 		await process_frame
-	스테이지.call("_지대_적용")
+	p.call("_대표색_갱신")
 	확인("★x=2200 의 검정 경계 안 — 플레이어가 검정이 된다",
 		int(p.get("player_color")) == ColorDefs.BLACK)
 
@@ -490,7 +504,7 @@ func _실제_스테이지() -> void:
 	await physics_frame
 	for i in 6:
 		await process_frame
-	스테이지.call("_지대_적용")
+	p.call("_대표색_갱신")
 	확인("빛 사이(x=1550)에서는 색을 안 뺏는다", int(p.get("player_color")) == ColorDefs.WHITE)
 	확인("빛 사이(x=1550)에서는 안 죽는다", not bool(스테이지.call("_사망_판정")))
 

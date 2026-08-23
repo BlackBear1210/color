@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://cxyp00fit7cdr" path="res://scripts/gun.gd" id="2"]
 [ext_resource type="Script" uid="uid://djtq07snku0ad" path="res://scripts/player_anim.gd" id="3"]
 [ext_resource type="SpriteFrames" uid="uid://ce7va4l5j1ei0" path="res://assets/p/player_frames.tres" id="4"]
+[ext_resource type="Script" path="res://scripts/총_받침.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/색겹침.gd" id="6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(55.348686, 263.7887)
@@ -32,11 +34,23 @@ sprite_frames = ExtResource("4")
 animation = &"black_idle"
 script = ExtResource("3")
 
-[node name="Gun" type="Node2D" parent="." unique_id=947334393]
+[node name="색겹침" type="AnimatedSprite2D" parent="CharacterSprite" unique_id=274799589]
+sprite_frames = ExtResource("4")
+animation = &"white_idle"
+script = ExtResource("6")
+
+[node name="GunRig" type="Node2D" parent="." unique_id=947334394]
+script = ExtResource("5")
+
+[node name="Gun" type="Node2D" parent="GunRig" unique_id=947334393]
+# 원본 640px 시트에서 입은 발끝(567px)보다 약 347px 위다.
+# 월드 표시 비율(130 / 640)을 곱하면 정확히 약 70px이므로, 총 회전 중심을 입에 둔다.
 position = Vector2(0, -70)
 script = ExtResource("2")
 
-[node name="Muzzle" type="Marker2D" parent="Gun" unique_id=1157795680]
-position = Vector2(24, 0)
+[node name="Muzzle" type="Marker2D" parent="GunRig/Gun" unique_id=1157795680]
+# 입 중심에서 앞쪽 가장자리까지의 실제 월드 거리. Gun이 조준 방향으로 회전해도
+# 총알은 항상 입에서 바깥 방향으로만 출발한다.
+position = Vector2(18, 0)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=614551773]
