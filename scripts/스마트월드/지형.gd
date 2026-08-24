@@ -140,6 +140,15 @@ func _셰이더_설치() -> void:
 	for 메타 in 전용.get_all_edge_meta_materials():
 		if 메타 == null or 메타.edge_material == null:
 			continue
+		# ★ 코너 전용 엣지는 건너뛴다.
+		#   grass_v4 이후 타일셋은 "전방향 코너 전용" 메타를 하나 더 얹는데,
+		#   그 메타의 기본 텍스처는 **안 보이는 투명 캐리어**(투명_256)다.
+		#   캐리어는 흰색 짝이 있을 이유가 없고 화면에도 안 나오므로
+		#   셰이더를 붙일 필요가 없다. 그냥 두면 지형 하나당 경고가 하나씩 떠서
+		#   (쇼케이스 씬에서 144개) 진짜 경고를 덮어 버린다.
+		#   판별은 이름이 아니라 **코너 텍스처를 들고 있는가**로 한다.
+		if not 메타.edge_material.textures_corner_outer.is_empty():
+			continue
 		var 첫텍스처: Texture2D = 메타.edge_material.get_texture(0)
 		var mat := _셰이더_만들기(첫텍스처)
 		if mat:
@@ -164,14 +173,43 @@ func _셰이더_만들기(검정: Texture2D) -> ShaderMaterial:
 	return mat
 
 
+## 검정 텍스처의 흰색 짝을 찾는다. 규칙 두 가지를 **순서대로** 시도한다.
+##
+##   1) 파일명 규칙 (기존)   .../black_grass_edge.png  ->  .../white_grass_edge.png
+##   2) 폴더 규칙   (신규)   .../grass_v4/black/edge_top.png
+##                            -> .../grass_v4/white/edge_top.png
+##
+## ▣ 2번을 추가한 이유
+##   grass_v4 이후의 고해상도 타일셋은 재질 폴더 밑에 black/ white/ 를 나눠 담는다
+##   (파일이 재질당 32장이라 접두어로 구분하면 한 폴더가 감당이 안 된다).
+##   그 구조에서는 파일명이 "black_" 로 시작하지 않아 1번 규칙이 실패하고,
+##   셰이더가 아예 안 붙어서 **지형이 총에 맞아도 색이 안 변한다**.
+##   "내 색과 다른 지형에 닿으면 즉사" 가 핵심 규칙인 게임에서 치명적이라 넓혔다.
+##
+## ▣ 하위호환
+##   1번을 먼저 보므로 기존 머티리얼 5개는 예전과 완전히 같은 경로로 짝을 찾는다.
+##   1번이 실패할 때만 2번을 추가로 시도하므로, 예전에 null 이던 경우만 값이 생긴다.
 func _짝_텍스처(검정: Texture2D) -> Texture2D:
 	var 경로 := 검정.resource_path
-	if 경로.is_empty() or not 경로.get_file().begins_with("black_"):
+	if 경로.is_empty():
 		return null
-	var 짝 := 경로.get_base_dir() + "/" + 경로.get_file().replace("black_", "white_")
-	if not ResourceLoader.exists(짝):
+
+	# 1) 파일명 규칙 — 기존 동작. 여기서 찾으면 예전과 동일하다.
+	if 경로.get_file().begins_with("black_"):
+		var 짝 := 경로.get_base_dir() + "/" + 경로.get_file().replace("black_", "white_")
+		if ResourceLoader.exists(짝):
+			return load(짝) as Texture2D
 		return null
-	return load(짝) as Texture2D
+
+	# 2) 폴더 규칙 — 경로 마지막 폴더가 정확히 "black" 일 때만 "white" 로 바꾼다.
+	#    경로 중간에 우연히 black 이 들어간 폴더를 건드리지 않으려고 마지막 폴더만 본다.
+	var 폴더 := 경로.get_base_dir()
+	if 폴더.get_file() != "black":
+		return null
+	var 짝2 := 폴더.get_base_dir() + "/white/" + 경로.get_file()
+	if not ResourceLoader.exists(짝2):
+		return null
+	return load(짝2) as Texture2D
 
 
 # ── 페인트코어와의 약속 ─────────────────────────────────────────────────────

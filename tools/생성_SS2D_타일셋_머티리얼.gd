@@ -51,6 +51,10 @@ var _재질 := ""
 var _폴더 := ""
 var _배율 := 0.35
 var _접두어 := ""
+## 내부 표현: 채움(FILL 텍스처 사용) 또는 속빔(fill_textures 비움).
+## ★ SS2D 는 fill_textures 가 비면 _build_fill_mesh 가 채우기 메시를 통째로
+##   건너뛴다(shape.gd:858). 검정으로 칠하는 게 아니라 **진짜 알파 투명** 내부가 된다.
+var _내부 := "채움"
 var _확인만 := false
 var _빠진것: PackedStringArray = PackedStringArray()
 
@@ -65,6 +69,8 @@ func _init() -> void:
 			_배율 = a.substr("--배율=".length()).to_float()
 		elif a.begins_with("--접두어="):
 			_접두어 = a.substr("--접두어=".length())
+		elif a.begins_with("--내부="):
+			_내부 = a.substr("--내부=".length())
 		elif a == "--확인만":
 			_확인만 = true
 	call_deferred("_실행")
@@ -152,7 +158,11 @@ func _머티(테마: String, 종류: String) -> Resource:
 	for m in metas:
 		typed.push_back(m)
 	s.set_edge_meta_materials(typed)
-	var ft: Array[Texture2D] = [fill]
+	# 속빔이면 fill_textures 를 비운다 -> 내부가 투명해진다.
+	# ★ 삼항식으로 쓰면 무타입 Array 가 나와 Array[Texture2D] 대입이 거부된다.
+	var ft: Array[Texture2D] = []
+	if _내부 != "속빔":
+		ft.push_back(fill)
 	s.fill_textures = ft
 	s.fill_texture_scale = _배율
 	s.fill_texture_z_index = -1
@@ -172,7 +182,8 @@ func _실행() -> void:
 			var m := _머티(테마, 종류)
 			if m == null:
 				continue
-			var 경로 := "%s/tres/지형_%s_%s_%s.tres" % [_폴더, _재질, 테마, 종류]
+			var 꼬리 := "_속빔" if _내부 == "속빔" else ""
+			var 경로 := "%s/tres/지형_%s_%s_%s%s.tres" % [_폴더, _재질, 테마, 종류, 꼬리]
 			if _확인만:
 				print("  [확인] 만들 수 있다: %s" % 경로)
 				만든것 += 1
