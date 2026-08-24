@@ -80,7 +80,13 @@ var _착지_감시_시작: bool = false
 ##                 단일 색 하나만 필요한 곳(색레이저·도약대·색문·HUD·애니메이션)이 읽는다.
 ##                 **읽기 전용으로 다뤄라** — 매 물리 프레임 다시 계산된다.
 ##   `몸_영역들()`  조각 목록. 지형·유체 접촉 사망 판정이 이걸 쓴다.
-@onready var placeholder: Polygon2D = $Placeholder
+## ★[2026-08-25 제거] `Placeholder`(파란 Polygon2D)를 씬에서 지웠다.
+##   진짜 캐릭터 그림(`CharacterSprite`)이 생기기 전에 쓰던 임시 사각형이고, 그 뒤로는
+##   `visible = false` 로 숨긴 채 색만 갱신하는 **죽은 노드**였다. 크기도 64×128(로컬,
+##   월드 50.9×47.1px)로 실제 콜리전 44×97px 과 안 맞은 지 오래였다(2026-08-07 키 변경 때 잔재).
+##   같이 지운 것: `placeholder` 참조와 `_apply_color_visual()`.
+##   ⚠ **몸 색을 실제로 그리는 것은 분할 셰이더다** — `_분할_갱신()` / `색경계.분할_셰이더값()`.
+##   ⚠ `Bullet.tscn` 의 `Placeholder` 는 **총알의 실제 그림**이다. 그건 건드리지 않았다.
 
 ## Shift 로 바꾸는 단 하나의 상태. 경계에 걸쳐 있으면 바꿀 수 없다.
 var 자유색: int = ColorDefs.BLACK
@@ -101,7 +107,6 @@ var player_color: int:
 	set(v):
 		자유색 = v
 		_대표색 = v
-		_apply_color_visual()
 
 ## 몸 콜리전을 실측해 만든 값 (원점=발바닥 기준). `_몸_실측()` 이 한 번만 채운다.
 var _몸_크기: Vector2 = Vector2(44.0, 97.0)
@@ -127,7 +132,6 @@ func _ready() -> void:
 	_총구_위치_맞추기()
 	_분할_시트_준비()
 	_대표색_갱신()
-	_apply_color_visual()
 	_점프_재계산()   # 씬 로드 중엔 계산을 건너뛰었으니 여기서 최종값으로 한 번 확정
 
 func _physics_process(delta: float) -> void:
@@ -234,7 +238,8 @@ func _toggle_color() -> void:
 		return
 	자유색 = ColorDefs.WHITE if 자유색 == ColorDefs.BLACK else ColorDefs.BLACK
 	_대표색_갱신()
-	_apply_color_visual()   # 경계 밖이라 대표색이 안 바뀌는 경우에도 그림은 맞춘다
+	# [2026-08-25] 예전엔 여기서 `_apply_color_visual()` 로 Placeholder 색을 맞췄다.
+	# 그 노드를 지웠고, 몸 색은 `_process` 의 `_분할_갱신()` 이 매 렌더 프레임 그린다.
 
 
 ## 대표색 = 실제 얼굴(입)이 있는 조각의 색.
@@ -244,7 +249,6 @@ func _대표색_갱신() -> void:
 	var 새색 := 얼굴색()
 	if 새색 != _대표색:
 		_대표색 = 새색            # ⚠ player_color 로 쓰면 자유색까지 덮어써진다
-		_apply_color_visual()
 
 
 ## 총 회전 중심은 입, Marker는 입 바로 앞이다.
@@ -346,31 +350,15 @@ func 분할_셰이더값() -> Dictionary:
 ## 몸 콜리전을 한 번만 실측한다.
 ## ⚠ 크기를 상수로 박지 않는다 — 2026-08-07 에 키가 47→97px 로 바뀌면서 상수로
 ##   박아둔 판정이 전부 어긋난 적이 있다(월드.gd 의 같은 주석 참고).
+## ★[2026-08-25] 재는 일을 `플레이어몸.재기()` 한 곳으로 옮겼다.
+##   예전에는 여기 직접 박혀 있었고 `RectangleShape2D`·`CapsuleShape2D` 만 알았다.
+##   콜리전을 `CollisionPolygon2D` 로 바꾸자 **노드조차 못 찾아** 기본값 44×97 로
+##   돌아갔고, 그 결과 "몸이 반대색 벽에 닿으면 죽는다"가 작동을 멈췄다.
+##   같은 코드가 7 곳에 복사돼 있어 어디가 깨졌는지도 알기 어려웠다 → 자를 하나로 모았다.
 func _몸_실측() -> void:
-	var cs := get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if cs == null:
-		for 자식 in get_children():
-			if 자식 is CollisionShape2D:
-				cs = 자식
-				break
-	if cs == null or cs.shape == null:
+	var 잰것 := 플레이어몸.재기(self)
+	if not 잰것["찾음"]:
 		push_warning("player: 콜리전을 못 찾음 → 몸 크기를 기본값(44×97)으로 쓴다")
 		return
-	var 배율 := cs.global_scale.abs()
-	if cs.shape is RectangleShape2D:
-		_몸_크기 = (cs.shape as RectangleShape2D).size * 배율
-	elif cs.shape is CapsuleShape2D:
-		var cap := cs.shape as CapsuleShape2D
-		_몸_크기 = Vector2(cap.radius * 2.0, cap.height) * 배율
-	else:
-		push_warning("player: 지원하지 않는 콜리전 모양 → 몸 크기를 기본값으로 쓴다")
-		return
-	_몸_중심오프셋 = cs.position * 배율
-
-
-## 플레이스홀더 스프라이트가 없으므로 임시로 Polygon2D 색을 대표색에 맞춰 표시.
-## (몸이 갈린 모습은 5단계의 분할 셰이더가 그린다 — 여기는 대표색만 보여준다)
-func _apply_color_visual() -> void:
-	if placeholder:
-		placeholder.color = Color(0.05, 0.05, 0.05) if _대표색 == ColorDefs.BLACK \
-			else Color(0.95, 0.95, 0.95)
+	_몸_크기 = 잰것["크기"]
+	_몸_중심오프셋 = 잰것["중심오프셋"]

@@ -39,8 +39,14 @@ extends RefCounted
 class_name 지형규칙
 
 # ── 플레이어 실측값 (tools/_치수.gd 2026-08-07) ──────────────────────────────
+## ⚠ 이 두 값은 **Player.tscn 의 콜리전을 실제로 잰 결과를 적어 두는 곳**이다.
+##   콜리전을 바꾸면 `test_지형규칙` 의 [0] 항목이 바로 빨개진다 — 그때 여기를 맞춘다.
+##   (실측은 `플레이어몸.재기()` 가 한다. 모양이 뭐든 바운딩 박스를 돌려준다)
+## ★[2026-08-25] 콜리전이 사각형 → **CollisionPolygon2D** 로 바뀌었다.
+##   폭은 44.0 그대로(폴리곤에서 가장 넓은 곳이 우연히 같다), 키만 97.0 → 95.6.
+##   ⚠ 폴리곤을 더 다듬으면 이 값도 다시 맞춰야 한다.
 const 플레이어_폭: float = 44.0
-const 플레이어_키: float = 97.0
+const 플레이어_키: float = 95.6
 const 점프_높이: float = 160.0
 const 점프_거리: float = 160.0
 const 최대_바닥각: float = 45.0
@@ -87,15 +93,17 @@ static func 플레이어에서_재기(플레이어: Node) -> Dictionary:
 	if 플레이어 == null:
 		return 결과
 
-	var cs: CollisionShape2D = null
-	for 자식 in 플레이어.get_children():
-		if 자식 is CollisionShape2D:
-			cs = 자식
-			break
-	if cs and cs.shape is RectangleShape2D:
-		var 배율: Vector2 = (cs as Node2D).global_scale.abs()
-		결과["폭"] = (cs.shape as RectangleShape2D).size.x * 배율.x
-		결과["키"] = (cs.shape as RectangleShape2D).size.y * 배율.y
+	# ★[2026-08-25] 재는 일을 `플레이어몸.재기()` 로 옮겼다.
+	#   예전에는 `RectangleShape2D` 만 읽고, 아니면 **위에서 채운 기본값(= 상수)을 그대로
+	#   반환**했다. 그러면 `상수_점검()` 이 상수를 상수와 비교하게 되어 **언제나 통과**한다.
+	#   실제로 콜리전을 캡슐로 바꿨을 때 폭이 31px 인데 44px 이라고 보고하며 통과했다.
+	#   자를 못 대면 통과시키지 말고 **기본값을 그대로 두되 그게 실측이 아님을 알린다.**
+	var 잰것 := 플레이어몸.재기(플레이어)
+	if 잰것["찾음"]:
+		결과["폭"] = (잰것["크기"] as Vector2).x
+		결과["키"] = (잰것["크기"] as Vector2).y
+	else:
+		push_warning("지형규칙: 플레이어 콜리전을 못 찾음 → 폭·키는 실측이 아니라 상수다")
 
 	# 점프 성능은 player.gd 가 `_점프_재계산()` 으로 채워둔 값에서 역산한다.
 	var g: float = float(플레이어.get("gravity"))
