@@ -52,7 +52,7 @@ const 카메라여백: float = 96.0
 ##   0.70 → 1646×926 이 보임 (플레이어 = 화면의 5%) ← 채택
 ## 리틀 나이트메어·레인월드처럼 "작은 존재가 큰 공간에 있다"는 프레이밍이 되고,
 ## 포물선 조준(최대 사거리 약 900px)의 착탄점이 화면 안에 들어와 조준이 편해진다.
-const 카메라_줌: float = 0.70
+const 카메라_줌: float = 0.85
 ## 스테이지 전환 페이드(초). 잉크 와이프가 아니라 **터널을 지나며 어두워지는** 연출.
 const 페이드_시간: float = 0.55
 
@@ -189,7 +189,7 @@ func _ready() -> void:
 	발사모션.setup(player, gun)
 
 	# ── 6.5) ★[2026-07-25] 라이팅/분위기 리그 ────────────────────────
-	# 환경광 + 플레이어 광원 + 배경 노멀맵 주입 + 비네트.
+	# 환경광 + 플레이어 광원 + 배경 노멀맵 주입. 비네트는 ProtoCamera 한 곳에서 그린다.
 	# 이게 있어야 배경에 심은 가로등·등불·발광 구슬이 "빛"으로 보인다
 	# (CanvasModulate 로 화면을 살짝 가라앉혀야 Light2D 가 대비를 만든다).
 	var visuals: ZoneVisuals = ZONE_VISUALS.new()
@@ -212,7 +212,8 @@ func _ready() -> void:
 		ui = CanvasLayer.new()
 		ui.name = "UI"
 		add_child(ui)
-	ui.layer = 10
+	# 스테이지 이름·사망 횟수도 핵심 HUD이므로 비네트(50) 위, 페인트 HUD와 같은 높이에 둔다.
+	ui.layer = 100
 	hud = STAGE_HUD.new()
 	hud.name = "StageHUD"
 	ui.add_child(hud)

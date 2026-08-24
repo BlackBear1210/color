@@ -86,8 +86,8 @@ func 연결(플레이어: Node, 어댑터: 어댑터_기반) -> void:
 
 
 func _ready() -> void:
-	# 낙하 경고 비네트(50)·일시정지 메뉴(100) 보다 아래, 기존 HUD 보다는 위.
-	layer = 5
+	# 핵심 자원 정보는 비네트(50)에 가려지면 안 되므로 일반 화면 효과보다 위에 고정한다.
+	layer = 100
 	_캔버스 = Control.new()
 	_캔버스.name = "그리기"
 	_캔버스.mouse_filter = Control.MOUSE_FILTER_IGNORE

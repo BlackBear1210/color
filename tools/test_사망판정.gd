@@ -147,11 +147,16 @@ func _바닥판정_검사() -> void:
 	await _세우기(월드, Vector2(420, -8), ColorDefs.WHITE)
 	확인("★지형 밖(안 밟음) = 안 죽는다", not _죽나(월드))
 
-	# ── 회색 ──
-	지형.call("명중", ColorDefs.WHITE, 지형.global_position)   # 검정 위에 흰색 = 회색
+	# ── 플레이어 덮어쓰기 / 장애물 상호작용 회색 ──
+	확인("★검정 위에 흰 총알 = 회색 없이 흰색 덮어쓰기",
+		지형.call("명중", ColorDefs.WHITE, 지형.global_position) == "painted")
 	await physics_frame
-	확인("(전제) 지형이 회색이 됐다", int(지형.call("현재색")) == ColorDefs.GRAY)
+	확인("덮어쓴 지형의 현재색은 흰색", int(지형.call("현재색")) == ColorDefs.WHITE)
 	await _세우기(월드, 발판위, ColorDefs.WHITE)
+	확인("흰색 지형 + 흰 플레이어 = 안 죽는다", not _죽나(월드))
+	# 플레이어 총알이 아닌 장애물 상호작용으로 회색이 전달된 상황을 직접 모사한다.
+	지형.call("_회색으로")
+	확인("장애물 상호작용 회색은 여전히 중립", int(지형.call("현재색")) == ColorDefs.GRAY)
 	확인("회색 지형 = 누구나 안 죽는다", not _죽나(월드))
 
 	# ── G. 잎발판 / 통과플랫폼도 발밑 판정에 잡히나 ──

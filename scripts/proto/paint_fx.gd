@@ -7,9 +7,9 @@ extends Node2D
 ## 새 스테이지·zone_04/05(플랫폼)는 이 스크립트를 쓴다.
 ##
 ## ▣ 담당하는 연출
-##   1. 색칠 스플래시 파티클 (명중 지점에서 물감이 튐)
-##   2. ★물감 흐름(PaintDrip) — 벽면·아랫면에 맞으면 아래로 주르륵
-##   3. 카메라 킥 / 회색화 히트스톱
+##   1. ★물감 흐름(PaintDrip) — 벽면·아랫면에 맞으면 아래로 주르륵
+##   2. 카메라 킥 / 회색화 히트스톱
+## 명중 순간의 튐은 모든 총알이 공용 `ActionFX`에서 한 번만 만든다.
 ##
 ## ▣ [2026-07-25] ★"얼룩 스탬프" 코드를 전부 걷어냈다
 ##   구 방식: 명중할 때마다 얼룩 스프라이트를 플랫폼 위에 겹쳐 찍었다.
@@ -30,9 +30,6 @@ const DRIP := preload("res://scripts/proto/paint_drip.gd")
 enum 모드 { 스며듦, 얼룩 }        ## zone_04 / zone_05 (이름만 바뀜, 규칙은 동일)
 
 # ── 튜닝 상수 ──────────────────────────────────────────────────────────────
-const 스플래시_수: int = 14
-const 스플래시_수명: float = 0.5
-const 스플래시_속도: float = 190.0
 const 흐름_확률_벽: float = 0.85       ## 벽면(세로면) 명중 시 물감이 흐를 확률
 const 흐름_확률_아랫면: float = 0.7    ## 아랫면 명중 시
 const 흐름_확률_윗면: float = 0.25     ## 윗면 명중 시 (앞쪽 모서리로 조금 넘쳐 흐름)
@@ -72,20 +69,17 @@ func _명중_받음(플랫폼: PaintPlatform, 결과: String, 색: int, 좌표: 
 	match 결과:
 		"progress", "painted":
 			var c := _물감색(색)
-			_스플래시(좌표, c, 결과 == "painted")
 			_흐름_시도(플랫폼, 좌표, c)
 			if _camera and _camera.has_method("add_trauma"):
 				_camera.add_trauma(킥_색칠 * (2.0 if 결과 == "painted" else 1.0))
 		"mixed_gray":
 			var g := Color(0.5, 0.5, 0.5, 0.95)
-			_스플래시(좌표, g, true)
 			_흐름_시도(플랫폼, 좌표, g)
 			if _camera and _camera.has_method("add_trauma"):
 				_camera.add_trauma(킥_회색)
 			_히트스톱(히트스톱_회색)
 		"wasted", "blocked":
-			# 아무 일도 안 일어난 명중 — 아주 작은 튐만 (헛발질 피드백)
-			_스플래시(좌표, Color(0.55, 0.55, 0.55, 0.7), false, 0.4)
+			pass
 
 ## 플레이어 색 → 화면에서 잘 보이는 물감색.
 ## 순수 검정은 검은 지형 위에서 안 보이므로 살짝 올린다(16차 effect_spawner 와 같은 보정).
@@ -93,30 +87,7 @@ func _물감색(색: int) -> Color:
 	return Color(0.95, 0.95, 0.95, 0.95) if 색 == ColorDefs.WHITE \
 		else Color(0.16, 0.16, 0.16, 0.95)
 
-# ── 1) 스플래시 파티클 ─────────────────────────────────────────────────────
-func _스플래시(pos: Vector2, 색: Color, 강하게: bool, 배율: float = 1.0) -> void:
-	var p := CPUParticles2D.new()
-	p.top_level = true                       # 부모 변환 무시 = 월드 좌표에 원형 그대로
-	p.global_position = pos
-	p.emitting = true
-	p.one_shot = true
-	p.explosiveness = 1.0
-	p.amount = maxi(int(스플래시_수 * 배율 * (1.6 if 강하게 else 1.0)), 3)
-	p.lifetime = 스플래시_수명
-	p.direction = Vector2.UP
-	p.spread = 180.0
-	p.initial_velocity_min = 스플래시_속도 * 0.3 * 배율
-	p.initial_velocity_max = 스플래시_속도 * (1.4 if 강하게 else 1.0) * 배율
-	p.gravity = Vector2(0, 620)               # 튄 물감은 금방 떨어진다
-	p.scale_amount_min = 1.4 * 배율
-	p.scale_amount_max = 3.4 * 배율
-	p.damping_min = 40.0
-	p.damping_max = 90.0
-	p.color = 색
-	p.finished.connect(p.queue_free)
-	add_child(p)
-
-# ── 2) 물감 흐름 ───────────────────────────────────────────────────────────
+# ── 물감 흐름 ──────────────────────────────────────────────────────────────
 ## 명중 지점이 플랫폼의 어느 면인지 보고, 확률적으로 흐름을 만든다.
 ## 벽(세로면)에 맞으면 그 자리에서, 윗면에 맞으면 앞쪽 모서리를 넘어 흐른다.
 func _흐름_시도(플랫폼: PaintPlatform, 좌표: Vector2, 색: Color) -> void:

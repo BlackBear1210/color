@@ -4,14 +4,14 @@ extends Node
 ## 참고한 원리 (Godot 공식 "2D lights and shadows" + GDQuest "Lighting with
 ## 2D normal maps"): 2D 라도 텍스처에 노멀맵을 붙이면 Light2D 가 픽셀 단위로
 ## 입체 음영을 계산한다 — "배경이 빛을 받으면 색이 변하는" 그 기법이다.
-## 구성 요소 4가지:
+## 구성 요소 3가지:
 ##  1. CanvasModulate: 화면 전체를 살짝 가라앉힘 (환경광). 이게 있어야 라이트가 "보인다".
 ##  2. PlayerLight(PointLight2D): 플레이어를 따라다니는 부드러운 원형 광원.
 ##     노멀맵이 있는 타일·배경은 이 빛의 방향에 따라 음영이 실시간으로 변한다.
 ##  3. 배경 노멀맵 주입: Parallax 배경 스프라이트를 CanvasTexture(원본+노멀맵)로
 ##     런타임 교체 — 씬 파일은 그대로, 노멀맵 PNG 가 없으면 조용히 생략.
 ##     (노멀맵 생성: tools/generate_normal_maps.gd 를 헤드리스로 1회 실행)
-##  4. 비네트: 화면 가장자리를 살짝 어둡게 — 리틀 나이트메어식 시선 집중 프레임.
+## 비네트는 카메라 전환과 강도를 함께 제어하는 `ProtoCamera` 한 곳에서 담당한다.
 ##
 ## 사용법: 존 루트에 add_child 후 setup(player) 호출. (모든 씬 파일 무수정)
 class_name ZoneVisuals
@@ -21,9 +21,6 @@ const AMBIENT := Color(0.82, 0.82, 0.88)
 ## 플레이어 광원 세기·반경(px)
 const LIGHT_ENERGY: float = 1.15
 const LIGHT_RADIUS: float = 520.0
-## 비네트 어두움 (0=없음)
-const VIGNETTE_STRENGTH: float = 0.32
-
 const NORMAL_DIR := "res://assets/textures/normal/"
 
 ## [2026-07-25 도형] 환경광을 씬마다 다르게 줄 수 있게 열어둔다.
@@ -39,7 +36,6 @@ func setup(p_player: Node2D) -> void:
 	_add_ambient()
 	_add_player_light()
 	_inject_bg_normal_maps()
-	_add_vignette()
 
 ## 1) 환경광 — CanvasModulate 는 같은 캔버스(월드)만 어둡게 하고 UI(CanvasLayer)는 건드리지 않는다
 func _add_ambient() -> void:
@@ -96,28 +92,3 @@ func _find_sprites(root: Node) -> Array[Sprite2D]:
 			out.append(n)
 		stack.append_array(n.get_children())
 	return out
-
-## 4) 비네트 — 셰이더 한 장짜리 CanvasLayer (UI 는 layer 10 으로 올려 그 아래에 깔림)
-func _add_vignette() -> void:
-	var layer := CanvasLayer.new()
-	layer.name = "VignetteLayer"
-	layer.layer = 5
-	var rect := ColorRect.new()
-	rect.name = "Vignette"
-	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var sh := Shader.new()
-	sh.code = "
-shader_type canvas_item;
-uniform float strength = %s;
-void fragment() {
-	// 화면 중심에서의 거리 → 가장자리만 부드럽게 어둡게
-	float d = distance(UV, vec2(0.5)) * 1.35;
-	float v = smoothstep(0.55, 1.05, d) * strength;
-	COLOR = vec4(0.0, 0.0, 0.0, v);
-}" % VIGNETTE_STRENGTH
-	var mat := ShaderMaterial.new()
-	mat.shader = sh
-	rect.material = mat
-	layer.add_child(rect)
-	add_child(layer)

@@ -82,10 +82,10 @@ func 명중(색: int, _월드좌표: Vector2) -> String:
 	if _상태색 >= 0:
 		if 색 == _상태색:
 			return "wasted"
-		_상태색 = ColorDefs.GRAY        # 반대색 → 회색 (전역 규칙 2)
+		_상태색 = 색                    # 플레이어가 마지막에 쏜 색으로 그대로 덮는다.
 		_공급_반영()
 		queue_redraw()
-		return "mixed_gray"
+		return "painted"
 
 	if _맞은횟수 > 0 and _진행색 != 색:
 		_맞은횟수 = 0

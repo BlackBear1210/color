@@ -32,7 +32,11 @@ uniform float aspect    = 8.0;                // size_world.x / size_world.y
 
 uniform vec2  seeds[MAX_SEEDS];             // 명중 지점 (바운딩박스 UV)
 uniform float seed_r[MAX_SEEDS];            // 각 지점의 현재 번짐 반지름
+uniform float seed_a[MAX_SEEDS];            // 색별 자동 회수 감쇠 0~1
+uniform int   seed_c[MAX_SEEDS];            // 각 지점의 색 0=검정, 1=흰색
 uniform int   seed_count = 0;
+uniform int   original_color = 0;            // 원본 타일 색
+uniform float base_mask = 0.0;               // 완성 상태에서 반대색 오버레이를 전부 보일지
 
 uniform float noise_amount = 0.13;          // 경계 일그러짐 (0 = 완전한 원)
 uniform float noise_scale  = 3.2;           // 노이즈 세밀도
@@ -74,19 +78,21 @@ void fragment() {
 	// 가로가 긴 플랫폼에서 원이 타원으로 찌그러지지 않게 x 를 aspect 로 편다
 	vec2 ap = vec2(local_uv.x * aspect, local_uv.y);
 
-	float d = 1e9;                                   // 가장 가까운 번짐 경계까지의 거리
+	float coverage = base_mask;
+	float nearest_edge = 1e9;
 	for (int i = 0; i < MAX_SEEDS; i++) {
 		if (i >= seed_count) { break; }
 		vec2 s = vec2(seeds[i].x * aspect, seeds[i].y);
-		d = min(d, distance(ap, s) - seed_r[i]);
+		float d = distance(ap, s) - seed_r[i];
+		d += (fbm(ap * noise_scale) - 0.5) * noise_amount;
+		float influence = (1.0 - smoothstep(0.0, edge_soft, d)) * seed_a[i];
+		float desired = (seed_c[i] == original_color) ? 0.0 : 1.0;
+		coverage = mix(coverage, desired, influence);
+		nearest_edge = min(nearest_edge, abs(d));
 	}
-	// 경계를 노이즈로 흔든다 → 원이 아니라 "번진 잉크" 모양
-	d += (fbm(ap * noise_scale) - 0.5) * noise_amount;
-
-	float mask = (seed_count == 0) ? 0.0 : (1.0 - smoothstep(0.0, edge_soft, d));
 
 	// 젖은 느낌의 하이라이트 — 번지는 경계에만, 명중 직후 잠깐
-	float band = (1.0 - smoothstep(0.0, wet_width, abs(d))) * mask * wet_amount;
+	float band = (1.0 - smoothstep(0.0, wet_width, nearest_edge)) * coverage * wet_amount;
 	vec3 sheen = (paint_color == 1) ? vec3(0.55, 0.56, 0.60) : vec3(0.42, 0.43, 0.50);
 	COLOR.rgb = mix(COLOR.rgb, COLOR.rgb * 0.55 + sheen * 0.55, clamp(band, 0.0, 1.0));
 
@@ -94,5 +100,5 @@ void fragment() {
 	float lum = dot(COLOR.rgb, vec3(0.299, 0.587, 0.114));
 	COLOR.rgb = mix(COLOR.rgb, vec3(lum * 0.28 + 0.44), locked);
 
-	COLOR.a *= mask;
+	COLOR.a *= coverage;
 }

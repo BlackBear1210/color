@@ -175,10 +175,10 @@ func 명중(색: int, _월드좌표: Vector2) -> String:
 	if _색 >= 0:
 		if 색 == _색:
 			return "wasted"
-		# 반대색 덧칠 → 회색. 회색도 단단하다(무너지지 않는다).
-		_색 = ColorDefs.GRAY
+		# 플레이어 페인트는 섞이지 않고 마지막에 맞은 색이 기존 색을 덮는다.
+		_색 = 색
 		queue_redraw()
-		return "mixed_gray"
+		return "painted"
 
 	if _맞은횟수 > 0 and _진행색 != 색:
 		_맞은횟수 = 0

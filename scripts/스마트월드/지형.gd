@@ -16,7 +16,7 @@ extends SS2D_Shape_Closed
 ## ▣ 색 상태 4가지 (docs/기획서_규칙_플로우차트.md 와 동일한 언어)
 ##   무색 : 아직 안 칠함. 누구나 안전. `무색일때_통과` 가 켜져 있으면 못 밟는 유령.
 ##   검정 : 검정 플레이어만 안전.   흰색 : 흰색 플레이어만 안전.
-##   회색 : 반대색을 덮어써서 섞인 상태. 누구나 안전하지만 **다시 못 칠하고 수동 회수도 안 됨**.
+##   회색 : 장애물 상호작용이나 시작 설정으로만 만든다. 플레이어 총알끼리는 섞이지 않는다.
 ##
 ## ▣ 부분 색칠 / 전체 색칠
 ##   한 발로 다 안 덮이는 크기면 맞은 자리만 얼룩진다(부분).
@@ -27,6 +27,7 @@ extends SS2D_Shape_Closed
 class_name 스마트지형
 
 const 페인트_셰이더 := preload("res://shaders/지형_페인트.gdshader")
+const 페인트진행_S := preload("res://scripts/페인트_진행.gd")
 const 최대_시드: int = 24                      ## 셰이더의 MAX_SEEDS 와 반드시 같아야 한다
 
 enum 상태 { 무색, 검정, 흰색, 회색 }
@@ -52,21 +53,20 @@ const 유령_레이어비트: int = 8
 ## 마지막 명중 후 이 시간이 지나면 부분 색칠이 흐려지기 시작한다(초).
 @export var 부분_유지시간: float = 4.0
 ## 흐려지는 데 걸리는 시간(초).
-@export var 부분_감쇠시간: float = 1.6
+@export var 부분_감쇠시간: float = 1.0
 
 # ── 내부 상태 ──────────────────────────────────────────────────────────────
 var 현재상태: 상태 = 상태.무색
 var _맞은횟수: int = 0
 var _진행색: int = ColorDefs.BLACK
+var _진행 := 페인트진행_S.new()
 
 var _시드: PackedVector2Array = PackedVector2Array()      # 노드 로컬 px
 var _반지름: PackedFloat32Array = PackedFloat32Array()
 var _세기: PackedFloat32Array = PackedFloat32Array()
 var _색: PackedInt32Array = PackedInt32Array()
 
-var _마지막명중: float = 0.0
 var _젖음: float = 0.0
-var _감쇠중: bool = false
 var _셰이더들: Array[ShaderMaterial] = []
 var _로컬반경: float = 200.0                 ## 전체를 덮는 데 필요한 반지름 (자동 계산)
 var _중심: Vector2 = Vector2.ZERO            ## 로컬 AABB 중심 (전체 색칠 얼룩의 기준점)
@@ -81,6 +81,8 @@ func _ready() -> void:
 	add_to_group("칠할수있음")
 	add_to_group("스마트지형")
 	_코어 = get_tree().get_first_node_in_group("페인트코어") as 페인트코어
+	_진행.유지시간 = 부분_유지시간
+	_진행.감쇠시간 = 부분_감쇠시간
 	_로컬반경_계산()
 	_셰이더_설치()
 	현재상태 = 시작상태
@@ -201,35 +203,33 @@ func 명중(색: int, 월드좌표: Vector2) -> String:
 
 	match 현재상태:
 		상태.회색:
-			return "blocked"                            # 규칙 3: 회색은 끝난 상태
+			return "blocked"                            # 장애물 상호작용으로 생긴 회색은 총알로 못 덮는다.
 		상태.검정, 상태.흰색:
 			if 색 == 현재색():
 				return "wasted"                         # 같은 색 덧칠 = 낭비 → 환급
-			_회색으로()                                  # 규칙 2: 반대색 → 회색
-			return "mixed_gray"
+			# 플레이어 페인트끼리는 섞지 않고 마지막 색이 기존 색을 그대로 덮는다.
+			_전체_즉시(상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색)
+			_충돌레이어_갱신()
+			_유니폼_갱신()
+			return "painted"
 		_:
 			return _무색_명중(색, 월드좌표)
 
 
 func _무색_명중(색: int, 월드좌표: Vector2) -> String:
-	# 진행 중이던 색과 다른 색이 오면 진행도를 새 색으로 리셋한다.
-	# (기획: "서로 다른 두 색이 부분 색칠 상태면 전체 색칠이 될 수 없다")
-	if _맞은횟수 > 0 and _진행색 != 색:
-		_시드_비우기()
-		_맞은횟수 = 0
 	_진행색 = 색
-	_맞은횟수 += 1
-	_마지막명중 = 0.0
+	_진행.명중(색, 필요횟수())
+	_맞은횟수 = _진행.전체횟수()
 	_젖음 = 1.0
-	_감쇠중 = false
+	_시드_추가(to_local(월드좌표), 부분_반지름, 색)
 
-	if _맞은횟수 >= 필요횟수():
+	# 두 색의 부분 얼룩이 함께 있으면 어느 쪽도 전체 색칠로 승격되지 않는다.
+	if _진행.완성가능(색, 필요횟수()):
 		_전체_즉시(상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색)
 		_충돌레이어_갱신()
 		_유니폼_갱신()
 		return "painted"
 
-	_시드_추가(to_local(월드좌표), 부분_반지름, 색)
 	_유니폼_갱신()
 	return "progress"
 
@@ -240,9 +240,9 @@ func 되돌리기() -> bool:
 		return false
 	현재상태 = 상태.무색
 	_맞은횟수 = 0
+	_진행.비우기()
 	_시드_비우기()
 	_젖음 = 0.0
-	_감쇠중 = false
 	_충돌레이어_갱신()
 	_유니폼_갱신()
 	return true
@@ -254,9 +254,9 @@ func 되돌리기() -> bool:
 func 강제_초기화() -> void:
 	현재상태 = 상태.무색
 	_맞은횟수 = 0
+	_진행.비우기()
 	_시드_비우기()
 	_젖음 = 0.0
-	_감쇠중 = false
 	_충돌레이어_갱신()
 	_유니폼_갱신()
 
@@ -268,13 +268,13 @@ func _회색으로() -> void:
 	# 회색은 지형 전체를 덮는 얼룩 하나로 표현 (색 인덱스 2 = 셰이더의 gray)
 	_시드_추가(_중심, _로컬반경, ColorDefs.GRAY)
 	_젖음 = 1.0
-	_감쇠중 = false
 	_충돌레이어_갱신()
 	_유니폼_갱신()
 
 
 func _전체_즉시(새상태: 상태) -> void:
 	현재상태 = 새상태
+	_진행.비우기()
 	_시드_비우기()
 	var 색 := ColorDefs.BLACK
 	match 새상태:
@@ -330,29 +330,35 @@ func _process(delta: float) -> void:
 		_젖음 = maxf(_젖음 - delta * 1.4, 0.0)
 		갱신 = true
 
-	# 전체 색칠·회색은 감쇠하지 않는다. 부분 색칠(무색 + 시드 있음)만 대상.
-	if 현재상태 == 상태.무색 and not _시드.is_empty():
-		_마지막명중 += delta
-		if _마지막명중 > 부분_유지시간:
-			_감쇠중 = true
-			var 감소 := delta / maxf(부분_감쇠시간, 0.01)
-			var 남음 := false
-			for i in _세기.size():
-				_세기[i] = maxf(_세기[i] - 감소, 0.0)
-				if _세기[i] > 0.0:
-					남음 = true
-			갱신 = true
-			if not 남음:
-				# 다 흐려졌다 → 페인트를 돌려준다
-				var 발수 := _맞은횟수
-				_시드_비우기()
-				_맞은횟수 = 0
-				_감쇠중 = false
-				if _코어:
-					_코어.부분_자동회수(self, 발수)
+	# 흑·백은 각자 4초를 유지한 뒤 1초 동안 흐려지며, 한쪽이 남아 조건을 채우면 그때 완성된다.
+	if 현재상태 == 상태.무색 and _진행.전체횟수() > 0:
+		var 변화: Dictionary = _진행.진행(delta, 필요횟수())
+		for i in _세기.size():
+			_세기[i] = _진행.알파(_색[i])
+		for 만료색 in 변화["만료"]:
+			_색_시드_지우기(int(만료색))
+			if _코어:
+				_코어.부분_자동회수(self, int(변화["만료"][만료색]))
+		_맞은횟수 = _진행.전체횟수()
+		var 완성색: int = 변화["완성색"]
+		if 완성색 >= 0:
+			_전체_즉시(상태.검정 if 완성색 == ColorDefs.BLACK else 상태.흰색)
+			_충돌레이어_갱신()
+		갱신 = true
 
 	if 갱신:
 		_유니폼_갱신()
+
+
+func _색_시드_지우기(색: int) -> void:
+	# 다른 색의 부분 칠은 남겨야 하므로 만료된 색의 시드만 뒤에서부터 제거한다.
+	for i in range(_색.size() - 1, -1, -1):
+		if _색[i] != 색:
+			continue
+		_시드.remove_at(i)
+		_반지름.remove_at(i)
+		_세기.remove_at(i)
+		_색.remove_at(i)
 
 
 func _유니폼_갱신() -> void:

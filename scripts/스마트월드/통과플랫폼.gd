@@ -79,9 +79,9 @@ func 명중(색: int, _월드좌표: Vector2) -> String:
 	if _상태색 >= 0:
 		if 색 == _상태색:
 			return "wasted"
-		_상태색 = ColorDefs.GRAY
+		_상태색 = 색                    # 총알끼리는 섞지 않고 나중 색이 먼저 색을 덮는다.
 		queue_redraw()
-		return "mixed_gray"
+		return "painted"
 	if _맞은횟수 > 0 and _진행색 != 색:
 		_맞은횟수 = 0
 	_진행색 = 색

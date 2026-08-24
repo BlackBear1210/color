@@ -30,8 +30,7 @@ extends AnimatableBody2D
 ##   무색  : 아직 안 칠해짐. 흑·백 누구든 밟아도 안전. 칠할 수 있음.
 ##   검정  : 검정 상태 플레이어만 안전. 흰색이 밟으면 즉사.
 ##   흰색  : 흰색 상태 플레이어만 안전. 검정이 밟으면 즉사.
-##   회색  : 완성된 발판에 반대색을 맞혀 섞인 상태. **영구**. 누구든 안전하지만 다시 못 칠함.
-##   (규칙 근거: docs/기획서_규칙_플로우차트.md v1.2 / v1.3 — 단위만 칸→플랫폼으로 승격)
+##   회색  : 장애물 상호작용이나 시작 설정으로만 만드는 중립 상태. 플레이어 총알은 만들지 않는다.
 ##
 ## ▣ 씬에 넣는 법
 ##   scenes/페인트/칠하는발판.tscn 을 스테이지에 드래그 → 인스펙터에서
@@ -41,6 +40,7 @@ class_name PaintPlatform
 
 const 최대_시드: int = 16         ## 셰이더 uniform 배열 크기(MAX_SEEDS)와 반드시 같아야 함
 const INK_SHADER := preload("res://shaders/ink_spread.gdshader")
+const 페인트진행_S := preload("res://scripts/페인트_진행.gd")
 
 ## ★[2026-07-25] 그림이 콜리전 밖으로 삐져나오는 여백(px). **크기와 무관하게 항상 일정**하다.
 ##
@@ -57,10 +57,10 @@ enum 상태 { 무색, 검정, 흰색, 회색 }
 
 signal 칠해짐(플랫폼: PaintPlatform, 색: int)        ## 필요 횟수를 다 채워 색이 확정된 순간
 signal 진행됨(플랫폼: PaintPlatform, 남은: int)      ## 맞았지만 아직 완성 전
-signal 회색됨(플랫폼: PaintPlatform)                 ## 되돌릴 수 없는 회색화
+signal 회색됨(플랫폼: PaintPlatform)                 ## 장애물 상호작용으로 회색화할 때 쓰는 예약 신호
 signal 되돌려짐(플랫폼: PaintPlatform)               ## E 회수로 무색 복귀
 ## 모든 명중을 한 번에 받는 통합 시그널 — 이펙트(paint_fx.gd)가 이걸 구독한다.
-## 결과 문자열 = progress / painted / wasted / mixed_gray / blocked
+## 결과 문자열 = progress / painted / wasted / blocked
 signal 명중됨(플랫폼: PaintPlatform, 결과: String, 색: int, 월드좌표: Vector2)
 
 # ── 인스펙터 설정 ──────────────────────────────────────────────────────────
@@ -121,9 +121,12 @@ var 표현_모드: int = 0
 var 현재상태: 상태 = 상태.무색
 var _맞은횟수: int = 0
 var _진행색: int = ColorDefs.BLACK
+var _진행 := 페인트진행_S.new()
 var _시드: PackedVector2Array = PackedVector2Array()      # 로컬 UV(0~1)
 var _시드반지름: PackedFloat32Array = PackedFloat32Array()
 var _시드목표: PackedFloat32Array = PackedFloat32Array()
+var _시드색: PackedInt32Array = PackedInt32Array()
+var _시드세기: PackedFloat32Array = PackedFloat32Array()
 var _젖음: float = 0.0
 var _애니중: bool = false
 
@@ -153,9 +156,7 @@ func 필요횟수() -> int:
 func 남은횟수(색: int) -> int:
 	if not 칠하기_허용 or 현재상태 != 상태.무색:
 		return -1
-	if _맞은횟수 > 0 and _진행색 == 색:
-		return 필요횟수() - _맞은횟수
-	return 필요횟수()
+	return _진행.남은횟수(색, 필요횟수())
 
 ## 지금 이 발판을 밟았을 때 죽는 색인가 (stage_lab 의 사망 판정이 사용)
 func 반대색인가(플레이어색: int) -> bool:
@@ -181,9 +182,12 @@ func _다시_만들기() -> void:
 	# 시작 상태를 실제 상태로 반영 (고정 지형이면 처음부터 꽉 칠해진 모습)
 	현재상태 = 시작상태
 	_맞은횟수 = 0
+	_진행.비우기()
 	_시드 = PackedVector2Array()
 	_시드반지름 = PackedFloat32Array()
 	_시드목표 = PackedFloat32Array()
+	_시드색 = PackedInt32Array()
+	_시드세기 = PackedFloat32Array()
 	if 현재상태 != 상태.무색:
 		_전체칠하기_즉시()
 	_유니폼_갱신()
@@ -272,7 +276,7 @@ func 밟을_수_있나() -> bool:
 
 # ── 색칠 처리 ──────────────────────────────────────────────────────────────
 ## 총알이 명중했을 때 호출. 반환값은 paint_system v2 와 같은 문자열 체계를 따른다.
-##   progress / painted / wasted / mixed_gray / blocked
+##   progress / painted / wasted / blocked
 func 명중(색: int, 월드좌표: Vector2) -> String:
 	var 결과 := _명중_처리(색, 월드좌표)
 	# 이펙트(스플래시·물감 흐름·카메라 킥)는 전부 이 통합 시그널 하나만 구독한다.
@@ -286,30 +290,30 @@ func _명중_처리(색: int, 월드좌표: Vector2) -> String:
 
 	match 현재상태:
 		상태.회색:
-			return "blocked"                     # 회색은 영구 — 아무 일도 없음
+			return "blocked"                     # 장애물 상호작용으로 생긴 회색은 총알로 못 덮는다.
 		상태.검정, 상태.흰색:
 			var 내색 := ColorDefs.BLACK if 현재상태 == 상태.검정 else ColorDefs.WHITE
 			if 색 == 내색:
 				return "wasted"                  # 같은 색 덧칠 = 낭비
-			_회색으로()
-			회색됨.emit(self)
-			return "mixed_gray"
-		_:
-			# ── 무색: 진행 누적 ──
-			if _맞은횟수 > 0 and _진행색 != 색:
-				# 규칙 3: 진행 중에 다른 색이 오면 회색이 아니라 "새 색으로 리셋"
-				_맞은횟수 = 0
-				_시드 = PackedVector2Array()
-				_시드반지름 = PackedFloat32Array()
-				_시드목표 = PackedFloat32Array()
-			_진행색 = 색
-			_맞은횟수 += 1
-			_시드_추가(uv)
+			# 완성된 플랫폼에는 마지막 플레이어 색을 바로 덮고 회색을 만들지 않는다.
+			현재상태 = 상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색
+			_전체칠하기_즉시()
 			_젖음 = 1.0
 			_애니시작()
-			if _맞은횟수 >= 필요횟수():
+			_충돌레이어_갱신()
+			칠해짐.emit(self, 색)
+			return "painted"
+		_:
+			# ── 무색: 진행 누적 ──
+			_진행색 = 색
+			_진행.명중(색, 필요횟수())
+			_맞은횟수 = maxi(_진행.횟수(ColorDefs.BLACK), _진행.횟수(ColorDefs.WHITE))
+			_시드_추가(uv, 색)
+			_젖음 = 1.0
+			_애니시작()
+			if _진행.완성가능(색, 필요횟수()):
 				현재상태 = 상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색
-				_목표반지름_갱신(true)           # 마지막 한 방 = 전체로 확 번짐
+				_전체칠하기_즉시()
 				_충돌레이어_갱신()               # ★유령 → 실체 (이제 밟을 수 있다)
 				queue_redraw()
 				칠해짐.emit(self, 색)
@@ -324,9 +328,12 @@ func 되돌리기() -> bool:
 		return false
 	현재상태 = 상태.무색
 	_맞은횟수 = 0
+	_진행.비우기()
 	_시드 = PackedVector2Array()
 	_시드반지름 = PackedFloat32Array()
 	_시드목표 = PackedFloat32Array()
+	_시드색 = PackedInt32Array()
+	_시드세기 = PackedFloat32Array()
 	_젖음 = 0.0
 	_유니폼_갱신()
 	_충돌레이어_갱신()                          # ★실체 → 유령 (발판이 사라져 아래가 열린다)
@@ -344,6 +351,7 @@ func _회색으로() -> void:
 
 ## 시작상태/회색화처럼 "이미 꽉 칠해진" 모습으로 즉시 세팅
 func _전체칠하기_즉시() -> void:
+	_진행.비우기()
 	_시드 = PackedVector2Array([Vector2(0.5, 0.5)])
 	var r := _최대반지름()
 	_시드반지름 = PackedFloat32Array([r])
@@ -353,13 +361,15 @@ func _전체칠하기_즉시() -> void:
 		상태.검정: _진행색 = ColorDefs.BLACK
 		상태.흰색: _진행색 = ColorDefs.WHITE
 		_:         _진행색 = ColorDefs.BLACK      # 회색은 셰이더 locked 로 덮이므로 아무 색이나
+	_시드색 = PackedInt32Array([_진행색])
+	_시드세기 = PackedFloat32Array([1.0])
 
 ## 명중 지점을 씨앗으로 등록.
 ## [2026-07-25] 물감 얼룩 프로파일(표현_모드 1)에서는 **한 번 명중에 씨앗 3개**를
 ## 살짝 흩어 심는다 → 원 하나가 커지는 게 아니라 "물감이 튀어 뭉친" 덩어리가 된다.
 ## (얼룩 스프라이트를 따로 찍던 구 방식과 달리, 씨앗은 셰이더 마스크 안에 있으므로
 ##  실루엣을 절대 벗어나지 않고 진행률 100% 에서 반드시 전부 덮인다)
-func _시드_추가(uv: Vector2) -> void:
+func _시드_추가(uv: Vector2, 색: int) -> void:
 	var 개수 := 3 if 표현_모드 == 1 else 1
 	for i in 개수:
 		var p := uv
@@ -374,9 +384,13 @@ func _시드_추가(uv: Vector2) -> void:
 			_시드.remove_at(0)
 			_시드반지름.remove_at(0)
 			_시드목표.remove_at(0)
+			_시드색.remove_at(0)
+			_시드세기.remove_at(0)
 		_시드.append(p)
 		_시드반지름.append(0.0)
 		_시드목표.append(0.0)
+		_시드색.append(색)
+		_시드세기.append(1.0)
 
 ## 화면 대각선(가로세로 보정 단위) — 이 반지름이면 플랫폼 전체가 덮인다.
 func _최대반지름() -> float:
@@ -437,8 +451,34 @@ func _process(delta: float) -> void:
 	if _젖음 > 0.0:
 		_젖음 = maxf(_젖음 - delta * 1.25, 0.0)     # 약 0.8초에 걸쳐 마른다
 		남음 = true
+	if 현재상태 == 상태.무색 and _진행.전체횟수() > 0:
+		var 변화: Dictionary = _진행.진행(delta, 필요횟수())
+		for i in _시드세기.size():
+			_시드세기[i] = _진행.알파(_시드색[i])
+		for 만료색 in 변화["만료"]:
+			_색_시드_지우기(int(만료색))
+		_맞은횟수 = maxi(_진행.횟수(ColorDefs.BLACK), _진행.횟수(ColorDefs.WHITE))
+		var 완성색: int = 변화["완성색"]
+		if 완성색 >= 0:
+			현재상태 = 상태.검정 if 완성색 == ColorDefs.BLACK else 상태.흰색
+			_전체칠하기_즉시()
+			_충돌레이어_갱신()
+			칠해짐.emit(self, 완성색)
+		남음 = _진행.전체횟수() > 0
 	_유니폼_갱신()
 	_애니중 = 남음
+
+
+func _색_시드_지우기(색: int) -> void:
+	# 반대색 진행은 유지해야 하므로 만료된 색에 속한 얼룩만 제거한다.
+	for i in range(_시드색.size() - 1, -1, -1):
+		if _시드색[i] != 색:
+			continue
+		_시드.remove_at(i)
+		_시드반지름.remove_at(i)
+		_시드목표.remove_at(i)
+		_시드색.remove_at(i)
+		_시드세기.remove_at(i)
 
 # ── 셰이더 유니폼 동기화 ───────────────────────────────────────────────────
 func _유니폼_갱신() -> void:
@@ -453,9 +493,13 @@ func _유니폼_갱신() -> void:
 	# 셰이더 배열은 길이가 고정(최대_시드)이라 남는 칸은 0 으로 채워 보낸다.
 	var 시드8 := PackedVector2Array()
 	var 반지름8 := PackedFloat32Array()
+	var 색8 := PackedInt32Array()
+	var 세기8 := PackedFloat32Array()
 	for i in 최대_시드:
 		시드8.append(_시드[i] if i < _시드.size() else Vector2.ZERO)
 		반지름8.append(_시드반지름[i] if i < _시드반지름.size() else 0.0)
+		색8.append(_시드색[i] if i < _시드색.size() else ColorDefs.BLACK)
+		세기8.append(_시드세기[i] if i < _시드세기.size() else 0.0)
 
 	# ★[2026-07-25] 표현 모드 = **같은 마스크의 프로파일 전환**으로 바뀌었다.
 	#   (구 방식: 얼룩 스프라이트를 따로 찍음 → 실루엣 밖으로 새고 덮임이 안 보장됨)
@@ -476,6 +520,8 @@ func _유니폼_갱신() -> void:
 	mat.set_shader_parameter("paint_color", 0 if _진행색 == ColorDefs.BLACK else 1)
 	mat.set_shader_parameter("seeds", 시드8)
 	mat.set_shader_parameter("seed_r", 반지름8)
+	mat.set_shader_parameter("seed_c", 색8)
+	mat.set_shader_parameter("seed_a", 세기8)
 	mat.set_shader_parameter("seed_count", _시드.size())
 	mat.set_shader_parameter("locked", 1.0 if 현재상태 == 상태.회색 else 0.0)
 	mat.set_shader_parameter("wet_amount", _젖음)

@@ -1,37 +1,34 @@
 extends Node
-## [2026-07-14 도형 · v2 전면 개정] 물감 규칙 프로토타입 — "게이지 폐지 + 횟수(내구도)제".
-## ⚠ 기존 스크립트(player.gd / gun.gd / bullet.gd)는 여전히 한 줄도 수정하지 않는다.
-##   zone_01 / zone_02 테스트 맵 + proto_* 스크립트에서만 사용. 정식 구현은 P-A 담당.
+## [2026-08-24 코덱스] 구형 타일맵에서도 현재 페인트 규칙을 똑같이 적용한다.
 ##
 ## ── v2 확정 규칙 (2026-07-14 도형 결정, 근거: docs/기획서_규칙_플로우차트.md v1.2) ──
 ##  1. 물감 게이지 폐지. 발사는 횟수 제한 없이 무제한.
 ##  2. 대신 "무색 발판"마다 필요 명중 횟수(1~3발)가 있다 — 타일 커스텀 데이터 "paint_hits".
 ##     같은 색 페인트를 필요 횟수만큼 맞히면 그 색 발판으로 변한다.
 ##     붓 커서를 발판에 올리면 남은 횟수가 숫자로 표시된다 (brush_cursor_ui.gd).
-##  3. 진행 중(1발 이상 맞았지만 미완성) 발판에 다른 색을 쏘면 → 회색이 아니라
-##     "새 색으로 진행 리셋"(1발부터 다시). 아직 칠해진 발판이 아니므로 혼합이 아니다. 🟡제안
+##  3. 흑·백 부분칠은 따로 남고, 두 색이 함께 있으면 어느 쪽도 전체칠이 되지 않는다.
+##     부분칠은 4초 유지 + 1초 감쇠 뒤 색별로 사라진다.
 ##  4. 회수(E)는 유지: 색과 무관하게 "가장 먼저 칠해진 발판"부터 전역 FIFO 로 무색 복구.
 ##     게이지가 없으므로 회수는 자원 회수가 아니라 "칠한 길을 되돌리는 지형 조작" 도구다.
-##  5. 회색(완성된 발판에 반대색 명중)은 그대로: 영구히 회색, 회수 큐에서 제외.
-##     (게이지 칸 파괴 페널티는 게이지와 함께 폐지 — 회색 그 자체가 페널티)
+##  5. 완성된 발판에 반대색을 쏘면 회색 혼합 없이 마지막 색이 그대로 덮어쓴다.
 class_name PaintSystem
 
 signal paint_changed                                        ## 지형 칠 상태가 바뀔 때 (UI 갱신용)
-signal gray_created(cell: Vector2i)                         ## 회색 혼합이 일어났을 때
 signal hit_feedback(cell: Vector2i, result: String, remaining: int)  ## 탄착 피드백 (UI 팝업용)
+
+const 페인트진행_S := preload("res://scripts/페인트_진행.gd")
 
 # ── 타일 아틀라스 좌표 (assets/tilesets/terrain_tileset.tres 기준) ──────
 const TILE_SOURCE: int = 0
 const ATLAS_BLACK: Vector2i = Vector2i(0, 0)
 const ATLAS_WHITE: Vector2i = Vector2i(1, 0)
-const ATLAS_GRAY:  Vector2i = Vector2i(2, 0)
 ## 무색(칠 가능) 발판 3종 — x좌표 3/4/5 = 필요 명중 횟수 1/2/3
 const ATLAS_UNPAINTED_1: Vector2i = Vector2i(3, 0)
 const ATLAS_UNPAINTED_2: Vector2i = Vector2i(4, 0)
 const ATLAS_UNPAINTED_3: Vector2i = Vector2i(5, 0)
 
-## 셀별 칠 진행 상태. key = Vector2i(셀), value = { "color": int, "done": int }
-## (무색 발판에 1발 이상 맞았지만 아직 필요 횟수를 못 채운 상태)
+## 셀별 칠 진행 상태. 흑·백 횟수와 수명은 공용 규칙 객체가 각각 관리한다.
+## layer/original 은 자동 회수 뒤 완성 여부를 처리할 때 필요하다.
 var _progress: Dictionary = {}
 
 ## 전역 FIFO 회수 큐. 원소 = { "cell": Vector2i, "color": int, "original": Vector2i }
@@ -45,7 +42,12 @@ static func is_unpainted(atlas: Vector2i) -> bool:
 ## 이 발판의 총 필요 명중 횟수. 타일 커스텀 데이터 "paint_hits"를 우선 읽고,
 ## (테스트 등에서 타일 데이터가 없으면) 아틀라스 좌표로 폴백.
 static func hits_required(layer: TileMapLayer, cell: Vector2i) -> int:
-	var data := layer.get_cell_tile_data(cell)
+	# 구형 테스트 타일셋처럼 source 리소스가 빠진 경우 get_cell_tile_data() 자체가
+	# 오류를 찍으므로, 실제 source가 있을 때만 커스텀 데이터를 읽는다.
+	var source_id := layer.get_cell_source_id(cell)
+	var data: TileData = null
+	if layer.tile_set != null and source_id >= 0 and layer.tile_set.has_source(source_id):
+		data = layer.get_cell_tile_data(cell)
 	if data != null:
 		var v = data.get_custom_data("paint_hits")
 		if v is int and v > 0:
@@ -63,9 +65,10 @@ func remaining_hits(layer: TileMapLayer, cell: Vector2i, color: int) -> int:
 	if not is_unpainted(atlas):
 		return -1
 	var req := hits_required(layer, cell)
-	if _progress.has(cell) and _progress[cell]["color"] == color:
-		return req - int(_progress[cell]["done"])   # 같은 색 진행 중이면 남은 만큼만
-	return req                                      # 미진행 or 다른 색 진행(리셋될 것)이면 전체
+	if _progress.has(cell):
+		var 진행 = _progress[cell]["진행"]
+		return 진행.남은횟수(color, req)
+	return req
 
 func queue_size() -> int:
 	return _queue.size()
@@ -79,8 +82,7 @@ func next_recover_cell():
 ##   progress    = 무색 발판에 명중했지만 아직 횟수가 남음
 ##   painted     = 필요 횟수를 채워 쏜 색으로 칠해짐 (FIFO 큐 등록)
 ##   wasted      = 이미 같은 색인 발판에 명중 (변화 없음)
-##   mixed_gray  = 완성된 발판에 반대색 명중 → 회색 (영구)
-##   blocked     = 회색 발판 등 아무 일도 없음
+##   blocked     = 칠할 수 없는 발판
 ##   miss        = 빈 셀
 func on_hit(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 	if layer.get_cell_source_id(cell) == -1:
@@ -91,22 +93,18 @@ func on_hit(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 
 	if is_unpainted(atlas):
 		var req := hits_required(layer, cell)
-		var done := 0
-		if _progress.has(cell) and _progress[cell]["color"] == color:
-			done = _progress[cell]["done"]
-		# 다른 색으로 진행 중이었으면 위에서 done=0 → 새 색으로 리셋 (규칙 3)
-		done += 1
-		if done >= req:
-			# 필요 횟수 달성 → 칠 완성. 원래 내구도 타일을 기억해두고 FIFO 등록.
-			layer.set_cell(cell, TILE_SOURCE, my_atlas)
-			_progress.erase(cell)
-			_queue.append({ "cell": cell, "color": color, "original": atlas })
-			paint_changed.emit()
-			hit_feedback.emit(cell, "painted", 0)
+		if not _progress.has(cell):
+			_progress[cell] = {
+				"진행": 페인트진행_S.new(),
+				"layer": layer,
+				"original": atlas,
+			}
+		var 진행 = _progress[cell]["진행"]
+		if 진행.명중(color, req):
+			_부분_완성(cell, color)
 			return "painted"
-		_progress[cell] = { "color": color, "done": done }
 		paint_changed.emit()
-		hit_feedback.emit(cell, "progress", req - done)
+		hit_feedback.emit(cell, "progress", 진행.남은횟수(color, req))
 		return "progress"
 
 	if atlas == my_atlas:
@@ -114,23 +112,21 @@ func on_hit(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 		return "wasted"                                  # 같은 색 덧칠: 변화 없음
 
 	if atlas == other_atlas:
-		# 완성된 발판에 반대색 → 회색. 영구. 회수 큐에서 제거(앞뒤 순서는 유지).
-		layer.set_cell(cell, TILE_SOURCE, ATLAS_GRAY)
+		# 플레이어 페인트끼리는 섞지 않는다. 회수 순서와 원래 지형은 그대로 둔다.
+		layer.set_cell(cell, TILE_SOURCE, my_atlas)
 		for i in _queue.size():
 			if _queue[i]["cell"] == cell:
-				_queue.remove_at(i)
+				_queue[i]["color"] = color
 				break
 		paint_changed.emit()
-		gray_created.emit(cell)
-		hit_feedback.emit(cell, "mixed_gray", -1)
-		return "mixed_gray"
+		hit_feedback.emit(cell, "painted", 0)
+		return "painted"
 
 	hit_feedback.emit(cell, "blocked", -1)
 	return "blocked"                                     # 회색 등: 아무 일도 없음
 
 # ── 회수 (E 키) ─────────────────────────────────────────────────────────
 ## 가장 먼저 칠해진 발판부터: 지형을 "원래 내구도의 무색"으로 되돌린다.
-## 회색이 된 발판은 큐에 없으므로 영원히 돌아오지 않는다.
 func recover(layer: TileMapLayer) -> bool:
 	if _queue.is_empty():
 		return false
@@ -139,3 +135,36 @@ func recover(layer: TileMapLayer) -> bool:
 	paint_changed.emit()
 	hit_feedback.emit(entry["cell"], "recovered", -1)
 	return true
+
+
+func _process(delta: float) -> void:
+	# 두 색은 별도 타이머로 흐려진다. 한쪽이 사라졌을 때 반대쪽이 필요 횟수를
+	# 이미 채웠다면 그 순간 전체칠로 승격한다.
+	for cell in _progress.keys():
+		var 항목: Dictionary = _progress[cell]
+		var layer: TileMapLayer = 항목["layer"]
+		if not is_instance_valid(layer):
+			_progress.erase(cell)
+			continue
+		var req := hits_required(layer, cell)
+		var 진행 = 항목["진행"]
+		var 결과: Dictionary = 진행.진행(delta, req)
+		if not (결과["만료"] as Dictionary).is_empty():
+			paint_changed.emit()
+		if int(결과["완성색"]) >= 0:
+			_부분_완성(cell, int(결과["완성색"]))
+		elif 진행.전체횟수() == 0:
+			_progress.erase(cell)
+
+
+func _부분_완성(cell: Vector2i, color: int) -> void:
+	if not _progress.has(cell):
+		return
+	var 항목: Dictionary = _progress[cell]
+	var layer: TileMapLayer = 항목["layer"]
+	var atlas := ATLAS_BLACK if color == ColorDefs.BLACK else ATLAS_WHITE
+	layer.set_cell(cell, TILE_SOURCE, atlas)
+	_queue.append({ "cell": cell, "color": color, "original": 항목["original"] })
+	_progress.erase(cell)
+	paint_changed.emit()
+	hit_feedback.emit(cell, "painted", 0)

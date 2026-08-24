@@ -151,9 +151,11 @@ var _적응배수: float = 1.0
 
 ## ── B) 화면 비네트 — 림보식 가장자리 어둠. 평상시 은은, 전환 때 조여든다 ──
 ## HUD(100)·전환(200)보다 아래 CanvasLayer(50)에 둔다 → 카메라 이동과 무관히 화면 고정.
-const 비네트_기본: float = 0.13      ## 평상시 가장자리 어둠(0=없음, 1=완전 검정)
+const 비네트_기본: float = 0.40      ## 발판 가독성은 유지하면서 외곽을 알아볼 수 있게 조인다.
+const 비네트_시작: float = 0.42      ## 중앙에서 이 거리까지는 맑게 두어 플레이 영역을 가리지 않는다.
+const 비네트_끝: float = 1.28        ## 시작과 끝 간격을 넓혀 어둠이 층지지 않고 천천히 깊어진다.
 var _비네트층: CanvasLayer = null
-var _비네트: TextureRect = null
+var _비네트: ColorRect = null
 var _비네트_트윈: Tween = null
 
 ## ── 전환 "빨림" — 다음 스테이지로 걸어들 때 화면이 플레이어에게 급격히 당겨진다 ──
@@ -450,30 +452,35 @@ func _비네트_설치() -> void:
 	_비네트층.name = "비네트"
 	_비네트층.layer = 50                  # 게임 위, HUD(100)·전환(200) 아래
 	add_child(_비네트층)                   # ⚠ owner 안 줌 (런타임 노드 — §규약 6)
-	_비네트 = TextureRect.new()
+	_비네트 = ColorRect.new()
 	_비네트.name = "가장자리어둠"
-	_비네트.texture = _비네트_텍스처()
 	_비네트.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_비네트.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_비네트.stretch_mode = TextureRect.STRETCH_SCALE
+	_비네트.material = _비네트_재질()
 	_비네트.modulate = Color(1, 1, 1, 비네트_기본)
 	_비네트층.add_child(_비네트)
 
 
-## 가운데는 투명, 가장자리로 갈수록 검은 방사형 그라데이션 텍스처.
-func _비네트_텍스처() -> GradientTexture2D:
-	var g := Gradient.new()
-	# 가운데 45% 까지는 완전히 맑고, 거기서부터 가장자리로 어두워진다.
-	g.set_offset(0, 0.45); g.set_color(0, Color(0, 0, 0, 0))
-	g.set_offset(1, 1.0);  g.set_color(1, Color(0, 0, 0, 1))
-	var t := GradientTexture2D.new()
-	t.gradient = g
-	t.fill = GradientTexture2D.FILL_RADIAL
-	t.fill_from = Vector2(0.5, 0.5)
-	t.fill_to = Vector2(1.0, 0.5)
-	t.width = 256
-	t.height = 256
-	return t
+## 화면 해상도와 무관하게 픽셀마다 계산해 확대 시 생기던 굵은 그라데이션 층을 없앤다.
+func _비네트_재질() -> ShaderMaterial:
+	var 셰이더 := Shader.new()
+	# 셰이더 내부는 프로젝트 규약에 따라 ASCII만 사용한다.
+	셰이더.code = """
+shader_type canvas_item;
+
+void fragment() {
+	vec2 p = (UV - vec2(0.5)) * 2.0;
+	p.x *= 0.72;
+	float distance_from_center = length(p);
+	float shade = smoothstep(%f, %f, distance_from_center);
+	float noise = fract(sin(dot(FRAGCOORD.xy, vec2(12.9898, 78.233))) * 43758.5453);
+	shade = clamp(shade + (noise - 0.5) / 255.0, 0.0, 1.0);
+	COLOR = vec4(0.0, 0.0, 0.0, shade);
+}
+""" % [비네트_시작, 비네트_끝]
+	var 재질 := ShaderMaterial.new()
+	재질.shader = 셰이더
+	return 재질
 
 
 ## 평상시 비네트 강도 — 전환이 끝난 뒤 이 값으로 되돌린다.

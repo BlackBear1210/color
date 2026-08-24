@@ -40,6 +40,8 @@ const int MAX_SEEDS = 16;
 uniform int   paint_color = 0;                 // 0=검정, 1=흰색 (목표색)
 uniform vec2  seeds[MAX_SEEDS];                // 색칠 시작점 (로컬 UV)
 uniform float seed_r[MAX_SEEDS];               // 각 시작점의 현재 번짐 반지름
+uniform float seed_a[MAX_SEEDS];               // 색별 자동 회수 감쇠 0~1
+uniform int   seed_c[MAX_SEEDS];               // 각 시작점의 색 0=검정, 1=흰색
 uniform int   seed_count = 0;
 uniform float locked = 0.0;                    // 1 = 회색(영구) 상태
 
@@ -112,33 +114,28 @@ void fragment() {
 	//   반대라 평균 내면 무늬가 상쇄된다(스크린샷으로 확인).
 	//   → 백 텍스처의 명암을 살린 채 명도만 절반으로. (가이드 §5 "회색 45~55%")
 	vec4 neutral = vec4(cw.rgb * 0.55, cw.a);
-	vec4 target  = (paint_color == 1) ? cw : cb;
-
 	// ── 3) 잉크 번짐 마스크 ────────────────────────────────────────────
-	// 가로가 긴 플랫폼에서 원이 타원으로 찌그러지지 않도록 x 를 aspect 로 편다.
+	// 각 시드의 색을 순서대로 합성해야 검정·흰색 부분 칠이 동시에 남을 수 있다.
 	vec2 ap = vec2(local.x * aspect, local.y);
-	float d = 1e9;                                    // 가장 가까운 번짐 경계까지의 거리
+	vec4 col = neutral;
+	float wet_edge = 0.0;
 	for (int i = 0; i < MAX_SEEDS; i++) {
 		if (i >= seed_count) { break; }
 		vec2 s = vec2(seeds[i].x * aspect, seeds[i].y);
-		d = min(d, distance(ap, s) - seed_r[i]);
+		float d = distance(ap, s) - seed_r[i];
+		d += (fbm(ap * noise_scale) - 0.5) * noise_amount;
+		if (profile == 1) {
+			d += (vnoise(ap * (noise_scale * 0.42) + vec2(13.7, 4.1)) - 0.5) * blob_amount;
+		}
+		float mask = (1.0 - smoothstep(0.0, edge_soft, d)) * seed_a[i];
+		vec4 target = (seed_c[i] == 1) ? cw : cb;
+		col = mix(col, target, mask);
+		wet_edge = max(wet_edge, (1.0 - smoothstep(0.0, wet_width, abs(d))) * mask);
 	}
-	// 경계를 노이즈로 흔든다 → 원이 아니라 "번진 잉크" 모양
-	d += (fbm(ap * noise_scale) - 0.5) * noise_amount;
-	if (profile == 1) {
-		// [2026-07-25] 물감 얼룩 프로파일 — 큰 덩어리 노이즈를 한 겹 더 얹어
-		// 경계가 "찢어진 물감 자국"처럼 뭉텅뭉텅 들어가고 나온다.
-		d += (vnoise(ap * (noise_scale * 0.42) + vec2(13.7, 4.1)) - 0.5) * blob_amount;
-	}
-
-	float mask = (seed_count == 0) ? 0.0 : (1.0 - smoothstep(0.0, edge_soft, d));
-
-	vec4 col = mix(neutral, target, mask);
 
 	// ── 4) 젖은 느낌의 하이라이트 (번지는 경계에만, 명중 직후 잠깐) ─────
-	float band = (1.0 - smoothstep(0.0, wet_width, abs(d))) * mask * wet_amount;
 	vec3 sheen = (paint_color == 1) ? vec3(0.55, 0.56, 0.60) : vec3(0.42, 0.43, 0.50);
-	col.rgb = mix(col.rgb, col.rgb * 0.55 + sheen * 0.55, clamp(band, 0.0, 1.0));
+	col.rgb = mix(col.rgb, col.rgb * 0.55 + sheen * 0.55, clamp(wet_edge * wet_amount, 0.0, 1.0));
 
 	// ── 5) 회색(영구) 상태: 대비를 죽여 "죽은 지형"으로 보이게 ─────────
 	float lum = dot(col.rgb, vec3(0.299, 0.587, 0.114));

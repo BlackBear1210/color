@@ -27,8 +27,9 @@ extends Node
 ## ▣ 규칙은 zone_04 를 그대로 따른다 (paint_platform.gd 와 동일한 상태 기계)
 ##   · 연결된 같은 색 타일 덩어리 = 플랫폼 1개
 ##   · 필요횟수 = 플랫폼의 긴 변(칸) / 나눗값  → 크면 더 많이 맞혀야 한다
-##   · 진행 중에 다른 색이 오면 회색이 아니라 "새 색으로 리셋"
-##   · 완성된 플랫폼에 반대색 → 영구 회색 (회수 큐에서 제외)
+##   · 흑·백 부분칠은 따로 남고, 두 색이 함께 있으면 전체칠이 되지 않는다
+##   · 완성된 플랫폼에 반대색 → 회색 없이 마지막 색으로 덮어쓰기
+##   · 부분칠은 4초 유지 + 1초 감쇠 뒤 색별로 자동 회수
 ##   · E 회수 = 색과 무관하게 "가장 먼저 칠한 플랫폼"부터 원래 타일로 FIFO 복구
 ##
 ## ▣ proto_bullet / proto_gun 과의 연결
@@ -36,6 +37,8 @@ extends Node
 ##   그래서 총알·총 코드를 고치지 않고 그대로 끼울 수 있다(덕 타이핑).
 ## ============================================================================
 class_name TilePaintMap
+
+const 페인트진행_S := preload("res://scripts/페인트_진행.gd")
 
 signal 상태변경                                     ## HUD 갱신용
 signal 명중됨(결과: String, 색: int, 월드좌표: Vector2)
@@ -116,6 +119,7 @@ class 플랫폼:
 	var 필요: int = 1
 	var 맞은: int = 0
 	var 진행색: int = -1
+	var 진행 = 페인트진행_S.new()
 	var 칠해짐: bool = false
 	var 회색: bool = false
 	var 고정: bool = false             ## 바닥·벽 등 칠할 수 없는 덩어리
@@ -126,6 +130,9 @@ class 플랫폼:
 	var 시드: PackedVector2Array = PackedVector2Array()        ## 바운딩박스 UV(0~1)
 	var 시드반지름: PackedFloat32Array = PackedFloat32Array()
 	var 시드목표: PackedFloat32Array = PackedFloat32Array()
+	var 시드색: PackedInt32Array = PackedInt32Array()
+	var 시드세기: PackedFloat32Array = PackedFloat32Array()
+	var 바탕마스크: float = 0.0
 	var 젖음: float = 0.0
 	var 최소: Vector2i = Vector2i.ZERO                          ## 바운딩박스(칸)
 	var 최대: Vector2i = Vector2i.ZERO
@@ -288,7 +295,7 @@ func _찾기(layer: TileMapLayer, cell: Vector2i):
 	return _셀_찾기.get(_키(layer, cell), null)
 
 # ── 명중 처리 (proto_bullet 이 호출 — PaintSystem.on_hit 과 같은 시그니처) ───
-## 반환값: progress / painted / wasted / mixed_gray / blocked / miss
+## 반환값: progress / painted / wasted / blocked / miss
 ## 명중 지점 보정 반경(칸). 아래 이유로 2칸(=32px)이 필요하다.
 const 탐색_반경: int = 2
 
@@ -306,7 +313,7 @@ func on_hit(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 ## 명중 결과에 따라 페인트를 돌려주거나 잠근다 (페인트_코어.gd 규칙 5·6 과 동일).
 ##   painted / progress → 그대로 대상에 묶인다 (E 로 회수 가능)
 ##   wasted / blocked / miss → 아무 일도 안 일어났으니 **그 자리에서 환급**
-##   mixed_gray → 원래 색에 든 발 + 방금 덮은 1발이 **함께 잠긴다**
+##   mixed_gray → 외부 장애물끼리 회색을 만든 경우에만 발을 잠근다
 func _탄약_정산(layer: TileMapLayer, cell: Vector2i, 결과: String) -> void:
 	if not 탄약을_쓰나():
 		return
@@ -359,29 +366,30 @@ func _명중_처리(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 	if p.칠해짐:
 		if color == p.진행색:
 			return "wasted"                    # 같은 색 덧칠 = 낭비
-		_회색으로(p)
+		# 플레이어가 쏜 반대색은 회색으로 섞지 않고 마지막 색으로 전체를 덮는다.
+		p.진행색 = color
+		p.맞은 += 1
+		_전체색칠(p, color)
 		상태변경.emit()
-		return "mixed_gray"
+		return "painted"
 
-	# 아직 원래색인 플랫폼에 같은 색을 쏘면 아무 의미가 없다
-	if color == p.원래색:
+	# 아무 부분 칠도 없을 때 원래 타일과 같은 색을 쏘면 보이는 변화가 없다.
+	if color == p.원래색 and p.진행.전체횟수() == 0:
 		return "wasted"
 
 	# ── 진행 누적 ──
-	if p.맞은 > 0 and p.진행색 != color:
-		p.맞은 = 0                             # 다른 색이 오면 새 색으로 리셋 (zone_04 규칙 3)
-		_시드_비우기(p)
 	p.진행색 = color
-	p.맞은 += 1
+	p.진행.명중(color, p.필요)
+	p.맞은 = p.진행.전체횟수()
 
 	_오버레이_준비(p)
-	_시드_추가(p, cell)
+	_시드_추가(p, cell, color)
 	p.젖음 = 1.0
 
-	if p.맞은 >= p.필요:
-		p.칠해짐 = true
-		_목표반지름_갱신(p, true)               # 마지막 한 방 = 전체로 확 번짐
-		_큐.append(p)
+	if p.진행.완성가능(color, p.필요):
+		_전체색칠(p, color)
+		if not _큐.has(p):
+			_큐.append(p)
 		_유니폼_갱신(p)                         # 첫 프레임부터 올바른 마스크로 그려지게
 		_애니_시작()
 		상태변경.emit()
@@ -391,7 +399,19 @@ func _명중_처리(layer: TileMapLayer, cell: Vector2i, color: int) -> String:
 	_유니폼_갱신(p)
 	_애니_시작()
 	상태변경.emit()
+	if not _큐.has(p):
+		_큐.append(p)                           # 부분 칠도 E 회수와 자동 환급의 대상이다.
 	return "progress"
+
+
+func _전체색칠(p: 플랫폼, 색: int) -> void:
+	p.칠해짐 = true
+	p.진행색 = 색
+	p.진행.비우기()
+	_시드_비우기(p)
+	p.바탕마스크 = 0.0 if 색 == p.원래색 else 1.0
+	_오버레이_준비(p)
+	p.젖음 = 1.0
 
 # ── 잉크 번짐 표현 ──────────────────────────────────────────────────────────
 ## 반대색 타일을 통째로 찍어둔 오버레이 레이어를 만든다(없으면).
@@ -420,7 +440,7 @@ func _오버레이_준비(p: 플랫폼) -> void:
 		ov.set_cell(c, 원["src"], 새좌표, 원["alt"])
 
 ## 명중 지점을 씨앗으로 등록 (바운딩박스 UV 로 변환)
-func _시드_추가(p: 플랫폼, cell: Vector2i) -> void:
+func _시드_추가(p: 플랫폼, cell: Vector2i, 색: int) -> void:
 	var 크기 := p.최대 - p.최소 + Vector2i.ONE
 	var uv := Vector2(
 		(float(cell.x - p.최소.x) + 0.5) / float(maxi(크기.x, 1)),
@@ -429,14 +449,20 @@ func _시드_추가(p: 플랫폼, cell: Vector2i) -> void:
 		p.시드.remove_at(0)
 		p.시드반지름.remove_at(0)
 		p.시드목표.remove_at(0)
+		p.시드색.remove_at(0)
+		p.시드세기.remove_at(0)
 	p.시드.append(uv)
 	p.시드반지름.append(0.0)
 	p.시드목표.append(0.0)
+	p.시드색.append(색)
+	p.시드세기.append(1.0)
 
 func _시드_비우기(p: 플랫폼) -> void:
 	p.시드 = PackedVector2Array()
 	p.시드반지름 = PackedFloat32Array()
 	p.시드목표 = PackedFloat32Array()
+	p.시드색 = PackedInt32Array()
+	p.시드세기 = PackedFloat32Array()
 
 func _종횡비(p: 플랫폼) -> float:
 	var 크기 := p.최대 - p.최소 + Vector2i.ONE
@@ -454,7 +480,8 @@ func _목표반지름_갱신(p: 플랫폼, 완성: bool) -> void:
 	var n := p.시드.size()
 	if n == 0:
 		return
-	var 진행 := clampf(float(p.맞은) / float(maxi(p.필요, 1)), 0.0, 1.0)
+	var 색진행 := maxi(p.진행.횟수(ColorDefs.BLACK), p.진행.횟수(ColorDefs.WHITE))
+	var 진행 := clampf(float(색진행) / float(maxi(p.필요, 1)), 0.0, 1.0)
 	var a := _종횡비(p)
 	var 면적반지름 := sqrt(maxf(진행, 0.0001) * a / PI) / sqrt(float(n))
 	var 목표 := _최대반지름(p) if 완성 else lerpf(면적반지름, _최대반지름(p), pow(진행, 5.0))
@@ -484,11 +511,40 @@ func _process(delta: float) -> void:
 		if p.젖음 > 0.0:
 			p.젖음 = maxf(p.젖음 - delta * 1.25, 0.0)     # 약 0.8초에 걸쳐 마른다
 			이_플랫폼_남음 = true
+		if not p.칠해짐 and p.진행.전체횟수() > 0:
+			var 변화: Dictionary = p.진행.진행(delta, p.필요)
+			for i in p.시드세기.size():
+				p.시드세기[i] = p.진행.알파(p.시드색[i])
+			for 만료색 in 변화["만료"]:
+				var 발수 := int(변화["만료"][만료색])
+				_색_시드_지우기(p, int(만료색))
+				p.맞은 = maxi(p.맞은 - 발수, 0)
+				_환급(발수)
+			var 완성색: int = 변화["완성색"]
+			if 완성색 >= 0:
+				_전체색칠(p, 완성색)
+				이_플랫폼_남음 = true
+			elif p.진행.전체횟수() == 0:
+				_큐.erase(p)
+				p.진행색 = -1
+			이_플랫폼_남음 = p.진행.전체횟수() > 0
+			상태변경.emit()
 		if 이_플랫폼_남음:
 			남음 = true
 		_유니폼_갱신(p)
 	if not 남음:
 		set_process(false)
+
+
+func _색_시드_지우기(p: 플랫폼, 색: int) -> void:
+	for i in range(p.시드색.size() - 1, -1, -1):
+		if p.시드색[i] != 색:
+			continue
+		p.시드.remove_at(i)
+		p.시드반지름.remove_at(i)
+		p.시드목표.remove_at(i)
+		p.시드색.remove_at(i)
+		p.시드세기.remove_at(i)
 
 func _유니폼_갱신(p: 플랫폼) -> void:
 	if p.오버레이 == null or not is_instance_valid(p.오버레이):
@@ -499,9 +555,13 @@ func _유니폼_갱신(p: 플랫폼) -> void:
 	var 타일 := Vector2(p.레이어.tile_set.tile_size)
 	var 시드8 := PackedVector2Array()
 	var 반지름8 := PackedFloat32Array()
+	var 색8 := PackedInt32Array()
+	var 세기8 := PackedFloat32Array()
 	for i in 최대_시드:
 		시드8.append(p.시드[i] if i < p.시드.size() else Vector2.ZERO)
 		반지름8.append(p.시드반지름[i] if i < p.시드반지름.size() else 0.0)
+		색8.append(p.시드색[i] if i < p.시드색.size() else p.원래색)
+		세기8.append(p.시드세기[i] if i < p.시드세기.size() else 0.0)
 	# ★셰이더는 월드 좌표로 계산한다 (TileMapLayer 가 쿼드런트별 CanvasItem 으로 쪼개 그리므로
 	#   레이어 로컬 좌표를 넘기면 마스크가 어긋나 아예 투명해진다 — 실제로 그 버그를 겪었다)
 	mat.set_shader_parameter("origin_world", p.레이어.to_global(Vector2(p.최소) * 타일))
@@ -510,7 +570,11 @@ func _유니폼_갱신(p: 플랫폼) -> void:
 	mat.set_shader_parameter("aspect", _종횡비(p))
 	mat.set_shader_parameter("seeds", 시드8)
 	mat.set_shader_parameter("seed_r", 반지름8)
+	mat.set_shader_parameter("seed_c", 색8)
+	mat.set_shader_parameter("seed_a", 세기8)
 	mat.set_shader_parameter("seed_count", p.시드.size())
+	mat.set_shader_parameter("original_color", p.원래색)
+	mat.set_shader_parameter("base_mask", p.바탕마스크)
 	mat.set_shader_parameter("wet_amount", p.젖음)
 	mat.set_shader_parameter("paint_color", 0 if p.진행색 == ColorDefs.BLACK else 1)
 	mat.set_shader_parameter("locked", 1.0 if p.회색 else 0.0)
@@ -524,7 +588,7 @@ func _회색으로(p: 플랫폼) -> void:
 	_큐.erase(p)                               # 영구 → 회수 대상에서 제외
 	_오버레이_준비(p)
 	if p.시드.is_empty():
-		_시드_추가(p, (p.최소 + p.최대) / 2)
+		_시드_추가(p, (p.최소 + p.최대) / 2, ColorDefs.BLACK)
 	for i in p.시드목표.size():
 		p.시드목표[i] = _최대반지름(p)
 	p.젖음 = 1.0
@@ -571,7 +635,7 @@ func 되돌리기() -> bool:
 ##   레벨 디자이너가 어느 씬에 두든 같은 결과를 얻는다.
 ##     painted / progress → 회수줄에 쌓인다 (E 로 회수 가능)
 ##     wasted / blocked   → 페인트 1발 환급
-##     mixed_gray         → 줄에서 빼고 발수를 잠근다 (회색은 회수 불가)
+##     mixed_gray         → 장애물 상호작용으로 회색이 된 경우에만 줄에서 빼고 발수를 잠근다
 func 노드_명중(대상: Node, 색: int, 월드좌표: Vector2) -> String:
 	_비행_해제()                       # 이 발은 결판났다 (HUD 표시용 계수)
 
@@ -593,7 +657,7 @@ func 노드_명중(대상: Node, 색: int, 월드좌표: Vector2) -> String:
 			항목.맞은 += 1
 			항목.좌표 = 월드좌표          # HUD 의 E 마커가 마지막으로 칠한 자리에 뜬다
 		"mixed_gray":
-			# 규칙 3: 회색은 수동 회수 불가 → 줄에서 빼고 발수를 잠근다.
+			# 플레이어 총알 대상은 이 값을 내지 않는다. 장애물 상호작용 회색만 잠근다.
 			var 기존: 외부칠 = _외부_찾기(대상)
 			var 들어간 := 0
 			if 기존 != null:
@@ -650,11 +714,13 @@ func _플랫폼_비우기(p: 플랫폼) -> void:
 		p.오버레이.queue_free()
 	p.오버레이 = null
 	_시드_비우기(p)
+	p.진행.비우기()
 	p.젖음 = 0.0
 	p.맞은 = 0
 	p.진행색 = -1
 	p.칠해짐 = false
 	p.회색 = false
+	p.바탕마스크 = 0.0
 
 ## PaintSystem(v2) 과 같은 이름 — proto_gun 의 기존 호출 경로도 그대로 동작한다.
 func recover(_layer: TileMapLayer = null) -> bool:
@@ -670,11 +736,11 @@ func 플랫폼_수() -> int:
 ## 이 색으로 쏘면 앞으로 몇 발 더 필요한가. 칠할 수 없으면 -1.
 func remaining_hits(layer: TileMapLayer, cell: Vector2i, color: int) -> int:
 	var p = _찾기(layer, cell)
-	if p == null or p.고정 or p.회색 or p.칠해짐 or color == p.원래색:
+	if p == null or p.고정 or p.회색 or p.칠해짐:
 		return -1
-	if p.맞은 > 0 and p.진행색 == color:
-		return p.필요 - p.맞은
-	return p.필요
+	if color == p.원래색 and p.진행.전체횟수() == 0:
+		return -1
+	return p.진행.남은횟수(color, p.필요)
 
 # ── [2026-08-17 추가] 탄약 ──────────────────────────────────────────────────
 # `총.gd`(스마트월드)가 `페인트코어` 에게 묻는 것과 **같은 이름**을 쓴다.
