@@ -38,7 +38,9 @@ const TOP높이 := 256
 const BOTTOM높이 := 192
 const SIDE높이 := 256
 const FILL변 := 1024
-const 코너변 := 256
+## fill_solid 의 한 변. 코너 크기와 **분리**해 둔다 —
+## 코너 해상도를 실험하려고 바꿀 때 필까지 같이 바뀌면 비교가 무효가 된다.
+const SOLID변 := 256
 const TAPER폭 := 128
 const TAPER높이 := 256
 const TAPER페이드 := 0.35
@@ -53,6 +55,12 @@ var _출력 := ""
 var _감마 := 1.60
 var _이음매폭 := 0.10
 ## 코너 합성 방식: polar(grass 확정) 또는 miter(규칙적 격자 재질용)
+## 코너 텍스처 한 변 (--코너크기). ★ 코너 쿼드의 **월드 크기**는 이 값이 아니라
+## 캐리어(투명_256) 높이 x 배율이 정한다. 이 값을 키우면 같은 90 월드px 에
+## 더 촘촘한 텍셀이 들어간다 = 코너만 해상도를 올리는 실험이 된다.
+var 코너변 := 256
+## 안쪽 그림자 세기 (0 = 끔). 바깥 대비 안쪽이 이 비율만큼 어두워진다.
+var _그림자 := 0.25
 var _코너방식 := "polar"
 var _확인만 := false
 var _빠짐: PackedStringArray = PackedStringArray()
@@ -68,6 +76,10 @@ func _init() -> void:
 			_감마 = a.substr("--감마=".length()).to_float()
 		elif a.begins_with("--이음매폭="):
 			_이음매폭 = a.substr("--이음매폭=".length()).to_float()
+		elif a.begins_with("--그림자="):
+			_그림자 = a.substr("--그림자=".length()).to_float()
+		elif a.begins_with("--코너크기="):
+			코너변 = a.substr("--코너크기=".length()).to_int()
 		elif a.begins_with("--코너방식="):
 			_코너방식 = a.substr("--코너방식=".length())
 		elif a == "--확인만":
@@ -217,10 +229,26 @@ func _엣지마감(im: Image, 안쪽이아래: bool) -> Image:
 		if d < n:
 			var t: float = 1.0 - float(d) / float(n)
 			마스크 = 0.5 * (1.0 + cos(PI * (1.0 - t)))
+		# ★ 안쪽 그림자 — 바깥(v=0)에서 안쪽(v=1)으로 갈수록 어두워지는 깊이감.
+		#
+		# ▣ 왜 FILL 이 아니라 엣지에 굽나
+		#   FILL 은 내부를 **반복 타일링**한다. 텍스처 안에 '안쪽' 이라는 방향이 없어서
+		#   그라데이션을 구우면 그게 그대로 반복돼 줄무늬 타일 경계가 보인다.
+		#   엣지는 외곽선을 따라가므로 v 축이 곧 '바깥→안쪽' 이다. 여기가 제자리다.
+		#
+		# ▣ 왜 별도 그림자 엣지를 안 만들고 엣지에 직접 굽나
+		#   코너와 taper 는 이 엣지 단면에서 합성되므로 **그림자를 자동으로 물려받는다.**
+		#   별도 메타로 얹으면 코너에서 그림자가 끊기고 z-order 도 따로 맞춰야 한다.
+		#   필 톤도 _안쪽톤() 이 그림자 적용 후를 재므로 자동으로 이어진다.
+		var v: float = float(y) / float(maxi(1, H - 1))
+		if not 안쪽이아래:
+			v = 1.0 - v
+		var s: float = v * v * (3.0 - 2.0 * v)          # smoothstep — 시작 기울기 0
+		var 그늘: float = 1.0 - _그림자 * s
 		for x in W:
 			var c := im.get_pixel(x, y)
 			var a: float = clampf((c.a - 알파바닥) / (1.0 - 알파바닥), 0.0, 1.0) * 마스크
-			var l := _감마적용(c.r)
+			var l: float = _감마적용(c.r) * 그늘
 			out.set_pixel(x, y, Color(l, l, l, a))
 	return out
 
@@ -319,16 +347,16 @@ func _필만들기(원본필: Image, 목표톤: float) -> Array:
 			var v: float = clampf(값[y * FILL변 + x] + 이동, 0.0, 1.0)
 			detail.set_pixel(x, y, Color(v, v, v, 1.0))
 	# solid = detail 을 순환 축소 + 순환 블러 + 대비 20% 압축 -> 평균이 자동으로 같다
-	var 작 := _순환축소(detail, 코너변)
+	var 작 := _순환축소(detail, SOLID변)
 	var m := 0.0
-	for y in 코너변:
-		for x in 코너변:
+	for y in SOLID변:
+		for x in SOLID변:
 			m += 작.get_pixel(x, y).r
-	m /= float(코너변 * 코너변)
-	var 블러 := _순환블러(작, float(코너변) / 24.0)
-	var solid := Image.create(코너변, 코너변, false, Image.FORMAT_RGBA8)
-	for y in 코너변:
-		for x in 코너변:
+	m /= float(SOLID변 * SOLID변)
+	var 블러 := _순환블러(작, float(SOLID변) / 24.0)
+	var solid := Image.create(SOLID변, SOLID변, false, Image.FORMAT_RGBA8)
+	for y in SOLID변:
+		for x in SOLID변:
 			var v: float = clampf(m + (블러.get_pixel(x, y).r - m) * SOLID대비, 0.0, 1.0)
 			solid.set_pixel(x, y, Color(v, v, v, 1.0))
 	return [detail, solid]
@@ -521,8 +549,8 @@ func _실행() -> void:
 	var fill원 := _가로_seamless(_키잉_그레이(마스터["fill"]), _이음매폭)
 
 	# --- 4: 엣지 마감 ---
-	print("2) 엣지 마감 (알파 바닥 %.2f · 감마 %.2f · 안쪽 페이드 %.2f)"
-		% [알파바닥, _감마, 안쪽페이드])
+	print("2) 엣지 마감 (알파바닥 %.2f · 감마 %.2f · 안쪽페이드 %.2f · 안쪽그림자 %.2f)"
+		% [알파바닥, _감마, 안쪽페이드, _그림자])
 	var e_top := _엣지마감(top, true)
 	var e_bottom := _엣지마감(bottom, true)   # 네 방향 모두 안쪽이 아래다
 	var e_left := _엣지마감(side, true)
