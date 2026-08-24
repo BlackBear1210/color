@@ -121,9 +121,11 @@ func _ready() -> void:
 	# ── 플레이어 표시 정리 ──────────────────────────────────────────────
 	# [2026-08-02] "플레이어가 파란 박스에 갇혀 보인다"는 제보의 근본 원인은
 	# 빌더가 Player 인스턴스 내부를 복제해 Placeholder2 를 만든 것이었고 그건 고쳤다.
-	# 다만 Placeholder 는 player.gd 가 색 표시에 계속 쓰는 노드라 씬에서 지울 수 없으므로,
-	# 이름이 뭐가 됐든 Polygon2D 플레이스홀더는 여기서 한 번 더 확실히 숨긴다.
-	# (player_anim.gd 도 "Placeholder"만 숨긴다 — 이름이 다르면 놓친다)
+	# ★[2026-08-25 갱신] Placeholder 노드 자체를 Player.tscn 에서 **지웠다**(player.gd 참조도 같이).
+	# 그래서 평소에는 여기서 숨길 것이 없다. 그래도 이 안전망은 **남겨 둔다** —
+	# 빌더가 owner 를 잘못 박아 Player 내부를 복제하면 `Placeholder2` 같은 이름으로
+	# 되살아날 수 있고(2026-08-02 사고), 그때는 이름으로 찾는 코드가 전부 놓친다.
+	# 이름이 뭐가 됐든 Polygon2D 면 숨기는 것이 이 루프의 존재 이유다.
 	for 자식 in _플레이어.get_children():
 		if 자식 is Polygon2D:
 			(자식 as Polygon2D).visible = false
@@ -241,34 +243,20 @@ var _접촉_중심오프셋: Vector2 = Vector2.ZERO   ## 플레이어 원점(발
 ## 플레이어 콜리전을 **한 번만 실측**해서 겹침 질의용 모양을 만들어 둔다.
 ## ⚠ 크기를 코드에 상수로 박지 않는다 — 2026-08-07 에 캐릭터 키가 47px → 97px 로
 ##   바뀌면서 상수로 박아둔 판정이 전부 어긋난 적이 있다. 씬에서 재서 쓴다.
+## ★[2026-08-25] 재는 일을 `플레이어몸.재기()` 한 곳으로 옮겼다 (player.gd 의 같은 주석 참고).
+##   여기가 못 재면 사망 판정이 **발밑 레이 하나로 퇴화**해서, 몸이 반대색 벽에 닿아도
+##   안 죽는다. 실제로 2026-08-25 에 콜리전을 폴리곤으로 바꾸면서 그 일이 났다.
 func _접촉모양_준비() -> void:
-	var cs := _플레이어.get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if cs == null:
-		for 자식 in _플레이어.get_children():
-			if 자식 is CollisionShape2D:
-				cs = 자식
-				break
-	if cs == null or cs.shape == null:
+	var 잰것 := 플레이어몸.재기(_플레이어)
+	if not 잰것["찾음"]:
 		push_warning("스마트월드: 플레이어 콜리전을 못 찾음 → 발밑 레이로 대체한다")
 		return
 
-	# 플레이어는 비균등 스케일(0.79, 0.37)이라 로컬 크기를 그대로 쓰면 안 된다.
-	# 스케일을 **크기에 미리 곱해** 월드 크기로 만들어 두면 매 프레임 변환이 단순해진다.
-	var 배율 := cs.global_scale.abs()
-	var 로컬크기 := Vector2.ZERO
-	if cs.shape is RectangleShape2D:
-		로컬크기 = (cs.shape as RectangleShape2D).size
-	elif cs.shape is CapsuleShape2D:
-		var cap := cs.shape as CapsuleShape2D
-		로컬크기 = Vector2(cap.radius * 2.0, cap.height)
-	else:
-		push_warning("스마트월드: 지원하지 않는 콜리전 모양 → 발밑 레이로 대체한다")
-		return
-
+	# 크기는 이미 월드 픽셀이다(플레이어의 비균등 스케일 0.79/0.37 이 반영돼 있다).
 	_접촉모양 = RectangleShape2D.new()
-	_접촉모양.size = 로컬크기 * 배율 + Vector2.ONE * (접촉_여유 * 2.0)
+	_접촉모양.size = 잰것["크기"] + Vector2.ONE * (접촉_여유 * 2.0)
 	# 원점(발바닥)에서 몸 중심까지의 거리. 회전은 없다고 본다(플랫포머라 항상 0).
-	_접촉_중심오프셋 = cs.position * 배율
+	_접촉_중심오프셋 = 잰것["중심오프셋"]
 
 
 ## ★★[2026-08-23 부위별 판정] ─────────────────────────────────────────────

@@ -8,9 +8,6 @@
 [ext_resource type="Script" uid="uid://l8bmveg5y7ny" path="res://scripts/색겹침.gd" id="6"]
 [ext_resource type="Script" uid="uid://wv15vx0gcktx" path="res://scripts/player_action_fx.gd" id="7"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(55.348686, 263.7887)
-
 [node name="Player" type="CharacterBody2D" unique_id=1147093704]
 scale = Vector2(0.7949601, 0.36771855)
 floor_constant_speed = true
@@ -18,15 +15,6 @@ floor_snap_length = 32.0
 script = ExtResource("1")
 "점프_높이_칸" = 10.0
 "점프_거리_칸" = 10.0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=693978220]
-position = Vector2(-1.4995632e-07, -131.89435)
-shape = SubResource("RectangleShape2D_1")
-
-[node name="Placeholder" type="Polygon2D" parent="." unique_id=844620157]
-visible = false
-color = Color(0.3, 0.7, 1, 1)
-polygon = PackedVector2Array(-32, -128, 32, -128, 32, 0, -32, 0)
 
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="." unique_id=274799588]
 position = Vector2(0, -136.44098)
@@ -41,6 +29,7 @@ animation = &"white_idle"
 script = ExtResource("6")
 
 [node name="GunRig" type="Node2D" parent="." unique_id=947334394]
+visible = false
 scale = Vector2(1.2579248, 2.7194712)
 script = ExtResource("5")
 
@@ -50,7 +39,13 @@ script = ExtResource("2")
 [node name="Muzzle" type="Marker2D" parent="GunRig/Gun" unique_id=1157795680]
 
 [node name="ActionFX" type="Node2D" parent="." unique_id=1157795681]
+visible = false
 script = ExtResource("7")
 "크기_배율" = 1.55
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=614551773]
+visible = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=97548168]
+position = Vector2(0, -1)
+polygon = PackedVector2Array(20.126797, -260.06924, 32.706043, -81.58414, 15.095098, 0, -6.289624, 0, -22.642647, -81.58414, -8.805473, -260.06924)
