@@ -208,14 +208,26 @@ static func generate_array_mesh_from_quad_sequence(_quads: Array[SS2D_Quad], _wr
 
 	var first_quad: SS2D_Quad = _quads[0]
 	var tex: Texture2D = first_quad.texture
+	# [P0-1] 월드에서의 반복 주기 = 텍스처 픽셀폭 x texture_scale.
+	# texture_scale 기본값 1.0 에서는 예전의 tex.get_size().x 와 완전히 같은 값이다.
+	# maxf 는 배율이 0 으로 저장된 손상된 .tres 에 대한 0 나눗셈 방어일 뿐,
+	# 정상 범위(0.05 이상)에서는 절대 걸리지 않는다.
+	var tex_width: float = 0.0
+	if tex != null:
+		tex_width = maxf(0.001, tex.get_size().x * first_quad.texture_scale)
 	# The change in length required to apply to each quad
 	# to make the textures begin and end at the start and end of each texture
 	var change_in_length: float = -1.0
 	if tex != null:
 		# How many times the texture is repeated
-		var texture_reps: float = roundf(total_length / tex.get_size().x)
+		# [P0-2] 엣지 길이가 텍스처 주기의 절반보다 짧으면 roundf 가 0 을 돌려준다.
+		# 그러면 texture_full_length 도 0, change_in_length 도 0 이 되어
+		# 아래 x_left 와 x_right 가 같아지고 = UV 가 한 줄로 붕괴한다
+		# (텍스처의 세로 한 컬럼만 엣지 전체에 늘어난다).
+		# 1024px 같은 고해상도 텍스처에서는 짧은 엣지마다 이게 터지므로 최소 1회를 보장한다.
+		var texture_reps: float = maxf(1.0, roundf(total_length / tex_width))
 		# Length required to display all the reps with the texture's full width
-		var texture_full_length: float = texture_reps * tex.get_size().x
+		var texture_full_length: float = texture_reps * tex_width
 		# How much each quad's texture must be offset to make up the difference in full length vs total length
 		change_in_length = (texture_full_length / total_length)
 
@@ -241,8 +253,9 @@ static func generate_array_mesh_from_quad_sequence(_quads: Array[SS2D_Quad], _wr
 		var uv_d := Vector2(1, 0)
 		# If we have a valid texture and this quad isn't a corner
 		if tex != null and q.corner == q.CORNER.NONE:
-			var x_left: float = (length_elapsed) / tex.get_size().x
-			var x_right: float = (length_elapsed + section_length) / tex.get_size().x
+			# [P0-1] 반복 주기와 같은 기준(tex_width)으로 나눠야 UV 가 일관된다.
+			var x_left: float = (length_elapsed) / tex_width
+			var x_right: float = (length_elapsed + section_length) / tex_width
 			uv_a.x = x_left
 			uv_b.x = x_left
 			uv_c.x = x_right

@@ -30,6 +30,12 @@ var flip_texture: bool = false
 var control_point_index: int
 var fit_texture := SS2D_Material_Edge.FITMODE.SQUISH_AND_STRETCH
 
+# [P0-1] 이 쿼드가 속한 엣지 머티리얼의 texture_scale.
+# UV 를 만드는 SS2D_Edge.generate_array_mesh_from_quad_sequence() 가 static 이라
+# 머티리얼에 접근할 수 없다. 그래서 쿼드가 배율을 직접 들고 다닌다.
+# 기본값 1.0 = 기존 동작.
+var texture_scale: float = 1.0
+
 # Contains value from CORNER enum
 var corner: int = 0
 
@@ -58,6 +64,8 @@ func matches_quad(q: SS2D_Quad) -> bool:
 		and color == q.color
 		and flip_texture == q.flip_texture
 		and fit_texture == q.fit_texture
+		# [P0-1] 배율이 다르면 UV 주기가 달라지므로 같은 메시로 합치면 안 된다.
+		and is_equal_approx(texture_scale, q.texture_scale)
 	)
 
 
@@ -73,6 +81,9 @@ func duplicate() -> SS2D_Quad:
 
 	q.flip_texture = flip_texture
 	q.control_point_index = control_point_index
+	# [P0-1] 배율을 복사하지 않으면 bisect()/테이퍼로 만들어진 쿼드만 1.0 으로 돌아가
+	# 이웃 쿼드와 UV 주기가 어긋난다.
+	q.texture_scale = texture_scale
 
 	q.corner = corner
 	return q
