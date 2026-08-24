@@ -1447,6 +1447,9 @@ func _edge_generate_corner(
 		c_scale,
 		c_offset
 	)
+	# [P0-1] 코너 쿼드도 같은 배율을 들고 있어야 matches_quad() 그룹핑이 어긋나지 않는다.
+	# (코너의 UV 자체는 항상 0..1 이라 배율의 영향을 받지 않는다)
+	corner_quad.texture_scale = c_scale
 	return corner_quad
 
 
@@ -1492,6 +1495,11 @@ func _build_edge_with_material(
 		edge_material = edge_material_meta.edge_material
 		if edge_material == null:
 			return edge
+		# [P0-1] 지금까지 c_scale 은 1.0 리터럴로 고정되어 있어서
+		# "텍스처 픽셀 = 월드 픽셀" 을 벗어날 방법이 없었다.
+		# 이제 머티리얼의 texture_scale 을 받아 엣지 두께와 코너 크기에 반영한다.
+		# (UV 주기는 edge.gd 에서 쿼드의 texture_scale 로 따로 반영한다.)
+		c_scale = edge_material.texture_scale
 		c_offset += edge_material_meta.offset
 
 		edge.z_index = edge_material_meta.z_index
@@ -1573,6 +1581,9 @@ func _build_edge_with_material(
 			c_extends,
 			fitmode
 		)
+		# [P0-1] UV 를 만드는 edge.gd 쪽 함수가 static 이라 머티리얼을 못 본다.
+		# 쿼드에 배율을 실어 보낸다. (static 함수 시그니처는 건드리지 않는다)
+		new_quad.texture_scale = c_scale
 		var new_quads: Array[SS2D_Quad] = []
 		new_quads.push_back(new_quad)
 
@@ -1710,13 +1721,26 @@ func _taper_quad(
 	var taper_texture: Texture2D = get_taper_tex(edge_mat, tex_idx, facing_right, corner_taper)
 	if taper_texture != null:
 		var taper_size: Vector2 = taper_texture.get_size()
-		var fit: bool = absf(taper_size.x) <= quad.get_length_average()
+		# [P1-1] taper 가 차지하는 월드 길이.
+		# 예전: `delta_normal * taper_size` (Vector2 성분곱).
+		#   - 가로 엣지는 taper_size.x, 세로 엣지는 taper_size.y 가 길이가 되어
+		#     같은 텍스처인데 방향마다 길이가 달랐다. 정사각 텍스처로만 쓸 수 있었다.
+		#   - texture_scale 이 안 곱해져서 "텍스처 1px = 월드 1px" 로 굳어 있었다.
+		#     고해상도 타일셋(배율 0.35)에서는 taper 만 해상도가 1/2.86 로 떨어져
+		#     곡선에서 늘어난 자국으로 보인다.
+		# 이제: 항상 .x 만 쓰고 배율을 곱한다. 방향에 무관하게 같은 길이가 되고,
+		#       128x256 taper 를 배율 0.35 로 쓰면 길이 44.8 월드px 에
+		#       엣지 본체와 같은 2.8 텍셀/월드 해상도가 나온다.
+		# ▣ 하위호환: 배율 기본값은 1.0 이고, 정사각 taper 에서는 .x == .y 라
+		#   기존에 쓰이던 조합에서는 결과가 완전히 같다.
+		var taper_length: float = taper_size.x * quad.texture_scale
+		var fit: bool = taper_length <= quad.get_length_average()
 		if fit:
 			var taper_quad := quad.duplicate()
 			taper_quad.corner = SS2D_Quad.CORNER.NONE
 			taper_quad.texture = taper_texture
 			var delta_normal: Vector2 = (taper_quad.pt_d - taper_quad.pt_a).normalized()
-			var offset: Vector2 = delta_normal * taper_size
+			var offset: Vector2 = delta_normal * taper_length
 			if facing_right:
 				taper_quad.pt_a = taper_quad.pt_d - offset
 				taper_quad.pt_b = taper_quad.pt_c - offset
@@ -1730,10 +1754,15 @@ func _taper_quad(
 
 			taper_quad.is_tapered = true
 			return taper_quad
-		# If a new taper quad doesn't fit, re-texture the new_quad
-		else:
-			quad.is_tapered = true
-			quad.texture = taper_texture
+		# [P1-2] taper 가 쿼드보다 길면 **그냥 건너뛴다**.
+		# 예전에는 쿼드 **전체**를 taper 텍스처로 갈아끼웠다(아래 주석의 re-texture).
+		# 그 결과 곡선에서 짧은 끝쿼드 하나가 통째로 taper 로 덮여
+		# 늘어난 검은 슬래브가 실루엣 밖으로 튀어나왔다 (실측으로 확인).
+		# taper 는 마감 장식이고, 곡선 실루엣과 텍스처 연속성이 더 중요하다.
+		# 건너뛰면 그 쿼드는 평범한 엣지 텍스처로 그려진다 = 안전한 쪽으로 실패한다.
+		# ▣ 하위호환: 이 분기는 taper 텍스처가 실제로 있을 때만 닿는다.
+		#   현 저장소의 머티리얼 16개는 전부 use_taper_texture = false 이고
+		#   taper 텍스처를 가진 머티리얼이 하나도 없어서 도달하지 않는다.
 	return null
 
 
