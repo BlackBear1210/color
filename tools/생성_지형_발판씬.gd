@@ -25,29 +25,41 @@ extends SceneTree
 const 지형_S := preload("res://scripts/스마트월드/지형.gd")
 const 폴더 := "res://scenes/집/스마트 매쉬 assets"
 
-## [재질키, 표시이름, 채움 머티리얼, 속빔 머티리얼]
+## [재질키, 표시이름, 채움 머티리얼, 속빔 머티리얼, 폴더이름]
+## ★ 폴더 이름에 영문 키워드를 같이 넣는다 — 작업자가 BRICK/SEWER/WOOD/GRASS 로도,
+##   벽돌/하수/나무/잔디 로도 찾을 수 있게 하려는 것이다.
 const 재질표 := [
 	["잔디v4", "잔디",
 		"res://assets/textures/smartshape/grass_v4/tres/지형_잔디_v4_black_detail.tres",
-		"res://assets/textures/smartshape/grass_v4/tres/지형_잔디v4_black_detail_속빔.tres"],
+		"res://assets/textures/smartshape/grass_v4/tres/지형_잔디v4_black_detail_속빔.tres",
+		"GRASS_잔디"],
 	["벽돌v1", "벽돌",
 		"res://assets/textures/smartshape/brick_v1/tres/지형_벽돌v1_black_detail.tres",
-		"res://assets/textures/smartshape/brick_v1/tres/지형_벽돌v1_black_detail_속빔.tres"],
+		"res://assets/textures/smartshape/brick_v1/tres/지형_벽돌v1_black_detail_속빔.tres",
+		"BRICK_벽돌"],
 	["하수v1", "하수",
 		"res://assets/textures/smartshape/sewer_v1/tres/지형_하수v1_black_detail.tres",
-		"res://assets/textures/smartshape/sewer_v1/tres/지형_하수v1_black_detail_속빔.tres"],
+		"res://assets/textures/smartshape/sewer_v1/tres/지형_하수v1_black_detail_속빔.tres",
+		"SEWER_하수"],
 	["나무v1", "나무",
 		"res://assets/textures/smartshape/wood_v1/tres/지형_나무v1_black_detail.tres",
-		"res://assets/textures/smartshape/wood_v1/tres/지형_나무v1_black_detail_속빔.tres"],
+		"res://assets/textures/smartshape/wood_v1/tres/지형_나무v1_black_detail_속빔.tres",
+		"WOOD_나무"],
 ]
 
-## [꼬리, 시작상태(지형.gd 의 enum 값), 속빔여부]
+## [파일이름틀, 시작상태(지형.gd 의 enum 값), 속빔여부]
 ## enum 상태 { 무색=0, 검정=1, 흰색=2, 회색=3 }
+##
+## ★ 이름만 보고 용도를 알 수 있게 짓는다 (작업자용 규칙)
+##   발판_*_채움 = SOLID  (내부가 꽉 찬 지형 · 평소에 쓰는 것)
+##   발판_*_속빔 = HOLLOW (내부가 진짜 투명한 테두리 지형)
+##   프리뷰_*    = 시작상태만 다르게 둔 확인용. 맵에 그냥 써도 되지만
+##                 색은 런타임이 바꾸므로 보통은 '채움' 을 쓰고 시작상태만 고른다.
 const 변형표 := [
-	["", 0, false],          # 기본 — 무색, 칠할 수 있는 지형
-	["_검정", 1, false],      # 처음부터 검정
-	["_흰색", 2, false],      # 처음부터 흰색
-	["_속빔", 0, true],       # 내부가 비어 있는 테두리 지형
+	["발판_%s_채움", 0, false],
+	["발판_%s_속빔", 0, true],
+	["프리뷰_%s_검정", 1, false],
+	["프리뷰_%s_흰색", 2, false],
 ]
 
 ## 기본 발판 크기 (기존 발판_잔디.tscn 과 같은 384 x 128)
@@ -115,15 +127,16 @@ func _실행() -> void:
 	var 수 := 0
 	for 재질 in 재질표:
 		var 표시: String = 재질[1]
+		var 폴더이름: String = 재질[4]
 		for 변형 in 변형표:
-			var 꼬리: String = 변형[0]
+			var 틀: String = 변형[0]
 			var 상태: int = 변형[1]
 			var 속빔: bool = 변형[2]
 			var 머티: String = 재질[3] if 속빔 else 재질[2]
 			# 재질별 하위 폴더에 넣어 파일 목록이 안 뒤엉키게 한다.
 			# 기존 발판_*.tscn 5개는 루트에 그대로 둔다 (건드리지 않는다).
-			var 이름 := "%s/발판_%s%s" % [표시, 표시, 꼬리]
+			var 이름 := "%s/%s" % [폴더이름, 틀 % 표시]
 			if _만들기(이름, 머티, 상태):
 				수 += 1
-	print("\n발판 씬 %d 개 생성 (재질 %d x 변형 %d)" % [수, 재질표.size(), 변형표.size()])
+	print("\n작업자 씬 %d 개 생성 (재질 %d x 용도 %d)" % [수, 재질표.size(), 변형표.size()])
 	quit(0)

@@ -59,9 +59,26 @@ var _이음매폭 := 0.10
 ## 캐리어(투명_256) 높이 x 배율이 정한다. 이 값을 키우면 같은 90 월드px 에
 ## 더 촘촘한 텍셀이 들어간다 = 코너만 해상도를 올리는 실험이 된다.
 var 코너변 := 256
+## ★ [2026-08-25 추가] 코너 쿼드의 **월드 크기**를 정하는 캐리어 한 변 (투명_256).
+##   코너 텍스처를 512 로 키운 것은 '같은 90 월드px 에 텍셀을 더 넣는다' 는 뜻이었는데,
+##   u 매핑이 float(코너변) 을 그대로 쓰고 있어서 **엣지 그림의 2배 길이**를 코너에
+##   밀어 넣고 있었다 = 코너만 가로로 2배 압축. 벽돌이 코너에서만 좁아지고
+##   코너 쿼드 경계가 **사각형 자국**으로 드러난 원인이다 (하수에서 특히 심했다).
+##   u 길이는 텍셀 수가 아니라 월드 길이로 재야 하므로 이 값을 쓴다.
+var 코너캐리어 := 256.0
 ## 안쪽 그림자 세기 (0 = 끔). 바깥 대비 안쪽이 이 비율만큼 어두워진다.
 var _그림자 := 0.25
 var _코너방식 := "polar"
+## 코너 각도 블렌드 폭 (1.0 = 90도 전체, 0.70 = 기존값 = 45도 +-31.5도).
+var _코너블렌드 := 0.70
+## ★ [2026-08-25 추가] 알파에만 따로 쓰는 좁은 블렌드 폭 (0 이하 = 색과 동일).
+##   miter 코너의 후광 원인은 '넓은 각도 블렌드' 다. OUTER 코너의 오른쪽 열 근처
+##   (= SIDE 띠의 바깥 표면 **밖**) 인데도 각도가 45도에서 31도밖에 안 떨어져
+##   TOP 띠가 26% 섞이고, TOP 은 그 깊이에서 불투명이라
+##   **SIDE 실루엣 바깥에 알파 60짜리 반투명 덩어리**가 얹힌다. 그게 후광이다.
+##   색은 넓게 섞어야 이음매가 안 보이고, 알파는 좁게 끊어야 실루엣이 산다.
+##   그래서 둘을 분리한다 (실루엣은 좁게 · 질감은 넓게).
+var _코너알파폭 := -1.0
 var _확인만 := false
 var _빠짐: PackedStringArray = PackedStringArray()
 
@@ -82,6 +99,10 @@ func _init() -> void:
 			코너변 = a.substr("--코너크기=".length()).to_int()
 		elif a.begins_with("--코너방식="):
 			_코너방식 = a.substr("--코너방식=".length())
+		elif a.begins_with("--코너블렌드="):
+			_코너블렌드 = a.substr("--코너블렌드=".length()).to_float()
+		elif a.begins_with("--코너알파폭="):
+			_코너알파폭 = a.substr("--코너알파폭=".length()).to_float()
 		elif a == "--확인만":
 			_확인만 = true
 	call_deferred("_실행")
@@ -227,8 +248,16 @@ func _엣지마감(im: Image, 안쪽이아래: bool) -> Image:
 		var 마스크 := 1.0
 		var d: int = (H - 1 - y) if 안쪽이아래 else y
 		if d < n:
-			var t: float = 1.0 - float(d) / float(n)
-			마스크 = 0.5 * (1.0 + cos(PI * (1.0 - t)))
+			# ★ [2026-08-25 수정] 이 식은 뒤집혀 있었다 (실측으로 잡은 버그).
+			#   예전 식 0.5*(1+cos(PI*(1-t))) 는 d=0(가장 안쪽)에서 1, d=n 에서 0 이라
+			#   "안쪽으로 갈수록 사라진다" 가 아니라 반대로
+			#   **안쪽 78% 지점에 완전투명한 줄이 생기고 맨 안쪽 행이 불투명** 이 되었다.
+			#   실측: brick/sewer/wood edge_top 은 y=200 에서 알파 0, y=255 에서 255.
+			#   (파이썬으로 구운 grass_v4 는 y=253 에서 0 — 이쪽이 의도한 모양이다)
+			#   그 투명한 줄이 코너 합성에서 apex 둘레 고리로 감겨
+			#   확대하면 보이던 반투명 유령 실루엣의 정체였다.
+			var t: float = float(d) / float(n)   # 0 = 가장 안쪽, 1 = 페이드 시작
+			마스크 = 0.5 * (1.0 - cos(PI * t))
 		# ★ 안쪽 그림자 — 바깥(v=0)에서 안쪽(v=1)으로 갈수록 어두워지는 깊이감.
 		#
 		# ▣ 왜 FILL 이 아니라 엣지에 굽나
@@ -398,6 +427,27 @@ func _블렌드(a: Color, b: Color, w: float) -> Color:
 	return Color(r, r, r, clampf(outa, 0.0, 1.0))
 
 
+## 각도 p(0~1 · 0 = SIDE 쪽 끝 / 1 = TOP 쪽 끝)를 블렌드 가중치로 바꾼다.
+## 폭 1.0 이면 90도 내내 섞고, 좁을수록 45도 부근에서만 갈아탄다.
+func _가중(p: float, 폭: float) -> float:
+	var 시작: float = (1.0 - 폭) * 0.5
+	var t: float = clampf((p - 시작) / maxf(폭, 1e-4), 0.0, 1.0)
+	return t * t * (3.0 - 2.0 * t)
+
+
+## 색과 알파에 서로 다른 가중치를 쓰는 블렌드.
+## wa == wc 이면 기존 _블렌드() 와 같은 값이 나온다 (하위호환).
+func _블렌드2(a: Color, b: Color, wc: float, wa: float) -> Color:
+	var outa: float = clampf(a.a * wa + b.a * (1.0 - wa), 0.0, 1.0)
+	var wsum: float = a.a * wc + b.a * (1.0 - wc)
+	var r: float
+	if wsum > 0.05:
+		r = clampf((a.r * a.a * wc + b.r * b.a * (1.0 - wc)) / wsum, 0.0, 1.0)
+	else:
+		r = clampf(a.r * wc + b.r * (1.0 - wc), 0.0, 1.0)
+	return Color(r, r, r, outa)
+
+
 ## ★ 코너 합성 방식 두 가지 — 재질의 성격에 따라 고른다
 ##
 ##   polar : 극좌표로 감는다 (grass_v4 확정 방식).
@@ -426,21 +476,23 @@ func _코너합성_miter(top: Image, side: Image, 바깥: bool) -> Image:
 			if 바깥:
 				# 왼쪽 열(px=0)이 TOP 단면, 아래 행(py=1)이 SIDE 단면
 				phi = atan2((1.0 - py) * float(S), maxf(px * float(S), 1e-6))
-				u_t = U_TOP + px * float(S) / topW
+				u_t = U_TOP + px * 코너캐리어 / topW
 				v_t = py
-				u_s = U_SIDE - (1.0 - py) * float(S) / sideW
+				u_s = U_SIDE - (1.0 - py) * 코너캐리어 / sideW
 				v_s = 1.0 - px
 			else:
 				# 위 행(py=0)이 TOP 단면, 오른쪽 열(px=1)이 SIDE 단면
 				phi = atan2((1.0 - px) * float(S), maxf(py * float(S), 1e-6))
-				u_t = U_TOP + py * float(S) / topW
+				u_t = U_TOP + py * 코너캐리어 / topW
 				v_t = 1.0 - px
-				u_s = U_SIDE - (1.0 - px) * float(S) / sideW
+				u_s = U_SIDE - (1.0 - px) * 코너캐리어 / sideW
 				v_s = py
 			# 45도 대각선에서 부드럽게 섞는다 (경계에서는 한쪽만 100%)
-			var t: float = clampf((clampf(phi / (PI * 0.5), 0.0, 1.0) - 0.15) / 0.70, 0.0, 1.0)
-			var w_top := t * t * (3.0 - 2.0 * t)
-			out.set_pixel(x, y, _블렌드(_샘플(top, u_t, v_t), _샘플(side, u_s, v_s), w_top))
+			var p: float = clampf(phi / (PI * 0.5), 0.0, 1.0)
+			var w_top := _가중(p, _코너블렌드)
+			var w_a: float = w_top if _코너알파폭 <= 0.0 else _가중(p, _코너알파폭)
+			out.set_pixel(x, y, _블렌드2(
+				_샘플(top, u_t, v_t), _샘플(side, u_s, v_s), w_top, w_a))
 	return out
 
 
@@ -471,11 +523,16 @@ func _코너합성(top: Image, side: Image, 바깥: bool) -> Image:
 				phi = atan2(maxf(dx, 1e-6), maxf(dy, 1e-6))
 			var r := sqrt(dx * dx + dy * dy)
 			# 각도 블렌드는 중심에서 축퇴한다. smoothstep 으로 이음매에서 포화시킨다.
-			var t: float = clampf((clampf(phi / (PI * 0.5), 0.0, 1.0) - 0.15) / 0.70, 0.0, 1.0)
-			var w_top := t * t * (3.0 - 2.0 * t)
-			var u_top := U_TOP + ((PI * 0.5 - phi) * r) / float(top.get_width())
-			var u_side := U_SIDE - (phi * r) / float(side.get_width())
-			var c := _블렌드(_샘플(top, u_top, v_eq), _샘플(side, u_side, v_eq), w_top)
+			var p: float = clampf(phi / (PI * 0.5), 0.0, 1.0)
+			var w_top := _가중(p, _코너블렌드)
+			var w_a: float = w_top if _코너알파폭 <= 0.0 else _가중(p, _코너알파폭)
+			# ★ r 은 코너 텍스처 픽셀이다. u 는 월드 길이 기준이어야 하므로
+			#   코너 해상도(S)와 무관하게 캐리어 크기로 환산한다.
+			var r_w: float = r * 코너캐리어 / float(S)
+			var u_top := U_TOP + ((PI * 0.5 - phi) * r_w) / float(top.get_width())
+			var u_side := U_SIDE - (phi * r_w) / float(side.get_width())
+			var c := _블렌드2(
+				_샘플(top, u_top, v_eq), _샘플(side, u_side, v_eq), w_top, w_a)
 			if 바깥 and v_eq < 0.0:
 				c.a = 0.0
 			out.set_pixel(x, y, c)
