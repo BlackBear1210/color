@@ -38,6 +38,19 @@ class_name SS2D_Material_Edge
 enum FITMODE {SQUISH_AND_STRETCH, CROP}
 @export var fit_mode: FITMODE = FITMODE.SQUISH_AND_STRETCH : set = _set_fit_texture
 
+## [P0-1] 텍스처의 픽셀 크기와 월드 크기를 분리하는 배율.[br]
+## [br]
+## 원래 이 애드온은 "텍스처 1픽셀 = 월드 1픽셀" 로 고정되어 있었다.
+## 즉 엣지 띠의 월드 두께가 텍스처의 픽셀 높이와 같고, 반복 주기가 텍스처의 픽셀 폭과 같았다.
+## 그래서 해상도를 올리면 지형이 물리적으로 커져 버려서 고해상도 일러스트 텍스처를 쓸 수 없었다.[br]
+## [br]
+## 이 값을 곱하면 가로/세로 양쪽에 동일하게 적용되어 종횡비가 유지된다.[br]
+## 예) 1024x256 텍스처 + texture_scale 0.35 -> 월드에서 358x90 (grass_v3 의 256x90 과 같은 두께).[br]
+## [br]
+## [b]기본값 1.0 은 기존 동작과 완전히 동일하다.[/b] 기존 .tres 는 이 키가 없으므로
+## 로드 시 1.0 이 들어가고, 따라서 기존 지형은 픽셀 단위로 똑같이 렌더된다.
+@export_range(0.05, 4.0, 0.005, "or_greater") var texture_scale: float = 1.0 : set = _set_texture_scale
+
 @export var material: Material = null : set = _set_material
 
 
@@ -93,6 +106,12 @@ func _set_use_taper(b: bool) -> void:
 
 func _set_fit_texture(fitmode: FITMODE) -> void:
 	fit_mode = fitmode
+	emit_changed()
+
+
+# [P0-1] 다른 setter 들과 동일한 규약: 값이 바뀌면 emit_changed() 로 셰이프를 다시 굽게 한다.
+func _set_texture_scale(f: float) -> void:
+	texture_scale = f
 	emit_changed()
 
 
