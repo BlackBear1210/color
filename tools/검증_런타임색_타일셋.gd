@@ -22,12 +22,10 @@ const T := "res://assets/textures/smartshape"
 const 대상 := [
 	["잔디", T + "/grass_v4/tres/지형_잔디_v4_black_detail.tres",
 		T + "/grass_v4/tres/지형_잔디v4_black_detail_속빔.tres"],
-	["벽돌", T + "/brick_v1/tres/지형_벽돌v1_black_detail.tres",
-		T + "/brick_v1/tres/지형_벽돌v1_black_detail_속빔.tres"],
-	["하수", T + "/sewer_v1/tres/지형_하수v1_black_detail.tres",
-		T + "/sewer_v1/tres/지형_하수v1_black_detail_속빔.tres"],
-	["나무", T + "/wood_v1/tres/지형_나무v1_black_detail.tres",
-		T + "/wood_v1/tres/지형_나무v1_black_detail_속빔.tres"],
+	["벽돌", T + "/brick_v2/tres/지형_벽돌v2_black_detail.tres",
+		T + "/brick_v2/tres/지형_벽돌v2_black_detail_속빔.tres"],
+	["나무", T + "/wood_v2/tres/지형_나무v2_black_detail.tres",
+		T + "/wood_v2/tres/지형_나무v2_black_detail_속빔.tres"],
 ]
 
 var 통과 := 0

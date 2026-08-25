@@ -61,7 +61,8 @@ func _실행() -> void:
 		var n: Node = ps.instantiate()
 		root.add_child(n)
 
-		var 속빔 := 이름.contains("속빔")
+		# 이름 규칙: TEMPLATE_<재질>_<SOLID|HOLLOW>.tscn
+		var 속빔 := 이름.contains("HOLLOW")
 		_확인(n.get("shape_material") != null, "shape_material 이 비었다")
 		var m = n.get("shape_material")
 		if m != null:
@@ -100,12 +101,9 @@ func _실행() -> void:
 					"채움인데 fill 텍스처가 없다")
 			_확인(is_equal_approx(m.fill_texture_scale, 배율), "fill_texture_scale 이 다르다")
 
-		# 시작상태 — 이름과 맞아야 한다 (0 무색 / 1 검정 / 2 흰색)
+		# Template 은 전부 무색(0)으로 나간다. 색은 런타임 상태이고,
+		# 작업자는 인스펙터의 시작상태만 고른다.
 		var 기대: int = 0
-		if 이름.contains("검정"):
-			기대 = 1
-		elif 이름.contains("흰색"):
-			기대 = 2
 		_확인(int(n.get("시작상태")) == 기대,
 			"시작상태가 %d 여야 하는데 %d" % [기대, int(n.get("시작상태"))])
 
@@ -120,6 +118,16 @@ func _실행() -> void:
 		# 점 — 닫힌 사각형 4점 (작업자가 잡아 늘릴 시작 도형)
 		var pa: SS2D_Point_Array = n.get_point_array()
 		_확인(pa != null and pa.get_point_count() >= 4, "시작 점이 4개 미만")
+		# 시작 두께가 '공중 발판 권장 180px' 을 이미 만족해야 한다
+		if pa != null and pa.get_point_count() >= 4:
+			var pts := pa.get_tessellated_points()
+			var mn := pts[0]
+			var mx := pts[0]
+			for p in pts:
+				mn = mn.min(p)
+				mx = mx.max(p)
+			_확인(mx.y - mn.y >= 180.0,
+				"시작 두께가 %.0f px — 권장 180px 미만" % (mx.y - mn.y))
 
 		print("  %-32s %s" % [이름, "OK" if 실패 == 앞 else "FAIL"])
 		for msg in 메시지:

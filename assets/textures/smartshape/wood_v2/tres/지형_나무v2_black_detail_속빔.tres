@@ -1,0 +1,117 @@
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3]
+
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="1_iqwlm"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material.gd" id="2_wxdmv"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/edge_top.png" id="3_e0jfa"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_top_left.png" id="4_7knf0"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_top_right.png" id="5_7gmc0"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/normal_range.gd" id="6_72xgi"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/edge_left.png" id="7_rjy8q"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_left_left.png" id="8_5kq5a"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_left_right.png" id="9_hsqr7"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/edge_bottom.png" id="10_n3obe"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_bottom_left.png" id="11_eheew"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_bottom_right.png" id="12_1vqc8"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/edge_right.png" id="13_fam1h"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_right_left.png" id="14_kwe3o"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/taper/black/taper_right_right.png" id="15_x6ms0"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/grass_v4/공용/투명_256.png" id="16_h3n7d"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/corner_inner.png" id="17_1g165"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/corner_outer.png" id="18_xx37d"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/shape_material.gd" id="19_npxtt"]
+
+[sub_resource type="Resource" id="Resource_1dfhe"]
+script = ExtResource("2_wxdmv")
+textures = Array[Texture2D]([ExtResource("3_e0jfa")])
+textures_taper_left = Array[Texture2D]([ExtResource("4_7knf0")])
+textures_taper_right = Array[Texture2D]([ExtResource("5_7gmc0")])
+use_corner_texture = false
+texture_scale = 0.35
+
+[sub_resource type="Resource" id="Resource_teaq7"]
+script = ExtResource("6_72xgi")
+begin = 45.0
+distance = 90.0
+
+[sub_resource type="Resource" id="Resource_8gxh4"]
+script = ExtResource("1_iqwlm")
+edge_material = SubResource("Resource_1dfhe")
+normal_range = SubResource("Resource_teaq7")
+
+[sub_resource type="Resource" id="Resource_t7538"]
+script = ExtResource("2_wxdmv")
+textures = Array[Texture2D]([ExtResource("7_rjy8q")])
+textures_taper_left = Array[Texture2D]([ExtResource("8_5kq5a")])
+textures_taper_right = Array[Texture2D]([ExtResource("9_hsqr7")])
+use_corner_texture = false
+texture_scale = 0.35
+
+[sub_resource type="Resource" id="Resource_ewq6a"]
+script = ExtResource("6_72xgi")
+begin = 135.0
+distance = 90.0
+
+[sub_resource type="Resource" id="Resource_yl0t6"]
+script = ExtResource("1_iqwlm")
+edge_material = SubResource("Resource_t7538")
+normal_range = SubResource("Resource_ewq6a")
+
+[sub_resource type="Resource" id="Resource_ceyev"]
+script = ExtResource("2_wxdmv")
+textures = Array[Texture2D]([ExtResource("10_n3obe")])
+textures_taper_left = Array[Texture2D]([ExtResource("11_eheew")])
+textures_taper_right = Array[Texture2D]([ExtResource("12_1vqc8")])
+use_corner_texture = false
+texture_scale = 0.35
+
+[sub_resource type="Resource" id="Resource_lyor1"]
+script = ExtResource("6_72xgi")
+begin = 225.0
+distance = 90.0
+
+[sub_resource type="Resource" id="Resource_t4bsr"]
+script = ExtResource("1_iqwlm")
+edge_material = SubResource("Resource_ceyev")
+normal_range = SubResource("Resource_lyor1")
+
+[sub_resource type="Resource" id="Resource_v6ty8"]
+script = ExtResource("2_wxdmv")
+textures = Array[Texture2D]([ExtResource("13_fam1h")])
+textures_taper_left = Array[Texture2D]([ExtResource("14_kwe3o")])
+textures_taper_right = Array[Texture2D]([ExtResource("15_x6ms0")])
+use_corner_texture = false
+texture_scale = 0.35
+
+[sub_resource type="Resource" id="Resource_gf8di"]
+script = ExtResource("6_72xgi")
+begin = 315.0
+distance = 90.0
+
+[sub_resource type="Resource" id="Resource_ksxbu"]
+script = ExtResource("1_iqwlm")
+edge_material = SubResource("Resource_v6ty8")
+normal_range = SubResource("Resource_gf8di")
+
+[sub_resource type="Resource" id="Resource_kqlc3"]
+script = ExtResource("2_wxdmv")
+textures = Array[Texture2D]([ExtResource("16_h3n7d")])
+textures_corner_outer = Array[Texture2D]([ExtResource("18_xx37d")])
+textures_corner_inner = Array[Texture2D]([ExtResource("17_1g165")])
+use_taper_texture = false
+texture_scale = 0.35
+
+[sub_resource type="Resource" id="Resource_i8bc3"]
+script = ExtResource("6_72xgi")
+distance = 360.0
+
+[sub_resource type="Resource" id="Resource_xq1wv"]
+script = ExtResource("1_iqwlm")
+edge_material = SubResource("Resource_kqlc3")
+normal_range = SubResource("Resource_i8bc3")
+z_index = 1
+
+[resource]
+script = ExtResource("19_npxtt")
+_edge_meta_materials = Array[ExtResource("1_iqwlm")]([SubResource("Resource_8gxh4"), SubResource("Resource_yl0t6"), SubResource("Resource_t4bsr"), SubResource("Resource_ksxbu"), SubResource("Resource_xq1wv")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.35

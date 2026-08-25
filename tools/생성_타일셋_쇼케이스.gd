@@ -22,12 +22,12 @@ const 저장경로 := "res://scenes/smartshape_test/SmartShape2D_Tileset_Showcas
 const 재질표 := [
 	["잔디", "res://assets/textures/smartshape/grass_v4/tres/지형_잔디_v4_black_detail.tres",
 		"res://assets/textures/smartshape/grass_v4/tres/지형_잔디v4_black_detail_속빔.tres"],
-	["벽돌", "res://assets/textures/smartshape/brick_v1/tres/지형_벽돌v1_black_detail.tres",
-		"res://assets/textures/smartshape/brick_v1/tres/지형_벽돌v1_black_detail_속빔.tres"],
-	["하수", "res://assets/textures/smartshape/sewer_v1/tres/지형_하수v1_black_detail.tres",
+	["벽돌 v2", "res://assets/textures/smartshape/brick_v2/tres/지형_벽돌v2_black_detail.tres",
+		"res://assets/textures/smartshape/brick_v2/tres/지형_벽돌v2_black_detail_속빔.tres"],
+	["하수 v1(보류)", "res://assets/textures/smartshape/sewer_v1/tres/지형_하수v1_black_detail.tres",
 		"res://assets/textures/smartshape/sewer_v1/tres/지형_하수v1_black_detail_속빔.tres"],
-	["나무", "res://assets/textures/smartshape/wood_v1/tres/지형_나무v1_black_detail.tres",
-		"res://assets/textures/smartshape/wood_v1/tres/지형_나무v1_black_detail_속빔.tres"],
+	["나무 v2", "res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail.tres",
+		"res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail_속빔.tres"],
 ]
 
 const 행높이 := 1150.0
