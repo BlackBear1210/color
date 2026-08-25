@@ -19,12 +19,31 @@
 | 상황 | Template |
 |---|---|
 | 벽돌 바닥 · 벽 · 플랫폼 | `BRICK_벽돌/TEMPLATE_BRICK_SOLID.tscn` |
+| 벽돌 계단 | `BRICK_벽돌/TEMPLATE_BRICK_STAIRS.tscn` |
 | 벽돌인데 안이 비어야 함 | `BRICK_벽돌/TEMPLATE_BRICK_HOLLOW.tscn` |
 | 나무 바닥 · 선반 · 플랫폼 | `WOOD_나무/TEMPLATE_WOOD_SOLID.tscn` |
+| 나무 계단 | `WOOD_나무/TEMPLATE_WOOD_STAIRS.tscn` |
 | 나무인데 안이 비어야 함 | `WOOD_나무/TEMPLATE_WOOD_HOLLOW.tscn` |
 | 잔디 지형 | `GRASS_잔디/TEMPLATE_GRASS_SOLID.tscn` |
+| 잔디 계단 | `GRASS_잔디/TEMPLATE_GRASS_STAIRS.tscn` |
 | 잔디인데 안이 비어야 함 | `GRASS_잔디/TEMPLATE_GRASS_HOLLOW.tscn` |
-| 철 (IRON) | **아직 없습니다. 사용 금지** |
+| 철 (IRON) | **NOT READY — 사용 금지** |
+
+**STAIRS 템플릿**은 새로운 시스템이 아닙니다. SOLID 와 완전히 같은 재질이고,
+점 배치만 **폭 180 × 높이 110 × 4단 + 꼭대기 발판**으로 미리 잡아 둔 것입니다.
+치수를 외울 필요 없이 복제해서 늘리기만 하면 됩니다.
+
+### 폴더 구조
+
+```
+scenes/집/스마트 매쉬 assets/
+├─ README_지형찍기.md              ← 지금 읽는 문서
+├─ WORKER_GUIDE.tscn              ← 먼저 열어 볼 것 (예제 21개 + 규칙)
+├─ WORKER_EXAMPLE_INTERIOR.tscn   ← 실제로 걸어 다녀 볼 수 있는 실내 샘플
+├─ GRASS_잔디/  TEMPLATE_GRASS_{SOLID,HOLLOW,STAIRS}.tscn
+├─ BRICK_벽돌/  TEMPLATE_BRICK_{SOLID,HOLLOW,STAIRS}.tscn
+└─ WOOD_나무/   TEMPLATE_WOOD_{SOLID,HOLLOW,STAIRS}.tscn
+```
 
 IRON(하수도 철제)은 원본 작업이 아직 안 끝났습니다. 준비되면 여기에 추가됩니다.
 예전에 있던 `SEWER_하수` 템플릿은 IRON 으로 대체될 예정이라 뺐습니다.
@@ -150,18 +169,23 @@ SOLID 를 써야 할 자리에 HOLLOW 를 썼거나 그 반대입니다. Templat
 
 ## 12. 작업자가 건드리면 안 되는 값
 
-| 항목 | 변경 |
+| 항목 | 작업자 |
 |---|---|
-| `texture_scale` | **금지** |
-| `taper` | **금지** |
-| `corner` (크기 · 방식) | **금지** |
-| corner alpha width | **금지** |
-| 머티리얼(`.tres`) | **금지** (복제해서 수정하는 것도 금지) |
-| 원본 PNG · master | **금지** |
-| baker (`tools/생성_*`) | **금지** |
-| `addons/rmsmartshape` | **금지** |
-| `assets/.../grass_v4` | **금지** (검증 끝난 LOCK 에셋) |
-| AI 로 PNG 다시 만들어 교체 | **금지** |
+| **Polygon 점 (모양)** | ✅ 수정 가능 — 이것만 만지면 됩니다 |
+| **Position (위치)** | ✅ 수정 가능 |
+| Scale | ⚠ 되도록 만지지 마세요 (재질 크기가 어긋납니다) |
+| Material (`.tres`) | ❌ (복제해서 수정하는 것도 금지) |
+| Edge 텍스처 | ❌ |
+| Corner 텍스처 | ❌ |
+| Taper | ❌ |
+| `texture_scale` | ❌ |
+| gamma | ❌ |
+| baker (`tools/생성_*`) | ❌ |
+| SmartShape addon 설정 | ❌ |
+| 원본 PNG · master | ❌ |
+| `grass_v4` 에셋 | ❌ (검증 끝난 LOCK) |
+
+> **작업자는 "모양"만 만듭니다. 시스템은 건드리지 않습니다.**
 
 > 참고: `CORNER-TOPOLOGY-01` 은 코너 무늬가 미세하게 어긋나는 **내부 기술 이슈**입니다.
 > 작업자가 고칠 대상이 아닙니다. 확대해야 보이고, 플레이 거리에서는 거의 안 보입니다.
@@ -206,11 +230,13 @@ SOLID 를 써야 할 자리에 HOLLOW 를 썼거나 그 반대입니다. Templat
 
 ---
 
-## 17. 이 폴더의 옛날 파일들
+## 17. `_ARCHIVE/` 폴더는 뭔가요
 
-폴더 맨 위에 있는 `발판_나무.tscn` `발판_바위.tscn` `발판_벽돌.tscn` `발판_잔디.tscn`
-`발판_흙.tscn` 다섯 개는 **예전 픽셀 타일셋 시절의 것**입니다.
-새 시스템과 규격이 다르니 **쓰지 마세요.** 위의 `TEMPLATE_*.tscn` 만 쓰면 됩니다.
+예전 픽셀 타일셋 시절의 발판 씬 5개(`발판_나무` `발판_바위` `발판_벽돌` `발판_잔디` `발판_흙`)를
+거기로 옮겨 뒀습니다. 새 시스템과 규격이 다르니 **쓰지 마세요.**
+지우지 않은 이유는 옛 맵이 참조할 수도 있어서입니다 (현재 참조하는 씬은 없습니다).
+
+작업자가 쓸 것은 `TEMPLATE_*.tscn` 아홉 개뿐입니다.
 
 ---
 
@@ -242,3 +268,73 @@ Godot --headless --path . -s res://tools/레벨검사.gd -- <내가만든씬경�
 - **치명 낙하** — 걸어 나가면 죽을 만큼 떨어지는 가장자리 (치명 거리 520px)
 
 장식으로 일부러 띄워 둔 것(천장 기둥 등)이 '도달 불가' 로 나오는 건 정상입니다.
+
+---
+
+## 20. 만들 수 있는 형태 / 만들면 안 되는 형태
+
+### ✅ 허용
+
+```
+직선 · L자 · ㄷ자 · U자 · 계단 · 직각 코너 · 직각(축 정렬) 사각형 링·터널
+```
+
+### ❌ 금지
+
+```
+원 · 타원 · 8각형 — 대각선 변이 있는 모든 폐곡선
+```
+
+**이유**: 방향이 바뀌는 지점에서 taper 가 양쪽 다 투명해지면서 테두리 45°·135°·225°·315°
+네 곳에 **밝은 틈**이 생깁니다. 직각 코너에는 코너 조각이 들어가 메워지지만
+부드러운 곡선에는 메울 것이 없습니다.
+
+작업자가 고칠 수 있는 문제가 아니라 현재 SmartShape2D 파이프라인의 **알려진 한계**입니다
+(내부 이슈 `CLOSED-LOOP-TAPER-01`).
+
+⚠ 8각형처럼 **비스듬한 변**이 있으면 똑같이 틈이 생깁니다 (실제로 확인했습니다).
+
+→ 링·터널은 **HOLLOW 템플릿 + 직각(축 정렬) 사각형**으로 만드세요.
+   가로세로만 있는 모서리에는 코너 조각이 들어가 틈이 안 생깁니다.
+   `WORKER_EXAMPLE_INTERIOR.tscn` 의 "직각 링(HOLLOW)" 이 예제입니다.
+
+---
+
+## 21. 노드 이름 규칙
+
+Scene Tree 만 봐도 무엇인지 알 수 있게 지어 주세요.
+
+```
+SS_<재질>_<용도>_<번호>
+```
+
+| 예 | 뜻 |
+|---|---|
+| `SS_GRASS_FLOOR_01` | 잔디 바닥 |
+| `SS_BRICK_WALL_01` | 벽돌 벽 |
+| `SS_BRICK_PLATFORM_01` | 벽돌 공중 발판 |
+| `SS_BRICK_STAIRS_01` | 벽돌 계단 |
+| `SS_BRICK_HOLLOW_01` | 벽돌 속빔 구조 |
+| `SS_WOOD_SHELF_01` | 나무 선반 |
+| `SS_WOOD_PLATFORM_01` | 나무 발판 |
+
+씬 파일 이름은 `world_1_brick_platform_01.tscn` 처럼 **어느 맵의 무엇인지** 알 수 있게.
+
+---
+
+## 22. 실제로 어떻게 배치하는지 보고 싶다면
+
+```
+scenes/집/스마트 매쉬 assets/WORKER_EXAMPLE_INTERIOR.tscn
+```
+
+바깥 잔디 → 벽돌 건물 바닥 → 벽돌 계단 → 벽돌 윗층 → 나무 선반 2단 → 벽돌 벽 으로
+실제 방 하나를 구성한 샘플입니다. **직접 실행해서 걸어 다녀 볼 수 있습니다.**
+
+재질 역할 분담이 이 씬의 요점입니다:
+
+| 재질 | 역할 |
+|---|---|
+| GRASS | 바깥 자연 지형 |
+| BRICK | 건물 바닥 · 벽 · 계단 |
+| WOOD | 실내 선반 · 플랫폼 · 목재 구조물 |

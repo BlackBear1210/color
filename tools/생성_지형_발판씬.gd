@@ -42,18 +42,53 @@ const 재질표 := [
 		T + "/wood_v2/tres/지형_나무v2_black_detail_속빔.tres"],
 ]
 
-## [꼬리, 속빔여부]
-const 변형표 := [["SOLID", false], ["HOLLOW", true]]
+## [꼬리, 속빔여부, 계단여부]
+## STAIRS 는 새로운 시스템이 아니다 — SOLID 와 완전히 같은 머티리얼이고
+## **점 배치만 계단 모양으로 미리 잡아 둔 것**이다. 작업자가 매번 치수를 외우지 않아도 되게.
+const 변형표 := [
+	["SOLID", false, false],
+	["HOLLOW", true, false],
+	["STAIRS", false, true],
+]
 
 const 반폭 := 256.0
 const 반높이 := 96.0
+
+## 계단 확정 치수 (STEP 2.8 실측)
+##   폭 180 — 코너 쿼드 89.6px 보다 넉넉히 커야 코너가 안 겹친다
+##   높이 110 — 올라갈 수 있는 한계는 점프 높이 160 x 0.8 = 128px 다. 넘으면 못 올라간다.
+const 계단폭 := 180.0
+const 계단높이 := 110.0
+const 계단수 := 4
 
 
 func _init() -> void:
 	call_deferred("_실행")
 
 
-func _만들기(폴더이름: String, 이름: String, 머티경로: String) -> bool:
+## 계단 점 배치. ★ 마지막에 **밟을 수 있는 수평 발판**을 반드시 둔다.
+##   이걸 빼면 꼭대기가 폭 0 짜리 수직선이 되어 밟을 면이 없다 (STEP 2.8 에서 한 번 겪음).
+func _계단점() -> PackedVector2Array:
+	var 총폭: float = 계단폭 * float(계단수 + 1)
+	var 총높이: float = 계단높이 * float(계단수)
+	var x: float = -총폭 * 0.5
+	var y: float = 총높이 * 0.5
+	var p := PackedVector2Array()
+	p.push_back(Vector2(x, y))
+	for i in 계단수:
+		x += 계단폭
+		p.push_back(Vector2(x, y))
+		y -= 계단높이
+		p.push_back(Vector2(x, y))
+	x += 계단폭                     # 꼭대기 발판
+	p.push_back(Vector2(x, y))
+	var 바닥: float = 총높이 * 0.5 + 반높이 * 2.0
+	p.push_back(Vector2(x, 바닥))
+	p.push_back(Vector2(-총폭 * 0.5, 바닥))
+	return p
+
+
+func _만들기(폴더이름: String, 이름: String, 머티경로: String, 계단: bool = false) -> bool:
 	if not ResourceLoader.exists(머티경로):
 		push_error("머티리얼 없음: %s" % 머티경로)
 		return false
@@ -64,9 +99,12 @@ func _만들기(폴더이름: String, 이름: String, 머티경로: String) -> b
 	# 시작 도형: 점 4개 사각형. 작업자는 이걸 잡아 늘리거나 점을 추가한다.
 	var pa: SS2D_Point_Array = n.get_point_array()
 	pa.begin_update()
-	pa.add_points(PackedVector2Array([
-		Vector2(-반폭, -반높이), Vector2(반폭, -반높이),
-		Vector2(반폭, 반높이), Vector2(-반폭, 반높이)]))
+	if 계단:
+		pa.add_points(_계단점())
+	else:
+		pa.add_points(PackedVector2Array([
+			Vector2(-반폭, -반높이), Vector2(반폭, -반높이),
+			Vector2(반폭, 반높이), Vector2(-반폭, 반높이)]))
 	pa.end_update()
 	pa.close_shape()
 
@@ -111,7 +149,7 @@ func _실행() -> void:
 		for 변형 in 변형표:
 			var 머티: String = 재질[3] if 변형[1] else 재질[2]
 			var 이름 := "TEMPLATE_%s_%s" % [재질[0], 변형[0]]
-			if _만들기(재질[1], 이름, 머티):
+			if _만들기(재질[1], 이름, 머티, 변형[2]):
 				수 += 1
-	print("\nTemplate 씬 %d 개 (재질 %d x SOLID/HOLLOW)" % [수, 재질표.size()])
-	quit(0 if 수 == 재질표.size() * 2 else 1)
+	print("\nTemplate 씬 %d 개 (재질 %d x SOLID/HOLLOW/STAIRS)" % [수, 재질표.size()])
+	quit(0 if 수 == 재질표.size() * 변형표.size() else 1)

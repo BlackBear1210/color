@@ -37,6 +37,9 @@ func _씬목록() -> PackedStringArray:
 	if d == null:
 		return 결과
 	for sub in d.get_directories():
+		# 밑줄로 시작하는 폴더는 보관용(_ARCHIVE 등) — 작업자용 Template 이 아니다
+		if sub.begins_with("_"):
+			continue
 		var d2 := DirAccess.open("%s/%s" % [폴더, sub])
 		if d2 == null:
 			continue

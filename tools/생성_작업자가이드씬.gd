@@ -19,6 +19,7 @@ const 저장경로 := "res://scenes/집/스마트 매쉬 assets/WORKER_GUIDE.tsc
 const T := "res://assets/textures/smartshape"
 
 const 재질표 := [
+	["GRASS (잔디)", T + "/grass_v4/tres/지형_잔디_v4_black_detail.tres"],
 	["BRICK (벽돌)", T + "/brick_v2/tres/지형_벽돌v2_black_detail.tres"],
 	["WOOD (나무)", T + "/wood_v2/tres/지형_나무v2_black_detail.tres"],
 ]
@@ -66,7 +67,8 @@ func _예제표() -> Array:
 			Vector2(0, 0), Vector2(700, 0), Vector2(700, 250),
 			Vector2(250, 250), Vector2(250, 450), Vector2(700, 450),
 			Vector2(700, 700), Vector2(0, 700)])],
-		["7. 폐곡선 — 부드러운 원은 45도 4곳에 틈 (다각형 권장)", _원(300.0, 24)],
+		["7. 링·터널 = HOLLOW + 직각 사각형 (원·다각형 금지)", PackedVector2Array([
+			Vector2(0, 0), Vector2(620, 0), Vector2(620, 620), Vector2(0, 620)])],
 	]
 
 
@@ -93,7 +95,7 @@ func _실행() -> void:
 	var bg := ColorRect.new()
 	bg.name = "배경"
 	bg.position = Vector2(-400, -900)
-	bg.size = Vector2(전체폭 + 800, 행높이 * float(재질표.size() - 1) + 2200.0)
+	bg.size = Vector2(전체폭 + 800, 행높이 * float(재질표.size()) + 2000.0)
 	bg.color = Color(0.68, 0.70, 0.73)
 	bg.z_index = -100
 	_root.add_child(bg)
@@ -115,6 +117,22 @@ func _실행() -> void:
 	_라벨(Vector2(-360, -240),
 		"texture · material · corner · texture_scale 은 건드리지 마세요. 사용법은 README_지형찍기.md",
 		84, Color(0.16, 0.16, 0.20))
+
+	# ── 규칙 요약 (이 씬만 보고도 치수를 알 수 있게) ────────────────────────
+	# ★ 규칙 블록은 마지막 재질 행의 가장 큰 도형(높이 900) 아래로 내린다.
+	#   안 그러면 WOOD 의 긴 벽·계단과 글자가 겹친다.
+	var 규칙y: float = 행높이 * float(재질표.size()) + 200.0
+	_라벨(Vector2(-360, 규칙y), "제작 규칙", 110, Color(0.75, 0.05, 0.05))
+	var 규칙 := [
+		"공중 발판 두께   최소 140px · 권장 180px 이상",
+		"계단 한 칸       폭 180px · 높이 110px   (높이 128px 넘으면 플레이어가 못 올라감)",
+		"허용 형태        직선 · L · ㄷ · U · 계단 · 직각 코너 · 직각 사각형 링/터널",
+		"금지 형태        원 · 타원 · 8각형 등 대각선 변이 있는 폐곡선 (테두리에 밝은 틈이 생김)",
+		"제작 순서        Template 복제 → 이름 변경 → 맵에 배치 → 점 편집 → 저장 → 실행",
+	]
+	for i in 규칙.size():
+		_라벨(Vector2(-360, 규칙y + 160.0 + float(i) * 110.0), 규칙[i], 74,
+			Color(0.45, 0.05, 0.05) if i == 3 else Color(0.10, 0.10, 0.12))
 
 	# ── 예제 배치 ─────────────────────────────────────────────────────────
 	for ri in 재질표.size():
@@ -146,8 +164,8 @@ func _실행() -> void:
 	cam.name = "카메라"
 	# 내용 위끝 -900(제목) ~ 아래끝 (행수-1)*행높이+900(가장 큰 도형) 의 한가운데
 	cam.position = Vector2(전체폭 * 0.5 - 200.0,
-		(-900.0 + 행높이 * float(재질표.size() - 1) + 900.0) * 0.5)
-	cam.zoom = Vector2(0.24, 0.24)
+		(-900.0 + 행높이 * float(재질표.size()) + 1000.0) * 0.5)
+	cam.zoom = Vector2(0.20, 0.20)
 	_root.add_child(cam)
 	cam.owner = _root
 
