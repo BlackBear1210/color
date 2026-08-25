@@ -58,6 +58,19 @@ func _점들() -> PackedVector2Array:
 		"가로벽":
 			return PackedVector2Array([Vector2(0, 0), Vector2(1500, 0),
 				Vector2(1500, 260), Vector2(0, 260)])
+		"ㄷ자":
+			return PackedVector2Array([Vector2(0, 0), Vector2(700, 0), Vector2(700, 250),
+				Vector2(250, 250), Vector2(250, 450), Vector2(700, 450),
+				Vector2(700, 700), Vector2(0, 700)])
+		"1x5":
+			return PackedVector2Array([Vector2(0, 0), Vector2(640, 0),
+				Vector2(640, 128), Vector2(0, 128)])
+		"2x4":
+			return PackedVector2Array([Vector2(0, 0), Vector2(512, 0),
+				Vector2(512, 256), Vector2(0, 256)])
+		"4x4":
+			return PackedVector2Array([Vector2(0, 0), Vector2(512, 0),
+				Vector2(512, 512), Vector2(0, 512)])
 		"원":
 			var p := PackedVector2Array()
 			for i in 24:
