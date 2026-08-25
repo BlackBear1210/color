@@ -36,6 +36,15 @@ var fit_texture := SS2D_Material_Edge.FITMODE.SQUISH_AND_STRETCH
 # 기본값 1.0 = 기존 동작.
 var texture_scale: float = 1.0
 
+# [P0-3] 이음매를 용접할 때 "수직 두께"를 보존할지 여부.
+# weld_quads() 는 이음매 선분을 두 변의 이등분선 방향으로 놓으면서 길이를
+# needed_height 그대로 쓴다. 이등분선은 변의 법선과 어긋나 있어서
+# 실제 수직 두께가 sin(θ/2) 배로 줄어든다 (직각 모서리에서 38 -> 26.9).
+# 모서리 각이 제각각인 도형에서는 변마다 두께가 달라져 테두리가 들쭉날쭉해진다.
+# 이 값이 true 면 이음매 길이를 1/|이등분선·폭방향| 로 늘려 두께를 일정하게 만든다.
+# 기본값 false = 기존 동작 (기존 지형은 한 픽셀도 안 바뀐다).
+var uniform_width: bool = false
+
 # Contains value from CORNER enum
 var corner: int = 0
 
@@ -66,6 +75,8 @@ func matches_quad(q: SS2D_Quad) -> bool:
 		and fit_texture == q.fit_texture
 		# [P0-1] 배율이 다르면 UV 주기가 달라지므로 같은 메시로 합치면 안 된다.
 		and is_equal_approx(texture_scale, q.texture_scale)
+		# [P0-3] 두께 보정 여부가 다르면 기하가 달라지므로 합치지 않는다.
+		and uniform_width == q.uniform_width
 	)
 
 
@@ -84,6 +95,8 @@ func duplicate() -> SS2D_Quad:
 	# [P0-1] 배율을 복사하지 않으면 bisect()/테이퍼로 만들어진 쿼드만 1.0 으로 돌아가
 	# 이웃 쿼드와 UV 주기가 어긋난다.
 	q.texture_scale = texture_scale
+	# [P0-3] 복사하지 않으면 bisect()/테이퍼로 생긴 쿼드만 보정이 풀린다.
+	q.uniform_width = uniform_width
 
 	q.corner = corner
 	return q

@@ -51,6 +51,14 @@ enum FITMODE {SQUISH_AND_STRETCH, CROP}
 ## 로드 시 1.0 이 들어가고, 따라서 기존 지형은 픽셀 단위로 똑같이 렌더된다.
 @export_range(0.05, 4.0, 0.005, "or_greater") var texture_scale: float = 1.0 : set = _set_texture_scale
 
+## [P0-3] 모서리에서 테두리의 **수직 두께**를 일정하게 유지한다.[br]
+## [br]
+## 끄면(기본) SS2D 원래 동작 — 이음매 선분 길이만 맞추므로 수직 두께가
+## sin(θ/2) 배로 줄고, 모서리 각이 다른 도형에서는 변마다 두께가 달라진다.[br]
+## 켜면 이음매를 미터(miter) 로 늘려 어떤 모양에서도 두께가 같다.
+## 액자 테두리처럼 균일한 띠가 필요할 때 쓴다.
+@export var uniform_width: bool = false : set = _set_uniform_width
+
 @export var material: Material = null : set = _set_material
 
 
@@ -173,3 +181,8 @@ func _get_element(idx: int, a: Array) -> Variant:
 
 func _adjust_idx(idx: int, a: Array) -> int:
 	return idx % a.size()
+
+
+func _set_uniform_width(b: bool) -> void:
+	uniform_width = b
+	emit_changed()

@@ -1,0 +1,81 @@
+[gd_scene format=4 uid="uid://cxhhhwb5l4bj3"]
+
+[ext_resource type="Script" uid="uid://c6kxvfqr4ewu1" path="res://addons/rmsmartshape/shapes/shape_closed.gd" id="1_1n50q"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="2_76wgs"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_cxn87"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_0x2jx"]
+[ext_resource type="Texture2D" uid="uid://ga1m4nwunktt" path="res://scenes/world_2/brick_black_seamless.png" id="5_fv6dh"]
+[ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="6_tyijn"]
+[ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="7_4qrj4"]
+
+[sub_resource type="Resource" id="Resource_mdxd6"]
+script = ExtResource("2_76wgs")
+position = Vector2(-80, -96)
+texture_idx = 15
+
+[sub_resource type="Resource" id="Resource_moca1"]
+script = ExtResource("2_76wgs")
+position = Vector2(-80, 208)
+
+[sub_resource type="Resource" id="Resource_ds3ot"]
+script = ExtResource("2_76wgs")
+position = Vector2(-424, 208)
+
+[sub_resource type="Resource" id="Resource_i6qvu"]
+script = ExtResource("2_76wgs")
+position = Vector2(-80, -96)
+texture_idx = 15
+
+[sub_resource type="Resource" id="Resource_va6wx"]
+script = ExtResource("2_76wgs")
+position = Vector2(-424, -96)
+
+[sub_resource type="Resource" id="Resource_pyibi"]
+script = ExtResource("3_cxn87")
+_points = {
+0: SubResource("Resource_i6qvu"),
+1: SubResource("Resource_mdxd6"),
+2: SubResource("Resource_moca1"),
+3: SubResource("Resource_ds3ot"),
+8: SubResource("Resource_va6wx")
+}
+_point_order = PackedInt32Array(1, 2, 3, 8, 0)
+_constraints = {
+Vector2i(1, 0): 15
+}
+_next_key = 9
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ltxih"]
+_surfaces = [{
+"aabb": AABB(-424, -96, 0, 344, 304, 1e-05),
+"attribute_data": PackedByteArray("/////w88cL49ci0/Dzxwvj1yLT//////yiefvz1yLT/KJ5+/PXItP//////KJ5+/rxqgvsonn7+vGqC+/////w88cL6vGqC+Dzxwvq8aoL4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACgwgAAUEMAAAAAAADUwwAAUEMAAAAAAADUwwAAwMIAAAAAAACgwgAAwMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_846rm"]
+script = ExtResource("4_0x2jx")
+texture = ExtResource("5_fv6dh")
+mesh = SubResource("ArrayMesh_ltxih")
+z_index = -10
+
+[sub_resource type="Resource" id="Resource_um0j2"]
+script = ExtResource("7_4qrj4")
+_edge_meta_materials = Array[ExtResource("6_tyijn")]([null])
+fill_textures = Array[Texture2D]([ExtResource("5_fv6dh")])
+
+[node name="벽돌테스" type="Node2D" unique_id=2131027723]
+position = Vector2(424, 112)
+
+[node name="SS2D_Shape_Closed" type="Node2D" parent="." unique_id=1649934505]
+position = Vector2(-4, -18)
+script = ExtResource("1_1n50q")
+_points = SubResource("Resource_pyibi")
+_meshes = Array[ExtResource("4_0x2jx")]([SubResource("Resource_846rm")])
+shape_material = SubResource("Resource_um0j2")
+metadata/_custom_type_script = "uid://c6kxvfqr4ewu1"

@@ -1100,6 +1100,30 @@ static func weld_quads(a: SS2D_Quad, b: SS2D_Quad, custom_scale: float = 1.0) ->
 		var pt2: Vector2 = (a.pt_c + b.pt_b) * 0.5
 
 		midpoint = Vector2(pt1 + pt2) / 2.0
+
+		# [P0-3] 원래 방식은 이음매를 "이등분선 위에 midpoint 중심으로 대칭인
+		# 길이 needed_height 선분" 으로 다시 만든다. 이등분선은 변의 법선과
+		# 어긋나 있어서 실제 **수직 두께**가 cos(θ/2) 배로 줄고, 게다가 바깥 끝이
+		# 꼭지점 밖으로 밀려난다. 모서리 각이 제각각인 도형에서는 변마다 두께가
+		# 달라져 테두리가 들쭉날쭉해진다 (실측 편차 12%).
+		#
+		# uniform_width 가 켜져 있으면 두 쿼드의 바깥선끼리 · 안쪽선끼리를 그대로
+		# **교차**시킨다 (정식 미터 조인). 각도와 무관하게 수직 두께가 보존된다.
+		if a.uniform_width:
+			var i_out: Variant = Geometry2D.line_intersects_line(
+				a.pt_a, a.pt_d - a.pt_a, b.pt_a, b.pt_d - b.pt_a)
+			var i_in: Variant = Geometry2D.line_intersects_line(
+				a.pt_b, a.pt_c - a.pt_b, b.pt_b, b.pt_c - b.pt_b)
+			if i_out != null and i_in != null:
+				var p_out: Vector2 = i_out
+				var p_in: Vector2 = i_in
+				# 미터 한계 — 아주 뾰족한 모서리에서 교차점이 무한히 멀어진다.
+				if p_out.distance_to(midpoint) < needed_height * 4.0 						and p_in.distance_to(midpoint) < needed_height * 4.0:
+					a.pt_d = p_out
+					a.pt_c = p_in
+					b.pt_a = p_out
+					b.pt_b = p_in
+					return (p_out + p_in) / 2.0
 		var half_line: Vector2 = (pt2 - midpoint).normalized() * needed_height * custom_scale / 2.0
 
 		if half_line != Vector2.ZERO:
@@ -1584,6 +1608,8 @@ func _build_edge_with_material(
 		# [P0-1] UV 를 만드는 edge.gd 쪽 함수가 static 이라 머티리얼을 못 본다.
 		# 쿼드에 배율을 실어 보낸다. (static 함수 시그니처는 건드리지 않는다)
 		new_quad.texture_scale = c_scale
+		# [P0-3] weld_quads() 가 static 이라 머티리얼을 못 본다. 쿼드가 들고 간다.
+		new_quad.uniform_width = edge_material != null and edge_material.uniform_width
 		var new_quads: Array[SS2D_Quad] = []
 		new_quads.push_back(new_quad)
 
