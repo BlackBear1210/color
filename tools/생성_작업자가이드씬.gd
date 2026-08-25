@@ -44,8 +44,8 @@ func _원(r: float, 분할: int) -> PackedVector2Array:
 ## 계단 — 한 칸 180x180, 4단. 이 크기 아래로 내려가면 코너가 겹쳐 깨진다.
 func _계단() -> PackedVector2Array:
 	return PackedVector2Array([
-		Vector2(0, 540), Vector2(180, 540), Vector2(180, 360),
-		Vector2(360, 360), Vector2(360, 180), Vector2(540, 180),
+		Vector2(0, 330), Vector2(180, 330), Vector2(180, 220),
+		Vector2(360, 220), Vector2(360, 110), Vector2(540, 110),
 		Vector2(540, 0), Vector2(720, 0),
 		Vector2(720, 900), Vector2(0, 900)])
 
@@ -58,7 +58,7 @@ func _예제표() -> Array:
 			Vector2(0, 0), Vector2(260, 0), Vector2(260, 900), Vector2(0, 900)])],
 		["3. 공중 발판 (두께 192)", PackedVector2Array([
 			Vector2(0, 0), Vector2(520, 0), Vector2(520, 192), Vector2(0, 192)])],
-		["4. 계단 (한 칸 180)", _계단()],
+		["4. 계단 (폭 180 x 높이 110)", _계단()],
 		["5. L자", PackedVector2Array([
 			Vector2(0, 0), Vector2(700, 0), Vector2(700, 260),
 			Vector2(260, 260), Vector2(260, 700), Vector2(0, 700)])],
@@ -66,7 +66,7 @@ func _예제표() -> Array:
 			Vector2(0, 0), Vector2(700, 0), Vector2(700, 250),
 			Vector2(250, 250), Vector2(250, 450), Vector2(700, 450),
 			Vector2(700, 700), Vector2(0, 700)])],
-		["7. 폐곡선 (속빔과 같이 쓰면 링)", _원(300.0, 24)],
+		["7. 폐곡선 — 부드러운 원은 45도 4곳에 틈 (다각형 권장)", _원(300.0, 24)],
 	]
 
 
@@ -109,8 +109,8 @@ func _실행() -> void:
 		+ "  ④  점을 끌어서 모양 만들기  ⑤  저장   — 이게 전부입니다.",
 		84, Color(0.16, 0.16, 0.20))
 	_라벨(Vector2(-360, -370),
-		"치수 규칙:  공중 발판 두께 180px 이상  ·  계단 한 칸 180px 이상"
-		+ "   (140px 미만이면 검은 막대처럼 보이고, 90px 미만 계단은 코너가 뭉개집니다)",
+		"치수 규칙:  공중 발판 두께 180px 이상  ·  계단 폭 180px 이상 · 높이 110px"
+		+ "   (발판 140px 미만이면 검은 막대 · 계단 폭 90px 미만이면 코너가 뭉갬 · 계단 높이는 120px 이하여야 올라갑니다)",
 		84, Color(0.45, 0.05, 0.05))
 	_라벨(Vector2(-360, -240),
 		"texture · material · corner · texture_scale 은 건드리지 마세요. 사용법은 README_지형찍기.md",

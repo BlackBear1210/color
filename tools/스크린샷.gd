@@ -17,6 +17,10 @@ var 줌 := 0.0
 var 중심 := Vector2.INF
 var 폭 := 1920
 var 높이 := 1080
+## ★ [2026-08-25 추가] 스테이지 씬은 월드.gd 가 _ready 에서 ProtoCamera 를 만들어
+##   **플레이어를 따라간다.** 그래서 --중심 을 줘도 무시된다.
+##   구간을 옮겨 찍으려면 카메라가 아니라 **플레이어 시작 위치**를 옮겨야 한다.
+var 시작 := Vector2.INF
 
 
 func _init() -> void:
@@ -31,6 +35,10 @@ func _init() -> void:
 			폭 = a.substr("--폭=".length()).to_int()
 		elif a.begins_with("--높이="):
 			높이 = a.substr("--높이=".length()).to_int()
+		elif a.begins_with("--시작="):
+			var sx := a.substr("--시작=".length()).split(",")
+			if sx.size() == 2:
+				시작 = Vector2(sx[0].to_float(), sx[1].to_float())
 		elif a.begins_with("--중심="):
 			var xy := a.substr("--중심=".length()).split(",")
 			if xy.size() == 2:
@@ -54,6 +62,9 @@ func _실행() -> void:
 	DisplayServer.window_set_size(Vector2i(폭, 높이))
 
 	var 인스턴스: Node = ps.instantiate()
+	# 시작 위치는 **트리에 넣기 전**에 바꿔야 한다 — 월드.gd 가 _ready 에서 읽는다.
+	if 시작 != Vector2.INF:
+		instance_set(인스턴스, "시작_위치", 시작)
 	root.add_child(인스턴스)
 
 	# 카메라 보정: 씬에 카메라가 있으면 인자로 덮어쓴다
@@ -89,3 +100,11 @@ func _카메라찾기(n: Node) -> Camera2D:
 		if r != null:
 			return r
 	return null
+
+
+## 있으면 설정하고, 없는 속성이면 조용히 넘어간다 (일반 테스트 씬에도 쓸 수 있게)
+func instance_set(n: Node, 이름: String, 값) -> void:
+	for p in n.get_property_list():
+		if p.name == 이름:
+			n.set(이름, 값)
+			return
