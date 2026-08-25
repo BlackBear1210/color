@@ -158,11 +158,15 @@ func _성능_계측() -> void:
 	var p := _루트.get_node_or_null("Player") as Node2D
 	if p == null:
 		return
-	var cs := p.get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if cs and cs.shape is RectangleShape2D:
-		var r := (cs.shape as RectangleShape2D).size
-		_키 = absf(r.y * p.scale.y)
-		_폭 = absf(r.x * p.scale.x)
+	# ★[2026-08-25] `플레이어몸.재기()` 로 통일 (scripts/플레이어_몸.gd 주석 참고).
+	#   못 재면 기본값으로 디딤돌을 놓게 되는데, 몸 크기가 틀리면 **닿지도 않는 자리에
+	#   발판을 깔거나 통행을 막는다.** 그래서 조용히 넘어가지 않고 알린다.
+	var 잰것 := 플레이어몸.재기(p)
+	if 잰것["찾음"]:
+		_폭 = (잰것["크기"] as Vector2).x
+		_키 = (잰것["크기"] as Vector2).y
+	else:
+		print("  ⚠ 플레이어 콜리전을 못 찾음 → 기본 몸 크기로 보정한다(결과를 확인할 것)")
 	# player.gd 의 export 에서 실제 점프 성능을 역산한다(하드코딩하지 않는다).
 	var 타일: float = float(p.get("타일_크기")) if p.get("타일_크기") != null else 16.0
 	var 높이칸: float = float(p.get("점프_높이_칸")) if p.get("점프_높이_칸") != null else 10.0

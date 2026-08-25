@@ -136,17 +136,14 @@ func _플레이어_재기() -> void:
 	var p := _루트.get_node_or_null("Player") as Node2D
 	if p == null:
 		return
-	var cs := p.get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if cs == null or cs.shape == null:
+	# ★[2026-08-25] `플레이어몸.재기()` 로 통일. 모양·개수에 상관없이 재고,
+	#   못 재면 조용히 넘어가지 않고 알린다(예전엔 기본값으로 계속 진단해 결과가 거짓이 됐다).
+	var 잰것 := 플레이어몸.재기(p)
+	if not 잰것["찾음"]:
+		print("  ⚠ 플레이어 콜리전을 못 찾음 → 진단 수치를 믿지 말 것")
 		return
-	if cs.shape is RectangleShape2D:
-		var r := (cs.shape as RectangleShape2D).size
-		_키 = absf(r.y * p.scale.y)
-		_폭 = absf(r.x * p.scale.x)
-	elif cs.shape is CapsuleShape2D:
-		var c := cs.shape as CapsuleShape2D
-		_키 = absf(c.height * p.scale.y)
-		_폭 = absf(c.radius * 2.0 * p.scale.x)
+	_폭 = (잰것["크기"] as Vector2).x
+	_키 = (잰것["크기"] as Vector2).y
 	print("  플레이어 — 키 %.0fpx · 폭 %.0fpx" % [_키, _폭])
 
 
