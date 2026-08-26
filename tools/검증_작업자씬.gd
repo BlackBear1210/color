@@ -70,32 +70,53 @@ func _실행() -> void:
 		var m = n.get("shape_material")
 		if m != null:
 			var metas: Array = m.get_all_edge_meta_materials()
-			_확인(metas.size() == 5, "엣지 메타가 5개가 아니다 (%d)" % metas.size())
-			var 방향수 := 0
-			var 코너수 := 0
-			for meta in metas:
+			# 360도 단일 엣지는 벽돌테스 방식의 미터 조인이다. 코너·테이퍼를 겹치지 않는 대신
+			# CROP과 균일 폭을 반드시 켜야 도형을 늘리거나 꺾어도 테두리 두께가 유지된다.
+			var 단일_사방 := metas.size() == 1
+			_확인(metas.size() == 5 or 단일_사방,
+				"엣지 메타가 5방향 또는 단일 사방 구성이 아니다 (%d)" % metas.size())
+			if 단일_사방:
+				var meta = metas[0]
 				var e = meta.edge_material
-				_확인(e != null, "엣지 머티리얼이 없다")
-				if e == null:
-					continue
-				_확인(is_equal_approx(e.texture_scale, 배율),
-					"texture_scale 이 %.2f 가 아니다 (%.3f)" % [배율, e.texture_scale])
-				if e.use_corner_texture:
-					코너수 += 1
-					_확인(e.textures_corner_outer.size() > 0
-						and e.textures_corner_outer[0] != null, "corner_outer 없음")
-					_확인(e.textures_corner_inner.size() > 0
-						and e.textures_corner_inner[0] != null, "corner_inner 없음")
-				else:
-					방향수 += 1
-					_확인(e.textures.size() > 0 and e.textures[0] != null, "엣지 텍스처 없음")
-					_확인(e.use_taper_texture, "taper 가 꺼져 있다")
-					_확인(e.textures_taper_left.size() > 0
-						and e.textures_taper_left[0] != null, "taper_left 없음")
-					_확인(e.textures_taper_right.size() > 0
-						and e.textures_taper_right[0] != null, "taper_right 없음")
-			_확인(방향수 == 4, "4방향 엣지가 4개가 아니다 (%d)" % 방향수)
-			_확인(코너수 == 1, "코너 엣지가 1개가 아니다 (%d)" % 코너수)
+				_확인(e != null, "단일 사방 엣지 머티리얼이 없다")
+				_확인(meta.normal_range != null
+					and is_equal_approx(meta.normal_range.distance, 360.0),
+					"단일 사방 normal_range 가 360도가 아니다")
+				if e != null:
+					_확인(is_equal_approx(e.texture_scale, 배율),
+						"texture_scale 이 %.2f 가 아니다 (%.3f)" % [배율, e.texture_scale])
+					_확인(e.textures.size() == 1 and e.textures[0] != null,
+						"단일 사방 엣지 텍스처가 정확히 1개가 아니다")
+					_확인(not e.use_corner_texture, "단일 사방 재질에 코너 텍스처가 켜져 있다")
+					_확인(not e.use_taper_texture, "단일 사방 재질에 taper 가 켜져 있다")
+					_확인(int(e.fit_mode) == 1, "단일 사방 fit_mode 가 CROP이 아니다")
+					_확인(e.uniform_width, "단일 사방 uniform_width 가 꺼져 있다")
+			else:
+				var 방향수 := 0
+				var 코너수 := 0
+				for meta in metas:
+					var e = meta.edge_material
+					_확인(e != null, "엣지 머티리얼이 없다")
+					if e == null:
+						continue
+					_확인(is_equal_approx(e.texture_scale, 배율),
+						"texture_scale 이 %.2f 가 아니다 (%.3f)" % [배율, e.texture_scale])
+					if e.use_corner_texture:
+						코너수 += 1
+						_확인(e.textures_corner_outer.size() > 0
+							and e.textures_corner_outer[0] != null, "corner_outer 없음")
+						_확인(e.textures_corner_inner.size() > 0
+							and e.textures_corner_inner[0] != null, "corner_inner 없음")
+					else:
+						방향수 += 1
+						_확인(e.textures.size() > 0 and e.textures[0] != null, "엣지 텍스처 없음")
+						_확인(e.use_taper_texture, "taper 가 꺼져 있다")
+						_확인(e.textures_taper_left.size() > 0
+							and e.textures_taper_left[0] != null, "taper_left 없음")
+						_확인(e.textures_taper_right.size() > 0
+							and e.textures_taper_right[0] != null, "taper_right 없음")
+				_확인(방향수 == 4, "4방향 엣지가 4개가 아니다 (%d)" % 방향수)
+				_확인(코너수 == 1, "코너 엣지가 1개가 아니다 (%d)" % 코너수)
 			# 속빔은 fill_textures 가 **비어 있어야** 진짜 알파 투명 내부가 된다
 			if 속빔:
 				_확인(m.fill_textures.is_empty(), "속빔인데 fill_textures 가 차 있다")
