@@ -1,0 +1,60 @@
+; ============================================================================
+; [2026-08-27] BRICK v2 — 사방 미터 조인 재질 (채움 있음 / SOLID · STAIRS 용)
+; ----------------------------------------------------------------------------
+; 성진님의 `wood_v2/tres/지형_나무v2_black_detail_사방.tres` 와 **같은 처방**이다.
+; (근거: docs/작업기록_2026-08-27_성진_WOOD_SOLID_사방미터조인.md)
+;
+; ▣ 왜 벽돌도 사방으로 바꾸나 — 한 번에 세 가지가 고쳐진다
+;   ① 코너가 이상하다      방향별 엣지 4 + taper 8 + 코너 쿼드가 한 모서리에 겹쳐
+;                          투명한 뾰족점과 두께 불균일이 생겼다.
+;   ② 밟는 자리가 안쪽이다  엣지 텍스처(1024×256 × 0.35 = 89.6px)가 외곽선에
+;                          **가운데 정렬**로 그려져 사방 44.8px 이 도형 밖으로 나갔다.
+;                          `offset = -1.0` 이면 엣지가 통째로 안쪽으로 들어와
+;                          **그림과 콜리전이 정확히 일치**한다(실측 0.0px).
+;   ③ 코너가 안 칠해진다    `지형.gd _셰이더_설치()` 는 코너 텍스처를 든 메타를
+;                          건너뛴다(투명 캐리어라 흰색 짝이 없다). 그래서 코너 쿼드에는
+;                          페인트 셰이더가 안 붙어 **총을 맞아도 코너만 안 변했다.**
+;                          코너 메타가 없어지면 이 문제 자체가 사라진다.
+;
+; ▣ 색칠 짝 규칙 (지형.gd `_짝_텍스처`)
+;   `.../brick_v2/black/edge_top.png` → `.../brick_v2/white/edge_top.png` 로 찾는다.
+;   ⚠ 그래서 엣지·채움 텍스처는 **반드시 black/ 폴더 안**의 것을 써야 한다.
+;     (성진님의 `brick_v2_opaque` 사방 재질은 채움이 `assets/tileset/…` 이라
+;      흰색 짝을 못 찾는다 → 칠하기가 안 된다. 그래서 그쪽을 안 쓰고 새로 만들었다.)
+; ============================================================================
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3]
+
+[ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="1_meta"]
+[ext_resource type="Script" uid="uid://d0xjijisx1woh" path="res://addons/rmsmartshape/materials/edge_material.gd" id="2_edge"]
+[ext_resource type="Script" uid="uid://d218yx0d1ilsn" path="res://addons/rmsmartshape/normal_range.gd" id="3_range"]
+[ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="4_shape"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/brick_v2/black/edge_top.png" id="10_edge"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/brick_v2/black/fill_detail.png" id="20_fill"]
+
+[sub_resource type="Resource" id="E_all"]
+script = ExtResource("2_edge")
+textures = Array[Texture2D]([ExtResource("10_edge")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+uniform_width = true
+texture_scale = 0.35
+
+[sub_resource type="Resource" id="R_all"]
+script = ExtResource("3_range")
+begin = 0.0
+distance = 360.0
+
+[sub_resource type="Resource" id="M_all"]
+script = ExtResource("1_meta")
+edge_material = SubResource("E_all")
+normal_range = SubResource("R_all")
+weld = true
+offset = -1.0
+
+[resource]
+script = ExtResource("4_shape")
+_edge_meta_materials = Array[ExtResource("1_meta")]([SubResource("M_all")])
+fill_textures = Array[Texture2D]([ExtResource("20_fill")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.35

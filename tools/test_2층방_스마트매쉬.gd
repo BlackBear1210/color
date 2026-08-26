@@ -46,8 +46,30 @@ func _실행() -> void:
 	씬.set_physics_process(false)
 
 	var 지형층: Node = 씬.get_node("지형")
-	var 발판: Node = 지형층.get_node("발판_A")     # 나무 · 칠 가능
-	var 구조: Node = 지형층.get_node("1층바닥")     # 벽돌 · 구조물(안전)
+	# ★[2026-08-26] 이름을 박아 두지 않는다.
+	#   예전에는 `발판_A` · `1층바닥` 을 `get_node()` 로 직접 찾았다. 그런데 2026-08-25
+	#   원화 개편에서 지형 이름이 전부 `SS_WOOD_*` · `바닥_SS_BRICK_01` 로 바뀌면서
+	#   이 검사가 **null 을 붙잡고 멈춰 버렸다**(실패도 아니고 그냥 안 끝났다).
+	#   → 이름이 아니라 **역할**로 찾는다. 앞으로 이름을 또 바꿔도 안 깨진다.
+	#     발판 = 칠할 수 있는 지형 / 구조 = 칠 거부 지형.
+	var 발판: Node = null
+	var 구조: Node = null
+	for n in 지형층.get_children():
+		if not n.has_method("반대색인가"):
+			continue
+		if bool(n.get("칠하기_허용")) and not bool(n.get("무색일때_통과")):
+			if 발판 == null:
+				발판 = n                        # 나무 · 칠 가능 (유령은 콜리전이 달라 제외)
+		elif not bool(n.get("칠하기_허용")):
+			if 구조 == null:
+				구조 = n                        # 벽돌 · 구조물(안전)
+	확인("칠할 수 있는 발판과 칠 거부 구조물을 둘 다 찾았다",
+		발판 != null and 구조 != null)
+	if 발판 == null or 구조 == null:
+		print("결과: %d / %d 통과  ← 지형을 못 찾아 중단" % [총 - 실패, 총])
+		quit(1)
+		return
+	print("  (발판 = %s · 구조 = %s)" % [발판.name, 구조.name])
 
 	# ── 1. 타입 ──────────────────────────────────────────────────────────
 	확인("발판_A 가 스마트지형(색 지님)", 발판.has_method("반대색인가") and 발판.has_method("명중"))
@@ -99,6 +121,11 @@ func _실행() -> void:
 	확인("월드 판정: 검정발판+검정플레이어 = 안 죽는다", not bool(씬._사망_판정()))
 
 	# 구조물 위에서는 어느 색이든 안전해야 한다.
+	# ⚠[2026-08-26] 바로 위에서 발판을 **검정으로 칠해 놨다.** 방 배치가 바뀌면서
+	#   구조물(바닥) 중심과 그 발판이 겹치게 되어, 흰 몸이 발판에 닿아 죽는 게 정답이
+	#   되어 버렸다(검사는 "벽돌은 안전한가" 를 묻고 싶은 건데 발판이 끼어든 것).
+	#   → 발판 색을 되돌려 **벽돌만 남긴 상태**로 묻는다.
+	발판.강제_초기화()
 	player.global_position = 구조.global_position
 	await physics_frame
 	player.set("player_color", ColorDefs.WHITE)
