@@ -1,9 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=4 uid="uid://b1lj4baa5si1m"]
 
-[ext_resource type="Script" path="res://scripts/스마트월드/지형.gd" id="1_pwshu"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="2_125f5"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_ywyfw"]
-[ext_resource type="Resource" path="res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail_얇은_속빔_사방.tres" id="4_1pp5l"]
+[ext_resource type="Script" uid="uid://qsashlrklll3" path="res://scripts/스마트월드/지형.gd" id="1_pwshu"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="2_125f5"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_ywyfw"]
+[ext_resource type="Resource" uid="uid://8q2x02aovav4" path="res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail_얇은_속빔_사방.tres" id="4_1pp5l"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_xw1qc"]
+[ext_resource type="Texture2D" uid="uid://dj1q1sitixcqo" path="res://assets/textures/smartshape/wood_v2/black/edge_top_thin.png" id="5_4cm0a"]
 
 [sub_resource type="Resource" id="Resource_ih5q5"]
 script = ExtResource("2_125f5")
@@ -40,15 +42,43 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
+[sub_resource type="ArrayMesh" id="ArrayMesh_wi0hc"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9uO6k/AACAP247qT8AAIA//////247qT8AAAAAbjupPwAAAAD/////ty3gPwAAgD+3LeA/AACAP/////+3LeA/AAAAALct4D8AAAAA/////5K0REAAAIA/krREQAAAgD//////krREQAAAAACStERAAAAAAP////+3LWBAAACAP7ctYEAAAIA//////7ctYEAAAAAAty1gQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwwAAwMIAAAAAmtlZw2dmZ8IAAAAAmtlZQ2dmZ8IAAAAAAACAQwAAwMIAAAAAmtlZQ2dmZ0IAAAAAAACAQwAAwEIAAAAAmtlZw2dmZ0IAAAAAAACAwwAAwEIAAAAAmtlZw2dmZ8IAAAAAAACAwwAAwMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_ryt8q"]
+script = ExtResource("4_xw1qc")
+texture = ExtResource("5_4cm0a")
+mesh = SubResource("ArrayMesh_wi0hc")
+
 [node name="TEMPLATE_WOOD_HOLLOW" type="Node2D" unique_id=366337310]
 script = ExtResource("1_pwshu")
 _points = SubResource("Resource_n6ed3")
+_meshes = Array[ExtResource("4_xw1qc")]([SubResource("Resource_ryt8q")])
 shape_material = ExtResource("4_1pp5l")
 collision_update_mode = 2
 collision_size = 24.0
 collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
 
+[node name="@ColorRect@42701" type="ColorRect" parent="." unique_id=809744961]
+modulate = Color(1, 1, 1, 0)
+offset_left = -256.0
+offset_top = -96.0
+offset_right = 256.0
+offset_bottom = 96.0
+metadata/__ss2d_click_rect__ = true
+
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1018857790]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=296494566]
-polygon = PackedVector2Array(-256, -96, 256, -96, 256, 96, -256, 96, -256, -96)
+visible = false
+polygon = PackedVector2Array(-256, -96, 256, -96, 256, 96, -256, 96)

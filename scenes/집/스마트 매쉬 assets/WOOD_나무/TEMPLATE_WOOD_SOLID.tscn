@@ -5,8 +5,8 @@
 [ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_xh3mk"]
 [ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_ick6f"]
 [ext_resource type="Texture2D" uid="uid://bwn2b1081olaf" path="res://assets/textures/smartshape/wood_v2/black/fill_detail.png" id="5_m2lq1"]
-[ext_resource type="Texture2D" uid="uid://bixutv2astt8a" path="res://assets/textures/smartshape/wood_v2/black/edge_top.png" id="7_6dgmk"]
-[ext_resource type="Resource" path="res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail_얇은_사방.tres" id="7_pg6cn"]
+[ext_resource type="Texture2D" uid="uid://dj1q1sitixcqo" path="res://assets/textures/smartshape/wood_v2/black/edge_top_thin.png" id="6_pg6cn"]
+[ext_resource type="Resource" uid="uid://ckheo3aretsqu" path="res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail_얇은_사방.tres" id="7_pg6cn"]
 
 [sub_resource type="Resource" id="Resource_ogowm"]
 script = ExtResource("2_lrc6y")
@@ -41,9 +41,9 @@ _point_order = PackedInt32Array(0, 1, 2, 3, 4)
 _constraints = {
 Vector2i(0, 4): 15
 }
-_next_key = 6
+_next_key = 7
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_pg6cn"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_nxy5u"]
 _surfaces = [{
 "aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
 "attribute_data": PackedByteArray("/////27bNj+SJIm+bts2P5Ikib7/////bts2P5IkiT5u2zY/kiSJPv////9u2za/kiSJPm7bNr+SJIk+/////27bNr+SJIm+bts2v5Ikib4="),
@@ -56,13 +56,13 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AACAQwAAwMIAAAAAAACAQwAAwEIAAAAAAACAwwAAwEIAAAAAAACAwwAAwMIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_nxy5u"]
+[sub_resource type="Resource" id="Resource_hntwl"]
 script = ExtResource("4_ick6f")
 texture = ExtResource("5_m2lq1")
-mesh = SubResource("ArrayMesh_pg6cn")
+mesh = SubResource("ArrayMesh_nxy5u")
 z_index = -1
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_hntwl"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_pru2t"]
 _surfaces = [{
 "aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
 "attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9uO6k/AACAP247qT8AAIA//////247qT8AAAAAbjupPwAAAAD/////ty3gPwAAgD+3LeA/AACAP/////+3LeA/AAAAALct4D8AAAAA/////5K0REAAAIA/krREQAAAgD//////krREQAAAAACStERAAAAAAP////+3LWBAAACAP7ctYEAAAIA//////7ctYEAAAAAAty1gQAAAAAA="),
@@ -75,26 +75,21 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AACAwwAAwMIAAAAAmtlZw2dmZ8IAAAAAmtlZQ2dmZ8IAAAAAAACAQwAAwMIAAAAAmtlZQ2dmZ0IAAAAAAACAQwAAwEIAAAAAmtlZw2dmZ0IAAAAAAACAwwAAwEIAAAAAmtlZw2dmZ8IAAAAAAACAwwAAwMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
 }]
 
-[sub_resource type="AtlasTexture" id="Atlas_wood_thin"]
-atlas = ExtResource("7_6dgmk")
-region = Rect2(0, 68, 1024, 109)
-filter_clip = true
-
-[sub_resource type="Resource" id="Resource_pru2t"]
+[sub_resource type="Resource" id="Resource_j3f05"]
 script = ExtResource("4_ick6f")
-texture = SubResource("Atlas_wood_thin")
-mesh = SubResource("ArrayMesh_hntwl")
+texture = ExtResource("6_pg6cn")
+mesh = SubResource("ArrayMesh_pru2t")
 
 [node name="TEMPLATE_WOOD_SOLID" type="Node2D" unique_id=850870401]
 script = ExtResource("1_p7j1u")
 _points = SubResource("Resource_5armn")
-_meshes = Array[ExtResource("4_ick6f")]([SubResource("Resource_nxy5u"), SubResource("Resource_pru2t")])
+_meshes = Array[ExtResource("4_ick6f")]([SubResource("Resource_hntwl"), SubResource("Resource_j3f05")])
 shape_material = ExtResource("7_pg6cn")
 collision_update_mode = 2
 collision_size = 24.0
 collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
 
-[node name="@ColorRect@35219" type="ColorRect" parent="." unique_id=972310650]
+[node name="@ColorRect@18754" type="ColorRect" parent="." unique_id=1144091744]
 modulate = Color(1, 1, 1, 0)
 offset_left = -256.0
 offset_top = -96.0

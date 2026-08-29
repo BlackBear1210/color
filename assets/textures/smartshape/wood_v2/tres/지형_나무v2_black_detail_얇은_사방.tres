@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://d0xjijisx1woh" path="res://addons/rmsmartshape/materials/edge_material.gd" id="2_edge"]
 [ext_resource type="Script" uid="uid://d218yx0d1ilsn" path="res://addons/rmsmartshape/normal_range.gd" id="3_range"]
 [ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="4_shape"]
-[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/edge_top_thin.png" id="10_edge"]
+[ext_resource type="Texture2D" uid="uid://dj1q1sitixcqo" path="res://assets/textures/smartshape/wood_v2/black/edge_top_thin.png" id="10_edge"]
 [ext_resource type="Texture2D" uid="uid://bwn2b1081olaf" path="res://assets/textures/smartshape/wood_v2/black/fill_detail.png" id="20_fill"]
 
 [sub_resource type="Resource" id="E_all"]
@@ -30,8 +30,5 @@ offset = -1.0
 script = ExtResource("4_shape")
 _edge_meta_materials = Array[ExtResource("1_meta")]([SubResource("M_all")])
 fill_textures = Array[Texture2D]([ExtResource("20_fill")])
-# 얇은 테두리(109px × 0.35 ≒ 38px)만큼 채움을 안쪽으로 넣어 모서리 밖 노출을 막는다.
-# fill_mesh_offset는 fill 텍스처 폭(1024px)에 곱해지므로 -0.0375는 약 38.4px 인셋이다.
-fill_mesh_offset = -0.0375
 fill_texture_z_index = -1
 fill_texture_scale = 0.35

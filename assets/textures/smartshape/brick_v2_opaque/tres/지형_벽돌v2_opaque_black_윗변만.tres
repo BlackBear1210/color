@@ -1,20 +1,19 @@
-[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3]
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3 uid="uid://b1nplsx3mvdhu"]
 
 [ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="1_meta"]
 [ext_resource type="Script" uid="uid://d0xjijisx1woh" path="res://addons/rmsmartshape/materials/edge_material.gd" id="2_edge"]
 [ext_resource type="Script" uid="uid://d218yx0d1ilsn" path="res://addons/rmsmartshape/normal_range.gd" id="3_range"]
 [ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="4_shape"]
-[ext_resource type="Texture2D" path="res://assets/textures/smartshape/brick_v2_opaque/black/edge_top_thin.png" id="10_e"]
-[ext_resource type="Texture2D" path="res://assets/tileset/brick_black_seamless_341x307.png" id="50_fill"]
+[ext_resource type="Texture2D" uid="uid://10whmxfsuiyk" path="res://assets/textures/smartshape/brick_v2_opaque/black/edge_top_thin.png" id="10_e"]
+[ext_resource type="Texture2D" uid="uid://bkxx7iiakjcia" path="res://assets/tileset/brick_black_seamless_341x307.png" id="50_fill"]
 
 [sub_resource type="Resource" id="E_top"]
 script = ExtResource("2_edge")
 textures = Array[Texture2D]([ExtResource("10_e")])
 use_corner_texture = false
 use_taper_texture = false
-uniform_width = true
 fit_mode = 1
-texture_scale = 1.0
+uniform_width = true
 
 [sub_resource type="Resource" id="R_top"]
 script = ExtResource("3_range")
@@ -25,7 +24,6 @@ distance = 90.0
 script = ExtResource("1_meta")
 edge_material = SubResource("E_top")
 normal_range = SubResource("R_top")
-weld = true
 offset = -1.0
 
 [resource]
@@ -33,4 +31,3 @@ script = ExtResource("4_shape")
 _edge_meta_materials = Array[ExtResource("1_meta")]([SubResource("M_top")])
 fill_textures = Array[Texture2D]([ExtResource("50_fill")])
 fill_texture_z_index = -1
-fill_texture_scale = 1.0

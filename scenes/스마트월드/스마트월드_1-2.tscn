@@ -26,8 +26,8 @@
 [ext_resource type="Texture2D" uid="uid://dls2oupvaw210" path="res://assets/textures/smartshape/black_right2.png" id="21_6c756"]
 [ext_resource type="Script" uid="uid://cyyy5rke8bwet" path="res://scripts/스마트월드/유체.gd" id="21_plhgq"]
 [ext_resource type="Texture2D" uid="uid://uoaea03k31b1" path="res://assets/textures/smartshape/black_bottom_center.png" id="22_8lqic"]
-[ext_resource type="Script" path="res://scripts/스마트월드/색레이저.gd" id="22_n8dgv"]
-[ext_resource type="Script" path="res://scripts/스마트월드/무너지는바위.gd" id="23_kxvs0"]
+[ext_resource type="Script" uid="uid://6wnxsrldkukd" path="res://scripts/스마트월드/색레이저.gd" id="22_n8dgv"]
+[ext_resource type="Script" uid="uid://cm8nkjbawoi3j" path="res://scripts/스마트월드/무너지는바위.gd" id="23_kxvs0"]
 [ext_resource type="Texture2D" uid="uid://37bnt3gl1mfe" path="res://assets/textures/smartshape/black_left2.png" id="23_sgr3m"]
 [ext_resource type="Script" uid="uid://dqtxnr7b8nnbf" path="res://scripts/스마트월드/배관.gd" id="24_n3kpt"]
 [ext_resource type="Script" uid="uid://b1wxvt5vq8e3w" path="res://scripts/스마트월드/물저장고.gd" id="25_dhvka"]
@@ -36,9 +36,9 @@
 [ext_resource type="Script" uid="uid://bfbp4by0y6mlv" path="res://scripts/스마트월드/통과플랫폼.gd" id="27_qvfvc"]
 [ext_resource type="Script" uid="uid://bkrm7amrmtthd" path="res://scripts/스마트월드/제어레버.gd" id="28_e7jwy"]
 [ext_resource type="Script" uid="uid://c1efe3ukm06oq" path="res://scripts/스마트월드/식물_b.gd" id="29_3yah6"]
-[ext_resource type="Script" path="res://scripts/스마트월드/도약대.gd" id="30_ocn3p"]
+[ext_resource type="Script" uid="uid://cc34yv6h0403f" path="res://scripts/스마트월드/도약대.gd" id="30_ocn3p"]
 [ext_resource type="Script" uid="uid://dmnfymva6lhso" path="res://scripts/스마트월드/송풍기.gd" id="31_88ndh"]
-[ext_resource type="Script" path="res://scripts/스마트월드/연결통로.gd" id="32_qnrcm"]
+[ext_resource type="Script" uid="uid://btb30vjfpe18l" path="res://scripts/스마트월드/연결통로.gd" id="32_qnrcm"]
 [ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="33_vylfq"]
 
 [sub_resource type="Shader" id="Shader_4arwo"]
@@ -7732,7 +7732,7 @@ position = Vector2(0, 410)
 shape = SubResource("RectangleShape2D_0eepv")
 
 [node name="배관_갱도" type="Node2D" parent="오브젝트" unique_id=316924381]
-z_index = -6
+z_index = 2
 position = Vector2(3210, 940)
 script = ExtResource("24_n3kpt")
 "세로" = true
@@ -7810,7 +7810,7 @@ script = ExtResource("25_dhvka")
 "공급_유체" = NodePath("../수로_본류")
 
 [node name="배관_수로1" type="Node2D" parent="오브젝트" unique_id=618936128]
-z_index = -6
+z_index = 2
 position = Vector2(3560, 1330)
 script = ExtResource("24_n3kpt")
 "세로" = true
@@ -7818,7 +7818,7 @@ script = ExtResource("24_n3kpt")
 "연결_유체" = NodePath("../수로_본류")
 
 [node name="배관_수로2" type="Node2D" parent="오브젝트" unique_id=905269634]
-z_index = -6
+z_index = 2
 position = Vector2(3660, 1390)
 script = ExtResource("24_n3kpt")
 "모양" = 2
@@ -7826,14 +7826,14 @@ script = ExtResource("24_n3kpt")
 "연결_유체" = NodePath("../수로_본류")
 
 [node name="배관_수로3" type="Node2D" parent="오브젝트" unique_id=1216957610]
-z_index = -6
+z_index = 2
 position = Vector2(3900, 1390)
 script = ExtResource("24_n3kpt")
 "길이" = 240.0
 "연결_유체" = NodePath("../수로_본류")
 
 [node name="배관_수로4" type="Node2D" parent="오브젝트" unique_id=1784509735]
-z_index = -6
+z_index = 2
 position = Vector2(4140, 1390)
 script = ExtResource("24_n3kpt")
 "모양" = 1
@@ -7990,7 +7990,7 @@ position = Vector2(0, 210)
 shape = SubResource("RectangleShape2D_hyijc")
 
 [node name="배관_갈래" type="Node2D" parent="오브젝트" unique_id=1430570510]
-z_index = -6
+z_index = 2
 position = Vector2(6570, 200)
 script = ExtResource("24_n3kpt")
 "모양" = 1

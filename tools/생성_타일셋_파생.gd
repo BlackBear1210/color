@@ -483,10 +483,18 @@ func _코너합성_miter(top: Image, side: Image, 바깥: bool) -> Image:
 			else:
 				# 위 행(py=0)이 TOP 단면, 오른쪽 열(px=1)이 SIDE 단면
 				phi = atan2((1.0 - px) * float(S), maxf(py * float(S), 1e-6))
-				u_t = U_TOP + py * 코너캐리어 / topW
-				v_t = 1.0 - px
-				u_s = U_SIDE - (1.0 - px) * 코너캐리어 / sideW
-				v_s = py
+				# ★ [2026-08-25] 이슈 CORNER-SIDE-ROTATION-01
+				#   여기 UV 네 줄이 바깥 분기와 px/py 가 서로 뒤바뀌어 있었다.
+				#   코너 쿼드는 회전하지 않으므로 어느 축에 대응시키느냐가 곧 화면 방향이다.
+				#   TOP 은 회전 없이 그리므로 진행방향이 코너의 **가로축**,
+				#   SIDE 는 원본_소스_제작규칙 §2 대로 90도 돌려 그리므로 **세로축**에 붙어야 한다.
+				#   뒤바뀐 탓에 안쪽 코너에서만 벽돌/판자가 90도 서 있었다
+				#   (방향지수 brick 0.47 · wood 0.49, 채움은 1.85 · 4.65).
+				#   phi(대각선 블렌드 방향)는 안쪽 코너의 것이 맞으므로 그대로 둔다.
+				u_t = U_TOP + px * 코너캐리어 / topW
+				v_t = py
+				u_s = U_SIDE - (1.0 - py) * 코너캐리어 / sideW
+				v_s = 1.0 - px
 			# 45도 대각선에서 부드럽게 섞는다 (경계에서는 한쪽만 100%)
 			var p: float = clampf(phi / (PI * 0.5), 0.0, 1.0)
 			var w_top := _가중(p, _코너블렌드)

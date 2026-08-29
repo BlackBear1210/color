@@ -1,9 +1,12 @@
-[gd_scene format=3]
+[gd_scene format=4 uid="uid://b6tt6pnq47m6k"]
 
-[ext_resource type="Script" path="res://scripts/스마트월드/지형.gd" id="1_1kqgf"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="2_8xlf3"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_ss85v"]
-[ext_resource type="Resource" path="res://assets/textures/smartshape/brick_v2/tres/지형_벽돌v2_black_detail_얇은_사방.tres" id="4_l2mkf"]
+[ext_resource type="Script" uid="uid://qsashlrklll3" path="res://scripts/스마트월드/지형.gd" id="1_1kqgf"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="2_8xlf3"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_ss85v"]
+[ext_resource type="Resource" uid="uid://dbkl81kbq4i1q" path="res://assets/textures/smartshape/brick_v2/tres/지형_벽돌v2_black_detail_얇은_사방.tres" id="4_l2mkf"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_nggji"]
+[ext_resource type="Texture2D" uid="uid://b1hsya8suinjy" path="res://assets/textures/smartshape/brick_v2/black/fill_detail.png" id="5_o4fcc"]
+[ext_resource type="Texture2D" uid="uid://10whmxfsuiyk" path="res://assets/textures/smartshape/brick_v2_opaque/black/edge_top_thin.png" id="6_1xk42"]
 
 [sub_resource type="Resource" id="Resource_bluq3"]
 script = ExtResource("2_8xlf3")
@@ -80,16 +83,63 @@ Vector2i(0, 12): 15
 }
 _next_key = 13
 
+[sub_resource type="ArrayMesh" id="ArrayMesh_dwal8"]
+_surfaces = [{
+"aabb": AABB(-450, -220, 0, 900, 632, 1e-05),
+"attribute_data": PackedByteArray("/////27bQL+TJB0/bttAv5MkHT//////bttAv5MknT5u20C/kySdPv////9JkoC+kySdPkmSgL6TJJ0+/////0mSgL4AAAAASZKAvgAAAAD/////SZKAPgAAAABJkoA+AAAAAP////9JkoA+kySdvkmSgD6TJJ2+/////27bQD+TJJ2+bttAP5Mknb7/////bttAP5MkHb9u20A/kyQdv//////ctqA/kyQdv9y2oD+TJB2//////9y2oD+TJJM/3LagP5Mkkz//////3Lagv5Mkkz/ctqC/kySTP//////ctqC/kyQdP9y2oL+TJB0/"),
+"format": 34359742527,
+"index_count": 33,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACAAJAAoABgAIAAoABAAGAAoAAgAEAAoAAAACAAoACgALAAsACwAAAAoA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("AACHwwAAXEMAAAAAAACHwwAA3EIAAAAAAAC0wgAA3EIAAAAAAAC0wgAAAAAAAAAAAAC0QgAAAAAAAAAAAAC0QgAA3MIAAAAAAACHQwAA3MIAAAAAAACHQwAAXMMAAAAAAADhQwAAXMMAAAAAAADhQwAAzkMAAAAAAADhwwAAzkMAAAAAAADhwwAAXEMAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_cd6ff"]
+script = ExtResource("4_nggji")
+texture = ExtResource("5_o4fcc")
+mesh = SubResource("ArrayMesh_dwal8")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_opy6w"]
+_surfaces = [{
+"aabb": AABB(-450, -220, 0, 900, 632, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AADQ+AACAPwAAND4AAIA//////wAAND4AAAAAAAA0PgAAAAD/////AACRPgAAgD8AAJE+AACAP/////8AAJE+AAAAAAAAkT4AAAAA/////wAA6z4AAIA/AADrPgAAgD//////AADrPgAAAAAAAOs+AAAAAP////8AABE/AACAPwAAET8AAIA//////wAAET8AAAAAAAARPwAAAAD/////AAA+PwAAgD8AAD4/AACAP/////8AAD4/AAAAAAAAPj8AAAAA/////wCAWT8AAIA/AIBZPwAAgD//////AIBZPwAAAAAAgFk/AAAAAP////8AQIM/AACAPwBAgz8AAIA//////wBAgz8AAAAAAECDPwAAAAD/////AACRPwAAgD8AAJE/AACAP/////8AAJE/AAAAAAAAkT8AAAAA/////wDAoj8AAIA/AMCiPwAAgD//////AMCiPwAAAAAAwKI/AAAAAP////8AAO0/AACAPwAA7T8AAIA//////wAA7T8AAAAAAADtPwAAAAD/////AGAsQAAAgD8AYCxAAACAP/////8AYCxAAAAAAABgLEAAAAAA/////wAANkAAAIA/AAA2QAAAgD//////AAA2QAAAAAAAADZAAAAAAA=="),
+"format": 34359742527,
+"index_count": 72,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 26,
+"vertex_data": PackedByteArray("AADhwwAAXEMAAAAAAADOwwAAgUMAAAAAAABowwAAgUMAAAAAAACHwwAAXEMAAAAAAABowwAAFEMAAAAAAACHwwAA3EIAAAAAAABQwgAAFEMAAAAAAAC0wgAA3EIAAAAAAABQwgAAGEIAAAAAAAC0wgAAAAAAAAAAAAAAQwAAGEIAAAAAAAC0QgAAAAAAAAAAAAAAQwAAkMIAAAAAAAC0QgAA3MIAAAAAAACaQwAAkMIAAAAAAACHQwAA3MIAAAAAAACaQwAANsMAAAAAAACHQwAAXMMAAAAAAADOQwAANsMAAAAAAADhQwAAXMMAAAAAAADOQwAAu0MAAAAAAADhQwAAzkMAAAAAAADOwwAAu0MAAAAAAADhwwAAzkMAAAAAAADOwwAAgUMAAAAAAADhwwAAXEMAAAAA/3//f////z//f/9/////P/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//x//f/9//7//H/9//3//P/8f/3//f/8//x//f/9//z//X/9//3//P/9f/3//f/9//n//f/9//3/+fw==")
+}]
+
+[sub_resource type="Resource" id="Resource_e4yl1"]
+script = ExtResource("4_nggji")
+texture = ExtResource("6_1xk42")
+mesh = SubResource("ArrayMesh_opy6w")
+
 [node name="TEMPLATE_BRICK_STAIRS" type="Node2D" unique_id=1849391121]
 script = ExtResource("1_1kqgf")
 _points = SubResource("Resource_yseur")
+_meshes = Array[ExtResource("4_nggji")]([SubResource("Resource_cd6ff"), SubResource("Resource_e4yl1")])
 shape_material = ExtResource("4_l2mkf")
 collision_update_mode = 2
 collision_size = 24.0
 collision_offset = 44.8
 collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
 
+[node name="@ColorRect@32517" type="ColorRect" parent="." unique_id=709205674]
+modulate = Color(1, 1, 1, 0)
+offset_left = -450.0
+offset_top = -220.0
+offset_right = 450.0
+offset_bottom = 412.0
+metadata/__ss2d_click_rect__ = true
+
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=199201654]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=2072532455]
-polygon = PackedVector2Array(-494.8, 175.2, -314.8, 175.2, -314.8, 65.2, -134.8, 65.2, -134.8, -44.8, 45.2, -44.8, 45.2, -154.8, 225.2, -154.8, 225.2, -264.8, 494.8, -264.8, 494.8, 456.8, -494.8, 456.8, -494.8, 175.2)
+visible = false
+polygon = PackedVector2Array(494.8, 456.8, -494.8, 456.8, -494.8, 175.2, -314.8, 175.2, -314.8, 65.2, -134.8, 65.2, -134.8, -44.8, 45.2, -44.8, 45.2, -154.8, 225.2, -154.8, 225.2, -264.8, 494.8, -264.8)
