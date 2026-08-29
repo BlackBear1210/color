@@ -320,7 +320,17 @@ func _조각이_반대색에_닿았나(폴리곤: PackedVector2Array, 색: int) 
 	var 결과 := _플레이어.get_world_2d().direct_space_state.intersect_shape(질의, 24)
 	for 항목 in 결과:
 		var 대상 := _반대색_대상_찾기(항목.get("collider"))
-		if 대상 != null and 대상.반대색인가(색):
+		if 대상 == null:
+			continue
+		# ★[2026-08-30] 자리별 판정을 아는 지형에는 **닿은 자리**를 넘긴다.
+		#   지형은 노드 하나가 통째로 한 색이라, 큰 흰 얼룩이 눈앞에 찍혀 있어도
+		#   `필요횟수` 를 못 채웠으면 "무색 = 안전" 이라고 답해 왔다.
+		#   화면과 판정이 어긋나는 그 구멍을 여기서 막는다.
+		#   (`위치_반대색인가` 가 없는 대상 — 유체·빛기둥·장애물 — 은 예전 그대로)
+		if 대상.has_method("위치_반대색인가"):
+			if 대상.위치_반대색인가(색, 폴리곤):
+				return true
+		elif 대상.반대색인가(색):
 			return true
 	return false
 

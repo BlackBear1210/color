@@ -68,6 +68,11 @@ const 페이드_시간: float = 0.55
 ## ★타일맵 페인트 모드 — 지형을 PaintPlatform 노드가 아니라 TileMapLayer 로 그린 스테이지.
 ## 켜면 TilePaintMap 이 타일의 아틀라스 좌표로 색을 인지해 플랫폼을 자동 검출한다.
 @export var 타일맵_페인트: bool = false
+
+## ★[2026-08-30] 이 스테이지의 SS2D 지형에 **자리별 색 판정**을 켠다.
+## 켜면 "안 칠한 것은 검정" + "닿은 자리의 물감 색으로 판정" 이 적용된다.
+## 씬마다 지형 노드를 일일이 고치지 않아도 되도록 스테이지가 통째로 켜 준다.
+@export var 자리별_색판정: bool = true
 ## 필요횟수 = ceil(플랫폼 긴 변 칸수 / 이 값). 작을수록 많이 쏴야 한다.
 @export var 타일_필요횟수_나눗값: int = 4
 ## 이 칸수를 넘는 덩어리는 칠할 수 없는 고정 지형으로 본다. 0 = 제한 없음.
@@ -112,6 +117,14 @@ func _ready() -> void:
 	_스폰색 = ColorDefs.BLACK if 시작색 == 0 else ColorDefs.WHITE
 	if player.get("player_color") != _스폰색:
 		player.call("_toggle_color")
+
+	# ── 1.5) ★[2026-08-30] 자리별 색 판정 켜기 ──────────────────────
+	# 지형 노드를 씬마다 손으로 고치지 않아도 되도록 스테이지가 통째로 켠다.
+	# 나중에 지형을 더 놓아도 이 줄 하나로 같이 켜진다.
+	if 자리별_색판정:
+		for 지형 in get_tree().get_nodes_in_group("스마트지형"):
+			if 지형.is_inside_tree() and is_ancestor_of(지형):
+				지형.set("위치별_판정", true)
 
 	# ── 2) 페인트 매니저 (회수 FIFO) ────────────────────────────────
 	매니저 = PAINT_MANAGER.new()
@@ -358,15 +371,25 @@ func _physics_process(delta: float) -> void:
 	_무적 = maxf(_무적 - delta, 0.0)
 	_반대색_밟았나()
 
-## 발밑 플랫폼의 색이 내 색의 반대면 즉사 (규칙 v1.3 — 단위만 타일→플랫폼).
-## 무색·회색은 누구에게나 안전하다.
+## 발밑 지형의 색이 내 색과 다르면 즉사.
+##
+## ★[2026-08-30] 규칙이 바뀌었다 — **안 칠한 것은 무색이 아니라 검정**이다.
+##   그리고 지형은 노드 전체가 아니라 **닿은 자리**의 물감 색으로 판정한다.
+##   자세한 것은 `docs/색판정_규칙_2026-08-30.md` · `scripts/스마트월드/색규칙.gd`.
 func _반대색_밟았나() -> void:
 	if _사망중 or _클리어됨 or _무적 > 0.0 or player == null or not player.is_on_floor():
 		return
 	var 색: int = player.get("player_color")
-	var 밟은 := _발밑_플랫폼()
-	if 밟은 and 밟은.반대색인가(색):
-		죽기("💀 반대색 지형을 밟았다")
+	for 접촉 in _발밑_접촉들():
+		var 대상: Node = 접촉["대상"]
+		# 자리별 판정을 아는 지형에는 **밟은 그 점**을 넘긴다.
+		if 대상.has_method("위치_반대색인가"):
+			if 대상.위치_반대색인가(색, PackedVector2Array([접촉["점"]])):
+				죽기("💀 색이 다른 지형을 밟았다")
+				return
+		elif 대상.반대색인가(색):
+			죽기("💀 색이 다른 지형을 밟았다")
+			return
 
 ## 발밑 검사 — 중앙 + 좌우 발끝 3점 레이캐스트.
 ## (플레이어 원점 = 발바닥. 스케일이 비균등이라 로컬 오프셋 대신 월드 오프셋을 쓴다)
@@ -378,7 +401,11 @@ func _반대색_밟았나() -> void:
 ##   → 타입이 아니라 **계약**으로 찾는다. `반대색인가()` 를 가진 조상을 거슬러 올라가며
 ##     찾으면 PaintPlatform 도 스마트지형도 같은 규칙을 탄다.
 ##     (`월드.gd _반대색_대상_찾기()` 와 같은 방식이다 — 두 계열이 같은 말을 쓰게)
-func _발밑_플랫폼() -> Node:
+## 반환: [{ "대상": Node, "점": Vector2(월드) }] — 발밑에 닿은 **색 가진 것들**.
+## ★점을 같이 돌려주는 이유: 지형은 한 노드 안에서도 자리마다 색이 다르다(부분칠).
+##   "무엇을 밟았나" 만으로는 판정할 수 없고 "어디를 밟았나" 가 있어야 한다.
+func _발밑_접촉들() -> Array[Dictionary]:
+	var 결과: Array[Dictionary] = []
 	var space := get_world_2d().direct_space_state
 	for dx in [0.0, -14.0, 14.0]:
 		var 시작 := player.global_position + Vector2(dx, -6.0)
@@ -386,11 +413,18 @@ func _발밑_플랫폼() -> Node:
 		q.collision_mask = 1
 		q.exclude = [player.get_rid()]
 		var hit := space.intersect_ray(q)
-		if hit and hit.has("collider"):
-			var 대상 := _색가진_조상(hit["collider"])
-			if 대상 != null:
-				return 대상
-	return null
+		if hit.is_empty() or not hit.has("collider"):
+			continue
+		var 대상 := _색가진_조상(hit["collider"])
+		if 대상 != null:
+			결과.append({ "대상": 대상, "점": hit.get("position", 시작) })
+	return 결과
+
+
+## 예전 이름 — 다른 곳(HUD 등)이 쓸 수 있어 남겨 둔다. 첫 접촉의 대상만 돌려준다.
+func _발밑_플랫폼() -> Node:
+	var 접촉들 := _발밑_접촉들()
+	return 접촉들[0]["대상"] if not 접촉들.is_empty() else null
 
 
 ## 콜리전 바디에서 "색을 가진 것"을 거슬러 올라가 찾는다.

@@ -160,11 +160,8 @@ func 현재색() -> int:
 
 ## 칠해진 색과 반대색인 플레이어가 밟으면 죽는다 (지형과 같은 규칙).
 func 반대색인가(플레이어색: int) -> bool:
-	if _색 == ColorDefs.BLACK:
-		return 플레이어색 == ColorDefs.WHITE
-	if _색 == ColorDefs.WHITE:
-		return 플레이어색 == ColorDefs.BLACK
-	return false
+	# ★[2026-08-30] 안 칠한 바위도 검정이다 — 흰색 플레이어가 밟으면 죽는다.
+	return 색규칙.위험한가(_색, 플레이어색)
 
 
 func 명중(색: int, _월드좌표: Vector2) -> String:

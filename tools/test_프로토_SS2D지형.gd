@@ -24,6 +24,8 @@ const 색상 := preload("res://scripts/color_defs.gd")
 var _n := 0
 var _st: Node = null
 var _지형: Node = null
+var _윗면: Vector2 = Vector2.INF
+var _죽음수_전 := 0
 var _통과 := 0
 var _실패 := 0
 
@@ -48,8 +50,14 @@ func _틱() -> void:
 		_st = (load(스테이지) as PackedScene).instantiate()
 		root.add_child(_st)
 		return
+	if _n == 120:
+		_마무리_검사()
+		return
+	if _n == 160:
+		_죽음_검사()
+		return
 	if _n != 25:
-		if _n > 40:
+		if _n > 200:
 			_끝내기()
 		return
 
@@ -75,6 +83,15 @@ func _틱() -> void:
 	var 찾음 := _칠할대상_찾기(바디)
 	_확인(찾음 == _지형, "총알이 콜리전에서 지형을 찾아낸다 (명중·현재색 계약)")
 
+	# ★[2026-08-30] 자리별 색 판정 — 스테이지가 통째로 켜 줬는가
+	_확인(bool(_지형.get("위치별_판정")),
+		"스테이지가 SS2D 지형에 자리별 색 판정을 켰다 (stage_lab 자리별_색판정)")
+	var 안쪽 := PackedVector2Array([_지형.global_position])
+	_확인(not _지형.위치_반대색인가(색상.BLACK, 안쪽),
+		"안 칠한 지형(검은 아트) → 검정 플레이어는 안전하다")
+	_확인(_지형.위치_반대색인가(색상.WHITE, 안쪽),
+		"안 칠한 지형(검은 아트) → 흰색 플레이어는 죽는다  ★world_2 로 넓힌 것")
+
 	# ③ 프로토 계열의 규칙 엔진(TilePaintMap)이 이 지형을 칠할 수 있나
 	var 타일페인트 = _st.get("타일페인트")
 	_확인(타일페인트 != null and 타일페인트.has_method("노드_명중"),
@@ -91,16 +108,44 @@ func _틱() -> void:
 	# ④ 밟았을 때 죽는가 — `_발밑_플랫폼()` 이 SS2D 지형을 집어야 한다
 	var 플레이어 = _st.get("player")
 	if 플레이어 != null and 폴리 != null:
-		var 윗면 := _윗면_한점(폴리)
-		플레이어.global_position = 윗면
+		_윗면 = _윗면_한점(폴리)
+		플레이어.global_position = _윗면
 		var 밟은 = _st._발밑_플랫폼()
 		_확인(밟은 == _지형, "발밑 판정이 SS2D 지형을 집는다")
+		# ⚠ 여기서 그대로 두면 **검정 플레이어가 흰 지형을 밟은 채**가 되어 곧 죽는다.
+		#   죽으면 페인트가 회수되므로, 번짐 판정을 먼저 보고 죽음은 맨 뒤에서 따로 본다.
+		플레이어.global_position = _윗면 + Vector2(0, -4000)
 		_확인(_지형.반대색인가(색상.BLACK),
 			"흰 지형은 검정 플레이어에게 반대색이다 (= 밟으면 죽는다)")
 		_확인(not _지형.반대색인가(색상.WHITE), "흰 플레이어에게는 안전하다")
+
 	else:
 		_확인(false, "플레이어를 찾았다")
 
+	# 자리별 판정은 **번짐이 다 자란 뒤**에 본다.
+	# ★얼룩이 자라는 중에는 아직 안 덮인 자리가 검정으로 읽히는 게 맞다 —
+	#   화면이 거기서 검정이기 때문이다. 판정이 화면을 앞질러 가면 그것도 거짓말이다.
+	return
+
+
+## 번짐이 다 자란 뒤 자리별 판정을 보고, 그 다음 **실제로 밟혀 죽는지**까지 본다.
+func _마무리_검사() -> void:
+	var 안쪽 := PackedVector2Array([_지형.global_position])
+	_확인(_지형.위치_반대색인가(색상.BLACK, 안쪽)
+			and not _지형.위치_반대색인가(색상.WHITE, 안쪽),
+		"번짐이 다 자란 뒤 → 자리별 판정도 흰색이라고 답한다")
+	# 검정 플레이어를 흰 지형 위에 올려 둔다. 스테이지가 스스로 죽여야 한다.
+	var 플레이어 = _st.get("player")
+	if 플레이어 != null and _윗면 != Vector2.INF:
+		플레이어.global_position = _윗면
+		플레이어.set("player_color", 색상.BLACK)
+		플레이어.set("velocity", Vector2.ZERO)
+	_죽음수_전 = int(_st.get("_사망수"))
+
+
+func _죽음_검사() -> void:
+	_확인(int(_st.get("_사망수")) > _죽음수_전 or bool(_st.get("_사망중")),
+		"흰 지형 위의 검정 플레이어 → 스테이지가 실제로 죽였다  ★world_2 끝까지")
 	_끝내기()
 
 

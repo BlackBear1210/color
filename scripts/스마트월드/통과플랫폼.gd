@@ -68,9 +68,9 @@ func 현재색() -> int:
 
 
 func 반대색인가(플레이어색: int) -> bool:
-	if _상태색 < 0 or _상태색 == ColorDefs.GRAY:
-		return false
-	return 플레이어색 != _상태색
+	# ★[2026-08-30] 안 칠한 상태(-1)도 화면에는 검정이다 → 검정으로 판정한다.
+	#   규칙은 `색규칙.gd` 한 곳에만 있다.
+	return 색규칙.위험한가(_상태색, 플레이어색)
 
 
 func 명중(색: int, _월드좌표: Vector2) -> String:

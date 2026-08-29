@@ -33,9 +33,8 @@ func 현재색() -> int:
 
 
 func 반대색인가(플레이어색: int) -> bool:
-	if 잎색 == ColorDefs.GRAY:
-		return false
-	return 플레이어색 != 잎색
+	# 잎은 태어날 때 이미 색이 정해져 있어 무색이 없다. 규칙만 한 곳으로 모은다.
+	return 색규칙.위험한가(잎색, 플레이어색)
 
 
 func _draw() -> void:
