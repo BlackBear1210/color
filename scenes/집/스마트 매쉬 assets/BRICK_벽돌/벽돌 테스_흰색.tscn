@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://b0f3jshwtw2ix"]
+[gd_scene format=4 uid="uid://c1vwj0imyjklb"]
 
 [ext_resource type="Script" uid="uid://qsashlrklll3" path="res://scripts/스마트월드/지형.gd" id="1_1n50q"]
 [ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="2_76wgs"]
@@ -105,4 +105,12 @@ script = ExtResource("1_1n50q")
 _points = SubResource("Resource_pyibi")
 _meshes = Array[ExtResource("4_0x2jx")]([SubResource("Resource_fv6dh"), SubResource("Resource_ds3ot")])
 shape_material = ExtResource("7_cxn87")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
 metadata/_custom_type_script = "uid://c6kxvfqr4ewu1"
+
+[node name="StaticBody2D" type="StaticBody2D" parent="SS2D_Shape_Closed"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="SS2D_Shape_Closed/StaticBody2D"]
+visible = false

@@ -370,7 +370,15 @@ func _반대색_밟았나() -> void:
 
 ## 발밑 검사 — 중앙 + 좌우 발끝 3점 레이캐스트.
 ## (플레이어 원점 = 발바닥. 스케일이 비균등이라 로컬 오프셋 대신 월드 오프셋을 쓴다)
-func _발밑_플랫폼() -> PaintPlatform:
+##
+## ★[2026-08-29 수정] 예전에는 콜리전을 **`PaintPlatform` 으로 캐스팅**해서, 그 타입이
+##   아니면 무조건 null 이었다. 그래서 SS2D 지형(`스마트지형`)을 이 계열 스테이지에
+##   놓으면 **총으로 칠할 수는 있는데 밟아도 안 죽었다** — 색이 곧 규칙인 게임에서
+##   화면과 판정이 어긋나는 최악의 상태다(stage_2-3 에 벽돌 테스를 넣고 확인).
+##   → 타입이 아니라 **계약**으로 찾는다. `반대색인가()` 를 가진 조상을 거슬러 올라가며
+##     찾으면 PaintPlatform 도 스마트지형도 같은 규칙을 탄다.
+##     (`월드.gd _반대색_대상_찾기()` 와 같은 방식이다 — 두 계열이 같은 말을 쓰게)
+func _발밑_플랫폼() -> Node:
 	var space := get_world_2d().direct_space_state
 	for dx in [0.0, -14.0, 14.0]:
 		var 시작 := player.global_position + Vector2(dx, -6.0)
@@ -379,9 +387,21 @@ func _발밑_플랫폼() -> PaintPlatform:
 		q.exclude = [player.get_rid()]
 		var hit := space.intersect_ray(q)
 		if hit and hit.has("collider"):
-			var p := hit["collider"] as PaintPlatform
-			if p:
-				return p
+			var 대상 := _색가진_조상(hit["collider"])
+			if 대상 != null:
+				return 대상
+	return null
+
+
+## 콜리전 바디에서 "색을 가진 것"을 거슬러 올라가 찾는다.
+## SS2D 지형은 [스마트지형] → StaticBody2D → CollisionPolygon2D 구조라 부모를 봐야 한다.
+## ⚠ 스테이지 루트(self)까지만 올라간다 — 그 위로 새면 엉뚱한 노드를 집을 수 있다.
+func _색가진_조상(맞은것: Object) -> Node:
+	var n := 맞은것 as Node
+	while n != null and n != self:
+		if n.has_method("반대색인가"):
+			return n
+		n = n.get_parent()
 	return null
 
 func _위험물_접촉(body: Node2D) -> void:
