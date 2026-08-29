@@ -29,6 +29,11 @@ class_name 스마트지형
 const 페인트_셰이더 := preload("res://shaders/지형_페인트.gdshader")
 const 페인트진행_S := preload("res://scripts/페인트_진행.gd")
 const 최대_시드: int = 24                      ## 셰이더의 MAX_SEEDS 와 반드시 같아야 한다
+## 번짐 지수 감쇠 상수. `tile_paint_map.gd` 와 **같은 값**이어야 손맛이 같다.
+const 번짐_지수: float = 0.0008
+## 얼룩 반지름을 자리마다 몇 % 씩 일그러뜨리나 (셰이더 `blob_wobble` 과 **반드시 같은 값**).
+## 전체 색칠 반경에 이만큼 여유를 더해야 오목한 쪽 구석이 안 칠해진 채 남지 않는다.
+const 얼룩_일그러짐: float = 0.14
 
 enum 상태 { 무색, 검정, 흰색, 회색 }
 
@@ -55,6 +60,24 @@ const 유령_레이어비트: int = 8
 ## 흐려지는 데 걸리는 시간(초).
 @export var 부분_감쇠시간: float = 1.0
 
+## ★[2026-08-29] 잉크 번짐 — 타일맵(`tile_paint_map.gd`)이 쓰던 연출을 SS2D 로 옮긴 것.
+## 예전에는 맞은 자리에 46px 얼룩이 **즉시** 찍혔다. 타일맵은 씨앗이 0 에서 자라고
+## 마지막 한 방에 전체로 확 튀어서 "칠했다"는 쾌감이 있었는데 그게 없었다.
+##
+## 아래로 흘러내리는 물감 줄기의 최대 길이(px). 0 이면 흘러내리지 않는다.
+@export var 흘러내림_길이: float = 74.0
+## 흘러내리는 속도(px/초).
+@export var 흘러내림_속도: float = 110.0
+## 테두리가 안쪽보다 얼마나 먼저 물드나. **1.0 = 한 덩어리로 칠해진다(기본).**
+##
+## ⚠★[2026-08-29] 기본값을 1.35 에서 **1.0 으로 내렸다** (성진님 제보).
+##   SS2D 는 테두리 메시와 채우기 메시가 따로라, 테두리 쪽 얼룩만 크게 그리면
+##   **테두리는 다 칠해졌는데 안쪽은 덜 칠해진** 상태가 눈에 그대로 보인다.
+##   경계가 띠 두께를 따라 **직선으로 잘리고**, 모서리에서는 검은 쐐기가 파고든다.
+##   "물감이 번진다" 가 아니라 "테두리와 안쪽을 따로 칠했다" 로 읽힌다.
+##   → 기본은 한 덩어리. 이 값은 그 효과를 일부러 쓰고 싶을 때만 올린다(1.05~1.1 권장).
+@export_range(1.0, 2.0, 0.05) var 테두리_선행: float = 1.0
+
 # ── 내부 상태 ──────────────────────────────────────────────────────────────
 var 현재상태: 상태 = 상태.무색
 var _맞은횟수: int = 0
@@ -62,7 +85,12 @@ var _진행색: int = ColorDefs.BLACK
 var _진행 := 페인트진행_S.new()
 
 var _시드: PackedVector2Array = PackedVector2Array()      # 노드 로컬 px
-var _반지름: PackedFloat32Array = PackedFloat32Array()
+var _반지름: PackedFloat32Array = PackedFloat32Array()     ## 지금 반지름 (자라는 중)
+var _목표: PackedFloat32Array = PackedFloat32Array()       ## 자라서 닿을 반지름
+var _흘러내림: PackedFloat32Array = PackedFloat32Array()   ## 아래로 흘러내린 길이(px)
+## 시드별 흘러내림 상한. **총에 맞아 생긴 얼룩만** 0 보다 크다 —
+## `시작상태` 로 태어난 지형에서 물감이 흘러내리면 방금 칠한 것처럼 보여 거짓말이 된다.
+var _흘림상한: PackedFloat32Array = PackedFloat32Array()
 var _세기: PackedFloat32Array = PackedFloat32Array()
 var _색: PackedInt32Array = PackedInt32Array()
 
@@ -71,7 +99,13 @@ var _셰이더들: Array[ShaderMaterial] = []
 var _로컬반경: float = 200.0                 ## 전체를 덮는 데 필요한 반지름 (자동 계산)
 var _중심: Vector2 = Vector2.ZERO            ## 로컬 AABB 중심 (전체 색칠 얼룩의 기준점)
 var _긴변: float = 200.0                     ## 로컬 AABB 의 긴 변 — 필요횟수 계산에 쓴다
-var _코어: 페인트코어 = null
+var _면적: float = 40000.0                   ## 다각형 실면적(px²) — 번짐 목표 반지름 계산에 쓴다
+## 채우기 텍스처들. 메시가 테두리인지 채우기인지 **이름 추측 없이** 가르는 데 쓴다
+## (옛 벽돌 채움은 `brick_black_seamless_341x307.png` 라 이름에 fill 이 없다).
+var _채움_텍스처들: Array[Texture2D] = []
+## 페인트 규칙 엔진. 스마트월드에서는 `페인트코어`, 프로토 계열 스테이지에서는
+## `TilePaintMap` 이 들어온다 — 둘 다 `부분_자동회수()` 를 갖는 **계약**만 맞으면 된다.
+var _코어: Node = null
 
 ## ★[2026-08-27] `_메시별_셰이더_보정()` 을 마지막으로 돌렸을 때의 메시 개수.
 ## 모양을 편집해 메시가 다시 구워지면 개수가 달라지므로 그때 한 번 더 훑는다.
@@ -110,7 +144,7 @@ func _ready() -> void:
 		return
 	add_to_group("칠할수있음")
 	add_to_group("스마트지형")
-	_코어 = get_tree().get_first_node_in_group("페인트코어") as 페인트코어
+	_코어 = _규칙엔진_찾기()
 	_진행.유지시간 = 부분_유지시간
 	_진행.감쇠시간 = 부분_감쇠시간
 	_로컬반경_계산()
@@ -121,6 +155,28 @@ func _ready() -> void:
 	_충돌레이어_갱신()
 	_유니폼_갱신()
 	set_process(true)
+
+
+## 이 지형의 페인트 규칙을 관리하는 노드를 찾는다.
+##
+## ▣ 왜 두 군데를 보나 (2026-08-29)
+##   같은 SS2D 지형이 **두 계열 스테이지**에 다 놓인다.
+##     · 스마트월드(`월드.gd`)  → 그룹 "페인트코어" 의 `페인트코어`
+##     · 프로토(`stage_lab.gd`) → 자식으로 붙는 `TilePaintMap`("타일페인트")
+##   전에는 앞엣것만 봤다. 프로토 스테이지에 지형을 놓으면 `_코어` 가 null 이라,
+##   부분 칠이 스스로 흐려져 사라져도 **총알이 안 돌아왔다**(잠긴 채로 남는다).
+func _규칙엔진_찾기() -> Node:
+	var 코어 := get_tree().get_first_node_in_group("페인트코어")
+	if 코어 != null:
+		return 코어
+	# 프로토 계열 — 스테이지 루트 아래에 붙은 TilePaintMap 을 위로 올라가며 찾는다.
+	var n := get_parent()
+	while n != null:
+		for 자식 in n.get_children():
+			if 자식.has_method("노드_명중") and 자식.has_method("부분_자동회수"):
+				return 자식
+		n = n.get_parent()
+	return null
 
 
 ## 지형 전체를 덮으려면 얼룩 반지름이 얼마여야 하는지 — 로컬 AABB 의 대각선 절반.
@@ -136,6 +192,13 @@ func _로컬반경_계산() -> void:
 	_중심 = (최소 + 최대) * 0.5
 	_로컬반경 = 최소.distance_to(최대) * 0.5 + 24.0
 	_긴변 = maxf(최대.x - 최소.x, 최대.y - 최소.y)
+	# 실면적(신발끈 공식). AABB 가 아니라 진짜 면적이어야 계단·L자에서 번짐이 안 부푼다.
+	var 합:= 0.0
+	for i in 점들.size():
+		var a := 점들[i]
+		var b := 점들[(i + 1) % 점들.size()]
+		합 += a.x * b.y - b.x * a.y
+	_면적 = maxf(absf(합) * 0.5, 1.0)
 
 
 ## 이 지형을 전체 색칠하는 데 필요한 명중 횟수.
@@ -162,7 +225,11 @@ func _셰이더_설치() -> void:
 
 	# 채우기
 	var 채우기_텍스처: Texture2D = 전용.fill_textures[0] if not 전용.fill_textures.is_empty() else null
-	전용.fill_mesh_material = _셰이더_만들기(채우기_텍스처)
+	_채움_텍스처들.clear()
+	for t in 전용.fill_textures:
+		if t != null:
+			_채움_텍스처들.append(t)
+	전용.fill_mesh_material = _셰이더_만들기(채우기_텍스처, false, false)
 	if 전용.fill_mesh_material:
 		_셰이더들.append(전용.fill_mesh_material)
 
@@ -180,7 +247,7 @@ func _셰이더_설치() -> void:
 		if not 메타.edge_material.textures_corner_outer.is_empty():
 			continue
 		var 첫텍스처: Texture2D = 메타.edge_material.get_texture(0)
-		var mat := _셰이더_만들기(첫텍스처)
+		var mat := _셰이더_만들기(첫텍스처, false, true)   # 테두리 = 먼저 물든다
 		if mat:
 			메타.edge_material.material = mat
 			_셰이더들.append(mat)
@@ -214,7 +281,7 @@ func _메시별_셰이더_보정() -> void:
 		var tex: Texture2D = m.texture
 		if tex == null:
 			continue
-		var mat := _셰이더_만들기_조용히(tex)
+		var mat := _셰이더_만들기_조용히(tex, not _채움_텍스처들.has(tex))
 		if mat == null:
 			continue                      # 흰색 짝이 없는 캐리어 — 화면에도 안 나온다
 		m.material = mat
@@ -227,8 +294,8 @@ func _메시별_셰이더_보정() -> void:
 
 ## `_셰이더_만들기` 와 같지만 **경고를 안 띄운다.**
 ## 메시별 보정은 조용히 지나가는 게 정상 동작이라 경고가 소음이 된다.
-func _셰이더_만들기_조용히(기본: Texture2D) -> ShaderMaterial:
-	return _셰이더_만들기(기본, true)
+func _셰이더_만들기_조용히(기본: Texture2D, 테두리: bool) -> ShaderMaterial:
+	return _셰이더_만들기(기본, true, 테두리)
 
 
 ## 이 조각이 든 아트에 **반대색 짝**을 물려 페인트 셰이더를 만든다.
@@ -240,7 +307,7 @@ func _셰이더_만들기_조용히(기본: Texture2D) -> ShaderMaterial:
 ##   없다는 이유로 윗면 테두리만 검정으로 남아 있었다 (test_사방재질_칠하기 실패 3).
 ##   → 이제 짝이 없으면 **셰이더 안에서 밝기를 뒤집어** 쓴다(`alt_invert`). 색은 항상 바뀐다.
 ##   진짜 아트가 나중에 들어오면 `_짝_찾기()` 가 파일을 먼저 집으므로 저절로 교체된다.
-func _셰이더_만들기(기본: Texture2D, 조용히: bool = false) -> ShaderMaterial:
+func _셰이더_만들기(기본: Texture2D, 조용히: bool = false, 테두리: bool = false) -> ShaderMaterial:
 	if 기본 == null:
 		return null
 	# 투명 캐리어는 화면에 안 나온다 → 셰이더를 붙일 이유가 없다.
@@ -250,6 +317,9 @@ func _셰이더_만들기(기본: Texture2D, 조용히: bool = false) -> ShaderM
 	var mat := ShaderMaterial.new()
 	mat.shader = 페인트_셰이더
 	mat.set_shader_parameter("base_is_white", bool(짝["흰색이_기본"]))
+	mat.set_shader_parameter("blob_wobble", 얼룩_일그러짐)
+	# 테두리 쪽 얼룩만 크게 그린다 = 가장자리가 먼저 잠기고 안쪽이 따라온다.
+	mat.set_shader_parameter("r_scale", 테두리_선행 if 테두리 else 1.0)
 	if 짝["짝"] == null:
 		mat.set_shader_parameter("alt_invert", true)
 		if not 조용히:
@@ -359,7 +429,7 @@ func 명중(색: int, 월드좌표: Vector2) -> String:
 			if 색 == 현재색():
 				return "wasted"                         # 같은 색 덧칠 = 낭비 → 환급
 			# 플레이어 페인트끼리는 섞지 않고 마지막 색이 기존 색을 그대로 덮는다.
-			_전체_즉시(상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색)
+			_덮어쓰기(상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색, to_local(월드좌표))
 			_충돌레이어_갱신()
 			_유니폼_갱신()
 			return "painted"
@@ -372,11 +442,13 @@ func _무색_명중(색: int, 월드좌표: Vector2) -> String:
 	_진행.명중(색, 필요횟수())
 	_맞은횟수 = _진행.전체횟수()
 	_젖음 = 1.0
-	_시드_추가(to_local(월드좌표), 부분_반지름, 색)
+	# 0 에서 자라기 시작한다. 목표는 바로 아래에서 진행률로 다시 잡는다.
+	_시드_추가(to_local(월드좌표), 부분_반지름, 색, false)
+	_목표반지름_갱신()
 
 	# 두 색의 부분 얼룩이 함께 있으면 어느 쪽도 전체 색칠로 승격되지 않는다.
 	if _진행.완성가능(색, 필요횟수()):
-		_전체_즉시(상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색)
+		_전체_즉시(상태.검정 if 색 == ColorDefs.BLACK else 상태.흰색, false)
 		_충돌레이어_갱신()
 		_유니폼_갱신()
 		return "painted"
@@ -430,15 +502,20 @@ func _회색으로() -> void:
 	현재상태 = 상태.회색
 	_시드_비우기()
 	# 회색은 지형 전체를 덮는 얼룩 하나로 표현 (색 인덱스 2 = 셰이더의 gray)
-	_시드_추가(_중심, _로컬반경, ColorDefs.GRAY)
+	_시드_추가(_중심, _로컬반경 * (1.0 + 얼룩_일그러짐 + 0.02), ColorDefs.GRAY)
 	_젖음 = 1.0
 	_충돌레이어_갱신()
 	_유니폼_갱신()
 
 
-func _전체_즉시(새상태: 상태) -> void:
+## 지형 전체를 한 색으로 만든다.
+##   즉시 = true  → 그 자리에서 덮는다 (시작상태·회수 복귀·강제 초기화)
+##   즉시 = false → **마지막 한 방** 연출. 지금까지 번진 크기에서 이어서 전체로 퍼진다.
+## `기준점` 을 주면 그 자리에서부터 퍼진다(맞은 자리). 안 주면 지형 중심.
+func _전체_즉시(새상태: 상태, 즉시: bool = true, 기준점: Variant = null) -> void:
 	현재상태 = 새상태
 	_진행.비우기()
+	var 이어받을 := _최대_현재반지름()          # 시드를 지우기 전에 재둔다
 	_시드_비우기()
 	var 색 := ColorDefs.BLACK
 	match 새상태:
@@ -448,7 +525,31 @@ func _전체_즉시(새상태: 상태) -> void:
 	_맞은횟수 = 필요횟수()
 	# 검정은 기본 아트가 이미 검정이라 얼룩을 안 찍어도 같은 그림이지만,
 	# "칠해졌다"는 걸 셰이더 젖음 효과로 보여주기 위해 똑같이 찍는다.
-	_시드_추가(_중심, _로컬반경, 색)
+	var 중심: Vector2 = 기준점 if 기준점 is Vector2 else _중심
+	# 전체를 덮으려면 중심에서 잰 반경으로는 모자란다(맞은 자리가 구석일 수 있다).
+	# ★얼룩이 일그러지는 만큼 여유를 더 준다 — 안 그러면 오목한 쪽 구석이
+	#   안 칠해진 채 남아 "다 칠했는데 검은 자국"이 생긴다.
+	var 반경 := (_로컬반경 + 중심.distance_to(_중심)) * (1.0 + 얼룩_일그러짐 + 0.02)
+	_시드_추가(중심, 반경, 색, 즉시, 이어받을)
+
+
+## 이미 칠해진 지형을 반대색으로 덮는다 — **옛 얼룩을 지우지 않고 그 위로 번지게** 한다.
+##
+## ▣ 왜 `_전체_즉시` 를 안 쓰나
+##   그쪽은 시드를 비우고 새 얼룩 하나만 남긴다. 그러면 새 얼룩이 자라는 동안
+##   나머지가 **기본 아트**(= 안 칠한 색)로 보인다. 흰 지형을 검정으로 덮는데
+##   한순간 원래 색이 드러나는 셈이라, 덮어쓰기가 아니라 지우기처럼 보인다.
+##   셰이더는 시드를 배열 순서대로 겹쳐 칠하므로, 옛 얼룩을 그냥 두고 새 얼룩을
+##   **뒤에 붙이면** 새 색이 옛 색 위를 쓸고 지나간다.
+func _덮어쓰기(새상태: 상태, 기준점: Vector2) -> void:
+	현재상태 = 새상태
+	_진행.비우기()
+	var 색 := ColorDefs.WHITE if 새상태 == 상태.흰색 else ColorDefs.BLACK
+	_진행색 = 색
+	_맞은횟수 = 필요횟수()
+	var 반경 := (_로컬반경 + 기준점.distance_to(_중심)) * (1.0 + 얼룩_일그러짐 + 0.02)
+	_시드_추가(기준점, 반경, 색, false, 부분_반지름 * 0.4)
+	_젖음 = 1.0
 
 
 func _충돌레이어_갱신() -> void:
@@ -468,20 +569,60 @@ func _충돌레이어_갱신() -> void:
 func _시드_비우기() -> void:
 	_시드 = PackedVector2Array()
 	_반지름 = PackedFloat32Array()
+	_목표 = PackedFloat32Array()
+	_흘러내림 = PackedFloat32Array()
+	_흘림상한 = PackedFloat32Array()
 	_세기 = PackedFloat32Array()
 	_색 = PackedInt32Array()
 
 
-func _시드_추가(로컬: Vector2, 반지름: float, 색: int) -> void:
+## 얼룩 하나를 찍는다.
+##   즉시 = true  → 처음부터 목표 크기로 (시작상태·회수 복귀처럼 **연출이 없어야** 하는 자리)
+##   즉시 = false → `시작반지름` 에서 목표까지 자란다 (총에 맞았을 때)
+func _시드_추가(로컬: Vector2, 목표반지름: float, 색: int, 즉시: bool = true,
+		시작반지름: float = 0.0) -> void:
 	if _시드.size() >= 최대_시드:
 		_시드.remove_at(0)
 		_반지름.remove_at(0)
+		_목표.remove_at(0)
+		_흘러내림.remove_at(0)
+		_흘림상한.remove_at(0)
 		_세기.remove_at(0)
 		_색.remove_at(0)
 	_시드.append(로컬)
-	_반지름.append(반지름)
+	_반지름.append(목표반지름 if 즉시 else 시작반지름)
+	_목표.append(목표반지름)
+	_흘러내림.append(0.0)
+	_흘림상한.append(0.0 if 즉시 else 흘러내림_길이)
 	_세기.append(1.0)
 	_색.append(색)
+
+
+## 지금 찍혀 있는 얼룩 중 가장 큰 반지름. 완성 연출을 여기서 이어 시작한다.
+func _최대_현재반지름() -> float:
+	var 큰 := 0.0
+	for r in _반지름:
+		큰 = maxf(큰, r)
+	return 큰
+
+
+## 진행률에 맞춰 모든 얼룩의 **목표** 반지름을 다시 잡는다.
+## `tile_paint_map.gd _목표반지름_갱신()` 과 같은 공식을 px 좌표로 옮긴 것이다.
+##   · 초반 = 면적 비례 원 → 조금씩 스며드는 느낌
+##     (n 개 얼룩이 지형 면적의 `진행` 만큼을 나눠 덮는 반지름)
+##   · 끝에서 pow(진행, 5) 로 전체 반지름에 확 붙는다 → "마지막 한 방" 의 쾌감
+func _목표반지름_갱신() -> void:
+	var n := _시드.size()
+	if n == 0:
+		return
+	var 색진행 := maxi(_진행.횟수(ColorDefs.BLACK), _진행.횟수(ColorDefs.WHITE))
+	var 진행 := clampf(float(색진행) / float(maxi(필요횟수(), 1)), 0.0, 1.0)
+	var 면적반지름 := sqrt(maxf(진행, 0.0001) * _면적 / (PI * float(n)))
+	var 목표 := lerpf(면적반지름, _로컬반경, pow(진행, 5.0))
+	# 한 발만 맞아도 눈에 보여야 한다 — 부분 반지름보다 작아지지 않게 바닥을 깐다.
+	목표 = clampf(목표, 부분_반지름, _로컬반경)
+	for i in n:
+		_목표[i] = 목표
 
 
 # ── 부분 색칠 감쇠 (기획: "서서히 흐려지다 자동으로 회수") ────────────────────
@@ -508,6 +649,26 @@ func _process(delta: float) -> void:
 		_젖음 = maxf(_젖음 - delta * 1.4, 0.0)
 		갱신 = true
 
+	# ── 잉크 번짐 ──────────────────────────────────────────────────────────
+	# 지수 감쇠 = 처음엔 빠르게 퍼지고 끝에서 살짝 붙는 잉크 느낌.
+	# 상수 0.0008 은 타일맵(`tile_paint_map.gd _process`)이 쓰던 값 그대로다 —
+	# 두 시스템의 번짐 속도가 다르면 같은 게임인데 스테이지마다 손맛이 달라진다.
+	for i in _반지름.size():
+		var r: float = _반지름[i]
+		var t: float = _목표[i] if i < _목표.size() else r
+		if absf(t - r) > 0.05:
+			_반지름[i] = lerpf(r, t, 1.0 - pow(번짐_지수, delta))
+			갱신 = true
+		else:
+			_반지름[i] = t
+		# 흘러내림은 얼룩이 어느 정도 자란 뒤부터 시작한다 (물감이 고여야 흐른다).
+		if i < _흘림상한.size() and _흘림상한[i] > 0.0:
+			# 작은 얼룩은 짧게, 다 자란 얼룩은 상한만큼 흐른다.
+			var 최대 := _흘림상한[i] * clampf(_반지름[i] / maxf(부분_반지름, 1.0), 0.0, 1.0)
+			if _흘러내림[i] < 최대 - 0.5:
+				_흘러내림[i] = minf(_흘러내림[i] + 흘러내림_속도 * delta, 최대)
+				갱신 = true
+
 	# 흑·백은 각자 4초를 유지한 뒤 1초 동안 흐려지며, 한쪽이 남아 조건을 채우면 그때 완성된다.
 	if 현재상태 == 상태.무색 and _진행.전체횟수() > 0:
 		var 변화: Dictionary = _진행.진행(delta, 필요횟수())
@@ -515,12 +676,13 @@ func _process(delta: float) -> void:
 			_세기[i] = _진행.알파(_색[i])
 		for 만료색 in 변화["만료"]:
 			_색_시드_지우기(int(만료색))
-			if _코어:
+			if _코어 and _코어.has_method("부분_자동회수"):
 				_코어.부분_자동회수(self, int(변화["만료"][만료색]))
 		_맞은횟수 = _진행.전체횟수()
 		var 완성색: int = 변화["완성색"]
 		if 완성색 >= 0:
-			_전체_즉시(상태.검정 if 완성색 == ColorDefs.BLACK else 상태.흰색)
+			# 시간이 지나 저절로 완성된 경우도 **퍼지는 연출**을 준다 (즉시 = false).
+			_전체_즉시(상태.검정 if 완성색 == ColorDefs.BLACK else 상태.흰색, false)
 			_충돌레이어_갱신()
 		갱신 = true
 
@@ -535,6 +697,9 @@ func _색_시드_지우기(색: int) -> void:
 			continue
 		_시드.remove_at(i)
 		_반지름.remove_at(i)
+		_목표.remove_at(i)
+		_흘러내림.remove_at(i)
+		_흘림상한.remove_at(i)
 		_세기.remove_at(i)
 		_색.remove_at(i)
 
@@ -547,11 +712,13 @@ func _유니폼_갱신() -> void:
 	var 반지름 := PackedFloat32Array()
 	var 세기 := PackedFloat32Array()
 	var 색 := PackedInt32Array()
+	var 흘러내림 := PackedFloat32Array()
 	for i in 최대_시드:
 		시드.append(_시드[i] if i < _시드.size() else Vector2.ZERO)
 		반지름.append(_반지름[i] if i < _반지름.size() else 0.0)
 		세기.append(_세기[i] if i < _세기.size() else 0.0)
 		색.append(_색[i] if i < _색.size() else 0)
+		흘러내림.append(_흘러내림[i] if i < _흘러내림.size() else 0.0)
 
 	for mat in _셰이더들:
 		mat.set_shader_parameter("seed_count", _시드.size())
@@ -559,4 +726,5 @@ func _유니폼_갱신() -> void:
 		mat.set_shader_parameter("seed_r", 반지름)
 		mat.set_shader_parameter("seed_a", 세기)
 		mat.set_shader_parameter("seed_c", 색)
+		mat.set_shader_parameter("seed_d", 흘러내림)
 		mat.set_shader_parameter("wet", _젖음)
