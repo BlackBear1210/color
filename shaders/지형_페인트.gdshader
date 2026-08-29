@@ -21,8 +21,22 @@ shader_type canvas_item;
 //   조금씩 달라서, 알파까지 섞으면 색칠할 때 지형 윤곽이 꿈틀거린다.
 // ============================================================================
 
-// 흰색 짝 텍스처. 채우기면 white_fill, 윗면 테두리면 white_center …
+// 짝 텍스처. 검정 아트가 base 면 흰색 짝이, 흰색 아트가 base 면 검정 짝이 들어온다.
 uniform sampler2D alt_tex : filter_nearest, repeat_enable;
+
+// ★[2026-08-29] 흑백 대칭 유니폼 두 개 ─────────────────────────────────────
+// ▣ base_is_white
+//   흰색 Template(흰 아트를 기본으로 든 지형)이 생기면서, "TEXTURE = 검정 아트"
+//   라는 가정이 깨졌다. 이 값이 켜지면 검정/흰색 매핑을 통째로 뒤집는다.
+//   → 흰 지형을 검정으로 칠하면 alt(검정 아트)가, 흰색으로 칠하면 base 가 나온다.
+// ▣ alt_invert
+//   짝 파일이 아직 없을 때의 안전망. 짝이 없으면 지금까지는 셰이더를 **아예 안 붙였고**,
+//   그래서 총에 맞아 상태는 바뀌는데 화면은 그대로였다(= 화면이 거짓말을 한다).
+//   이 값이 켜지면 짝을 파일에서 읽지 않고 base 의 밝기를 뒤집어 즉석에서 만든다.
+//   식(1.0 - r)은 근사가 아니라 `tools/생성_타일셋_파생.gd _반전()` 과 **같은 식**이다.
+//   나중에 진짜 짝 파일이 들어오면 지형.gd 가 그쪽을 먼저 집으므로 자동으로 교체된다.
+uniform bool base_is_white = false;
+uniform bool alt_invert = false;
 
 const int MAX_SEEDS = 24;
 uniform int seed_count = 0;
@@ -64,11 +78,17 @@ float vnoise(vec2 p) {
 }
 
 void fragment() {
-	vec4 base = texture(TEXTURE, UV);      // 검정 아트
-	vec4 alt = texture(alt_tex, UV);       // 흰색 아트
-	vec3 gray = mix(base.rgb, alt.rgb, 0.5);
+	vec4 base = texture(TEXTURE, UV);      // 이 지형이 기본으로 든 아트
+	// 짝이 없으면 밝기를 뒤집어 즉석에서 만든다 (생성기의 _반전() 과 같은 식).
+	vec4 alt = alt_invert
+		? vec4(vec3(1.0 - base.r), base.a)
+		: texture(alt_tex, UV);
+	// 어느 쪽이 검정 아트인지는 base_is_white 가 정한다.
+	vec3 ink_black = base_is_white ? alt.rgb : base.rgb;
+	vec3 ink_white = base_is_white ? base.rgb : alt.rgb;
+	vec3 gray = mix(ink_black, ink_white, 0.5);
 
-	vec3 col = base.rgb;                   // 무색 = 검정 아트 그대로
+	vec3 col = base.rgb;                   // 무색 = 기본 아트 그대로
 	float wet_edge = 0.0;
 
 	// 경계를 흔드는 노이즈는 픽셀마다 한 번만 구해서 모든 시드에 공용으로 쓴다.
@@ -83,8 +103,8 @@ void fragment() {
 		a *= seed_a[i];
 		if (a <= 0.001) { continue; }
 
-		vec3 target = base.rgb;
-		if (seed_c[i] == 1) { target = alt.rgb; }
+		vec3 target = ink_black;
+		if (seed_c[i] == 1) { target = ink_white; }
 		else if (seed_c[i] == 2) { target = gray; }
 		col = mix(col, target, a);
 

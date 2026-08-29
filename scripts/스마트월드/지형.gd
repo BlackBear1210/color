@@ -226,69 +226,103 @@ func _메시별_셰이더_보정() -> void:
 
 
 ## `_셰이더_만들기` 와 같지만 **경고를 안 띄운다.**
-## 위 보정은 "짝이 없으면 그냥 넘어가는" 게 정상 동작이라 경고가 소음이 된다.
-func _셰이더_만들기_조용히(검정: Texture2D) -> ShaderMaterial:
-	var 흰색 := _짝_텍스처(검정)
-	if 흰색 == null:
+## 메시별 보정은 조용히 지나가는 게 정상 동작이라 경고가 소음이 된다.
+func _셰이더_만들기_조용히(기본: Texture2D) -> ShaderMaterial:
+	return _셰이더_만들기(기본, true)
+
+
+## 이 조각이 든 아트에 **반대색 짝**을 물려 페인트 셰이더를 만든다.
+##
+## ★[2026-08-29 개정] 예전에는 짝을 못 찾으면 **셰이더를 안 붙이고 null 을 돌려줬다.**
+##   그러면 총에 맞아 `현재상태` 는 바뀌는데 그 조각만 원래 색으로 남는다 —
+##   "몸에 닿은 지형이 내 색과 다르면 즉사" 가 규칙인 게임에서 **화면이 거짓말을 한다.**
+##   실제로 벽돌 Template 3 종이 `brick_v2_opaque/black/edge_top_thin.png` 의 흰색 짝이
+##   없다는 이유로 윗면 테두리만 검정으로 남아 있었다 (test_사방재질_칠하기 실패 3).
+##   → 이제 짝이 없으면 **셰이더 안에서 밝기를 뒤집어** 쓴다(`alt_invert`). 색은 항상 바뀐다.
+##   진짜 아트가 나중에 들어오면 `_짝_찾기()` 가 파일을 먼저 집으므로 저절로 교체된다.
+func _셰이더_만들기(기본: Texture2D, 조용히: bool = false) -> ShaderMaterial:
+	if 기본 == null:
 		return null
+	# 투명 캐리어는 화면에 안 나온다 → 셰이더를 붙일 이유가 없다.
+	if _투명_캐리어인가(기본):
+		return null
+	var 짝 := _짝_찾기(기본)
 	var mat := ShaderMaterial.new()
 	mat.shader = 페인트_셰이더
-	mat.set_shader_parameter("alt_tex", 흰색)
+	mat.set_shader_parameter("base_is_white", bool(짝["흰색이_기본"]))
+	if 짝["짝"] == null:
+		mat.set_shader_parameter("alt_invert", true)
+		if not 조용히:
+			# 경고는 남긴다 — 돌아가긴 하지만 **진짜 아트가 빠진 상태**다.
+			push_warning("스마트지형(%s): '%s' 의 반대색 짝이 없어 밝기 반전으로 대체함"
+				% [name, 기본.resource_path])
+	else:
+		mat.set_shader_parameter("alt_tex", 짝["짝"])
 	return mat
 
 
-## black_xxx.png 에 대응하는 white_xxx.png 를 찾아 셰이더를 만든다.
-func _셰이더_만들기(검정: Texture2D) -> ShaderMaterial:
-	if 검정 == null:
-		return null
-	var 흰색 := _짝_텍스처(검정)
-	if 흰색 == null:
-		# 짝을 못 찾으면 셰이더를 안 붙인다 (원본 그대로 그려서 최소한 보이게)
-		push_warning("스마트지형(%s): '%s' 의 흰색 짝을 못 찾음" % [name, 검정.resource_path])
-		return null
-	var mat := ShaderMaterial.new()
-	mat.shader = 페인트_셰이더
-	mat.set_shader_parameter("alt_tex", 흰색)
-	return mat
+## 투명 캐리어인가 — 코너 메타가 드는, 화면에 안 나오는 텍스처.
+## 판별은 파일명 접두어 `투명_` 로 한다. `tools/test_사방재질_칠하기.gd` 와 **같은 규칙**이다
+## (두 곳이 어긋나면 검사가 거짓말을 한다).
+func _투명_캐리어인가(tex: Texture2D) -> bool:
+	return tex != null and tex.resource_path.get_file().begins_with("투명_")
 
 
-## 검정 텍스처의 흰색 짝을 찾는다. 규칙 두 가지를 **순서대로** 시도한다.
+## 기본 아트의 **반대색 짝**을 찾는다. 흑→백뿐 아니라 **백→흑도** 찾는다.
 ##
-##   1) 파일명 규칙 (기존)   .../black_grass_edge.png  ->  .../white_grass_edge.png
-##   2) 폴더 규칙   (신규)   .../grass_v4/black/edge_top.png
-##                            -> .../grass_v4/white/edge_top.png
+## 반환 { "짝": Texture2D | null, "흰색이_기본": bool }
+##   · 짝 == null  → 파일이 없다. 셰이더가 밝기 반전으로 대신 만든다.
+##   · 흰색이_기본 → 이 조각이 **흰 아트를 기본으로 들었는가**. 셰이더의 검정/흰색
+##     매핑이 이 값으로 뒤집힌다. 흰색 Template 이 이 위에 얹힌다.
 ##
-## ▣ 2번을 추가한 이유
-##   grass_v4 이후의 고해상도 타일셋은 재질 폴더 밑에 black/ white/ 를 나눠 담는다
-##   (파일이 재질당 32장이라 접두어로 구분하면 한 폴더가 감당이 안 된다).
-##   그 구조에서는 파일명이 "black_" 로 시작하지 않아 1번 규칙이 실패하고,
-##   셰이더가 아예 안 붙어서 **지형이 총에 맞아도 색이 안 변한다**.
-##   "내 색과 다른 지형에 닿으면 즉사" 가 핵심 규칙인 게임에서 치명적이라 넓혔다.
+## ▣ 왜 양방향이 필요한가 (2026-08-29)
+##   흑백이 공존하는 게임인데 코드에는 "검정이 원본" 이라는 가정이 박혀 있었다.
+##   흰 아트를 기본으로 든 지형(흰색 Template)은 `black → white` 규칙에 아예 안 걸려
+##   셰이더가 안 붙고, 그래서 **검정으로 칠할 수가 없었다.**
 ##
-## ▣ 하위호환
-##   1번을 먼저 보므로 기존 머티리얼 5개는 예전과 완전히 같은 경로로 짝을 찾는다.
-##   1번이 실패할 때만 2번을 추가로 시도하므로, 예전에 null 이던 경우만 값이 생긴다.
-func _짝_텍스처(검정: Texture2D) -> Texture2D:
-	var 경로 := 검정.resource_path
+## ▣ 규칙 세 가지를 순서대로 본다
+##   1) 파일명 토큰   black_edge.png ↔ white_edge.png
+##                    brick_black_seamless_341x307.png ↔ brick_white_seamless_341x307.png
+##   2) 폴더 이름     .../brick_v2/black/edge_top.png ↔ .../brick_v2/white/edge_top.png
+##   3) 둘 다 안 걸리면 짝 없음 → 반전 대체. 방향을 모르니 검정 기본으로 본다.
+##
+## ▣ 1) 이 예전보다 넓어졌다
+##   예전에는 `begins_with("black_")` 만 봤다. 그래서 옛 이름
+##   `brick_black_seamless_341x307.png`(벽돌 계단 씬이 쓰는 채움)이 규칙 밖으로 빠졌다.
+##   `_` 로 끊어 **정확히 black/white 인 토막**을 보면 두 이름 모두 걸린다.
+func _짝_찾기(기본: Texture2D) -> Dictionary:
+	var 없음 := { "짝": null, "흰색이_기본": false }
+	var 경로 := 기본.resource_path
 	if 경로.is_empty():
-		return null
+		return 없음
+	var 파일 := 경로.get_file()
 
-	# 1) 파일명 규칙 — 기존 동작. 여기서 찾으면 예전과 동일하다.
-	if 경로.get_file().begins_with("black_"):
-		var 짝 := 경로.get_base_dir() + "/" + 경로.get_file().replace("black_", "white_")
-		if ResourceLoader.exists(짝):
-			return load(짝) as Texture2D
-		return null
+	# 1) 파일명 토큰
+	var 조각 := 파일.get_basename().split("_")
+	for i in 조각.size():
+		if 조각[i] != "black" and 조각[i] != "white":
+			continue
+		var 흰색기본 := 조각[i] == "white"
+		var 반대 := 조각.duplicate()
+		반대[i] = "black" if 흰색기본 else "white"
+		var 짝경로 := "%s/%s.%s" % [경로.get_base_dir(), "_".join(반대), 파일.get_extension()]
+		if ResourceLoader.exists(짝경로):
+			return { "짝": load(짝경로) as Texture2D, "흰색이_기본": 흰색기본 }
+		return { "짝": null, "흰색이_기본": 흰색기본 }
 
-	# 2) 폴더 규칙 — 경로 마지막 폴더가 정확히 "black" 일 때만 "white" 로 바꾼다.
+	# 2) 폴더 이름 — 마지막 폴더가 정확히 black / white 일 때만.
 	#    경로 중간에 우연히 black 이 들어간 폴더를 건드리지 않으려고 마지막 폴더만 본다.
 	var 폴더 := 경로.get_base_dir()
-	if 폴더.get_file() != "black":
-		return null
-	var 짝2 := 폴더.get_base_dir() + "/white/" + 경로.get_file()
-	if not ResourceLoader.exists(짝2):
-		return null
-	return load(짝2) as Texture2D
+	var 폴더명 := 폴더.get_file()
+	if 폴더명 == "black" or 폴더명 == "white":
+		var 흰색기본2 := 폴더명 == "white"
+		var 반대폴더 := "black" if 흰색기본2 else "white"
+		var 짝경로2 := "%s/%s/%s" % [폴더.get_base_dir(), 반대폴더, 파일]
+		if ResourceLoader.exists(짝경로2):
+			return { "짝": load(짝경로2) as Texture2D, "흰색이_기본": 흰색기본2 }
+		return { "짝": null, "흰색이_기본": 흰색기본2 }
+
+	return 없음
 
 
 # ── 페인트코어와의 약속 ─────────────────────────────────────────────────────
@@ -355,27 +389,40 @@ func _무색_명중(색: int, 월드좌표: Vector2) -> String:
 func 되돌리기() -> bool:
 	if 현재상태 == 상태.회색 or not 칠하기_허용:
 		return false
-	현재상태 = 상태.무색
+	_원래대로()
+	return true
+
+
+## ★[2026-08-29 신규] "원래" 는 무색이 아니라 **`시작상태`** 다.
+##
+## ▣ 왜 고쳤나 — 흰색 Template 이 생기면서 드러난 구멍
+##   예전에는 회수·사망 리셋이 무조건 `무색` 으로 돌렸다. `시작상태 = 흰색` 인 지형을
+##   플레이어가 검정으로 덮은 뒤 죽으면, 리셋이 그것을 **흰색이 아니라 무색으로** 돌린다.
+##   → 흰 발판이 통째로 사라진 채로 스테이지가 다시 시작된다(디자인이 조용히 무너진다).
+##   회수의 뜻은 "내가 칠한 것을 지운다" 이지 "레벨이 원래 갖고 있던 색을 뺏는다" 가 아니다.
+##
+## ⚠ 기존 씬은 전부 `시작상태 = 무색` 이라 동작이 하나도 안 바뀐다.
+##   색을 갖고 태어난 지형(흰색 Template · 고정색 함정)만 제 색으로 돌아온다.
+func _원래대로() -> void:
 	_맞은횟수 = 0
 	_진행.비우기()
 	_시드_비우기()
 	_젖음 = 0.0
+	if 시작상태 == 상태.무색:
+		현재상태 = 상태.무색
+		_충돌레이어_갱신()
+		_유니폼_갱신()
+		return
+	_전체_즉시(시작상태)                  # 시드까지 다시 찍어야 화면도 제 색으로 돌아온다
 	_충돌레이어_갱신()
 	_유니폼_갱신()
-	return true
 
 
 ## 사망/스테이지 리셋 전용 — 되돌리기() 와 달리 회색이어도 강제로 무색화한다.
 ## (규칙 3의 "회색은 수동 회수 불가"는 플레이 중 E 회수에만 적용되고,
 ##  사망 리스폰은 스테이지 재시도이므로 회색도 포함해 전부 초기화돼야 한다.)
 func 강제_초기화() -> void:
-	현재상태 = 상태.무색
-	_맞은횟수 = 0
-	_진행.비우기()
-	_시드_비우기()
-	_젖음 = 0.0
-	_충돌레이어_갱신()
-	_유니폼_갱신()
+	_원래대로()
 
 
 # ── 상태 전이 ───────────────────────────────────────────────────────────────
