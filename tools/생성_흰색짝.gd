@@ -21,9 +21,27 @@ extends SceneTree
 ##   그 때문에 벽돌 Template 3 종의 윗면 테두리가 칠해지지 않았다.
 ##   → 손으로 늘어난 것만 골라 짝을 채우는 도구를 따로 둔다.
 ##
-## ▣ 반전식은 파이프라인과 **같은 식**이다
-##   `생성_타일셋_파생.gd _반전()` : Color(1-r, 1-r, 1-r, a)
-##   원본이 그레이스케일이라 r 하나만 뒤집으면 되고, 알파(실루엣)는 건드리지 않는다.
+## ▣ 만드는 방식이 두 가지다 (`--방식=`)
+##
+##   `반전`(기본) : Color(1-r, 1-r, 1-r, a) — 파이프라인(`생성_타일셋_파생.gd _반전()`)과 같은 식.
+##   `파임유지`   : 바탕 톤만 뒤집고 **디테일의 명암 방향은 그대로** 둔다.
+##
+## ▣ 왜 두 번째가 필요한가 (2026-08-29 · 성진님 제보 "그냥 페인트가 덮히는 것처럼 보인다")
+##   반전은 **밝은 디테일(하이라이트)** 을 가진 그림에는 맞다 — 잔디의 흰 풀잎, 나무의 결.
+##   뒤집으면 어두운 선이 되어 흰 바탕 위에서 잘 읽힌다.
+##   그런데 **어두운 디테일(파인 곳)** 을 가진 그림은 반대로 망가진다.
+##   벽돌이 그렇다. 검정 벽돌은 벽돌면(0.149)보다 **줄눈이 더 어둡다**(0.0).
+##   반전하면 줄눈이 1.0 이 되어 **줄눈이 빛나고** 벽돌면은 회색이 된다
+##   → 흰 바탕에 흰 선이라 아무것도 안 읽히고, 흰 물감을 한 겹 부은 것처럼 보인다.
+##   (실측: 벽돌 채움은 어두운 디테일 2273 : 밝은 디테일 866 으로 어두운 쪽이 2.6 배)
+##
+##   `파임유지` 는 이렇게 만든다:  흰색 = (1 - 중앙값) + (r - 중앙값) x 대비
+##   중앙값(바탕 톤)은 그대로 뒤집히고, 줄눈은 **바탕보다 어두운 회색 선**으로 남는다.
+##   디자이너가 예전 타일맵 흑/백 두 판을 그렸을 때 쓴 것과 같은 문법이다.
+##
+## ⚠ 아무 데나 쓰면 안 된다. 잔디에 쓰면 흰 풀잎이 날아가 흐릿해진다(눈으로 확인).
+##   재질마다 어느 쪽인지는 `--진단` 으로 재 보고 정한다.
+##   알파(실루엣)는 두 방식 모두 건드리지 않는다.
 ##
 ## ▣ 멱등
 ##   이미 있는 짝은 건너뛴다. 몇 번을 돌려도 결과가 같다(규약 5).
@@ -36,6 +54,12 @@ var _폴더들: PackedStringArray = PackedStringArray()
 var _파일들: PackedStringArray = PackedStringArray()
 var _덮어쓰기 := false
 var _확인만 := false
+## "반전" 또는 "파임유지"
+var _방식 := "반전"
+## 파임유지에서 디테일을 몇 배로 세게 남길지. 1.0 이면 원본과 같은 폭.
+var _대비 := 1.6
+## 밝은 디테일 / 어두운 디테일 중 어느 쪽이 우세한지만 재고 끝낸다.
+var _진단 := false
 
 var _만듦 := 0
 var _건너뜀 := 0
@@ -59,6 +83,12 @@ func _인자읽기() -> void:
 			_덮어쓰기 = true
 		elif a == "--확인만":
 			_확인만 = true
+		elif a == "--진단":
+			_진단 = true
+		elif a.begins_with("--방식="):
+			_방식 = a.substr(a.find("=") + 1)
+		elif a.begins_with("--대비="):
+			_대비 = a.substr(a.find("=") + 1).to_float()
 
 
 func _실행() -> void:
@@ -114,6 +144,11 @@ func _파일_하나(경로: String) -> void:
 
 
 func _짝_채우기(검정경로: String, 흰색경로: String) -> void:
+	if _진단:
+		var 진 := _png(검정경로)
+		if 진 != null:
+			_진단_찍기(진, 검정경로)
+		return
 	if FileAccess.file_exists(흰색경로) and not _덮어쓰기:
 		_건너뜀 += 1
 		return
@@ -125,7 +160,7 @@ func _짝_채우기(검정경로: String, 흰색경로: String) -> void:
 	if _확인만:
 		_만듦 += 1
 		return
-	if _저장(_반전(im), 흰색경로):
+	if _저장(_흰색으로(im), 흰색경로):
 		_만듦 += 1
 	else:
 		_실패 += 1
@@ -156,7 +191,14 @@ func _저장(im: Image, 경로: String) -> bool:
 	return true
 
 
-## 흰색 = 검정의 휘도 반전. 알파(실루엣)는 그대로 둔다.
+## 흰색 판 만들기. 알파(실루엣)는 두 방식 모두 그대로 둔다.
+func _흰색으로(im: Image) -> Image:
+	if _방식 == "파임유지":
+		return _파임유지(im)
+	return _반전(im)
+
+
+## 흰색 = 검정의 휘도 반전. (기본 · 파이프라인과 같은 식)
 func _반전(im: Image) -> Image:
 	var out := Image.create(im.get_width(), im.get_height(), false, Image.FORMAT_RGBA8)
 	for y in im.get_height():
@@ -164,3 +206,61 @@ func _반전(im: Image) -> Image:
 			var c := im.get_pixel(x, y)
 			out.set_pixel(x, y, Color(1.0 - c.r, 1.0 - c.r, 1.0 - c.r, c.a))
 	return out
+
+
+## 흰색 = (1 - 중앙값) + (r - 중앙값) x 대비.
+## 바탕 톤은 뒤집고, 파인 곳은 **계속 파여 보이게** 둔다.
+func _파임유지(im: Image) -> Image:
+	var 중앙 := _중앙값(im)
+	var 바탕 := 1.0 - 중앙
+	var out := Image.create(im.get_width(), im.get_height(), false, Image.FORMAT_RGBA8)
+	for y in im.get_height():
+		for x in im.get_width():
+			var c := im.get_pixel(x, y)
+			var v := clampf(바탕 + (c.r - 중앙) * _대비, 0.0, 1.0)
+			out.set_pixel(x, y, Color(v, v, v, c.a))
+	return out
+
+
+## 불투명 픽셀의 밝기 중앙값 = 이 그림의 **바탕 톤**.
+## 256 칸 히스토그램으로 센다 (백만 픽셀을 정렬하면 느리다).
+func _중앙값(im: Image) -> float:
+	var 칸 := PackedInt32Array()
+	칸.resize(256)
+	var 총 := 0
+	for y in im.get_height():
+		for x in im.get_width():
+			var c := im.get_pixel(x, y)
+			if c.a <= 0.5:
+				continue
+			칸[clampi(int(c.r * 255.0), 0, 255)] += 1
+			총 += 1
+	if 총 == 0:
+		return 0.5
+	var 누적 := 0
+	for i in 256:
+		누적 += 칸[i]
+		if 누적 * 2 >= 총:
+			return float(i) / 255.0
+	return 0.5
+
+
+## 이 그림의 디테일이 바탕보다 **밝은 쪽인가 어두운 쪽인가**.
+## 어두운 쪽이 우세하면 반전하면 안 된다 (줄눈이 빛난다).
+func _진단_찍기(im: Image, 경로: String) -> void:
+	var 중앙 := _중앙값(im)
+	var 밝은 := 0.0
+	var 어두운 := 0.0
+	for y in im.get_height():
+		for x in im.get_width():
+			var c := im.get_pixel(x, y)
+			if c.a <= 0.5:
+				continue
+			var d := c.r - 중앙
+			if d > 0.0:
+				밝은 += d
+			else:
+				어두운 -= d
+	var 판정 := "어두운 디테일(파임) → 파임유지" if 어두운 > 밝은 else "밝은 디테일 → 반전"
+	print("  %-30s 중앙 %.3f  밝은 %8.0f : 어두운 %8.0f   %s"
+		% [경로.get_file(), 중앙, 밝은, 어두운, 판정])
