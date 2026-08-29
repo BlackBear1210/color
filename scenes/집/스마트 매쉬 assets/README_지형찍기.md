@@ -1,7 +1,7 @@
 # SmartShape2D 지형 제작 가이드
 
 > **맵을 찍는 사람**이 읽는 문서입니다. 코드·텍스처·Aseprite 전부 몰라도 됩니다.
-> 최종 갱신: 2026-08-25 · 먼저 `WORKER_GUIDE.tscn` 을 열어 보세요.
+> 최종 갱신: 2026-08-29 (흰색 키트 추가) · 먼저 `WORKER_GUIDE.tscn` 을 열어 보세요.
 
 ---
 
@@ -29,6 +29,27 @@
 | 잔디인데 안이 비어야 함 | `GRASS_잔디/TEMPLATE_GRASS_HOLLOW.tscn` |
 | 철 (IRON) | **NOT READY — 사용 금지** |
 
+### ★흰색 지형 (2026-08-29 추가)
+
+**처음부터 흰색인 지형**은 이름 뒤에 `_WHITE` 가 붙은 Template 을 씁니다.
+
+| 상황 | Template |
+|---|---|
+| 흰 나무 바닥 · 선반 | `WOOD_나무/TEMPLATE_WOOD_SOLID_WHITE.tscn` |
+| 흰 나무 계단 | `WOOD_나무/TEMPLATE_WOOD_STAIRS_WHITE.tscn` |
+| 흰 잔디 지형 | `GRASS_잔디/TEMPLATE_GRASS_SOLID_WHITE.tscn` |
+| 흰 잔디 계단 | `GRASS_잔디/TEMPLATE_GRASS_STAIRS_WHITE.tscn` |
+| 흰 벽돌 계단 | `BRICK_벽돌/벽돌 계단_흰색.tscn` |
+
+모양·치수·쓰는 법은 **검정판과 완전히 같습니다.** 다른 것은 두 가지뿐입니다.
+
+1. 재질이 흰 아트다 → **에디터에서도 희게 보인다**
+2. `시작상태 = 흰색` 이다 → 게임을 켜면 **흰색 지형으로 태어난다**
+   (= 검정 플레이어가 닿으면 죽는다. 흰색 플레이어는 안전하다)
+
+흰 지형도 **검정으로 칠할 수 있습니다.** 칠하면 검정 아트로 바뀌고,
+페인트를 회수하면 **원래 흰색으로 돌아옵니다**(무색이 아니라).
+
 **STAIRS 템플릿**은 새로운 시스템이 아닙니다. SOLID 와 완전히 같은 재질이고,
 점 배치만 **폭 180 × 높이 110 × 4단 + 꼭대기 발판**으로 미리 잡아 둔 것입니다.
 치수를 외울 필요 없이 복제해서 늘리기만 하면 됩니다.
@@ -40,9 +61,9 @@ scenes/집/스마트 매쉬 assets/
 ├─ README_지형찍기.md              ← 지금 읽는 문서
 ├─ WORKER_GUIDE.tscn              ← 먼저 열어 볼 것 (예제 21개 + 규칙)
 ├─ WORKER_EXAMPLE_INTERIOR.tscn   ← 실제로 걸어 다녀 볼 수 있는 실내 샘플
-├─ GRASS_잔디/  TEMPLATE_GRASS_{SOLID,HOLLOW,STAIRS}.tscn
-├─ BRICK_벽돌/  TEMPLATE_BRICK_{SOLID,HOLLOW,STAIRS}.tscn
-└─ WOOD_나무/   TEMPLATE_WOOD_{SOLID,HOLLOW,STAIRS}.tscn
+├─ GRASS_잔디/  TEMPLATE_GRASS_{SOLID,HOLLOW,STAIRS}.tscn  + *_WHITE 2개
+├─ BRICK_벽돌/  TEMPLATE_BRICK_{SOLID,HOLLOW,STAIRS}.tscn  + 벽돌 계단_흰색.tscn
+└─ WOOD_나무/   TEMPLATE_WOOD_{SOLID,HOLLOW,STAIRS}.tscn   + *_WHITE 2개
 ```
 
 IRON(하수도 철제)은 원본 작업이 아직 안 끝났습니다. 준비되면 여기에 추가됩니다.
@@ -62,7 +83,13 @@ IRON(하수도 철제)은 원본 작업이 아직 안 끝났습니다. 준비되
 끝입니다. 그 다음 맵 씬에 끌어다 놓으면 됩니다.
 
 > 색(검정/흰색)은 **게임이 실행 중에** 정합니다. 인스펙터의 `시작상태` 만 고르세요
-> (무색 / 검정 / 흰색 / 회색). 머티리얼을 색깔별로 만들면 안 됩니다.
+> (무색 / 검정 / 흰색 / 회색). **머티리얼을 직접 만들지 마세요** — 키트에 있는 것만 씁니다.
+>
+> ★[2026-08-29] 다만 `시작상태` 를 흰색으로 바꿔도 **에디터 화면에서는 검게 보입니다.**
+> 색을 칠하는 셰이더가 게임 실행 중에만 돌기 때문입니다.
+> 그래서 흰 지형을 **눈으로 보면서 배치해야 하면** 위 §2 의 `_WHITE` Template 을 쓰세요.
+> (그 Template 들이 유일한 예외이고, 그것도 도구가 검정판에서 자동으로 파생한 것입니다:
+>  `tools/생성_흰색키트.gd`. 손으로 색깔별 머티리얼을 만드는 것은 여전히 금지입니다.)
 
 ---
 

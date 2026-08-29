@@ -63,11 +63,21 @@ func _실행() -> void:
 			continue
 		var n: Node = ps.instantiate()
 		root.add_child(n)
+		# ★[2026-08-29] 지형이 루트라는 보장이 없다 — `벽돌 테스.tscn` 은 빈 Node2D 아래에
+		#   지형을 자식으로 달고 있다. 예전에는 루트에서 `시작상태` 를 못 찾아 null 이 되고
+		#   `int(null)` 에서 **검사기가 통째로 죽었다**(그 뒤 씬들은 아예 안 봤다).
+		var 지형 := _지형_찾기(n)
+		if 지형 == null:
+			실패 += 1
+			print("  %s
+    ✗ 칠할 수 있는 지형이 없다 (지형.gd 를 안 씀)" % 이름)
+			n.queue_free()
+			continue
 
 		# 이름 규칙: TEMPLATE_<재질>_<SOLID|HOLLOW>.tscn
 		var 속빔 := 이름.contains("HOLLOW")
-		_확인(n.get("shape_material") != null, "shape_material 이 비었다")
-		var m = n.get("shape_material")
+		_확인(지형.get("shape_material") != null, "shape_material 이 비었다")
+		var m = 지형.get("shape_material")
 		if m != null:
 			var metas: Array = m.get_all_edge_meta_materials()
 			# 360도 단일 엣지는 벽돌테스 방식의 미터 조인이다. 코너·테이퍼를 겹치지 않는 대신
@@ -125,22 +135,23 @@ func _실행() -> void:
 					"채움인데 fill 텍스처가 없다")
 			_확인(is_equal_approx(m.fill_texture_scale, 배율), "fill_texture_scale 이 다르다")
 
-		# Template 은 전부 무색(0)으로 나간다. 색은 런타임 상태이고,
-		# 작업자는 인스펙터의 시작상태만 고른다.
-		var 기대: int = 0
-		_확인(int(n.get("시작상태")) == 기대,
-			"시작상태가 %d 여야 하는데 %d" % [기대, int(n.get("시작상태"))])
+		# ★검정 Template 은 무색(0)으로 나간다 — 색은 런타임 상태이고 작업자가 고른다.
+		#   흰색 Template(`_WHITE` · `_흰색`)만 예외로 **흰색(2)을 갖고 태어난다.**
+		#   흰 아트를 든 지형이 무색이면 "희게 보이는데 아무에게도 안 위험한" 거짓말이 된다.
+		var 기대: int = 흰색씬인가(이름)
+		var 실제: int = int(지형.get("시작상태"))
+		_확인(실제 == 기대, "시작상태가 %d 여야 하는데 %d" % [기대, 실제])
 
 		# 콜리전 — 이게 없으면 밟을 수 없다
-		var body := n.get_node_or_null("StaticBody2D")
+		var body := 지형.get_node_or_null("StaticBody2D")
 		_확인(body != null, "StaticBody2D 가 없다")
-		_확인(n.get_node_or_null("StaticBody2D/CollisionPolygon2D") != null,
+		_확인(지형.get_node_or_null("StaticBody2D/CollisionPolygon2D") != null,
 			"CollisionPolygon2D 가 없다")
-		_확인(String(n.get("collision_polygon_node_path")) == "StaticBody2D/CollisionPolygon2D",
+		_확인(String(지형.get("collision_polygon_node_path")) == "StaticBody2D/CollisionPolygon2D",
 			"collision_polygon_node_path 가 안 맞는다")
 
 		# 점 — 닫힌 사각형 4점 (작업자가 잡아 늘릴 시작 도형)
-		var pa: SS2D_Point_Array = n.get_point_array()
+		var pa: SS2D_Point_Array = 지형.get_point_array()
 		_확인(pa != null and pa.get_point_count() >= 4, "시작 점이 4개 미만")
 		# 시작 두께가 '공중 발판 권장 180px' 을 이미 만족해야 한다
 		if pa != null and pa.get_point_count() >= 4:
@@ -162,3 +173,20 @@ func _실행() -> void:
 
 	print("\n검증 %d 통과 / %d 실패" % [통과, 실패])
 	quit(0 if 실패 == 0 else 1)
+
+
+## 이름이 흰색 키트인가 → 기대하는 시작상태(0 = 무색, 2 = 흰색).
+func 흰색씬인가(이름: String) -> int:
+	var 기본 := 이름.get_basename()
+	return 2 if (기본.ends_with("_WHITE") or 기본.ends_with("_흰색")) else 0
+
+
+## 씬 안에서 칠할 수 있는 지형 노드를 찾는다 (루트이거나 그 아래 어딘가).
+func _지형_찾기(n: Node) -> Node:
+	if n.has_method("반대색인가"):
+		return n
+	for 자식 in n.get_children():
+		var 찾음 := _지형_찾기(자식)
+		if 찾음 != null:
+			return 찾음
+	return null
