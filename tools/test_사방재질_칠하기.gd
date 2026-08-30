@@ -53,6 +53,12 @@ const 대상 := [
 	[키트 + "GRASS_잔디/TEMPLATE_GRASS_HOLLOW.tscn", false, -1, 색상.WHITE],
 	[키트 + "GRASS_잔디/TEMPLATE_GRASS_STAIRS.tscn", false, -1, 색상.WHITE],
 	[키트 + "GRASS_잔디/TEMPLATE_GRASS_STAIRS_WHITE.tscn", false, 색상.WHITE, 색상.BLACK],
+	# ★[2026-08-31] 철판(METAL) — 벽돌·나무와 같은 **360° 단일 사방 엣지** 구성이다.
+	#   흑/백 짝이 폴더 규칙(black/ ↔ white/)을 지키므로 페인트 셰이더가 그대로 붙는다.
+	[키트 + "METAL_철판/TEMPLATE_METAL_SOLID.tscn", true, -1, 색상.WHITE],
+	[키트 + "METAL_철판/TEMPLATE_METAL_SOLID_WHITE.tscn", true, 색상.WHITE, 색상.BLACK],
+	[키트 + "METAL_철판/TEMPLATE_METAL_STAIRS.tscn", true, -1, 색상.WHITE],
+	[키트 + "METAL_철판/TEMPLATE_METAL_STAIRS_WHITE.tscn", true, 색상.WHITE, 색상.BLACK],
 ]
 
 var _통과 := 0
