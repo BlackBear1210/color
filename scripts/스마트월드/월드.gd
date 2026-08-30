@@ -271,6 +271,17 @@ func _접촉모양_준비() -> void:
 func _사망_판정() -> bool:
 	var 대표색: int = _플레이어.get("player_color")
 
+	# 0) ★[2026-08-30 신규] hazard 그룹 — 색과 무관한 즉사 함정(가시·톱·굴러오는 물체).
+	#   지금까지 이 판정은 **구 매니저 `stage_lab.gd:352` 에만** 있었다. 그래서
+	#   스마트월드 스테이지에 `가시.tscn` 을 놓으면 그림만 나오고 안 죽었다
+	#   (`가시.gd:34` 의 주석이 "stage_lab 이 이 그룹만 보고" 라고 말하는 그대로다).
+	#   ⚠ 여기서 색을 보지 않는다. 색을 보면 "칠하면 안전한 가시" 가 되어 규칙이 흐려진다 —
+	#     즉사는 `색레이저`·`hazard` 의 몫이고, 색 판정은 아래 2) 가 전담한다.
+	for n in get_tree().get_nodes_in_group("hazard"):
+		var 함정 := n as Area2D
+		if 함정 and 함정.monitoring and 함정.get_overlapping_bodies().has(_플레이어):
+			return true
+
 	# 1) 색 레이저 — 몸 전체가 닿는 판정이라 레이저가 스스로 판단한다(대표색 사용).
 	for n in get_tree().get_nodes_in_group("색레이저"):
 		var 빔 := n as 색레이저
