@@ -19,7 +19,8 @@ extends SceneTree
 
 const 셰이프_S := preload("res://addons/rmsmartshape/shapes/shape.gd")
 const TEX := "res://assets/textures/smartshape/grass_v4/black/grass_edge_top.png"
-const TEX_CORNER := "res://assets/textures/smartshape/grass_v4/black/grass_corner_top.png"
+## [2026-08-30] grass_corner_top.png 은 없다. grass_v4 는 코너를 inner/outer 두 장으로 굽는다.
+const TEX_CORNER := "res://assets/textures/smartshape/grass_v4/black/grass_corner_outer.png"
 
 
 func _init() -> void:

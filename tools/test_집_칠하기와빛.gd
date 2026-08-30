@@ -32,7 +32,7 @@ const 색상 := preload("res://scripts/color_defs.gd")
 
 ## 방마다 [씬경로, 유령발판이름, 빛이름]
 const 대상 := [
-	["res://scenes/집/집_2층방.tscn", "SS_WOOD_GHOST_01", "창문빛"],
+	# [2026-08-30] 집_2층방.tscn 은 STAGE 1 로 대체돼 삭제했다 — 검사 대상에서 뺀다.
 	["res://scenes/집/집_거실.tscn", "SS_WOOD_TABLE_01", "창문빛"],
 	["res://scenes/집/집_부엌.tscn", "SS_WOOD_GHOST_01", "전등빛"],
 	["res://scenes/집/집_굴뚝.tscn", "SS_WOOD_GHOST_01", "굴뚝빛"],
