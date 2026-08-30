@@ -59,6 +59,7 @@ func _실행() -> void:
 	await _시험_주파()
 	await _시험_색칠()
 	await _시험_색사망()
+	await _시험_배경()
 
 	print("\n──────────────── 결과 ────────────────")
 	var 실패 := 0
@@ -304,7 +305,7 @@ func _시험_색칠() -> void:
 		_기록("Paint Ammo", false, "페인트코어를 못 찾음")
 		return
 	var 발판: Node = _루트.get_node_or_null("지형/SS_WOOD_WARDROBE_01")
-	var 구조물: Node = _루트.get_node_or_null("지형/바닥_STAGE1_BRICK_01")
+	var 구조물: Node = _루트.get_node_or_null("지형/SS_WOOD_FLOOR_01")
 	if 발판 == null or 구조물 == null:
 		_기록("Paint Ammo", false, "지형 노드를 못 찾음")
 		return
@@ -360,3 +361,109 @@ func _시험_색사망() -> void:
 	_p.set("자유색", ColorDefs.BLACK)
 	_기록("Structure Safe", not 바닥_흰색,
 		"바닥(구조물) 위 흰색 플레이어 죽음=%s (false 여야 정상)" % 바닥_흰색)
+
+
+# ── 12) 배경 구조 — STEP 1-1.6 의 절대 원칙을 기계로 검사한다 ───────────────
+## 도형님 §1: room.png 를 **자르지도 · 반복하지도 · 비율을 바꾸지도** 않는다.
+##            원화 위에 코드로 방을 다시 그리지 않는다. 앞바닥을 쓰지 않는다.
+## 눈으로만 보면 "어두워서 안 보이는 것"과 "안 그려진 것"을 구별할 수 없다 → 값으로 잰다.
+func _시험_배경() -> void:
+	var 배경들: Array = []
+	for c in _모두(_루트):
+		var s: Script = c.get_script()
+		if s != null and String(s.resource_path).ends_with("실내배경.gd"):
+			배경들.append(c)
+
+	# ① 배경 노드가 정확히 1 개 (앞바닥 띠가 사라졌으니 한 장뿐이어야 한다)
+	_기록("앞바닥 제거", 배경들.size() == 1 and _이름에_앞바닥없나(),
+		"실내배경 노드 %d 개 · 이름에 '앞바닥' 들어간 노드 %d 개 (둘 다 1/0 이어야 정상)"
+			% [배경들.size(), _앞바닥_노드수()])
+	if 배경들.is_empty():
+		_기록("room.png Load", false, "실내배경 노드가 없다")
+		return
+
+	var b: Node2D = 배경들[0]
+	var t: Texture2D = b.get("그림_아래")
+	var 영역: Rect2 = b.get("영역")
+	var 원본영역: Rect2 = b.get("그림_원본영역")
+
+	# ② 원본 로드 + 크기
+	_기록("room.png Load", t != null and t.get_size() == Vector2(2135, 1200),
+		"%s %s" % ["null" if t == null else t.resource_path.get_file(),
+			"—" if t == null else str(t.get_size())])
+
+	# ③ Crop 없음 — 원본영역이 원본 전체와 같아야 한다
+	var 통짜 := t != null and is_equal_approx(원본영역.position.x, 0.0) \
+		and is_equal_approx(원본영역.position.y, 0.0) \
+		and 원본영역.size == t.get_size()
+	_기록("Full Background / Crop", 통짜,
+		"그림_원본영역=%s (원본 전체 (0,0,2135,1200) 여야 정상)" % 원본영역)
+
+	# ④ 비율 유지 — 가로 배율과 세로 배율이 같아야 한다(= 균등 확대, 왜곡 아님)
+	var 배x := 영역.size.x / 2135.0
+	var 배y := 영역.size.y / 1200.0
+	_기록("Stretch(비율 왜곡)", absf(배x - 배y) < 0.001,
+		"가로 ×%.4f · 세로 ×%.4f — 같으면 균등 확대(왜곡 없음)" % [배x, 배y])
+
+	# ⑤ Repeat 없음 — Parallax2D 의 repeat_size 가 0 이어야 한 장만 그린다
+	var 부모 := b.get_parent() as Parallax2D
+	var 반복 := Vector2.ZERO if 부모 == null else 부모.repeat_size
+	_기록("Repeat", 반복 == Vector2.ZERO, "Parallax2D.repeat_size=%s (0 이어야 한 장)" % 반복)
+
+	# ⑥ 코드 그림 덮어쓰기 없음 — 섞임이 0 이면 `_이층방()` 이 안 그려진다
+	var 섞임: float = b.call("섞임_계산", -1500.0)
+	_기록("Code Overlay", is_equal_approx(섞임, 0.0),
+		"섞임_계산(-1500)=%.3f · 전환_시작y=%.1f 전환_끝y=%.1f (0 이면 원화만 그린다)"
+			% [섞임, b.get("전환_시작y"), b.get("전환_끝y")])
+
+	# ⑦ 바닥이 WOOD 인가 + 원화 바닥선과 맞물리는가
+	# ⚠ `shape_material.resource_path` 는 인스턴스에서 **빈 문자열**이다(씬에 임베드된다).
+	#   재질을 알아내려면 **채움 텍스처 경로**를 봐야 한다 — wood_v2 / brick_v2 로 갈린다.
+	var 바닥_재질 := _채움텍스처("SS_WOOD_FLOOR_01")
+	var 벽_재질 := _채움텍스처("벽_왼아래_BRICK_01")
+	_기록("WOOD Floor", 바닥_재질.contains("wood") and 벽_재질.contains("brick"),
+		"바닥 채움=%s · 벽 채움=%s (바닥은 wood, 벽은 brick 이어야 정상)"
+			% [바닥_재질.get_file(), 벽_재질.get_file()])
+
+	# 원화 py 950 이 world 어디로 가는지 = 영역.y + 950 × 세로배율. 바닥 윗면(0)과 같아야 한다.
+	var 원화바닥_월드 := 영역.position.y + 950.0 * 배y
+	_기록("Background ↔ Floor 정렬", absf(원화바닥_월드 - 0.0) < 1.0,
+		"원화 py950 → world y %.1f · WOOD 바닥 윗면 y 0.0 (오차 %.1fpx)"
+			% [원화바닥_월드, absf(원화바닥_월드)])
+
+	# ⑧ 카메라 리밋이 배경 영역과 정확히 같은가 → 배경 밖이 절대 안 보인다
+	var 리밋: Rect2 = _루트.get("카메라_리밋")
+	_기록("Camera Limit = 배경", 리밋 == 영역,
+		"리밋 %s · 배경 %s" % [리밋, 영역])
+	# 뷰포트가 리밋보다 작으면 카메라가 클램프돼 배경 밖이 나올 수 없다.
+	var 보이는크기 := Vector2(1920.0, 1080.0) / float(_루트.get("카메라_줌"))
+	_기록("Background 밖 노출", 보이는크기.x < 리밋.size.x and 보이는크기.y < 리밋.size.y,
+		"화면 %s < 리밋 %s 이면 클램프돼 배경 밖이 안 보인다" % [보이는크기, 리밋.size])
+
+
+func _앞바닥_노드수() -> int:
+	var n := 0
+	for c in _모두(_루트):
+		if String(c.name).contains("앞바닥"):
+			n += 1
+	return n
+
+func _이름에_앞바닥없나() -> bool:
+	return _앞바닥_노드수() == 0
+
+func _모두(n: Node) -> Array:
+	var r := [n]
+	for c in n.get_children():
+		r.append_array(_모두(c))
+	return r
+
+
+## 지형 노드의 **채움 텍스처 경로**. 재질 종류(wood/brick)를 이걸로 판별한다.
+func _채움텍스처(이름: String) -> String:
+	var t := _루트.get_node_or_null("지형/" + 이름)
+	if t == null:
+		return ""
+	var m = t.get("shape_material")
+	if m == null or m.fill_textures.is_empty() or m.fill_textures[0] == null:
+		return ""
+	return String(m.fill_textures[0].resource_path)
