@@ -18,17 +18,18 @@ const 씬경로 := "res://scenes/집/스테이지_1_2층방.tscn"
 
 ## 지형 윗면 실측 기대값 (빌더 상수와 같아야 한다).
 const 발판들 := [
-	["벽계단_단1", 460.0, -2050.0],
-	["벽계단_단2", 845.0, -1940.0],
-	["벽계단_단3", 1295.0, -1830.0],
+	["벽계단A", 500.0, -2050.0],
+	["벽계단B", 1100.0, -1830.0],
 	["옷장", 1930.0, -1522.0],
-	["출구계단_단1", 2522.0, -1632.0],
-	["출구계단_단2", 2972.0, -1742.0],
+	["서랍(열림)", 2447.0, -1522.0],
+	["가시받침", 2850.0, -1632.0],
+	["출구선반", 3770.0, -1742.0],
 ]
 
 var _루트: Node = null
 var _p: CharacterBody2D = null
 var _결과: Array = []
+var _최대드리프트: float = 0.0
 
 
 func _init() -> void:
@@ -56,10 +57,12 @@ func _실행() -> void:
 	await _시험_벽충돌()
 	await _시험_천장충돌()
 	await _시험_구간별_점프()
-	await _시험_주파()
+	await _시험_완주()
 	await _시험_색칠()
 	await _시험_색사망()
 	await _시험_배경()
+	await _시험_서랍()
+	await _시험_가시()
 
 	print("\n──────────────── 결과 ────────────────")
 	var 실패 := 0
@@ -202,9 +205,8 @@ func _시험_벽충돌() -> void:
 ## 출구 선반(−1860) 위에서 점프하면 들보(아랫면 −2030)에 머리가 막혀야 한다.
 ## 안 막히면 점프 높이 167 만큼 올라 −2027 까지 간다.
 func _시험_천장충돌() -> void:
-	# ★들보는 x 2997…3297 에 있다. 그 **바로 아래**에서 재야 한다 —
-	#   2972 에서 쟀더니 167px 이 나왔는데(= 안 막힘), 들보 왼쪽 25px 밖이었다.
-	await _놓기(Vector2(3100.0, -1790.0))
+	# ★들보는 x 3697…3997 에 있다. 그 **바로 아래**에서 재야 한다.
+	await _놓기(Vector2(3770.0, -1790.0))
 	await _착지_대기()
 	var y0 := _p.global_position.y
 	Input.action_press("jump")
@@ -227,11 +229,10 @@ func _시험_천장충돌() -> void:
 func _시험_구간별_점프() -> void:
 	# [이름, 출발x, 출발 윗면y, 출발 오른쪽끝, 목표 윗면y, 목표 x 최소]
 	var 구간 := [
-		["벽계단 단1→단2", 340.0, -2050.0, 620.0, -1940.0, 640.0],
-		["벽계단 단2→단3", 680.0, -1940.0, 1070.0, -1830.0, 1090.0],
-		["벽계단→옷장", 1150.0, -1830.0, 1520.0, -1522.0, 1580.0],
-		["옷장→출구계단", 1700.0, -1522.0, 2297.0, -1632.0, 2320.0],
-		["출구계단 단1→단2", 2350.0, -1632.0, 2747.0, -1742.0, 2770.0],
+		["Gap1 벽계단A→B", 350.0, -2050.0, 700.0, -1830.0, 850.0],
+		["Gap2 벽계단B→옷장", 900.0, -1830.0, 1390.0, -1522.0, 1566.0],
+		["Gap3 서랍→가시받침", 2320.0, -1522.0, 2597.0, -1632.0, 2747.0],
+		["Gap4 받침→출구", 3200.0, -1632.0, 3397.0, -1742.0, 3547.0],
 	]
 	var 전부 := true
 	var 상세: Array = []
@@ -262,33 +263,7 @@ func _시험_구간별_점프() -> void:
 		print("    [틈] %s" % s)
 
 
-# ── 9) 1-2 방향 주파 ────────────────────────────────────────────────────────
-## 사람처럼 "오른쪽 누른 채로 착지할 때마다 점프" 하는 봇으로 1-1 을 끝까지 가 본다.
-## ⚠ 최적 조작이 아니다. 이 봇이 통과하면 **여유 있게 통과 가능**하다는 뜻이고,
-##   못 가면 그 x 좌표가 실제로 어려운 자리다.
-func _시험_주파() -> void:
-	var 시작: Vector2 = _루트.get("시작_위치")
-	await _놓기(시작)
-	await _착지_대기()
-	var 최대x := _p.global_position.x
-	var 죽음 := 0
-	var 이전y := _p.global_position.y
-	Input.action_press("move_right")
-	for i in 1500:                              # 25 초
-		await physics_frame
-		if _p.is_on_floor():
-			Input.action_press("jump")
-		else:
-			Input.action_release("jump")
-		최대x = maxf(최대x, _p.global_position.x)
-		# 리스폰되면 y 가 갑자기 크게 튄다 — 사망 횟수로 센다
-		if absf(_p.global_position.y - 이전y) > 900.0:
-			죽음 += 1
-		이전y = _p.global_position.y
-	_해제()
-	# 출구 선반 오른쪽 끝 = 3197. 3150 을 넘으면 1-1 을 끝까지 간 것이다.
-	_기록("1-2 Direction", 최대x > 3150.0,
-		"봇이 도달한 최대 x = %.0f (출구계단 2297…3197) · 리스폰 %d 회" % [최대x, 죽음])
+# ── 9) (삭제) 옛 무작정 봇 — `_시험_완주()` 로 대체했다
 
 
 # ── 10) 색칠 — 총알이 지형을 칠하는가 · 탄약이 주는가 ───────────────────────
@@ -467,3 +442,205 @@ func _채움텍스처(이름: String) -> String:
 	if m == null or m.fill_textures.is_empty() or m.fill_textures[0] == null:
 		return ""
 	return String(m.fill_textures[0].resource_path)
+
+
+# ── 13) 서랍 — 실제로 열리고 닫히는가 · 플레이어를 태우는가 ─────────────────
+## 도형님 §14 Test 4·5. 콜리전이 그림과 **같이** 움직이는지가 핵심이다.
+func _시험_서랍() -> void:
+	var d := _루트.get_node_or_null("기믹/서랍_옷장") as AnimatableBody2D
+	if d == null:
+		_기록("Drawer Open", false, "서랍 노드를 못 찾음")
+		return
+	var 닫힘x: float = d.position.x
+	var 주기: float = d.call("주기")
+
+	# ① 한 주기를 돌려 열림/닫힘 양 끝에 실제로 도달하는지 본다.
+	var 최소 := 1.0
+	var 최대 := 0.0
+	var 최소x := 1e9
+	var 최대x := -1e9
+	for i in int(주기 * 60.0) + 20:
+		await physics_frame
+		var v: float = d.call("열린정도")
+		최소 = minf(최소, v)
+		최대 = maxf(최대, v)
+		최소x = minf(최소x, d.position.x)
+		최대x = maxf(최대x, d.position.x)
+	_기록("Drawer Open", 최대 > 0.99, "한 주기 중 최대 열린정도 %.2f · 오른끝 x %.0f" % [최대, 최대x])
+	_기록("Drawer Close", 최소 < 0.01, "한 주기 중 최소 열린정도 %.2f · 왼끝 x %.0f" % [최소, 최소x])
+
+	# ② 그림과 콜리전이 같은 노드 밑에 있으니 이동량이 같아야 한다.
+	#    (SS2D 쪽 StaticBody2D 가 남아 있으면 밟는 면이 둘이 되어 여기서 걸린다)
+	var 그림 := d.get_node_or_null("그림")
+	var 그림_몸 := 그림.get_node_or_null("StaticBody2D") if 그림 else null
+	var 이동량: float = 최대x - 최소x
+	_기록("Drawer Collision Sync", 그림_몸 == null and absf(이동량 - 300.0) < 6.0,
+		"SS2D StaticBody2D=%s(없어야 정상) · 이동량 %.1fpx (설계 300)"
+			% ["없음" if 그림_몸 == null else "있음 ✗", 이동량])
+
+	# ③ 서랍 위에 세워 두고 한 주기를 돌린다 — 실려 가야 하고, 안 빠지고, 안 박혀야 한다.
+	#    서랍이 완전히 열린 순간을 기다렸다가 그 위에 놓는다.
+	for i in 400:
+		await physics_frame
+		if float(d.call("열린정도")) > 0.99:
+			break
+	await _놓기(Vector2(d.global_position.x, d.global_position.y - 160.0))
+	await _착지_대기(120)
+	var 탑승_시작 := _p.global_position
+	var 서랍_시작x := d.position.x
+	# ★서랍이 **옷장 밖**(x > 2297)에 있는 동안만 잰다.
+	#   플레이어가 옷장 위로 넘어가면 바닥이 옷장으로 바뀌어 더는 안 실리는 게 정상이다.
+	#   그 구간까지 드리프트로 세면 "정상 동작" 을 실패로 잡는다.
+	var 떨어짐 := false
+	var 기준_오프셋 := _p.global_position.x - d.position.x
+	var 최대순간이동 := 0.0
+	_최대드리프트 = 0.0
+	var 이전x := _p.global_position.x
+	for i in int(주기 * 60.0) + 20:
+		await physics_frame
+		최대순간이동 = maxf(최대순간이동, absf(_p.global_position.x - 이전x))
+		이전x = _p.global_position.x
+		if _p.global_position.x > 2320.0:
+			_최대드리프트 = maxf(_최대드리프트,
+				absf((_p.global_position.x - d.position.x) - 기준_오프셋))
+		if _p.global_position.y > 탑승_시작.y + 200.0:
+			떨어짐 = true
+			break
+	# ⚠ 한 주기를 돌면 서랍은 제자리로 돌아온다 → **순이동량 비교는 의미가 없다**(처음에 그렇게
+	#   쟀다가 서랍 0px · 플레이어 −150px 이 나왔다). 실려 가는지는 **상대 오프셋이
+	#   유지되는가**로 봐야 한다.
+	_기록("Player on Drawer",
+		(not 떨어짐) and _최대드리프트 < 20.0 and 최대순간이동 < 60.0,
+		"옷장 밖 구간 드리프트 최대 %.1fpx(실리면 ≈0) · 한 프레임 최대 이동 %.1fpx(순간이동 없음) · 떨어짐=%s"
+			% [_최대드리프트, 최대순간이동, 떨어짐])
+
+
+# ── 14) 가시 — 닿으면 죽는가 · 칠해도 안전해지지 않는가 ─────────────────────
+## 도형님 §7·§14 Test 6·7. 가시는 **항상** hazard 다 — 색 규칙과 완전히 분리된다.
+func _시험_가시() -> void:
+	var s := _루트.get_node_or_null("위험물/가시_1_1") as Area2D
+	if s == null:
+		_기록("Spike Hazard", false, "가시 노드를 못 찾음")
+		return
+
+	# ① 가시 위에 서면 죽는다
+	# ⚠ 플레이어 원점은 **발바닥**이고 몸은 위로 뻗는다. 처음에 가시보다 60 위에
+	#   놓았더니 몸이 통째로 가시 위에 떠서 안 겹쳤다(죽음=false). 떨어뜨려 받침에
+	#   착지시켜야 다리가 가시에 잠긴다.
+	var 가시위_죽음 := await _가시위에서_죽나(s)
+	# ② 가시에서 멀리 떨어진 같은 받침 위에서는 안 죽는다 (가시만 위험하다는 확인)
+	await _놓기(Vector2(2850.0, -1700.0))
+	await _착지_대기(120)
+	var 받침위_죽음 := false
+	for i in 10:
+		await physics_frame
+		if bool(_루트.call("_사망_판정")):
+			받침위_죽음 = true
+	_기록("Spike Hazard", 가시위_죽음 and (not 받침위_죽음),
+		"가시 위 죽음=%s · 같은 받침의 빈 자리 죽음=%s · hazard그룹=%s"
+			% [가시위_죽음, 받침위_죽음, s.is_in_group("hazard")])
+
+	# ③ 받침을 칠해도 가시는 그대로 위험하다.
+	#    (총알은 레이어 1|8 만 레이캐스트한다 → 레이어 0 인 가시는 통과하고 받침이 맞는다)
+	var 코어 := _루트.get_tree().get_first_node_in_group("페인트코어")
+	var 받침: Node = _루트.get_node_or_null("지형/SS_BRICK_SPIKE_BASE_01")
+	var 결과 := "—"
+	if 코어 != null and 받침 != null:
+		코어.발사_소모()
+		결과 = 코어.명중_처리(받침, ColorDefs.BLACK, s.global_position + Vector2(0, 40))
+	var 칠한뒤_죽음 := await _가시위에서_죽나(s)
+	_기록("Spike Paint Immunity", 칠한뒤_죽음,
+		"받침 명중 \"%s\" 뒤에도 가시 위 죽음=%s (칠해도 안전해지면 안 된다)" % [결과, 칠한뒤_죽음])
+
+
+# ── 15) 완주 — 스폰부터 1-2 진입 직전까지 실제 조작으로 끝까지 간다 ─────────
+## ▣ 왜 "무작정 봇" 을 버렸나
+##   예전 봇은 **오른쪽 누른 채 착지할 때마다 점프**했다. 이 구간에는
+##     · 타이밍이 있는 서랍(닫혀 있으면 못 건넌다)
+##     · 넘어야 하는 가시(무작정 점프하면 그 위에 착지한다)
+##   가 생겨서, 봇이 x 3030 = **가시 한복판**에 떨어져 죽었다.
+##   → 사람이 하는 것과 같은 **웨이포인트 조작**으로 바꿨다:
+##     발판 끝에서 점프하고, 서랍이 닫혀 있으면 옷장 위에서 **기다린다**.
+func _시험_완주() -> void:
+	var d := _루트.get_node_or_null("기믹/서랍_옷장")
+	var 시작: Vector2 = _루트.get("시작_위치")
+	await _놓기(시작)
+	await _착지_대기(120)
+
+	# 점프를 눌러야 하는 x 들 (각 발판의 오른쪽 끝 조금 앞)
+	var 점프지점: Array[float] = [
+		660.0,    # Gap1  벽계단A → B
+		1350.0,   # Gap2  벽계단B → 옷장
+		2560.0,   # Gap3  서랍 → 가시받침
+		2930.0,   # 가시 넘기 (가시 2990…3182)
+		3360.0,   # Gap4  받침 → 출구
+	]
+	var 다음 := 0
+	var 최대x := _p.global_position.x
+	var 죽음 := 0
+	var 이전y := _p.global_position.y
+	var 기다린프레임 := 0
+
+	for i in 1800:                                   # 30 초
+		await physics_frame
+		var x := _p.global_position.x
+		최대x = maxf(최대x, x)
+		if absf(_p.global_position.y - 이전y) > 900.0:
+			죽음 += 1
+		이전y = _p.global_position.y
+
+		# ★옷장 오른쪽 끝(2297) 앞에서는 서랍이 열릴 때까지 기다린다.
+		#   닫혀 있는데 걸어 나가면 1522 아래 바닥까지 떨어져 죽는다.
+		var 기다려 := false
+		if d != null and x > 2150.0 and x < 2290.0 and float(d.call("열린정도")) < 0.95:
+			기다려 = true
+			기다린프레임 += 1
+		if 기다려:
+			Input.action_release("move_right")
+		else:
+			Input.action_press("move_right")
+
+		# ★웨이포인트 점프 — **자리로 판단한다**(순번으로 하면 리스폰 뒤에 어긋난다).
+		#   처음엔 index 를 하나씩 올렸는데, 죽고 되살아나면 index 는 그대로라
+		#   이미 지난 지점으로 취급돼 다음 틈에서 점프를 안 하고 계속 떨어졌다(사망 21 회).
+		var 뛸때 := false
+		for wp in 점프지점:
+			if x > wp and x < wp + 70.0:
+				뛸때 = true
+				break
+		if _p.is_on_floor() and 뛸때:
+			Input.action_press("jump")
+			다음 = maxi(다음, _지난_웨이포인트(점프지점, x))
+		elif _p.is_on_floor():
+			Input.action_release("jump")
+
+		if x > 3900.0:
+			break
+	_해제()
+	_기록("Exit Reachable", 최대x > 3900.0 and 죽음 == 0,
+		"도달 최대 x = %.0f (출구선반 3547…3997) · 웨이포인트 %d/5 · 서랍 대기 %.1f초 · 사망 %d 회"
+			% [최대x, 다음, 기다린프레임 / 60.0, 죽음])
+
+
+## 가시 위에 떨어뜨리고 **죽음이 잡히는지** 본다.
+## ⚠ `월드.gd` 는 살아 있다 — 제 `_physics_process` 에서 사망을 감지하면 **바로 리스폰**한다.
+##   그래서 착지 뒤 4 프레임이나 기다렸다가 `_사망_판정()` 을 부르면 이미 안전지점으로
+##   옮겨져 **false** 가 나온다(처음에 그렇게 잘못 쟀다).
+##   → 착지 직후부터 여러 프레임을 훑어 **한 번이라도 true 면 죽은 것**으로 본다.
+func _가시위에서_죽나(가시: Area2D) -> bool:
+	await _놓기(Vector2(가시.global_position.x, -1900.0))
+	await _착지_대기(120)
+	for i in 10:
+		if bool(_루트.call("_사망_판정")):
+			return true
+		await physics_frame
+	return false
+
+
+## x 를 이미 지난 웨이포인트가 몇 개인가 (진행도 표시용).
+func _지난_웨이포인트(목록: Array[float], x: float) -> int:
+	var n := 0
+	for wp in 목록:
+		if x > wp:
+			n += 1
+	return n
