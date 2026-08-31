@@ -73,6 +73,7 @@ func _실행() -> void:
 	await _시험_서랍()
 	await _시험_가시()
 	await _시험_가구밑()
+	await _시험_1_4()
 
 	print("\n──────────────── 결과 ────────────────")
 	var 실패 := 0
@@ -844,3 +845,218 @@ func _시험_가구밑() -> void:
 	_기록("Respawn", 움직임 > 50.0,
 		"리스폰 자리 (%.0f, %.0f) 에서 0.5 초간 %.0fpx 이동 (조작 복귀)"
 			% [부활자리.x, 부활자리.y, 움직임])
+
+
+# ── 15) 구간 1-4 — OneWay 매트리스 · 부서지는 마룻바닥 ──────────────────────
+## ▣ 왜 이 시험이 STEP 1-4.2 의 전부인가
+##   1-4 의 핵심은 새 아트가 아니라 **두 가지 물리 계약**이다.
+##     ① 매트리스는 아래에서 위로 뚫리고 위에서는 받는다 (안 그러면 1-3 이 막힌다)
+##     ② 마룻바닥은 3 발에 부서지고 **콜리전이 실제로 사라진다** (안 그러면 구멍이 아니다)
+##   둘 다 "화면에 보이는 것"이 아니라 **조작으로만 확인되는 것**이라 여기서 잰다.
+func _시험_1_4() -> void:
+	var 매트: Node2D = _루트.get_node_or_null("지형/SS_WOOD_MATTRESS_01")
+	var 파괴: Node2D = _루트.get_node_or_null("지형/SS_WOOD_BREAK_FLOOR_01")
+	if 매트 == null or 파괴 == null:
+		_기록("1-4 Nodes", false, "매트리스/파괴바닥 노드를 못 찾음")
+		return
+	var 매트_중심 := 3258.0            # (2691 + 3825) / 2
+	var 매트_윗면 := -435.0
+	var 파괴_중심 := 5741.5            # (5591.5 + 5891.5) / 2
+
+	# ── ① OneWay 가 실제로 켜졌는가 (씬에 저장이 안 되는 값이라 런타임에서 확인한다) ──
+	var 켜짐: bool = bool(매트.call("단방향_켜졌나"))
+	_기록("Mattress OneWay Flag", 켜짐,
+		"one_way_collision=%s · 여유=%.0f (씬에는 저장 안 되고 단방향지형.gd 가 런타임에 켠다)"
+			% [켜짐, float(매트.get("단방향_여유"))])
+
+	# ── ② 아래 → 위 : 통과해야 한다. 그리고 되떨어져 **윗면에 선다** ──
+	# 한 번의 조작으로 OneWay 양쪽을 다 본다: 뚫고 올라갔다가 위에서 착지한다.
+	# (바닥에서 점프로는 435 를 못 올라가므로 도약대처럼 velocity.y 를 직접 준다 —
+	#  `player.gd` 는 velocity.y 를 덮어쓰지 않는다)
+	# ⚠ 여기서 `_착지_대기()` 를 부르면 안 된다 — 매트리스 밑은 허공이라 바닥(0)까지
+	#   떨어지고, 거기서 쏘아 올려 봐야 상승 177 로는 −435 에 못 닿는다(첫 시도의 오답).
+	#   **매트리스 밑면(−275) 바로 아래에서** 쏘아 올려야 OneWay 통과를 잰다.
+	await _놓기(Vector2(매트_중심, -300.0))       # 매트리스 밑면(−275) 바로 아래
+	_p.velocity.y = -900.0                       # 상승 ≈ 177 → 발이 −477 까지 올라간다
+	var 최고 := _p.global_position.y
+	for i in 40:
+		await physics_frame
+		최고 = minf(최고, _p.global_position.y)
+	var 뚫었나 := 최고 < 매트_윗면                # 윗면보다 위로 올라갔으면 통과한 것
+	var 섰나 := await _착지_대기(180)
+	var 착지y := _p.global_position.y
+	_기록("Mattress Pass Up", 뚫었나 and 섰나 and absf(착지y - 매트_윗면) < 8.0,
+		"매트리스 밑(−300)에서 위로 쏘아 올림 → 최고 %.0f (윗면 %.0f 통과=%s) → 착지 %.1f (윗면이어야 정상)"
+			% [최고, 매트_윗면, 뚫었나, 착지y])
+
+	# ── ③ 위 → 아래 : 위에서 떨어지면 **막혀야** 한다 ──
+	await _놓기(Vector2(매트_중심, -900.0))
+	var 받았나 := await _착지_대기(240)
+	var 위착지 := _p.global_position.y
+	_기록("Mattress Land From Above", 받았나 and absf(위착지 - 매트_윗면) < 8.0,
+		"−900 에서 낙하 → 착지 %.1f (윗면 %.0f 이어야 정상 · 뚫고 지나가면 0 근처)"
+			% [위착지, 매트_윗면])
+
+	# ── ④ 1-3 회귀 — 매트리스 **밑**을 걸어서 지나갈 수 있는가 ──
+	# 1-3 의 검증된 동선(1-2 바닥 → 왼쪽)이 정확히 여기를 지난다. 막히면 1-3 이 죽는다.
+	await _놓기(Vector2(3900.0, -100.0))
+	await _착지_대기(180)
+	var 최소x := _p.global_position.x
+	var 끼임 := false
+	var 이전x := _p.global_position.x
+	var 정체 := 0
+	Input.action_press("move_left")
+	for i in 600:
+		await physics_frame
+		var x := _p.global_position.x
+		최소x = minf(최소x, x)
+		if absf(x - 이전x) < 0.5:
+			정체 += 1
+			if 정체 > 60:
+				끼임 = true
+				break
+		else:
+			정체 = 0
+		이전x = x
+		if x < 2600.0:
+			break
+	_해제()
+	_기록("Under Mattress (1-3)", 최소x < 2650.0 and not 끼임,
+		"바닥 3900 → 왼쪽 %.0f 로 매트리스 밑(2691…3825)을 통과 · 끼임=%s (틈 275 > 몸 96)"
+			% [최소x, 끼임])
+
+	# ── ④-2 ★1-4 의 실제 동선 : 1-3 종료 지점(x 794)에서 **오른쪽으로 되돌아간다** ──
+	# 1-3 에서 왼쪽으로 기어 지나온 관문 셋(책장 밑 151 · 가시 · 옷장 밑 220)을
+	# **반대 방향으로** 다시 통과해 오른쪽 벽 앞까지 간다. 이것이 1-4 의 본체다.
+	await _놓기(Vector2(794.0, -100.0))
+	await _착지_대기(180)
+	var 최대x := _p.global_position.x
+	var 죽음14 := 0
+	var 이전y := _p.global_position.y
+	var 이전x14 := _p.global_position.x
+	var 정체14 := 0
+	var 끼임14 := false
+	Input.action_press("move_right")
+	for i in 2400:
+		await physics_frame
+		var px := _p.global_position.x
+		최대x = maxf(최대x, px)
+		if absf(_p.global_position.y - 이전y) > 900.0:
+			죽음14 += 1
+		이전y = _p.global_position.y
+		# 가시(1882…1978) **앞**에서 점프한다. 오른쪽으로 가므로 1882 왼쪽이 앞이다.
+		if _p.is_on_floor() and px > 1780.0 and px < 1850.0:
+			Input.action_press("jump")
+		elif _p.is_on_floor():
+			Input.action_release("jump")
+		if absf(px - 이전x14) < 0.5 and _p.is_on_floor():
+			정체14 += 1
+			if 정체14 > 90:
+				끼임14 = true
+				break
+		else:
+			정체14 = 0
+		이전x14 = px
+		if px > 5400.0:
+			break
+	_해제()
+	_기록("1-4 Return Route", 최대x > 5400.0 and not 끼임14 and 죽음14 == 0,
+		"1-3 종료(794)에서 오른쪽으로 x %.0f 까지 · 책장밑 151 → 가시 → 옷장밑 220 역방향 통과 · 끼임=%s · 사망 %d 회"
+			% [최대x, 끼임14, 죽음14])
+
+	# ── ⑤ 파괴 전 : 그냥 바닥이어야 한다 ──
+	await _놓기(Vector2(파괴_중심, -100.0))   # ★1-2 탁자(−319, 밑면 −159) 아래에 놓아야 바닥에 닿는다
+	var 밟히나 := await _착지_대기(240)
+	var 밟은y := _p.global_position.y
+	_기록("Break Floor Solid", 밟히나 and absf(밟은y) < 8.0,
+		"파괴 전 x %.0f 에 착지 y=%.1f (0 이어야 정상 — 부수기 전엔 평범한 바닥)"
+			% [파괴_중심, 밟은y])
+
+	# ── ⑥ 총알이 **실제로 닿는 자리**인가 (§10 — 못 쏘는 바닥이면 관문이 아니다) ──
+	# 총알과 똑같은 레이캐스트(레이어 1|8)로, 왼쪽 바닥에 선 플레이어의 총구에서
+	# 파괴 바닥 윗면을 겨눴을 때 **처음 맞는 것이 파괴 바닥인지** 본다.
+	await _놓기(Vector2(5400.0, -100.0))
+	await _착지_대기(180)
+	var 총구 := _p.global_position + Vector2(0.0, -48.0)   # 몸 중심 높이
+	var 공간 := _p.get_world_2d().direct_space_state
+	var 질의 := PhysicsRayQueryParameters2D.create(총구, Vector2(파괴_중심, 20.0), 1 | 8)
+	질의.collide_with_areas = false
+	질의.exclude = [_p.get_rid()]
+	var 맞음 := 공간.intersect_ray(질의)
+	var 맞은대상: Node = null
+	if 맞음:
+		var n := 맞음.get("collider") as Node
+		while n != null and not n.has_method("명중"):
+			n = n.get_parent()
+		맞은대상 = n
+	_기록("Break Floor Shootable", 맞은대상 == 파괴,
+		"x 5400 에 선 총구 → (%.0f, −4) 레이캐스트 첫 명중 = %s (SS_WOOD_BREAK_FLOOR_01 이어야 정상)"
+			% [파괴_중심, 맞은대상.name if 맞은대상 else "없음"])
+
+	# ── ⑦ 1 발 / 2 발 / 3 발 ──
+	var 코어 := _루트.get_tree().get_first_node_in_group("페인트코어")
+	if 코어 == null:
+		_기록("Break Floor 3 Hits", false, "페인트코어를 못 찾음")
+		return
+	코어.리셋()
+	var 기록: Array[String] = []
+	var 단계_정상 := true
+	for 발 in 3:
+		코어.발사_소모()
+		var r: String = 코어.명중_처리(파괴, ColorDefs.BLACK, Vector2(파괴_중심, 0.0))
+		await _프레임(4)                                  # _부수기() 가 call_deferred 다
+		var 부서짐: bool = bool(파괴.call("부서졌나"))
+		var 남음: int = int(파괴.call("남은_명중"))
+		기록.append("%d발→\"%s\" 남은 %d 부서짐 %s" % [발 + 1, r, 남음, 부서짐])
+		# 1·2 발째는 멀쩡해야 하고 3 발째에 부서져야 한다
+		if (발 < 2 and 부서짐) or (발 == 2 and not 부서짐):
+			단계_정상 = false
+	_기록("Break Floor 3 Hits", 단계_정상, " · ".join(기록))
+
+	# ── ⑧ 콜리전이 실제로 사라졌는가 ──
+	var 폴리 := 파괴.call("get_collision_polygon_node") as CollisionPolygon2D
+	var 바디 := 폴리.get_parent() as CollisionObject2D if 폴리 else null
+	await _프레임(4)
+	# ⚠ `_착지_대기()` 로 재면 안 된다 — 구멍으로 떨어지다 **낙사 판정(치명 낙하 520)**이
+	#   먼저 걸려 리스폰되고, 그 리스폰 자리(바닥)를 "착지" 로 읽어 버린다(첫 시도의 오답).
+	#   → 착지 여부가 아니라 **얼마나 깊이 내려갔는지**(최대 y)를 본다. 리스폰해도 최대값은 남는다.
+	await _놓기(Vector2(파괴_중심, -100.0))   # ★1-2 탁자(−319, 밑면 −159) 아래에 놓아야 바닥에 닿는다
+	var 최대y := _p.global_position.y
+	for i in 60:
+		await physics_frame
+		최대y = maxf(최대y, _p.global_position.y)
+	var 폴리_꺼짐: bool = 폴리.disabled if 폴리 else false
+	var 레이어_0: bool = (바디.collision_layer == 0) if 바디 else false
+	_기록("Break Floor Collision Gone", 최대y > 300.0 and 폴리_꺼짐 and 레이어_0,
+		"파괴 후 같은 자리에서 최대 y=%.0f (바닥 아랫면 300 아래로 빠져야 정상 · 남아 있으면 0) · disabled=%s layer=%s"
+			% [최대y, 폴리_꺼짐, 바디.collision_layer if 바디 else "-"])
+
+	# ── ⑨ 걸어가서 구멍에 빠지는가 → 낙사 → 리스폰 ──
+	# ★"떨어져서 죽는다" 까지가 지금의 STAGE 1 종료다 (STAGE 2 씬이 아직 없다).
+	await _놓기(Vector2(5350.0, -100.0))
+	await _착지_대기(180)
+	var 시작x := _p.global_position.x
+	var 최저y := _p.global_position.y
+	var 죽었나 := false
+	Input.action_press("move_right")
+	for i in 420:
+		await physics_frame
+		최저y = maxf(최저y, _p.global_position.y)
+		if _p.global_position.y > 400.0:
+			죽었나 = true                                  # 바닥 아랫면(300) 밑으로 빠졌다
+			break
+	_해제()
+	_기록("Break Floor Fall", 죽었나,
+		"x %.0f 에서 오른쪽으로 걸어가 구멍(5591…5891)에 빠짐 · 최저 y=%.0f (300 아래면 관통)"
+			% [시작x, 최저y])
+
+	# ⑩ 빠진 뒤 되살아나 다시 움직일 수 있는가 (끼임 · 무한 낙하가 아니어야 한다)
+	await _프레임(150)
+	var 부활 := _p.global_position
+	Input.action_press("move_left")
+	await _프레임(30)
+	Input.action_release("move_left")
+	var 움직임 := 부활.x - _p.global_position.x
+	_기록("Fall Respawn", 움직임 > 50.0 and 부활.y < 400.0,
+		"리스폰 자리 (%.0f, %.0f) 에서 0.5 초간 %.0fpx 이동 (조작 복귀)"
+			% [부활.x, 부활.y, 움직임])
