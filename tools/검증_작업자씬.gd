@@ -13,6 +13,16 @@ extends SceneTree
 
 const 폴더 := "res://scenes/집/스마트 매쉬 assets"
 const 배율 := 0.35
+## ★[2026-08-31] 재질마다 확정된 텍스처 배율이 다르다.
+##   철판(METAL)은 0.6 이 확정값이다 — 외곽 림과 이음선 두께를 이전의 60% 로 줄이고
+##   같은 면적에 패턴을 1.67 배 더 보이게 한 결정이다
+##   (`docs/작업기록_2026-08-31_Codex_철판_SS2D_템플릿.md`).
+##   여기에 0.35 를 그대로 들이대면 **맞게 만든 재질이 검사에서 틀린 것으로 나온다.**
+## [엣지 배율, 채움 배율] — 둘이 다를 수 있다.
+## ⚠ 철판은 문서에는 둘 다 0.6 이라고 적혀 있지만 실제 `.tres` 는 채움이 **0.48** 이다.
+##   어느 쪽이 맞는지는 아트 판단이라 여기서는 **지금 확정된 값을 그대로 기록**한다.
+##   값을 바꾸기로 하면 이 표와 `.tres` 를 같이 고친다.
+const 배율표 := { "METAL": [0.6, 0.48] }
 
 var 통과 := 0
 var 실패 := 0
@@ -55,6 +65,8 @@ func _실행() -> void:
 	print("작업자 씬 %d 개 검증\n" % 목록.size())
 	for 경로 in 목록:
 		var 이름 := 경로.get_file()
+		var 기대배율 := _기대배율(이름, 0)
+		var 기대채움배율 := _기대배율(이름, 1)
 		var 앞 := 실패
 		var ps: PackedScene = load(경로)
 		if ps == null:
@@ -93,8 +105,8 @@ func _실행() -> void:
 					and is_equal_approx(meta.normal_range.distance, 360.0),
 					"단일 사방 normal_range 가 360도가 아니다")
 				if e != null:
-					_확인(is_equal_approx(e.texture_scale, 배율),
-						"texture_scale 이 %.2f 가 아니다 (%.3f)" % [배율, e.texture_scale])
+					_확인(is_equal_approx(e.texture_scale, 기대배율),
+						"texture_scale 이 %.2f 가 아니다 (%.3f)" % [기대배율, e.texture_scale])
 					_확인(e.textures.size() == 1 and e.textures[0] != null,
 						"단일 사방 엣지 텍스처가 정확히 1개가 아니다")
 					_확인(not e.use_corner_texture, "단일 사방 재질에 코너 텍스처가 켜져 있다")
@@ -109,8 +121,8 @@ func _실행() -> void:
 					_확인(e != null, "엣지 머티리얼이 없다")
 					if e == null:
 						continue
-					_확인(is_equal_approx(e.texture_scale, 배율),
-						"texture_scale 이 %.2f 가 아니다 (%.3f)" % [배율, e.texture_scale])
+					_확인(is_equal_approx(e.texture_scale, 기대배율),
+						"texture_scale 이 %.2f 가 아니다 (%.3f)" % [기대배율, e.texture_scale])
 					if e.use_corner_texture:
 						코너수 += 1
 						_확인(e.textures_corner_outer.size() > 0
@@ -133,7 +145,9 @@ func _실행() -> void:
 			else:
 				_확인(m.fill_textures.size() == 1 and m.fill_textures[0] != null,
 					"채움인데 fill 텍스처가 없다")
-			_확인(is_equal_approx(m.fill_texture_scale, 배율), "fill_texture_scale 이 다르다")
+			_확인(is_equal_approx(m.fill_texture_scale, 기대채움배율),
+				"fill_texture_scale 이 %.2f 가 아니다 (%.3f)"
+					% [기대채움배율, m.fill_texture_scale])
 
 		# ★검정 Template 은 무색(0)으로 나간다 — 색은 런타임 상태이고 작업자가 고른다.
 		#   흰색 Template(`_WHITE` · `_흰색`)만 예외로 **흰색(2)을 갖고 태어난다.**
@@ -190,3 +204,13 @@ func _지형_찾기(n: Node) -> Node:
 		if 찾음 != null:
 			return 찾음
 	return null
+
+
+## 이 씬이 기대하는 텍스처 배율. 칸 0 = 엣지, 칸 1 = 채움.
+## 이름에 재질 이름이 들어 있으면 그 재질의 확정값을 쓰고, 없으면 공통 기본값을 쓴다.
+func _기대배율(이름: String, 칸: int) -> float:
+	for 키 in 배율표:
+		if 이름.contains(String(키)):
+			var 쌍: Array = 배율표[키]
+			return float(쌍[칸])
+	return 배율
