@@ -82,7 +82,8 @@ const 발광체_S := preload("res://scripts/스마트월드/발광체.gd")
 
 const PLAYER := "res://scenes/player/Player.tscn"
 const 내씬 := "res://scenes/집/스테이지_1_2층방.tscn"
-const 다음씬 := ""    ## STAGE 2 는 아직 없다. 빈 문자열이면 통로는 그림만 그린다.
+## ★[2026-09-01] STAGE 2 가 생겼다 → 파괴 바닥 구멍이 실제 출구가 된다.
+const 다음씬 := "res://scenes/집/스테이지_2_복도계단.tscn"
 
 ## 플레이어 인스턴스 오버라이드. ★`측정_플레이어_능력.gd -- --거리칸 15` 가 잰 것이
 ##   바로 이 설정이다. 여기를 바꾸면 아래 게임플레이 치수가 전부 무효가 된다.

@@ -1,0 +1,1518 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/월드.gd" id="1_ll0i2"]
+[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="2_mm4td"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/BRICK_벽돌/TEMPLATE_BRICK_SOLID.tscn" id="3_pjgfx"]
+[ext_resource type="Script" path="res://scripts/스마트월드/지형.gd" id="4_664of"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="5_h8v7g"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="6_di4w7"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/mesh.gd" id="7_640uw"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/brick_v2/black/fill_detail.png" id="8_4n13k"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/brick_v2_opaque/black/edge_top_thin.png" id="9_qboef"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/brick_v2/tres/지형_벽돌v2_black_detail_얇은_사방.tres" id="10_d0op3"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/BRICK_벽돌/TEMPLATE_BRICK_STAIRS.tscn" id="11_jkj8e"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WOOD_나무/TEMPLATE_WOOD_SOLID.tscn" id="12_eltjk"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/fill_detail.png" id="13_elisd"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_v2/black/edge_top_thin.png" id="14_xeesg"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail_얇은_사방.tres" id="15_h754o"]
+[ext_resource type="Script" path="res://scenes/경계/color_zone.gd" id="16_8u0fs"]
+[ext_resource type="Script" path="res://scripts/스마트월드/발광체.gd" id="17_fic6q"]
+[ext_resource type="Script" path="res://scripts/스마트월드/빛기둥.gd" id="18_ko2lf"]
+[ext_resource type="Script" path="res://scripts/proto/카메라_공간.gd" id="19_n6oom"]
+[ext_resource type="Script" path="res://scripts/스마트월드/연결통로.gd" id="20_2pndb"]
+[ext_resource type="Script" path="res://scripts/스마트월드/실내배경.gd" id="21_087f3"]
+[ext_resource type="Texture2D" path="res://assets/background/room.png" id="22_6eajf"]
+[ext_resource type="Texture2D" path="res://assets/background/livingroom.png" id="23_w7iag"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="24_5g48g"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="25_lhhrq"]
+
+[sub_resource type="Resource" id="Resource_kbwgk"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-1110, -105)
+
+[sub_resource type="Resource" id="Resource_irhir"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-590, -105)
+
+[sub_resource type="Resource" id="Resource_h85xj"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-590, -195)
+
+[sub_resource type="Resource" id="Resource_kumsf"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-390, -195)
+
+[sub_resource type="Resource" id="Resource_eym2c"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-390, -105)
+
+[sub_resource type="Resource" id="Resource_b3wka"]
+script = ExtResource("5_h8v7g")
+position = Vector2(1110, -105)
+
+[sub_resource type="Resource" id="Resource_1t30e"]
+script = ExtResource("5_h8v7g")
+position = Vector2(1110, 195)
+
+[sub_resource type="Resource" id="Resource_i1cd2"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-1110, 195)
+
+[sub_resource type="Resource" id="Resource_eof0k"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-1110, -105)
+
+[sub_resource type="Resource" id="Resource_8syxd"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_kbwgk"),
+1: SubResource("Resource_irhir"),
+2: SubResource("Resource_h85xj"),
+3: SubResource("Resource_kumsf"),
+4: SubResource("Resource_eym2c"),
+5: SubResource("Resource_b3wka"),
+6: SubResource("Resource_1t30e"),
+7: SubResource("Resource_i1cd2"),
+8: SubResource("Resource_eof0k")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_s6u87"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////27bNj+SJIm+bts2P5Ikib7/////bts2P5IkiT5u2zY/kiSJPv////9u2za/kiSJPm7bNr+SJIk+/////27bNr+SJIm+bts2v5Ikib4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQwAAwMIAAAAAAACAQwAAwEIAAAAAAACAwwAAwEIAAAAAAACAwwAAwMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_n8cw5"]
+script = ExtResource("7_640uw")
+texture = ExtResource("8_4n13k")
+mesh = SubResource("ArrayMesh_s6u87")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_pa7vw"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAO0+AACAPwAA7T4AAIA//////wAA7T4AAAAAAADtPgAAAAD/////AAAdPwAAgD8AAB0/AACAP/////8AAB0/AAAAAAAAHT8AAAAA/////wDAiT8AAIA/AMCJPwAAgD//////AMCJPwAAAAAAwIk/AAAAAP////8AAJ0/AACAPwAAnT8AAIA//////wAAnT8AAAAAAACdPwAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwwAAwMIAAAAAAABaw/7/Z8IAAAAAAABaQwAAaMIAAAAAAACAQwAAwMIAAAAAAABaQ/7/Z0IAAAAAAACAQwAAwEIAAAAAAABawwAAaEIAAAAAAACAwwAAwEIAAAAAAABaw/7/Z8IAAAAAAACAwwAAwMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_jlvfu"]
+script = ExtResource("7_640uw")
+texture = ExtResource("9_qboef")
+mesh = SubResource("ArrayMesh_pa7vw")
+
+[sub_resource type="Resource" id="Resource_t6wc1"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-790, -150)
+
+[sub_resource type="Resource" id="Resource_udajg"]
+script = ExtResource("5_h8v7g")
+position = Vector2(790, -150)
+
+[sub_resource type="Resource" id="Resource_ltr51"]
+script = ExtResource("5_h8v7g")
+position = Vector2(790, 150)
+
+[sub_resource type="Resource" id="Resource_wgq17"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-790, 150)
+
+[sub_resource type="Resource" id="Resource_5irwc"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-790, -150)
+
+[sub_resource type="Resource" id="Resource_54l0n"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_t6wc1"),
+1: SubResource("Resource_udajg"),
+2: SubResource("Resource_ltr51"),
+3: SubResource("Resource_wgq17"),
+4: SubResource("Resource_5irwc")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_487ng"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-360, -150)
+
+[sub_resource type="Resource" id="Resource_1tg0q"]
+script = ExtResource("5_h8v7g")
+position = Vector2(360, -150)
+
+[sub_resource type="Resource" id="Resource_v7yb5"]
+script = ExtResource("5_h8v7g")
+position = Vector2(360, 150)
+
+[sub_resource type="Resource" id="Resource_n2eaj"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-360, 150)
+
+[sub_resource type="Resource" id="Resource_2wqvc"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-360, -150)
+
+[sub_resource type="Resource" id="Resource_igkc2"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_487ng"),
+1: SubResource("Resource_1tg0q"),
+2: SubResource("Resource_v7yb5"),
+3: SubResource("Resource_n2eaj"),
+4: SubResource("Resource_2wqvc")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_8x817"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-630, -545)
+
+[sub_resource type="Resource" id="Resource_pdc7m"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-450, -545)
+
+[sub_resource type="Resource" id="Resource_lnc17"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-450, -435)
+
+[sub_resource type="Resource" id="Resource_s2mxg"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-270, -435)
+
+[sub_resource type="Resource" id="Resource_6hid7"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-270, -325)
+
+[sub_resource type="Resource" id="Resource_ipyr6"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-90, -325)
+
+[sub_resource type="Resource" id="Resource_6odo2"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-90, -215)
+
+[sub_resource type="Resource" id="Resource_6nnl2"]
+script = ExtResource("5_h8v7g")
+position = Vector2(90, -215)
+
+[sub_resource type="Resource" id="Resource_lyh6c"]
+script = ExtResource("5_h8v7g")
+position = Vector2(90, -105)
+
+[sub_resource type="Resource" id="Resource_xs7yj"]
+script = ExtResource("5_h8v7g")
+position = Vector2(270, -105)
+
+[sub_resource type="Resource" id="Resource_ms88s"]
+script = ExtResource("5_h8v7g")
+position = Vector2(270, 5)
+
+[sub_resource type="Resource" id="Resource_34xh5"]
+script = ExtResource("5_h8v7g")
+position = Vector2(450, 5)
+
+[sub_resource type="Resource" id="Resource_a6bsr"]
+script = ExtResource("5_h8v7g")
+position = Vector2(450, 115)
+
+[sub_resource type="Resource" id="Resource_pnbph"]
+script = ExtResource("5_h8v7g")
+position = Vector2(630, 115)
+
+[sub_resource type="Resource" id="Resource_miukm"]
+script = ExtResource("5_h8v7g")
+position = Vector2(630, 545)
+
+[sub_resource type="Resource" id="Resource_7ybp4"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-630, 545)
+
+[sub_resource type="Resource" id="Resource_7qkyg"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-630, -545)
+
+[sub_resource type="Resource" id="Resource_y208n"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_8x817"),
+1: SubResource("Resource_pdc7m"),
+2: SubResource("Resource_lnc17"),
+3: SubResource("Resource_s2mxg"),
+4: SubResource("Resource_6hid7"),
+5: SubResource("Resource_ipyr6"),
+6: SubResource("Resource_6odo2"),
+7: SubResource("Resource_6nnl2"),
+8: SubResource("Resource_lyh6c"),
+9: SubResource("Resource_xs7yj"),
+10: SubResource("Resource_ms88s"),
+11: SubResource("Resource_34xh5"),
+12: SubResource("Resource_a6bsr"),
+13: SubResource("Resource_pnbph"),
+14: SubResource("Resource_miukm"),
+15: SubResource("Resource_7ybp4"),
+16: SubResource("Resource_7qkyg")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+_constraints = {
+Vector2i(0, 16): 15
+}
+_next_key = 17
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_dwal8"]
+_surfaces = [{
+"aabb": AABB(-450, -220, 0, 900, 632, 1e-05),
+"attribute_data": PackedByteArray("/////27bQL+TJB0/bttAv5MkHT//////bttAv5MknT5u20C/kySdPv////9JkoC+kySdPkmSgL6TJJ0+/////0mSgL4AAAAASZKAvgAAAAD/////SZKAPgAAAABJkoA+AAAAAP////9JkoA+kySdvkmSgD6TJJ2+/////27bQD+TJJ2+bttAP5Mknb7/////bttAP5MkHb9u20A/kyQdv//////ctqA/kyQdv9y2oD+TJB2//////9y2oD+TJJM/3LagP5Mkkz//////3Lagv5Mkkz/ctqC/kySTP//////ctqC/kyQdP9y2oL+TJB0/"),
+"format": 34359742527,
+"index_count": 33,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACAAJAAoABgAIAAoABAAGAAoAAgAEAAoAAAACAAoACgALAAsACwAAAAoA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("AACHwwAAXEMAAAAAAACHwwAA3EIAAAAAAAC0wgAA3EIAAAAAAAC0wgAAAAAAAAAAAAC0QgAAAAAAAAAAAAC0QgAA3MIAAAAAAACHQwAA3MIAAAAAAACHQwAAXMMAAAAAAADhQwAAXMMAAAAAAADhQwAAzkMAAAAAAADhwwAAzkMAAAAAAADhwwAAXEMAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_cd6ff"]
+script = ExtResource("7_640uw")
+texture = ExtResource("8_4n13k")
+mesh = SubResource("ArrayMesh_dwal8")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_opy6w"]
+_surfaces = [{
+"aabb": AABB(-450, -220, 0, 900, 632, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AADQ+AACAPwAAND4AAIA//////wAAND4AAAAAAAA0PgAAAAD/////AACRPgAAgD8AAJE+AACAP/////8AAJE+AAAAAAAAkT4AAAAA/////wAA6z4AAIA/AADrPgAAgD//////AADrPgAAAAAAAOs+AAAAAP////8AABE/AACAPwAAET8AAIA//////wAAET8AAAAAAAARPwAAAAD/////AAA+PwAAgD8AAD4/AACAP/////8AAD4/AAAAAAAAPj8AAAAA/////wCAWT8AAIA/AIBZPwAAgD//////AIBZPwAAAAAAgFk/AAAAAP////8AQIM/AACAPwBAgz8AAIA//////wBAgz8AAAAAAECDPwAAAAD/////AACRPwAAgD8AAJE/AACAP/////8AAJE/AAAAAAAAkT8AAAAA/////wDAoj8AAIA/AMCiPwAAgD//////AMCiPwAAAAAAwKI/AAAAAP////8AAO0/AACAPwAA7T8AAIA//////wAA7T8AAAAAAADtPwAAAAD/////AGAsQAAAgD8AYCxAAACAP/////8AYCxAAAAAAABgLEAAAAAA/////wAANkAAAIA/AAA2QAAAgD//////AAA2QAAAAAAAADZAAAAAAA=="),
+"format": 34359742527,
+"index_count": 72,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 26,
+"vertex_data": PackedByteArray("AADhwwAAXEMAAAAAAADOwwAAgUMAAAAAAABowwAAgUMAAAAAAACHwwAAXEMAAAAAAABowwAAFEMAAAAAAACHwwAA3EIAAAAAAABQwgAAFEMAAAAAAAC0wgAA3EIAAAAAAABQwgAAGEIAAAAAAAC0wgAAAAAAAAAAAAAAQwAAGEIAAAAAAAC0QgAAAAAAAAAAAAAAQwAAkMIAAAAAAAC0QgAA3MIAAAAAAACaQwAAkMIAAAAAAACHQwAA3MIAAAAAAACaQwAANsMAAAAAAACHQwAAXMMAAAAAAADOQwAANsMAAAAAAADhQwAAXMMAAAAAAADOQwAAu0MAAAAAAADhQwAAzkMAAAAAAADOwwAAu0MAAAAAAADhwwAAzkMAAAAAAADOwwAAgUMAAAAAAADhwwAAXEMAAAAA/3//f////z//f/9/////P/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//x//f/9//7//H/9//3//P/8f/3//f/8//x//f/9//z//X/9//3//P/9f/3//f/9//n//f/9//3/+fw==")
+}]
+
+[sub_resource type="Resource" id="Resource_e4yl1"]
+script = ExtResource("7_640uw")
+texture = ExtResource("9_qboef")
+mesh = SubResource("ArrayMesh_opy6w")
+
+[sub_resource type="Resource" id="Resource_phl5h"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-360, -460)
+
+[sub_resource type="Resource" id="Resource_vwan3"]
+script = ExtResource("5_h8v7g")
+position = Vector2(360, -460)
+
+[sub_resource type="Resource" id="Resource_s8r6f"]
+script = ExtResource("5_h8v7g")
+position = Vector2(360, 460)
+
+[sub_resource type="Resource" id="Resource_auxoa"]
+script = ExtResource("5_h8v7g")
+position = Vector2(180, 460)
+
+[sub_resource type="Resource" id="Resource_77a87"]
+script = ExtResource("5_h8v7g")
+position = Vector2(180, 350)
+
+[sub_resource type="Resource" id="Resource_nxe7q"]
+script = ExtResource("5_h8v7g")
+position = Vector2(0, 350)
+
+[sub_resource type="Resource" id="Resource_4dph4"]
+script = ExtResource("5_h8v7g")
+position = Vector2(0, 240)
+
+[sub_resource type="Resource" id="Resource_xt4sx"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-180, 240)
+
+[sub_resource type="Resource" id="Resource_c178o"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-180, 130)
+
+[sub_resource type="Resource" id="Resource_pe733"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-360, 130)
+
+[sub_resource type="Resource" id="Resource_mw3li"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-360, -460)
+
+[sub_resource type="Resource" id="Resource_ms7m1"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_phl5h"),
+1: SubResource("Resource_vwan3"),
+2: SubResource("Resource_s8r6f"),
+3: SubResource("Resource_auxoa"),
+4: SubResource("Resource_77a87"),
+5: SubResource("Resource_nxe7q"),
+6: SubResource("Resource_4dph4"),
+7: SubResource("Resource_xt4sx"),
+8: SubResource("Resource_c178o"),
+9: SubResource("Resource_pe733"),
+10: SubResource("Resource_mw3li")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+_constraints = {
+Vector2i(0, 10): 15
+}
+_next_key = 11
+
+[sub_resource type="Resource" id="Resource_qfk5d"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-690, -150)
+
+[sub_resource type="Resource" id="Resource_8hib4"]
+script = ExtResource("5_h8v7g")
+position = Vector2(690, -150)
+
+[sub_resource type="Resource" id="Resource_ay23s"]
+script = ExtResource("5_h8v7g")
+position = Vector2(690, 150)
+
+[sub_resource type="Resource" id="Resource_h8ijf"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-690, 150)
+
+[sub_resource type="Resource" id="Resource_fiudl"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-690, -150)
+
+[sub_resource type="Resource" id="Resource_qoy8y"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_qfk5d"),
+1: SubResource("Resource_8hib4"),
+2: SubResource("Resource_ay23s"),
+3: SubResource("Resource_h8ijf"),
+4: SubResource("Resource_fiudl")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_jhiq1"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-960, -150)
+
+[sub_resource type="Resource" id="Resource_x0qjp"]
+script = ExtResource("5_h8v7g")
+position = Vector2(960, -150)
+
+[sub_resource type="Resource" id="Resource_vmikd"]
+script = ExtResource("5_h8v7g")
+position = Vector2(960, 150)
+
+[sub_resource type="Resource" id="Resource_6c1nk"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-960, 150)
+
+[sub_resource type="Resource" id="Resource_tk2i8"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-960, -150)
+
+[sub_resource type="Resource" id="Resource_uxkt7"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_jhiq1"),
+1: SubResource("Resource_x0qjp"),
+2: SubResource("Resource_vmikd"),
+3: SubResource("Resource_6c1nk"),
+4: SubResource("Resource_tk2i8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_x1uon"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -365)
+
+[sub_resource type="Resource" id="Resource_hxmx8"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, -365)
+
+[sub_resource type="Resource" id="Resource_pf3hn"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, 365)
+
+[sub_resource type="Resource" id="Resource_4o13l"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, 365)
+
+[sub_resource type="Resource" id="Resource_s2h38"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -365)
+
+[sub_resource type="Resource" id="Resource_ldcv2"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_x1uon"),
+1: SubResource("Resource_hxmx8"),
+2: SubResource("Resource_pf3hn"),
+3: SubResource("Resource_4o13l"),
+4: SubResource("Resource_s2h38")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_8wg0v"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -150)
+
+[sub_resource type="Resource" id="Resource_daysh"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, -150)
+
+[sub_resource type="Resource" id="Resource_d5vap"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, 150)
+
+[sub_resource type="Resource" id="Resource_oy20t"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, 150)
+
+[sub_resource type="Resource" id="Resource_kqae6"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -150)
+
+[sub_resource type="Resource" id="Resource_kudia"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_8wg0v"),
+1: SubResource("Resource_daysh"),
+2: SubResource("Resource_d5vap"),
+3: SubResource("Resource_oy20t"),
+4: SubResource("Resource_kqae6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_ljivp"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -370)
+
+[sub_resource type="Resource" id="Resource_ntouc"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, -370)
+
+[sub_resource type="Resource" id="Resource_40hbr"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, 370)
+
+[sub_resource type="Resource" id="Resource_bcylj"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, 370)
+
+[sub_resource type="Resource" id="Resource_k8jpr"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -370)
+
+[sub_resource type="Resource" id="Resource_tlpmk"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_ljivp"),
+1: SubResource("Resource_ntouc"),
+2: SubResource("Resource_40hbr"),
+3: SubResource("Resource_bcylj"),
+4: SubResource("Resource_k8jpr")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_qbxpn"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -245)
+
+[sub_resource type="Resource" id="Resource_xbn51"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, -245)
+
+[sub_resource type="Resource" id="Resource_xaf0v"]
+script = ExtResource("5_h8v7g")
+position = Vector2(120, 245)
+
+[sub_resource type="Resource" id="Resource_kqhal"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, 245)
+
+[sub_resource type="Resource" id="Resource_mx4jd"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-120, -245)
+
+[sub_resource type="Resource" id="Resource_tmrkc"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_qbxpn"),
+1: SubResource("Resource_xbn51"),
+2: SubResource("Resource_xaf0v"),
+3: SubResource("Resource_kqhal"),
+4: SubResource("Resource_mx4jd")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_o8s7o"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, -205)
+
+[sub_resource type="Resource" id="Resource_t7bgv"]
+script = ExtResource("5_h8v7g")
+position = Vector2(150, -205)
+
+[sub_resource type="Resource" id="Resource_qbxj4"]
+script = ExtResource("5_h8v7g")
+position = Vector2(150, 205)
+
+[sub_resource type="Resource" id="Resource_0lvf1"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, 205)
+
+[sub_resource type="Resource" id="Resource_3jsjj"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, -205)
+
+[sub_resource type="Resource" id="Resource_xoosl"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_o8s7o"),
+1: SubResource("Resource_t7bgv"),
+2: SubResource("Resource_qbxj4"),
+3: SubResource("Resource_0lvf1"),
+4: SubResource("Resource_3jsjj")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_nxy5u"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////27bNj+SJIm+bts2P5Ikib7/////bts2P5IkiT5u2zY/kiSJPv////9u2za/kiSJPm7bNr+SJIk+/////27bNr+SJIm+bts2v5Ikib4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQwAAwMIAAAAAAACAQwAAwEIAAAAAAACAwwAAwEIAAAAAAACAwwAAwMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_hntwl"]
+script = ExtResource("7_640uw")
+texture = ExtResource("13_elisd")
+mesh = SubResource("ArrayMesh_nxy5u")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_pru2t"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9uO6k/AACAP247qT8AAIA//////247qT8AAAAAbjupPwAAAAD/////ty3gPwAAgD+3LeA/AACAP/////+3LeA/AAAAALct4D8AAAAA/////5K0REAAAIA/krREQAAAgD//////krREQAAAAACStERAAAAAAP////+3LWBAAACAP7ctYEAAAIA//////7ctYEAAAAAAty1gQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwwAAwMIAAAAAmtlZw2dmZ8IAAAAAmtlZQ2dmZ8IAAAAAAACAQwAAwMIAAAAAmtlZQ2dmZ0IAAAAAAACAQwAAwEIAAAAAmtlZw2dmZ0IAAAAAAACAwwAAwEIAAAAAmtlZw2dmZ8IAAAAAAACAwwAAwMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_j3f05"]
+script = ExtResource("7_640uw")
+texture = ExtResource("14_xeesg")
+mesh = SubResource("ArrayMesh_pru2t")
+
+[sub_resource type="Resource" id="Resource_wfjuc"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, -205)
+
+[sub_resource type="Resource" id="Resource_os7gg"]
+script = ExtResource("5_h8v7g")
+position = Vector2(150, -205)
+
+[sub_resource type="Resource" id="Resource_mqiow"]
+script = ExtResource("5_h8v7g")
+position = Vector2(150, 205)
+
+[sub_resource type="Resource" id="Resource_u5581"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, 205)
+
+[sub_resource type="Resource" id="Resource_owgvh"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, -205)
+
+[sub_resource type="Resource" id="Resource_2n2rh"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_wfjuc"),
+1: SubResource("Resource_os7gg"),
+2: SubResource("Resource_mqiow"),
+3: SubResource("Resource_u5581"),
+4: SubResource("Resource_owgvh")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_lrmk0"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, -260)
+
+[sub_resource type="Resource" id="Resource_dk1xi"]
+script = ExtResource("5_h8v7g")
+position = Vector2(150, -260)
+
+[sub_resource type="Resource" id="Resource_tg6bx"]
+script = ExtResource("5_h8v7g")
+position = Vector2(150, 260)
+
+[sub_resource type="Resource" id="Resource_bpp0s"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, 260)
+
+[sub_resource type="Resource" id="Resource_m1usn"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-150, -260)
+
+[sub_resource type="Resource" id="Resource_urqot"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_lrmk0"),
+1: SubResource("Resource_dk1xi"),
+2: SubResource("Resource_tg6bx"),
+3: SubResource("Resource_bpp0s"),
+4: SubResource("Resource_m1usn")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_te0db"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-130, -205)
+
+[sub_resource type="Resource" id="Resource_pnurd"]
+script = ExtResource("5_h8v7g")
+position = Vector2(130, -205)
+
+[sub_resource type="Resource" id="Resource_koyt1"]
+script = ExtResource("5_h8v7g")
+position = Vector2(130, 205)
+
+[sub_resource type="Resource" id="Resource_4kib1"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-130, 205)
+
+[sub_resource type="Resource" id="Resource_7b143"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-130, -205)
+
+[sub_resource type="Resource" id="Resource_547ur"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_te0db"),
+1: SubResource("Resource_pnurd"),
+2: SubResource("Resource_koyt1"),
+3: SubResource("Resource_4kib1"),
+4: SubResource("Resource_7b143")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_0qniu"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-130, -245)
+
+[sub_resource type="Resource" id="Resource_on31d"]
+script = ExtResource("5_h8v7g")
+position = Vector2(130, -245)
+
+[sub_resource type="Resource" id="Resource_oppmw"]
+script = ExtResource("5_h8v7g")
+position = Vector2(130, 245)
+
+[sub_resource type="Resource" id="Resource_tu27g"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-130, 245)
+
+[sub_resource type="Resource" id="Resource_xr7px"]
+script = ExtResource("5_h8v7g")
+position = Vector2(-130, -245)
+
+[sub_resource type="Resource" id="Resource_d5gvt"]
+script = ExtResource("6_di4w7")
+_points = {
+0: SubResource("Resource_0qniu"),
+1: SubResource("Resource_on31d"),
+2: SubResource("Resource_oppmw"),
+3: SubResource("Resource_tu27g"),
+4: SubResource("Resource_xr7px")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[node name="집_복도계단" type="Node2D" unique_id=835513310]
+script = ExtResource("1_ll0i2")
+"스테이지_이름" = "집 · 2층 복도와 계단"
+"카메라_리밋" = Rect2(-2000, -960, 5460, 2100)
+"카메라_줌" = 1.35
+"시작_위치" = Vector2(-1560, 0)
+"낙사_y" = 1600.0
+"치명_낙하거리" = 900.0
+
+[node name="페인트코어" type="Node" parent="." unique_id=1137857368 groups=["페인트코어"]]
+script = ExtResource("2_mm4td")
+
+[node name="어둠" type="CanvasModulate" parent="." unique_id=2019357010]
+color = Color(0.72, 0.74, 0.7, 1)
+
+[node name="지형" type="Node2D" parent="." unique_id=877989017]
+
+[node name="바닥_2층_SS_BRICK_01" type="Node2D" parent="지형" unique_id=426990818 instance=ExtResource("3_pjgfx")]
+position = Vector2(-590, 105)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_8syxd")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="천장_2층복도_SS_BRICK_01" type="Node2D" parent="지형" unique_id=1154434495 instance=ExtResource("3_pjgfx")]
+position = Vector2(-990, -750)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_54l0n")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="천장_좁은통로_SS_BRICK_01" type="Node2D" parent="지형" unique_id=727145336 instance=ExtResource("3_pjgfx")]
+position = Vector2(160, -350)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_igkc2")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="SS_BRICK_STAIRS_01" type="Node2D" parent="지형" unique_id=1849391121 instance=ExtResource("11_jkj8e")]
+position = Vector2(1150, 655)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_y208n")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_cd6ff"), SubResource("Resource_e4yl1")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="천장_계단실_SS_BRICK_01" type="Node2D" parent="지형" unique_id=1349379057 instance=ExtResource("3_pjgfx")]
+position = Vector2(880, -440)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_ms7m1")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="바닥_1층_SS_BRICK_01" type="Node2D" parent="지형" unique_id=106647383 instance=ExtResource("3_pjgfx")]
+position = Vector2(2470, 920)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_qoy8y")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="천장_1층_SS_BRICK_01" type="Node2D" parent="지형" unique_id=2075692135 instance=ExtResource("3_pjgfx")]
+position = Vector2(2200, -180)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_uxkt7")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="벽_왼위_SS_BRICK_01" type="Node2D" parent="지형" unique_id=104115613 instance=ExtResource("3_pjgfx")]
+position = Vector2(-1820, -535)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_ldcv2")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="벽_왼아래_SS_BRICK_01" type="Node2D" parent="지형" unique_id=1600350441 instance=ExtResource("3_pjgfx")]
+position = Vector2(-1820, 150)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_kudia")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="벽_오른위_SS_BRICK_01" type="Node2D" parent="지형" unique_id=908411140 instance=ExtResource("3_pjgfx")]
+position = Vector2(3280, 40)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_tlpmk")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="벽_오른아래_SS_BRICK_01" type="Node2D" parent="지형" unique_id=2069941083 instance=ExtResource("3_pjgfx")]
+position = Vector2(3280, 825)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_tmrkc")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="SS_WOOD_CHEST_01" type="Node2D" parent="지형" unique_id=850870401 instance=ExtResource("12_eltjk")]
+position = Vector2(-490, 95)
+script = ExtResource("4_664of")
+_points = SubResource("Resource_xoosl")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_hntwl"), SubResource("Resource_j3f05")])
+shape_material = ExtResource("15_h754o")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="SS_BRICK_UNDERSTAIR_01" type="Node2D" parent="지형" unique_id=1595647284 instance=ExtResource("3_pjgfx")]
+position = Vector2(1950, 865)
+script = ExtResource("4_664of")
+"칠하기_허용" = false
+_points = SubResource("Resource_2n2rh")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_n8cw5"), SubResource("Resource_jlvfu")])
+shape_material = ExtResource("10_d0op3")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="SS_WOOD_TABLE_01" type="Node2D" parent="지형" unique_id=1366026842 instance=ExtResource("12_eltjk")]
+position = Vector2(2350, 810)
+script = ExtResource("4_664of")
+_points = SubResource("Resource_urqot")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_hntwl"), SubResource("Resource_j3f05")])
+shape_material = ExtResource("15_h754o")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="SS_WOOD_GHOST_01" type="Node2D" parent="지형" unique_id=12468523 instance=ExtResource("12_eltjk")]
+position = Vector2(2730, 865)
+script = ExtResource("4_664of")
+"무색일때_통과" = true
+_points = SubResource("Resource_547ur")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_hntwl"), SubResource("Resource_j3f05")])
+shape_material = ExtResource("15_h754o")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="SS_WOOD_SHELF_EXIT_01" type="Node2D" parent="지형" unique_id=313445026 instance=ExtResource("12_eltjk")]
+position = Vector2(3030, 825)
+script = ExtResource("4_664of")
+_points = SubResource("Resource_d5gvt")
+_meshes = Array[ExtResource("7_640uw")]([SubResource("Resource_hntwl"), SubResource("Resource_j3f05")])
+shape_material = ExtResource("15_h754o")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="오브젝트" type="Node2D" parent="." unique_id=100893888]
+
+[node name="경계_복도등" type="Area2D" parent="오브젝트" unique_id=1533102240]
+collision_layer = 0
+script = ExtResource("16_8u0fs")
+show_tint = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="오브젝트/경계_복도등" unique_id=1496314927]
+polygon = PackedVector2Array(-1240, -300, -940, -300, -940, 20, -1240, 20)
+
+[node name="반딧불_복도" type="Node2D" parent="오브젝트" unique_id=1135231510]
+
+[node name="구슬_01" type="Node2D" parent="오브젝트/반딧불_복도" unique_id=2035858998]
+position = Vector2(-1205, -255)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 170.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.45
+"부유" = 16.0
+
+[node name="구슬_02" type="Node2D" parent="오브젝트/반딧불_복도" unique_id=37904711]
+position = Vector2(-980, -235)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 170.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.56
+"부유" = 16.0
+
+[node name="구슬_03" type="Node2D" parent="오브젝트/반딧불_복도" unique_id=312181546]
+position = Vector2(-1190, -35)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 170.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.67
+"부유" = 16.0
+
+[node name="구슬_04" type="Node2D" parent="오브젝트/반딧불_복도" unique_id=1197151085]
+position = Vector2(-975, -55)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 170.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.78
+"부유" = 16.0
+
+[node name="구슬_05" type="Node2D" parent="오브젝트/반딧불_복도" unique_id=275327386]
+position = Vector2(-1090, -145)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 170.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.89
+"부유" = 16.0
+
+[node name="경계_반딧불이" type="Area2D" parent="오브젝트" unique_id=734744732]
+collision_layer = 0
+script = ExtResource("16_8u0fs")
+show_tint = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="오브젝트/경계_반딧불이" unique_id=419442818]
+polygon = PackedVector2Array(2560, 380, 2890, 380, 2890, 900, 2560, 900)
+
+[node name="반딧불_홀" type="Node2D" parent="오브젝트" unique_id=1525792197]
+
+[node name="구슬_01" type="Node2D" parent="오브젝트/반딧불_홀" unique_id=1164146557]
+position = Vector2(2595, 430)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 195.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.45
+"부유" = 16.0
+
+[node name="구슬_02" type="Node2D" parent="오브젝트/반딧불_홀" unique_id=1741927048]
+position = Vector2(2858, 470)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 195.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.56
+"부유" = 16.0
+
+[node name="구슬_03" type="Node2D" parent="오브젝트/반딧불_홀" unique_id=1865947329]
+position = Vector2(2585, 700)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 195.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.67
+"부유" = 16.0
+
+[node name="구슬_04" type="Node2D" parent="오브젝트/반딧불_홀" unique_id=33826660]
+position = Vector2(2865, 830)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 195.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.78
+"부유" = 16.0
+
+[node name="구슬_05" type="Node2D" parent="오브젝트/반딧불_홀" unique_id=1252133444]
+position = Vector2(2728, 565)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 195.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 0.89
+"부유" = 16.0
+
+[node name="구슬_06" type="Node2D" parent="오브젝트/반딧불_홀" unique_id=1476442585]
+position = Vector2(2685, 872)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.97, 0.9, 1)
+"반경" = 195.0
+"밝기" = 1.25
+"깜빡임" = 0.3
+"크기_흔들림" = 0.34
+"흔들림_속도" = 1.0
+"부유" = 16.0
+
+[node name="복도벽등" type="Node2D" parent="오브젝트" unique_id=997829754]
+position = Vector2(-900, -640)
+script = ExtResource("18_ko2lf")
+"모드" = 0
+"시작폭" = 110.0
+"끝폭" = 380.0
+"세기" = 0.42
+"먼지" = 20
+"구멍_그리기" = false
+
+[node name="계단창빛" type="Node2D" parent="오브젝트" unique_id=2063532095]
+position = Vector2(1895, 300)
+script = ExtResource("18_ko2lf")
+"모드" = 0
+"시작폭" = 190.0
+"끝폭" = 540.0
+"길이" = 720.0
+"각도" = 125.0
+"세기" = 0.5
+"먼지" = 20
+"구멍_그리기" = false
+
+[node name="홀천장등" type="Node2D" parent="오브젝트" unique_id=944255655]
+position = Vector2(2010, 140)
+script = ExtResource("18_ko2lf")
+"모드" = 0
+"시작폭" = 110.0
+"끝폭" = 640.0
+"길이" = 640.0
+"세기" = 0.46
+"먼지" = 20
+"구멍_그리기" = false
+
+[node name="등_복도_A" type="Node2D" parent="오브젝트" unique_id=78172434]
+position = Vector2(-1450, -300)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.96, 0.88, 1)
+"반경" = 360.0
+"밝기" = 0.62
+"깜빡임" = 0.08
+"크기_흔들림" = 0.06
+"흔들림_속도" = 0.25
+"알갱이_보이기" = false
+
+[node name="등_복도_B" type="Node2D" parent="오브젝트" unique_id=885551079]
+position = Vector2(-500, -300)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.96, 0.88, 1)
+"반경" = 360.0
+"밝기" = 0.62
+"깜빡임" = 0.08
+"크기_흔들림" = 0.06
+"흔들림_속도" = 0.25
+"알갱이_보이기" = false
+
+[node name="등_계단참" type="Node2D" parent="오브젝트" unique_id=36371751]
+position = Vector2(880, 200)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.96, 0.88, 1)
+"반경" = 400.0
+"밝기" = 0.55
+"깜빡임" = 0.1
+"크기_흔들림" = 0.06
+"흔들림_속도" = 0.25
+"알갱이_보이기" = false
+
+[node name="등_홀샹들리에" type="Node2D" parent="오브젝트" unique_id=1841338856]
+position = Vector2(2010, 150)
+script = ExtResource("17_fic6q")
+"종류" = 1
+"빛색" = Color(1, 0.96, 0.88, 1)
+"반경" = 560.0
+"밝기" = 0.72
+"깜빡임" = 0.05
+"크기_흔들림" = 0.06
+"흔들림_속도" = 0.25
+"알갱이_보이기" = false
+
+[node name="카메라_2층복도" type="Area2D" parent="오브젝트" unique_id=1859728450]
+position = Vector2(-950, -300)
+script = ExtResource("19_n6oom")
+"크기" = Vector2(1480, 620)
+"리밋_여유" = Vector2(0, 200)
+"줌_배수" = 1.15
+"시선_오프셋" = Vector2(0, -40)
+"수직모드" = false
+"오를수록_위로" = 0.0
+"들어갈때" = 0.8
+"나올때" = 1.0
+"틈새빛_사용" = false
+
+[node name="카메라_좁은통로" type="Area2D" parent="오브젝트" unique_id=656324136]
+position = Vector2(160, -100)
+script = ExtResource("19_n6oom")
+"크기" = Vector2(720, 200)
+"리밋_여유" = Vector2(0, 200)
+"줌_배수" = 1.85
+"시선_오프셋" = Vector2(0, -10)
+"수직모드" = false
+"오를수록_위로" = 0.0
+"들어갈때" = 0.55
+"나올때" = 1.1
+"틈새빛_사용" = false
+
+[node name="카메라_계단" type="Area2D" parent="오브젝트" unique_id=928836787]
+position = Vector2(1150, 385)
+script = ExtResource("19_n6oom")
+"크기" = Vector2(1230, 800)
+"리밋_여유" = Vector2(0, 200)
+"줌_배수" = 1.0
+"시선_오프셋" = Vector2(190, 110)
+"수직모드" = false
+"오를수록_위로" = 0.0
+"들어갈때" = 0.9
+"나올때" = 1.2
+"틈새빛_사용" = false
+
+[node name="카메라_1층홀" type="Area2D" parent="오브젝트" unique_id=1644007301]
+position = Vector2(2470, 370)
+script = ExtResource("19_n6oom")
+"크기" = Vector2(1380, 800)
+"리밋_여유" = Vector2(0, 200)
+"줌_배수" = 0.8
+"시선_오프셋" = Vector2(0, -50)
+"수직모드" = false
+"오를수록_위로" = 0.0
+"들어갈때" = 1.25
+"나올때" = 1.0
+"틈새빛_사용" = false
+
+[node name="입구통로" type="Area2D" parent="오브젝트" unique_id=801267192]
+position = Vector2(-1620, 0)
+script = ExtResource("20_2pndb")
+"역할" = 1
+"높이" = 170.0
+"속빛" = Color(0.3, 0.31, 0.34, 1)
+
+[node name="출구통로" type="Area2D" parent="오브젝트" unique_id=1931444257]
+position = Vector2(3100, 580)
+script = ExtResource("20_2pndb")
+"높이" = 170.0
+"다음_씬" = "res://scenes/집/집_거실.tscn"
+"속빛" = Color(0.3, 0.31, 0.34, 1)
+
+[node name="장식_뒤" type="Node2D" parent="." unique_id=540393177]
+z_index = -3
+z_as_relative = false
+
+[node name="난간_손잡이" type="Line2D" parent="장식_뒤" unique_id=1685383144]
+points = PackedVector2Array(520, -190, 700, -80, 880, 30, 1060, 140, 1240, 250, 1420, 360, 1600, 470, 1780, 580)
+default_color = Color(0.34, 0.33, 0.31, 0.95)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_아래살" type="Line2D" parent="장식_뒤" unique_id=316971133]
+points = PackedVector2Array(520, -96, 700, 14, 880, 124, 1060, 234, 1240, 344, 1420, 454, 1600, 564, 1780, 674)
+width = 5.0
+default_color = Color(0.28, 0.27, 0.26, 0.85)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_동자_00" type="Line2D" parent="장식_뒤" unique_id=1360870815]
+points = PackedVector2Array(700, 110, 700, -80)
+width = 6.0
+default_color = Color(0.3, 0.29, 0.28, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_동자_01" type="Line2D" parent="장식_뒤" unique_id=361057375]
+points = PackedVector2Array(880, 220, 880, 30)
+width = 6.0
+default_color = Color(0.3, 0.29, 0.28, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_동자_02" type="Line2D" parent="장식_뒤" unique_id=1494946518]
+points = PackedVector2Array(1060, 330, 1060, 140)
+width = 6.0
+default_color = Color(0.3, 0.29, 0.28, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_동자_03" type="Line2D" parent="장식_뒤" unique_id=912656305]
+points = PackedVector2Array(1240, 440, 1240, 250)
+width = 6.0
+default_color = Color(0.3, 0.29, 0.28, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_동자_04" type="Line2D" parent="장식_뒤" unique_id=112425052]
+points = PackedVector2Array(1420, 550, 1420, 360)
+width = 6.0
+default_color = Color(0.3, 0.29, 0.28, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_동자_05" type="Line2D" parent="장식_뒤" unique_id=1860386178]
+points = PackedVector2Array(1600, 660, 1600, 470)
+width = 6.0
+default_color = Color(0.3, 0.29, 0.28, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="난간_동자_06" type="Line2D" parent="장식_뒤" unique_id=1919391238]
+points = PackedVector2Array(1780, 770, 1780, 580)
+width = 6.0
+default_color = Color(0.3, 0.29, 0.28, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="장식_앞" type="Node2D" parent="." unique_id=1414391980]
+z_index = 3
+z_as_relative = false
+
+[node name="계단코_00" type="Line2D" parent="장식_앞" unique_id=870942866]
+points = PackedVector2Array(520, 107, 700, 107)
+width = 4.0
+default_color = Color(0.58, 0.57, 0.55, 0.6)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="계단코_01" type="Line2D" parent="장식_앞" unique_id=231584234]
+points = PackedVector2Array(700, 217, 880, 217)
+width = 4.0
+default_color = Color(0.58, 0.57, 0.55, 0.6)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="계단코_02" type="Line2D" parent="장식_앞" unique_id=461206440]
+points = PackedVector2Array(880, 327, 1060, 327)
+width = 4.0
+default_color = Color(0.58, 0.57, 0.55, 0.6)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="계단코_03" type="Line2D" parent="장식_앞" unique_id=580946227]
+points = PackedVector2Array(1060, 437, 1240, 437)
+width = 4.0
+default_color = Color(0.58, 0.57, 0.55, 0.6)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="계단코_04" type="Line2D" parent="장식_앞" unique_id=629616227]
+points = PackedVector2Array(1240, 547, 1420, 547)
+width = 4.0
+default_color = Color(0.58, 0.57, 0.55, 0.6)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="계단코_05" type="Line2D" parent="장식_앞" unique_id=1769659845]
+points = PackedVector2Array(1420, 657, 1600, 657)
+width = 4.0
+default_color = Color(0.58, 0.57, 0.55, 0.6)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="계단코_06" type="Line2D" parent="장식_앞" unique_id=1617712008]
+points = PackedVector2Array(1600, 767, 1780, 767)
+width = 4.0
+default_color = Color(0.58, 0.57, 0.55, 0.6)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="문틀_-200" type="Line2D" parent="장식_앞" unique_id=83152176]
+points = PackedVector2Array(-200, 0, -200, -200)
+width = 7.0
+default_color = Color(0.38, 0.37, 0.35, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="문틀_520" type="Line2D" parent="장식_앞" unique_id=858642139]
+points = PackedVector2Array(520, 0, 520, -200)
+width = 7.0
+default_color = Color(0.38, 0.37, 0.35, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="걸레받이_1층" type="Line2D" parent="장식_앞" unique_id=516453063]
+points = PackedVector2Array(1780, 766, 3160, 766)
+width = 5.0
+default_color = Color(0.26, 0.25, 0.24, 0.8)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="걸레받이_2층_a" type="Line2D" parent="장식_앞" unique_id=732302842]
+points = PackedVector2Array(-1700, -4, -1180, -4)
+width = 5.0
+default_color = Color(0.26, 0.25, 0.24, 0.8)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="걸레받이_2층_b" type="Line2D" parent="장식_앞" unique_id=352443414]
+points = PackedVector2Array(-980, -4, -200, -4)
+width = 5.0
+default_color = Color(0.26, 0.25, 0.24, 0.8)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="배경_2층_복도" type="Node2D" parent="." unique_id=1850610067]
+z_index = -60
+z_as_relative = false
+script = ExtResource("21_087f3")
+"영역" = Rect2(-2000, -2755, 2552, 3480)
+"아래_방" = 4
+"위_방" = 4
+"전환_끝y" = 0.0
+"그림_아래" = ExtResource("22_6eajf")
+"그림_맞춤" = 1
+"그림_원본영역" = Rect2(0, 0, 880, 1200)
+"그림_밝기" = 1.05
+
+[node name="배경_1층_거실원화" type="Node2D" parent="." unique_id=454622317]
+z_index = -59
+z_as_relative = false
+script = ExtResource("21_087f3")
+"영역" = Rect2(1240, -96.7, 1921.5, 1080)
+"위_방" = 0
+"전환_끝y" = 0.0
+"그림_아래" = ExtResource("23_w7iag")
+"그림_맞춤" = 1
+"그림_밝기" = 1.05
+
+[node name="앞바닥_1층" type="Node2D" parent="." unique_id=2053860708]
+z_index = 40
+z_as_relative = false
+script = ExtResource("21_087f3")
+"영역" = Rect2(1240, 780.8, 1921.5, 202.5)
+"그림_아래" = ExtResource("23_w7iag")
+"그림_맞춤" = 1
+"그림_원본영역" = Rect2(0, 975, 2135, 225)
+"그림_밝기" = 1.05
+"앞에_그리기" = true
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1147093704 instance=ExtResource("24_5g48g")]
+position = Vector2(-1560, 0)
+scale = Vector2(0.7949601, 0.36771855)
+floor_constant_speed = true
+floor_snap_length = 32.0
+script = ExtResource("25_lhhrq")
+"점프_높이_칸" = 10.0
+"점프_거리_칸" = 15.0
