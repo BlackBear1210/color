@@ -24,12 +24,21 @@ const 발판들 := [
 	["서랍(열림)", 2447.0, -1522.0],
 	["가시받침", 2850.0, -1632.0],
 	["출구선반", 3770.0, -1742.0],
+	["1-2 기둥코벨", 4325.0, -1740.0],
+	["1-2 창윗틀", 5000.0, -1740.0],
+	["1-2 커튼주름1", 5250.0, -1380.0],
+	["1-2 커튼주름2", 5450.0, -1020.0],
+	["1-2 커튼주름3", 5150.0, -900.0],
+	["1-2 창턱", 5070.0, -537.0],
+	["1-2 탁자", 5745.0, -319.0],
+	["1-2 바닥", 4000.0, 0.0],
 ]
 
 var _루트: Node = null
 var _p: CharacterBody2D = null
 var _결과: Array = []
 var _최대드리프트: float = 0.0
+var _지상y: float = 0.0
 
 
 func _init() -> void:
@@ -169,7 +178,9 @@ func _시험_발판_착지() -> void:
 		var 이름: String = f[0]
 		var x: float = f[1]
 		var 예상: float = f[2]
-		await _놓기(Vector2(x, 예상 - 300.0))
+		# ⚠ 낙하 높이 150. 300 으로 뒀더니 **위 발판 안**에 스폰돼 밀려 올라갔다
+		#   (커튼 주름은 360 간격에 두께 160 이라 빈 공간이 200 뿐이다).
+		await _놓기(Vector2(x, 예상 - 150.0))
 		var 닿음 := await _착지_대기(200)
 		var 오차: float = _p.global_position.y - 예상
 		var 통과: bool = 닿음 and absf(오차) < 6.0
@@ -180,9 +191,9 @@ func _시험_발판_착지() -> void:
 				나무_ok = false
 			else:
 				벽돌_ok = false
-	_기록("Landing", 착지_ok, "발판 8 개 모두 예상 윗면에 안착")
-	_기록("Wood Collision", 나무_ok, "책장 2 단 · 옷장 2 단 · 오차 < 6px")
-	_기록("Brick Collision", 벽돌_ok, "선반A/B · 가시받침 · 출구선반 · 오차 < 6px")
+	_기록("Landing", 착지_ok, "발판 %d 개 모두 예상 윗면에 안착" % 발판들.size())
+	_기록("Wood Collision", 나무_ok, "옷장·서랍·창윗틀·커튼주름·창턱·탁자·바닥 · 오차 < 6px")
+	_기록("Brick Collision", 벽돌_ok, "벽계단A/B · 가시받침 · 출구선반 · 기둥코벨 · 오차 < 6px")
 	print("    [착지 오차] %s" % ", ".join(상세))
 
 
@@ -233,13 +244,32 @@ func _시험_구간별_점프() -> void:
 		["Gap2 벽계단B→옷장", 900.0, -1830.0, 1390.0, -1522.0, 1566.0],
 		["Gap3 서랍→가시받침", 2320.0, -1522.0, 2597.0, -1632.0, 2747.0],
 		["Gap4 받침→출구", 3200.0, -1632.0, 3397.0, -1742.0, 3547.0],
+		["1-2 Gap5 출구→코벨", 3600.0, -1742.0, 3997.0, -1740.0, 4147.0],
+		["1-2 Gap6 코벨→창윗틀", 4180.0, -1740.0, 4504.0, -1740.0, 4654.0],
+		["1-2 Gap7 창턱→탁자", 4750.0, -537.0, 5450.0, -319.0, 5600.0],
 	]
 	var 전부 := true
 	var 상세: Array = []
+	var 서랍 := _루트.get_node_or_null("기믹/서랍_옷장")
 	for c in 구간:
 		var 이름: String = c[0]
 		await _놓기(Vector2(float(c[1]), float(c[2]) - 40.0))
 		await _착지_대기(120)
+		# ★서랍을 건너는 틈은 **열릴 때까지 기다렸다가** 출발한다.
+		#   안 기다리면 옷장 끝에서 그대로 떨어져 죽는다(실측: 리스폰돼 x 1498 로 튀었다).
+		# ★서랍을 건너는 틈은 **막 열린 순간**에 출발한다.
+		#   그냥 "열려 있으면 출발" 로 하면 이미 1.1 초 지난 열림일 수 있어
+		#   달려가는 도중에 닫혀 떨어진다(실측: 리스폰돼 x 1540 으로 튀었다).
+		#   → 먼저 **닫히기를** 기다린 뒤, 다시 열리는 순간을 잡는다.
+		if 이름.contains("서랍") and 서랍 != null:
+			for w in 400:
+				if float(서랍.call("열린정도")) < 0.05:
+					break
+				await physics_frame
+			for w in 400:
+				if float(서랍.call("열린정도")) > 0.99:
+					break
+				await physics_frame
 		Input.action_press("move_right")
 		var 뛰었나 := false
 		for i in 240:
@@ -321,9 +351,16 @@ func _시험_색사망() -> void:
 	_p.set("자유색", ColorDefs.BLACK)
 	await _프레임(2)
 	var 검정일때: bool = _루트.call("_사망_판정")
+	# ⚠ 월드는 살아 있어서 사망을 감지하면 **바로 리스폰**한다. 2 프레임 뒤에 읽으면
+	#   이미 안전지점으로 옮겨져 false 가 나온다(가시 시험에서 겪은 것과 같은 함정).
+	#   → 색을 바꾼 직후부터 여러 프레임을 훑어 한 번이라도 true 면 죽은 것으로 본다.
 	_p.set("자유색", ColorDefs.WHITE)
-	await _프레임(2)
-	var 흰색일때: bool = _루트.call("_사망_판정")
+	var 흰색일때 := false
+	for i in 10:
+		if bool(_루트.call("_사망_판정")):
+			흰색일때 = true
+			break
+		await physics_frame
 	_기록("Color Death", (not 검정일때) and 흰색일때,
 		"옷장(안 칠함=검정) 위 — 검정 플레이어 죽음=%s · 흰색 플레이어 죽음=%s" % [검정일때, 흰색일때])
 
@@ -568,20 +605,28 @@ func _시험_완주() -> void:
 	await _착지_대기(120)
 
 	# 점프를 눌러야 하는 x 들 (각 발판의 오른쪽 끝 조금 앞)
-	var 점프지점: Array[float] = [
-		660.0,    # Gap1  벽계단A → B
-		1350.0,   # Gap2  벽계단B → 옷장
-		2560.0,   # Gap3  서랍 → 가시받침
-		2930.0,   # 가시 넘기 (가시 2990…3182)
-		3360.0,   # Gap4  받침 → 출구
+	# ★웨이포인트에는 **x 뿐 아니라 그 발판의 y** 도 붙인다.
+	#   x 만 보면 위/아래로 겹친 다른 발판에서도 점프해 버린다 —
+	#   실제로 5390(창턱용)이 주름2(−1020) 위에도 걸려 봇이 그 자리에서
+	#   점프-착지를 20 초 넘게 반복했다(추적으로 확인).
+	var 점프지점: Array[Vector2] = [
+		Vector2(660.0, -2050.0),    # Gap1  벽계단A → B
+		Vector2(1350.0, -1830.0),   # Gap2  벽계단B → 옷장
+		Vector2(2560.0, -1522.0),   # Gap3  서랍 → 가시받침
+		Vector2(2930.0, -1632.0),   # 가시 넘기 (가시 2990…3182)
+		Vector2(3360.0, -1632.0),   # Gap4  받침 → 출구
+		Vector2(3950.0, -1742.0),   # 1-2 Gap5  출구 → 기둥 코벨
+		Vector2(4460.0, -1740.0),   # 1-2 Gap6  코벨 → 창 윗틀
+		Vector2(5390.0, -537.0),    # 1-2 Gap7  창턱 → 탁자
 	]
 	var 다음 := 0
 	var 최대x := _p.global_position.x
 	var 죽음 := 0
 	var 이전y := _p.global_position.y
 	var 기다린프레임 := 0
+	var 바닥도착 := false
 
-	for i in 1800:                                   # 30 초
+	for i in 5400:                                  # 90 초 (1-2 하강까지)
 		await physics_frame
 		var x := _p.global_position.x
 		최대x = maxf(최대x, x)
@@ -589,15 +634,37 @@ func _시험_완주() -> void:
 			죽음 += 1
 		이전y = _p.global_position.y
 
-		# ★옷장 오른쪽 끝(2297) 앞에서는 서랍이 열릴 때까지 기다린다.
+		# ★옷장 오른쪽 끝(2297) 앞에서는 서랍이 **막 열릴 때**까지 기다린다.
 		#   닫혀 있는데 걸어 나가면 1522 아래 바닥까지 떨어져 죽는다.
 		var 기다려 := false
-		if d != null and x > 2150.0 and x < 2290.0 and float(d.call("열린정도")) < 0.95:
+		if d != null and x > 2150.0 and x < 2290.0 and float(d.call("열린정도")) < 0.99:
 			기다려 = true
 			기다린프레임 += 1
+
+		# ★탁자(5600…5891)에 올라선 뒤에는 **왼쪽**으로 걸어 내려간다.
+		#   오른쪽으로 계속 가면 오른쪽 벽(5891)에 막혀 영영 바닥에 못 내려간다
+		#   (실측: 최대 x 5865 에서 멈췄다).
+		# ★★1-2 창가 하강은 **높이에 따라 방향이 바뀐다**(사람이 하는 것과 같다).
+		#   ① 창 윗틀·주름1(y < −1100) : 오른쪽으로 걸어 다음 단에 내려선다
+		#   ② 주름2·주름3(−1100…−700) : **왼쪽**으로 꺾어 창턱으로 내려간다
+		#   ③ 창턱(−700…−450)          : 오른쪽으로 달려 탁자로 점프(웨이포인트 5390)
+		#   ④ 탁자·바닥(> −450)        : 왼쪽으로 걸어 바닥에 내려서고 1-3 으로 간다
+		#   ⚠ 처음엔 "무조건 오른쪽" 이었는데, 주름2 오른쪽 끝에서 탁자까지 701 을
+		#     떨어져 즉사를 반복했다(치명 낙하 520). 사람은 거기서 왼쪽으로 꺾는다.
+		# ★방향은 **마지막으로 밟은 높이**로 정한다. 공중에서 실시간 y 로 정하면
+		#   점프 도중에 방향이 뒤집혀 제자리를 맴돈다(실측: 20 초 넘게 왕복했다).
+		if _p.is_on_floor():
+			_지상y = _p.global_position.y
+		var y := _지상y
+		var 왼쪽으로 := (y > -1100.0 and y < -700.0) or (y > -450.0 and x > 4200.0)
 		if 기다려:
 			Input.action_release("move_right")
+			Input.action_release("move_left")
+		elif 왼쪽으로:
+			Input.action_release("move_right")
+			Input.action_press("move_left")
 		else:
+			Input.action_release("move_left")
 			Input.action_press("move_right")
 
 		# ★웨이포인트 점프 — **자리로 판단한다**(순번으로 하면 리스폰 뒤에 어긋난다).
@@ -605,7 +672,7 @@ func _시험_완주() -> void:
 		#   이미 지난 지점으로 취급돼 다음 틈에서 점프를 안 하고 계속 떨어졌다(사망 21 회).
 		var 뛸때 := false
 		for wp in 점프지점:
-			if x > wp and x < wp + 70.0:
+			if x > wp.x and x < wp.x + 70.0 and absf(_p.global_position.y - wp.y) < 90.0:
 				뛸때 = true
 				break
 		if _p.is_on_floor() and 뛸때:
@@ -614,12 +681,33 @@ func _시험_완주() -> void:
 		elif _p.is_on_floor():
 			Input.action_release("jump")
 
-		if x > 3900.0:
+		# ★바닥(y 0)에 닿으면 1-2 하강 완료. 거기서부터는 **왼쪽**으로 1-3 을 향한다.
+		if _p.is_on_floor() and _p.global_position.y > -60.0:
+			바닥도착 = true
 			break
 	_해제()
 	_기록("Exit Reachable", 최대x > 3900.0 and 죽음 == 0,
-		"도달 최대 x = %.0f (출구선반 3547…3997) · 웨이포인트 %d/5 · 서랍 대기 %.1f초 · 사망 %d 회"
+		"1-1 출구 통과 최대 x = %.0f · 웨이포인트 %d/7 · 서랍 대기 %.1f초 · 사망 %d 회"
 			% [최대x, 다음, 기다린프레임 / 60.0, 죽음])
+
+	# ── 1-2 하강 완료 + 1-3 진입 ──
+	_기록("1-2 Descent", 바닥도착 and 죽음 == 0,
+		"바닥 도착=%s · 끝난 자리 (%.0f, %.0f) · 바닥=%s (사망 %d 회)"
+			% [바닥도착, _p.global_position.x, _p.global_position.y, _p.is_on_floor(), 죽음])
+	if 바닥도착:
+		# 바닥에서 왼쪽으로 걸어 1-3 영역(x < 3000)까지 간다.
+		Input.action_press("move_left")
+		var 최소x := _p.global_position.x
+		for i in 900:
+			await physics_frame
+			최소x = minf(최소x, _p.global_position.x)
+			if 최소x < 2600.0:
+				break
+		_해제()
+		_기록("1-3 Entry", 최소x < 2600.0,
+			"바닥을 따라 왼쪽으로 x %.0f 까지 이동 (1-3 은 x < 3096 의 아래층)" % 최소x)
+	else:
+		_기록("1-3 Entry", false, "바닥에 못 내려와 1-3 진입을 못 쟀다")
 
 
 ## 가시 위에 떨어뜨리고 **죽음이 잡히는지** 본다.
@@ -638,9 +726,9 @@ func _가시위에서_죽나(가시: Area2D) -> bool:
 
 
 ## x 를 이미 지난 웨이포인트가 몇 개인가 (진행도 표시용).
-func _지난_웨이포인트(목록: Array[float], x: float) -> int:
+func _지난_웨이포인트(목록: Array[Vector2], x: float) -> int:
 	var n := 0
 	for wp in 목록:
-		if x > wp:
+		if x > wp.x:
 			n += 1
 	return n
