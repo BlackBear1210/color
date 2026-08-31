@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3]
+
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="1_meta"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material.gd" id="2_edge"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/normal_range.gd" id="3_range"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/shape_material.gd" id="4_shape"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/concrete_v1/concrete_edge_white_v1.png" id="10_edge"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/concrete_v1/concrete_trowel_white_game_v1.png" id="20_fill"]
+
+[sub_resource type="Resource" id="Edge_All"]
+script = ExtResource("2_edge")
+textures = Array[Texture2D]([ExtResource("10_edge")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+uniform_width = true
+
+[sub_resource type="Resource" id="Range_All"]
+script = ExtResource("3_range")
+distance = 360.0
+
+[sub_resource type="Resource" id="Meta_All"]
+script = ExtResource("1_meta")
+edge_material = SubResource("Edge_All")
+normal_range = SubResource("Range_All")
+offset = -1.0
+
+[resource]
+script = ExtResource("4_shape")
+_edge_meta_materials = Array[ExtResource("1_meta")]([SubResource("Meta_All")])
+fill_textures = Array[Texture2D]([ExtResource("20_fill")])
+fill_texture_z_index = -1

@@ -1,0 +1,104 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" uid="uid://qsashlrklll3" path="res://scripts/스마트월드/지형.gd" id="1_enbgp"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="2_5gwtf"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_hebbq"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_8j7fg"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/concrete_v1/tres/지형_시멘트_white_기본.tres" id="4_xtfyu"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/concrete_v1/concrete_trowel_white_game_v1.png" id="5_03b18"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/concrete_v1/concrete_edge_white_v1.png" id="6_mcqcl"]
+
+[sub_resource type="Resource" id="Resource_apyxx"]
+script = ExtResource("2_5gwtf")
+position = Vector2(-256, -96)
+
+[sub_resource type="Resource" id="Resource_pr6gl"]
+script = ExtResource("2_5gwtf")
+position = Vector2(256, -96)
+
+[sub_resource type="Resource" id="Resource_8xqr5"]
+script = ExtResource("2_5gwtf")
+position = Vector2(256, 96)
+
+[sub_resource type="Resource" id="Resource_dvopi"]
+script = ExtResource("2_5gwtf")
+position = Vector2(-256, 96)
+
+[sub_resource type="Resource" id="Resource_kultx"]
+script = ExtResource("2_5gwtf")
+position = Vector2(-256, -96)
+
+[sub_resource type="Resource" id="Resource_y14av"]
+script = ExtResource("3_hebbq")
+_points = {
+0: SubResource("Resource_apyxx"),
+1: SubResource("Resource_pr6gl"),
+2: SubResource("Resource_8xqr5"),
+3: SubResource("Resource_dvopi"),
+4: SubResource("Resource_kultx")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_s6u87"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////27bNj+SJIm+bts2P5Ikib7/////bts2P5IkiT5u2zY/kiSJPv////9u2za/kiSJPm7bNr+SJIk+/////27bNr+SJIm+bts2v5Ikib4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQwAAwMIAAAAAAACAQwAAwEIAAAAAAACAwwAAwEIAAAAAAACAwwAAwMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_n8cw5"]
+script = ExtResource("4_8j7fg")
+texture = ExtResource("5_03b18")
+mesh = SubResource("ArrayMesh_s6u87")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_pa7vw"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAO0+AACAPwAA7T4AAIA//////wAA7T4AAAAAAADtPgAAAAD/////AAAdPwAAgD8AAB0/AACAP/////8AAB0/AAAAAAAAHT8AAAAA/////wDAiT8AAIA/AMCJPwAAgD//////AMCJPwAAAAAAwIk/AAAAAP////8AAJ0/AACAPwAAnT8AAIA//////wAAnT8AAAAAAACdPwAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwwAAwMIAAAAAAABaw/7/Z8IAAAAAAABaQwAAaMIAAAAAAACAQwAAwMIAAAAAAABaQ/7/Z0IAAAAAAACAQwAAwEIAAAAAAABawwAAaEIAAAAAAACAwwAAwEIAAAAAAABaw/7/Z8IAAAAAAACAwwAAwMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_jlvfu"]
+script = ExtResource("4_8j7fg")
+texture = ExtResource("6_mcqcl")
+mesh = SubResource("ArrayMesh_pa7vw")
+
+[node name="TEMPLATE_CEMENT_SOLID_WHITE" type="Node2D" unique_id=426990818]
+script = ExtResource("1_enbgp")
+_points = SubResource("Resource_y14av")
+_meshes = Array[ExtResource("4_8j7fg")]([])
+shape_material = ExtResource("4_xtfyu")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="@ColorRect@18752" type="ColorRect" parent="." unique_id=885166179]
+modulate = Color(1, 1, 1, 0)
+offset_left = -256.0
+offset_top = -96.0
+offset_right = 256.0
+offset_bottom = 96.0
+metadata/__ss2d_click_rect__ = true
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1897821771]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=934716299]
+visible = false
+polygon = PackedVector2Array(-256, -96, 256, -96, 256, 96, -256, 96)
