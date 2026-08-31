@@ -72,6 +72,7 @@ func _실행() -> void:
 	await _시험_배경()
 	await _시험_서랍()
 	await _시험_가시()
+	await _시험_가구밑()
 
 	print("\n──────────────── 결과 ────────────────")
 	var 실패 := 0
@@ -695,17 +696,30 @@ func _시험_완주() -> void:
 		"바닥 도착=%s · 끝난 자리 (%.0f, %.0f) · 바닥=%s (사망 %d 회)"
 			% [바닥도착, _p.global_position.x, _p.global_position.y, _p.is_on_floor(), 죽음])
 	if 바닥도착:
-		# 바닥에서 왼쪽으로 걸어 1-3 영역(x < 3000)까지 간다.
+		# ★1-3 완주 — 바닥을 따라 왼쪽으로 가면서 옷장 밑 · 가시 · 책장 밑을 통과한다.
 		Input.action_press("move_left")
 		var 최소x := _p.global_position.x
-		for i in 900:
+		var 죽음13 := 0
+		var 이전y13 := _p.global_position.y
+		for i in 2400:
 			await physics_frame
-			최소x = minf(최소x, _p.global_position.x)
-			if 최소x < 2600.0:
+			var px := _p.global_position.x
+			최소x = minf(최소x, px)
+			if absf(_p.global_position.y - 이전y13) > 900.0:
+				죽음13 += 1
+			이전y13 = _p.global_position.y
+			# 1-3 의 가시(1882…1978) 앞에서만 점프한다 — 낮은 천장 밑이라 상승 124 뿐이다.
+			if _p.is_on_floor() and px > 2020.0 and px < 2090.0:
+				Input.action_press("jump")
+			elif _p.is_on_floor():
+				Input.action_release("jump")
+			if px < 800.0:
 				break
 		_해제()
 		_기록("1-3 Entry", 최소x < 2600.0,
-			"바닥을 따라 왼쪽으로 x %.0f 까지 이동 (1-3 은 x < 3096 의 아래층)" % 최소x)
+			"1-2 바닥에서 왼쪽으로 x %.0f 까지 (1-3 진입 = x < 2600)" % 최소x)
+		_기록("1-1→1-2→1-3 연속", 최소x < 800.0 and 죽음13 == 0,
+			"스폰부터 1-3 끝(x %.0f)까지 한 번에 · 1-3 구간 사망 %d 회" % [최소x, 죽음13])
 	else:
 		_기록("1-3 Entry", false, "바닥에 못 내려와 1-3 진입을 못 쟀다")
 
@@ -732,3 +746,101 @@ func _지난_웨이포인트(목록: Array[Vector2], x: float) -> int:
 		if x > wp.x:
 			n += 1
 	return n
+
+
+# ── 16) 1-3 가구 밑 통과 — 낮은 천장 두 장을 실제로 지나가는가 ──────────────
+## 도형님 §F·§N. 좌표로만 "지나갈 수 있다" 고 판단하지 않고 **실제로 걸어서** 통과한다.
+func _시험_가구밑() -> void:
+	var 옷장밑 := _루트.get_node_or_null("지형/천장_옷장밑_WOOD_01") as Node2D
+	var 책장밑 := _루트.get_node_or_null("지형/천장_책장밑_WOOD_01") as Node2D
+	if 옷장밑 == null or 책장밑 == null:
+		_기록("Furniture Underpass", false, "낮은 천장 노드를 못 찾음")
+		return
+
+	# ① 낮은 천장 밑에서 점프하면 머리가 막히는가 (천장이 점프를 봉인한다)
+	await _놓기(Vector2(1700.0, -100.0))          # 옷장 밑 (천장 아랫면 −260)
+	await _착지_대기(120)
+	var y0 := _p.global_position.y
+	Input.action_press("jump")
+	var 최고1 := y0
+	for i in 60:
+		await physics_frame
+		최고1 = minf(최고1, _p.global_position.y)
+	_해제()
+	await _놓기(Vector2(1200.0, -100.0))          # 책장 밑 (천장 아랫면 −151)
+	await _착지_대기(120)
+	var y1 := _p.global_position.y
+	Input.action_press("jump")
+	var 최고2 := y1
+	for i in 60:
+		await physics_frame
+		최고2 = minf(최고2, _p.global_position.y)
+	_해제()
+	var 오름1 := y0 - 최고1
+	var 오름2 := y1 - 최고2
+	# ★상승 한계 = 천장 높이 − 플레이어 키 95.63 (콜리전은 아래로 안 부푼다 — 실측 확인).
+	#   옷장 밑 220 → 124 · 책장 밑 151 → 55. 안 막히면 167.
+	_기록("Low Ceiling", 오름1 < 140.0 and 오름2 < 80.0,
+		"옷장 밑 점프 %.1fpx(한계 124) · 책장 밑 %.1fpx(한계 55) · 안 막히면 167"
+			% [오름1, 오름2])
+
+	# ② 오른쪽 넓은 바닥 → 두 천장 밑을 지나 왼쪽 끝까지 실제로 걸어간다.
+	#    ★가시(1930)는 점프로 넘어야 하므로 그 앞에서만 점프한다.
+	await _놓기(Vector2(2600.0, -100.0))
+	await _착지_대기(120)
+	var 끼임 := false
+	var 최소x := _p.global_position.x
+	var 이전x := _p.global_position.x
+	var 정체 := 0
+	Input.action_press("move_left")
+	for i in 1200:
+		await physics_frame
+		var x := _p.global_position.x
+		최소x = minf(최소x, x)
+		# 가시(1882…1978) 앞에서 점프
+		if _p.is_on_floor() and x > 2020.0 and x < 2090.0:
+			Input.action_press("jump")
+		elif _p.is_on_floor():
+			Input.action_release("jump")
+		# 같은 자리에 1 초 넘게 붙어 있으면 낮은 천장에 **끼인** 것이다
+		if absf(x - 이전x) < 0.5:
+			정체 += 1
+			if 정체 > 60:
+				끼임 = true
+				break
+		else:
+			정체 = 0
+		이전x = x
+		if x < 800.0:
+			break
+	_해제()
+	_기록("Furniture Underpass", 최소x < 800.0 and not 끼임,
+		"오른쪽 바닥 2600 → 왼쪽 %.0f 까지 걸어서 통과 (옷장 밑 · 가시 · 책장 밑) · 끼임=%s"
+			% [최소x, 끼임])
+
+	# ③ 1-3 의 가시도 hazard 로 작동하는가
+	var s := _루트.get_node_or_null("위험물/가시_1_3") as Area2D
+	if s == null:
+		_기록("Spike 1-3", false, "가시_1_3 을 못 찾음")
+		return
+	await _놓기(Vector2(s.global_position.x, -220.0))
+	await _착지_대기(120)
+	var 죽나 := false
+	for i in 10:
+		if bool(_루트.call("_사망_판정")):
+			죽나 = true
+			break
+		await physics_frame
+	_기록("Spike 1-3", 죽나 and s.is_in_group("hazard"),
+		"가시 위 죽음=%s · hazard그룹=%s · 폭 %d 칸" % [죽나, s.is_in_group("hazard"), s.get("칸수")])
+
+	# ④ 죽은 뒤 안전지점으로 되살아나 다시 움직일 수 있는가 (도형님 Run 3)
+	await _프레임(60)
+	var 부활자리 := _p.global_position
+	Input.action_press("move_left")
+	await _프레임(30)
+	Input.action_release("move_left")
+	var 움직임 := 부활자리.x - _p.global_position.x
+	_기록("Respawn", 움직임 > 50.0,
+		"리스폰 자리 (%.0f, %.0f) 에서 0.5 초간 %.0fpx 이동 (조작 복귀)"
+			% [부활자리.x, 부활자리.y, 움직임])
