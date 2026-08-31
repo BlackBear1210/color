@@ -74,6 +74,7 @@ func _실행() -> void:
 	await _시험_가시()
 	await _시험_가구밑()
 	await _시험_1_4()
+	await _시험_STAGE1_완주()
 
 	print("\n──────────────── 결과 ────────────────")
 	var 실패 := 0
@@ -1131,3 +1132,147 @@ func _시험_1_4() -> void:
 	_기록("Fall Respawn", 움직임 > 50.0 and 부활.y < 400.0,
 		"리스폰 자리 (%.0f, %.0f) 에서 0.5 초간 %.0fpx 이동 (조작 복귀)"
 			% [부활.x, 부활.y, 움직임])
+
+
+# ── 16) ★[STEP 1-4.4] STAGE 1 최종 완주 — **스폰부터 구멍까지 한 번에** ────────
+## ▣ 왜 따로 만드나
+##   지금까지의 시험은 구간마다 `_놓기()` 로 플레이어를 옮겨 놓고 쟀다. 그건
+##   "그 구간이 되는가" 지 **"처음부터 끝까지 한 흐름으로 되는가"** 가 아니다.
+##   여기서는 스폰 뒤로 **한 번도 옮기지 않는다.** 입력만 준다.
+##
+## ▣ 경로 (5 막)
+##   ① 1-1 지그재그 → ② 1-2 창가 하강 → ③ 1-3 바닥 왼쪽 끝(x<800)
+##   → ④ 1-4 되돌아가기(가시 넘고 · 도약대 · 매트리스) → ⑤ 파괴 바닥 3 발 → 낙하
+##
+## ⚠ 앞선 `_시험_1_4()` 가 이미 바닥을 부숴 놨으므로 **되살려 놓고** 시작한다.
+##   (`되살아남 = 0` 이라 게임 중에는 안 되살아난다 — 시험 하네스만 쓰는 리셋이다)
+func _시험_STAGE1_완주() -> void:
+	var 파괴: Node2D = _루트.get_node_or_null("지형/SS_WOOD_BREAK_FLOOR_01")
+	var d := _루트.get_node_or_null("기믹/서랍_옷장")
+	if 파괴 == null:
+		_기록("STAGE1 Full Run", false, "파괴 바닥을 못 찾음")
+		return
+	if bool(파괴.call("부서졌나")):
+		파괴.call("_되살리기")
+		await _프레임(4)
+
+	var 점프지점: Array[Vector2] = [
+		Vector2(660.0, -2050.0), Vector2(1350.0, -1830.0), Vector2(2560.0, -1522.0),
+		Vector2(2930.0, -1632.0), Vector2(3360.0, -1632.0), Vector2(3950.0, -1742.0),
+		Vector2(4460.0, -1740.0), Vector2(5390.0, -537.0),
+	]
+	await _놓기(_루트.get("시작_위치"))
+	await _착지_대기(120)
+
+	var 막 := 1                       # 1=하강 2=왼쪽으로 3=오른쪽으로 4=쏘기 5=낙하
+	var 죽음 := 0
+	var 이전y := _p.global_position.y
+	var 왼끝x := 9999.0
+	var 오른끝x := 0.0
+	var 끼임 := false
+	var 이전x := _p.global_position.x
+	var 정체 := 0
+	var 막_프레임 := [0, 0, 0, 0, 0, 0]
+
+	for i in 12000:                   # 200 초. 넉넉히 준다.
+		await physics_frame
+		var x := _p.global_position.x
+		var y := _p.global_position.y
+		막_프레임[막] += 1
+		if absf(y - 이전y) > 900.0:
+			죽음 += 1
+		이전y = y
+		if _p.is_on_floor():
+			_지상y = y
+
+		# 어느 막에서든 **같은 자리에 3 초** 붙어 있으면 끼인 것이다
+		if absf(x - 이전x) < 0.5 and _p.is_on_floor():
+			정체 += 1
+			if 정체 > 180:
+				끼임 = true
+				break
+		else:
+			정체 = 0
+		이전x = x
+
+		match 막:
+			1:  # ── 1-1 → 1-2 하강. `_시험_완주()` 와 같은 규칙을 쓴다 ──
+				var 기다려 := (d != null and x > 2150.0 and x < 2290.0
+					and float(d.call("열린정도")) < 0.99)
+				var 왼쪽으로 := (_지상y > -1100.0 and _지상y < -700.0) \
+					or (_지상y > -450.0 and x > 4200.0)
+				if 기다려:
+					_해제()
+				elif 왼쪽으로:
+					Input.action_release("move_right")
+					Input.action_press("move_left")
+				else:
+					Input.action_release("move_left")
+					Input.action_press("move_right")
+				var 뛸때 := false
+				for wp in 점프지점:
+					if x > wp.x and x < wp.x + 70.0 and absf(y - wp.y) < 90.0:
+						뛸때 = true
+						break
+				if _p.is_on_floor() and 뛸때:
+					Input.action_press("jump")
+				elif _p.is_on_floor():
+					Input.action_release("jump")
+				if _p.is_on_floor() and y > -60.0:
+					막 = 2
+					_해제()
+
+			2:  # ── 1-3 : 바닥을 따라 **왼쪽 끝**까지 (가시 앞에서만 점프) ──
+				Input.action_press("move_left")
+				if _p.is_on_floor() and x > 2020.0 and x < 2090.0:
+					Input.action_press("jump")
+				elif _p.is_on_floor():
+					Input.action_release("jump")
+				왼끝x = minf(왼끝x, x)
+				if x < 800.0:
+					막 = 3
+					_해제()
+
+			3:  # ── 1-4 : **오른쪽으로 되돌아간다.** 가시 앞에서만 점프 ──
+				Input.action_press("move_right")
+				if _p.is_on_floor() and x > 1780.0 and x < 1850.0:
+					Input.action_press("jump")
+				elif _p.is_on_floor():
+					Input.action_release("jump")
+				오른끝x = maxf(오른끝x, x)
+				if x > 5450.0 and _p.is_on_floor() and y > -60.0:
+					막 = 4
+					_해제()
+
+			4:  # ── 파괴 바닥에 3 발. 총구에서 실제로 닿는 자리인지는 §Shootable 이 이미 쟀다 ──
+				var 코어 := _루트.get_tree().get_first_node_in_group("페인트코어")
+				코어.리셋()
+				for 발 in 3:
+					코어.발사_소모()
+					코어.명중_처리(파괴, ColorDefs.BLACK, Vector2(5741.5, 0.0))
+					await _프레임(6)
+				막 = 5
+
+			5:  # ── 구멍으로 걸어 들어간다 ──
+				Input.action_press("move_right")
+				if y > 400.0:
+					break
+	_해제()
+
+	var 부서졌나: bool = bool(파괴.call("부서졌나"))
+	var 빠졌나 := _p.global_position.y > 400.0 or 막 == 5
+	_기록("STAGE1 Full Run", 왼끝x < 800.0 and 오른끝x > 5450.0 and 부서졌나
+			and 빠졌나 and not 끼임 and 죽음 == 0,
+		"스폰→1-2하강→1-3 왼끝 %.0f→1-4 오른끝 %.0f→3발 파괴 %s→구멍 낙하 %s · 끼임=%s · **사망 %d 회**"
+			% [왼끝x, 오른끝x, 부서졌나, 빠졌나, 끼임, 죽음])
+	print("    [막별 소요] 1-1·1-2 하강 %.1f초 · 1-3 왼쪽 %.1f초 · 1-4 오른쪽 %.1f초 · 낙하 %.1f초"
+		% [막_프레임[1] / 60.0,막_프레임[2] / 60.0, 막_프레임[3] / 60.0, 막_프레임[5] / 60.0])
+
+	# 마지막으로 되살아나 조작이 돌아오는가
+	await _프레임(150)
+	var 부활 := _p.global_position
+	Input.action_press("move_left")
+	await _프레임(30)
+	Input.action_release("move_left")
+	_기록("STAGE1 Full Run · Respawn", 부활.x - _p.global_position.x > 50.0 and 부활.y < 400.0,
+		"리스폰 (%.0f, %.0f) 에서 조작 복귀" % [부활.x, 부활.y])
