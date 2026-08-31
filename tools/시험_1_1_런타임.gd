@@ -856,14 +856,15 @@ func _시험_가구밑() -> void:
 ##   둘 다 "화면에 보이는 것"이 아니라 **조작으로만 확인되는 것**이라 여기서 잰다.
 func _시험_1_4() -> void:
 	var 매트: Node2D = _루트.get_node_or_null("지형/SS_WOOD_MATTRESS_01")
-	var 파괴: Node2D = _루트.get_node_or_null("지형/SS_WOOD_BREAK_FLOOR_01")
+	var 파괴: Node2D = _루트.get_node_or_null("지형/SS_BRICK_BREAK_WALL_01")
 	if 매트 == null or 파괴 == null:
 		_기록("1-4 Nodes", false, "매트리스/파괴바닥 노드를 못 찾음")
 		return
 	var 매트_중심 := 3258.0            # (2691 + 3825) / 2
 	var 도약대_x := 3250.0             # 빌더 상수와 같아야 한다
 	var 매트_윗면 := -435.0
-	var 파괴_중심 := 5741.5            # (5591.5 + 5891.5) / 2
+	var 파괴_중심 := 6041.5            # 부서지는 벽 (5891.5…6191.5) 한가운데
+	var 벽앞 := 5860.0                 # 벽 안쪽면(5891.5) 앞. 여기 서서 정면으로 쏜다
 
 	# ── ① OneWay 가 실제로 켜졌는가 (씬에 저장이 안 되는 값이라 런타임에서 확인한다) ──
 	var 켜짐: bool = bool(매트.call("단방향_켜졌나"))
@@ -1023,35 +1024,37 @@ func _시험_1_4() -> void:
 	# ── ④-3 ★[STEP 1-4.3] 진행 신호 — 파괴 바닥 위에 빛이 실제로 켜졌는가 ──
 	# 새 텍스처 없이 `발광체.gd`(구슬)가 코드로 굽는 광원이다. 노드만 놓고 빛이 안 켜지면
 	# 신호가 아니라 흰 점 하나일 뿐이라, **Light2D 가 실제로 생겼는지**까지 본다.
-	var 신호: Node2D = _루트.get_node_or_null("오브젝트/신호_파괴바닥")
+	var 신호: Node2D = _루트.get_node_or_null("오브젝트/신호_파괴벽")
 	var 빛: Light2D = null
 	if 신호:
 		for c in 신호.get_children():
 			if c is Light2D:
 				빛 = c
 				break
-	var 신호_위 := 신호 != null and absf(신호.global_position.x - 파괴_중심) < 200.0
+	# 신호는 문간(벽 안쪽면 5891.5) 앞에 뜬다 — 벽 한가운데(6041.5)가 아니다.
+	var 신호_위 := 신호 != null and absf(신호.global_position.x - 5891.5) < 200.0
 	_기록("Progress Signal", 신호_위 and 빛 != null and 빛.enabled,
 		"파괴 바닥(%.0f) 위 반딧불 자리=%s · Light2D=%s (켜짐=%s) — 캄캄한 막다른 구석의 유일한 빛"
 			% [파괴_중심, 신호.global_position if 신호 else "없음",
 			   "있음" if 빛 else "없음", 빛.enabled if 빛 else false])
 
-	# ── ⑤ 파괴 전 : 그냥 바닥이어야 한다 ──
-	await _놓기(Vector2(파괴_중심, -100.0))   # ★1-2 탁자(−319, 밑면 −159) 아래에 놓아야 바닥에 닿는다
-	var 밟히나 := await _착지_대기(240)
-	var 밟은y := _p.global_position.y
-	_기록("Break Floor Solid", 밟히나 and absf(밟은y) < 8.0,
-		"파괴 전 x %.0f 에 착지 y=%.1f (0 이어야 정상 — 부수기 전엔 평범한 바닥)"
-			% [파괴_중심, 밟은y])
+	# ── ⑤ 파괴 전 : **벽이라 못 지나간다** ──
+	# 오른쪽으로 계속 밀어도 벽 안쪽면(5891.5) 앞에서 멈춰야 한다.
+	await _놓기(Vector2(5500.0, -100.0))
+	await _착지_대기(240)
+	Input.action_press("move_right")
+	await _프레임(150)                        # 2.5 초 = 975px 분
+	_해제()
+	var 막힌x := _p.global_position.x
+	_기록("Break Wall Solid", 막힌x < 5891.5 and 막힌x > 5700.0,
+		"부수기 전 오른쪽으로 2.5 초 밀었을 때 x=%.1f (벽 안쪽면 5891.5 를 못 넘어야 정상)" % 막힌x)
 
-	# ── ⑥ 총알이 **실제로 닿는 자리**인가 (§10 — 못 쏘는 바닥이면 관문이 아니다) ──
-	# 총알과 똑같은 레이캐스트(레이어 1|8)로, 왼쪽 바닥에 선 플레이어의 총구에서
-	# 파괴 바닥 윗면을 겨눴을 때 **처음 맞는 것이 파괴 바닥인지** 본다.
-	await _놓기(Vector2(5400.0, -100.0))
-	await _착지_대기(180)
-	var 총구 := _p.global_position + Vector2(0.0, -48.0)   # 몸 중심 높이
+	# ── ⑥ 총알이 **실제로 닿는 자리**인가 (§10 — 못 쏘는 벽이면 관문이 아니다) ──
+	# ★벽으로 옮기면서 **정면 사격**이 됐다. 총구 높이(−48)가 문간(−170…0) 한가운데다.
+	#   바닥일 때는 자기가 딛고 선 발밑을 내려쏴야 했다.
+	var 총구 := _p.global_position + Vector2(0.0, -48.0)
 	var 공간 := _p.get_world_2d().direct_space_state
-	var 질의 := PhysicsRayQueryParameters2D.create(총구, Vector2(파괴_중심, 20.0), 1 | 8)
+	var 질의 := PhysicsRayQueryParameters2D.create(총구, Vector2(파괴_중심, -48.0), 1 | 8)
 	질의.collide_with_areas = false
 	질의.exclude = [_p.get_rid()]
 	var 맞음 := 공간.intersect_ray(질의)
@@ -1061,21 +1064,21 @@ func _시험_1_4() -> void:
 		while n != null and not n.has_method("명중"):
 			n = n.get_parent()
 		맞은대상 = n
-	_기록("Break Floor Shootable", 맞은대상 == 파괴,
-		"x 5400 에 선 총구 → (%.0f, −4) 레이캐스트 첫 명중 = %s (SS_WOOD_BREAK_FLOOR_01 이어야 정상)"
-			% [파괴_중심, 맞은대상.name if 맞은대상 else "없음"])
+	_기록("Break Wall Shootable", 맞은대상 == 파괴,
+		"벽 앞 x %.0f 에서 정면(−48) 레이캐스트 첫 명중 = %s (SS_BRICK_BREAK_WALL_01 이어야 정상)"
+			% [막힌x, 맞은대상.name if 맞은대상 else "없음"])
 
 	# ── ⑦ 1 발 / 2 발 / 3 발 ──
 	var 코어 := _루트.get_tree().get_first_node_in_group("페인트코어")
 	if 코어 == null:
-		_기록("Break Floor 3 Hits", false, "페인트코어를 못 찾음")
+		_기록("Break Wall 3 Hits", false, "페인트코어를 못 찾음")
 		return
 	코어.리셋()
 	var 기록: Array[String] = []
 	var 단계_정상 := true
 	for 발 in 3:
 		코어.발사_소모()
-		var r: String = 코어.명중_처리(파괴, ColorDefs.BLACK, Vector2(파괴_중심, 0.0))
+		var r: String = 코어.명중_처리(파괴, ColorDefs.BLACK, Vector2(파괴_중심, -85.0))
 		await _프레임(4)                                  # _부수기() 가 call_deferred 다
 		var 부서짐: bool = bool(파괴.call("부서졌나"))
 		var 남음: int = int(파괴.call("남은_명중"))
@@ -1083,55 +1086,51 @@ func _시험_1_4() -> void:
 		# 1·2 발째는 멀쩡해야 하고 3 발째에 부서져야 한다
 		if (발 < 2 and 부서짐) or (발 == 2 and not 부서짐):
 			단계_정상 = false
-	_기록("Break Floor 3 Hits", 단계_정상, " · ".join(기록))
+	_기록("Break Wall 3 Hits", 단계_정상, " · ".join(기록))
 
 	# ── ⑧ 콜리전이 실제로 사라졌는가 ──
 	var 폴리 := 파괴.call("get_collision_polygon_node") as CollisionPolygon2D
 	var 바디 := 폴리.get_parent() as CollisionObject2D if 폴리 else null
 	await _프레임(4)
-	# ⚠ `_착지_대기()` 로 재면 안 된다 — 구멍으로 떨어지다 **낙사 판정(치명 낙하 520)**이
-	#   먼저 걸려 리스폰되고, 그 리스폰 자리(바닥)를 "착지" 로 읽어 버린다(첫 시도의 오답).
-	#   → 착지 여부가 아니라 **얼마나 깊이 내려갔는지**(최대 y)를 본다. 리스폰해도 최대값은 남는다.
-	await _놓기(Vector2(파괴_중심, -100.0))   # ★1-2 탁자(−319, 밑면 −159) 아래에 놓아야 바닥에 닿는다
-	var 최대y := _p.global_position.y
-	for i in 60:
-		await physics_frame
-		최대y = maxf(최대y, _p.global_position.y)
 	var 폴리_꺼짐: bool = 폴리.disabled if 폴리 else false
 	var 레이어_0: bool = (바디.collision_layer == 0) if 바디 else false
-	_기록("Break Floor Collision Gone", 최대y > 300.0 and 폴리_꺼짐 and 레이어_0,
-		"파괴 후 같은 자리에서 최대 y=%.0f (바닥 아랫면 300 아래로 빠져야 정상 · 남아 있으면 0) · disabled=%s layer=%s"
-			% [최대y, 폴리_꺼짐, 바디.collision_layer if 바디 else "-"])
+	_기록("Break Wall Collision Gone", 폴리_꺼짐 and 레이어_0,
+		"파괴 후 disabled=%s · layer=%s (둘 다 꺼져야 정상)"
+			% [폴리_꺼짐, 바디.collision_layer if 바디 else "-"])
 
-	# ── ⑨ 걸어가서 구멍에 빠지는가 → 낙사 → 리스폰 ──
-	# ★"떨어져서 죽는다" 까지가 지금의 STAGE 1 종료다 (STAGE 2 씬이 아직 없다).
-	await _놓기(Vector2(5350.0, -100.0))
+	# ── ⑨ 뚫린 문간으로 **걸어 들어가** STAGE 2 로 넘어가는가 ──
+	# ★출구통로(`연결통로` 역할=출구)는 벽 바로 뒤에 있다. 벽이 멀쩡할 땐 벽이 막아
+	#   절대 안 닿고, 뚫리면 그대로 걸어 들어간다. 새 전환 시스템을 만들지 않았다.
+	# ⚠ 시험 하네스는 씬을 root 밑에 직접 붙여 돌리므로 실제 씬 전환은 일어나지 않는다.
+	#   그래서 "통로 판정 안까지 실제로 걸어 들어갔는가 + 다음_씬이 꽂혀 있는가" 로 잰다.
+	var 출구: Area2D = _루트.get_node_or_null("오브젝트/출구통로")
+	await _놓기(Vector2(5500.0, -100.0))
 	await _착지_대기(180)
-	var 시작x := _p.global_position.x
-	var 최저y := _p.global_position.y
-	var 죽었나 := false
+	var 지난x := _p.global_position.x
 	Input.action_press("move_right")
-	for i in 420:
+	for i in 240:
 		await physics_frame
-		최저y = maxf(최저y, _p.global_position.y)
-		if _p.global_position.y > 400.0:
-			죽었나 = true                                  # 바닥 아랫면(300) 밑으로 빠졌다
+		지난x = maxf(지난x, _p.global_position.x)
+		# ⚠ 5940 에서 멈춘다. 더 가면 출구통로 판정(6014…6099)에 몸 오른쪽 끝이 닿아
+		#   **진짜로 씬이 바뀌어** 뒤 시험의 좌표계가 STAGE 2 와 겹친다(실제로 그렇게 됐다).
+		#   전환 자체는 마지막 완주 시험이 끝까지 걸어 들어가 확인한다.
+		if 지난x > 5940.0:
 			break
 	_해제()
-	_기록("Break Floor Fall", 죽었나,
-		"x %.0f 에서 오른쪽으로 걸어가 구멍(5591…5891)에 빠짐 · 최저 y=%.0f (300 아래면 관통)"
-			% [시작x, 최저y])
+	var 다음씬: String = String(출구.get("다음_씬")) if 출구 else ""
+	_기록("Break Wall → Exit", 지난x > 5940.0 and 다음씬.ends_with("스테이지_2_복도계단.tscn"),
+		"뚫린 문간을 지나 x %.0f 까지 (벽 안쪽면 5891.5 통과) · 출구통로 다음_씬=%s"
+			% [지난x, 다음씬.get_file() if 다음씬 else "없음"])
 
-	# ⑩ 빠진 뒤 되살아나 다시 움직일 수 있는가 (끼임 · 무한 낙하가 아니어야 한다)
-	await _프레임(150)
-	var 부활 := _p.global_position
+	# ⑩ 문간 안에서 끼이지 않고 되돌아 나올 수 있는가 (통로 벽에 박히면 안 된다)
+	var 안자리 := _p.global_position
 	Input.action_press("move_left")
 	await _프레임(30)
 	Input.action_release("move_left")
-	var 움직임 := 부활.x - _p.global_position.x
-	_기록("Fall Respawn", 움직임 > 50.0 and 부활.y < 400.0,
-		"리스폰 자리 (%.0f, %.0f) 에서 0.5 초간 %.0fpx 이동 (조작 복귀)"
-			% [부활.x, 부활.y, 움직임])
+	var 되돌아옴 := 안자리.x - _p.global_position.x
+	_기록("Exit Passage Clear", 되돌아옴 > 50.0,
+		"문간 안 (%.0f, %.0f) 에서 왼쪽으로 %.0fpx 되돌아 나옴 (끼임 없음)"
+			% [안자리.x, 안자리.y, 되돌아옴])
 
 
 # ── 16) ★[STEP 1-4.4] STAGE 1 최종 완주 — **스폰부터 구멍까지 한 번에** ────────
@@ -1147,7 +1146,7 @@ func _시험_1_4() -> void:
 ## ⚠ 앞선 `_시험_1_4()` 가 이미 바닥을 부숴 놨으므로 **되살려 놓고** 시작한다.
 ##   (`되살아남 = 0` 이라 게임 중에는 안 되살아난다 — 시험 하네스만 쓰는 리셋이다)
 func _시험_STAGE1_완주() -> void:
-	var 파괴: Node2D = _루트.get_node_or_null("지형/SS_WOOD_BREAK_FLOOR_01")
+	var 파괴: Node2D = _루트.get_node_or_null("지형/SS_BRICK_BREAK_WALL_01")
 	var d := _루트.get_node_or_null("기믹/서랍_옷장")
 	if 파괴 == null:
 		_기록("STAGE1 Full Run", false, "파괴 바닥을 못 찾음")
@@ -1189,6 +1188,13 @@ func _시험_STAGE1_완주() -> void:
 		if absf(x - 이전x) < 0.5 and _p.is_on_floor():
 			정체 += 1
 			if 정체 > 180:
+				print("    [끼임] 막 %d · 자리 (%.0f, %.0f) · 속도 %s · 바닥=%s"
+					% [막, x, y, _p.velocity, _p.is_on_floor()])
+				var q := PhysicsRayQueryParameters2D.create(Vector2(x, y - 48.0), Vector2(x - 140.0, y - 48.0), 1 | 8)
+				q.collide_with_areas = false
+				q.exclude = [_p.get_rid()]
+				var h := _p.get_world_2d().direct_space_state.intersect_ray(q)
+				print("    [끼임] 왼쪽 레이캐스트 → %s" % [(h.get("collider") as Node).get_parent().name if h else "아무것도 없음"])
 				끼임 = true
 				break
 		else:
@@ -1240,39 +1246,51 @@ func _시험_STAGE1_완주() -> void:
 				elif _p.is_on_floor():
 					Input.action_release("jump")
 				오른끝x = maxf(오른끝x, x)
-				if x > 5450.0 and _p.is_on_floor() and y > -60.0:
+				# 벽 앞(5891.5)까지 걸어가 막히면 쏠 차례다
+				if x > 5820.0 and _p.is_on_floor():
 					막 = 4
 					_해제()
 
-			4:  # ── 파괴 바닥에 3 발. 총구에서 실제로 닿는 자리인지는 §Shootable 이 이미 쟀다 ──
+			4:  # ── 부서지는 벽에 정면으로 3 발. 총구가 닿는지는 §Shootable 이 이미 쟀다 ──
 				var 코어 := _루트.get_tree().get_first_node_in_group("페인트코어")
 				코어.리셋()
 				for 발 in 3:
 					코어.발사_소모()
-					코어.명중_처리(파괴, ColorDefs.BLACK, Vector2(5741.5, 0.0))
+					코어.명중_처리(파괴, ColorDefs.BLACK, Vector2(6041.5, -85.0))
 					await _프레임(6)
 				막 = 5
 
-			5:  # ── 구멍으로 걸어 들어간다 ──
+			5:  # ── 뚫린 문간 **안쪽까지** 걸어 들어간다 → 여기서 진짜로 씬이 바뀐다 ──
+				# 출구통로 판정은 x 6014…6099 에 있다. 거기 닿으면
+				# `연결통로._몸_들어옴()` → `장면전환.통로로_이동()` 이 실제로 돈다.
 				Input.action_press("move_right")
-				if y > 400.0:
+				오른끝x = maxf(오른끝x, x)
+				if x > 6060.0:
 					break
 	_해제()
 
 	var 부서졌나: bool = bool(파괴.call("부서졌나"))
-	var 빠졌나 := _p.global_position.y > 400.0 or 막 == 5
-	_기록("STAGE1 Full Run", 왼끝x < 800.0 and 오른끝x > 5450.0 and 부서졌나
-			and 빠졌나 and not 끼임 and 죽음 == 0,
-		"스폰→1-2하강→1-3 왼끝 %.0f→1-4 오른끝 %.0f→3발 파괴 %s→구멍 낙하 %s · 끼임=%s · **사망 %d 회**"
-			% [왼끝x, 오른끝x, 부서졌나, 빠졌나, 끼임, 죽음])
-	print("    [막별 소요] 1-1·1-2 하강 %.1f초 · 1-3 왼쪽 %.1f초 · 1-4 오른쪽 %.1f초 · 낙하 %.1f초"
+	var 나갔나 := 오른끝x > 6000.0
+	_기록("STAGE1 Full Run", 왼끝x < 800.0 and 부서졌나
+			and 나갔나 and not 끼임 and 죽음 == 0,
+		"스폰→1-2하강→1-3 왼끝 %.0f→1-4 되돌아가기→벽 3발 파괴 %s→문간 통과 x %.0f · 끼임=%s · **사망 %d 회**"
+			% [왼끝x, 부서졌나, 오른끝x, 끼임, 죽음])
+	print("    [막별 소요] 1-1·1-2 하강 %.1f초 · 1-3 왼쪽 %.1f초 · 1-4 오른쪽 %.1f초 · 문간 %.1f초"
 		% [막_프레임[1] / 60.0,막_프레임[2] / 60.0, 막_프레임[3] / 60.0, 막_프레임[5] / 60.0])
 
-	# 마지막으로 되살아나 조작이 돌아오는가
-	await _프레임(150)
-	var 부활 := _p.global_position
-	Input.action_press("move_left")
-	await _프레임(30)
-	Input.action_release("move_left")
-	_기록("STAGE1 Full Run · Respawn", 부활.x - _p.global_position.x > 50.0 and 부활.y < 400.0,
-		"리스폰 (%.0f, %.0f) 에서 조작 복귀" % [부활.x, 부활.y])
+	# ── ★STAGE 1 → STAGE 2 가 **실제로** 넘어갔는가 ──
+	# 문간 판정에 닿으면 `장면전환.통로로_이동()` 이 돈다. 연출 시간을 주고 트리를 뒤져
+	# STAGE 2 의 지형 노드가 실제로 올라왔는지 본다.
+	# (좌표계가 겹치므로 이 시험은 **반드시 마지막**이어야 한다 — 앞에 두면
+	#  뒤 시험이 STAGE 2 의 벽에 막힌다. 실제로 그렇게 됐고, 그래서 순서를 못 박았다)
+	await _프레임(240)
+	var 전환됨 := false
+	var 찾은이름 := ""
+	for n in _모두(root):
+		if String(n.name).begins_with("벽_오른위_SS_BRICK") or String(n.name) == "SS_BRICK_STAIRS_01":
+			전환됨 = true
+			찾은이름 = String(n.name)
+			break
+	_기록("STAGE1 → STAGE2 전환", 전환됨,
+		"문간을 지나자 STAGE 2 가 실제로 올라왔는가 = %s (찾은 노드: %s)"
+			% [전환됨, 찾은이름 if 찾은이름 else "없음"])
