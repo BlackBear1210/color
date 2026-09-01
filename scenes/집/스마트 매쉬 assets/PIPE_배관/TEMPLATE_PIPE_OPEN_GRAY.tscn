@@ -1,0 +1,47 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/배관_SS2D_끝마개.gd" id="1_caps"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/shape.gd" id="2_shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="3_point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="4_points"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/pipe_v1/tres/배관_회색v1_경로.tres" id="5_material"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/pipe_v1/source/pipe_connector_end_nobolt_gray_v2.png" id="6_end_cap"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/pipe_v1/source/pipe_connector_start_nobolt_gray_v2.png" id="7_start_cap"]
+
+[sub_resource type="Resource" id="Point_start"]
+script = ExtResource("3_point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Point_end"]
+script = ExtResource("3_point")
+position = Vector2(896, 0)
+
+[sub_resource type="Resource" id="PointArray_open"]
+script = ExtResource("4_points")
+_points = {
+0: SubResource("Point_start"),
+1: SubResource("Point_end")
+}
+_point_order = PackedInt32Array(0, 1)
+_next_key = 2
+
+[node name="배관_SS2D" type="Node2D"]
+script = ExtResource("1_caps")
+
+[node name="경로" type="Node2D" parent="."]
+script = ExtResource("2_shape")
+_points = SubResource("PointArray_open")
+shape_material = ExtResource("5_material")
+collision_update_mode = 0
+
+[node name="시작_끝마개" type="Sprite2D" parent="."]
+texture = ExtResource("7_start_cap")
+z_index = 1
+
+[node name="끝_끝마개" type="Sprite2D" parent="."]
+texture = ExtResource("6_end_cap")
+z_index = 1
+
+[node name="시작_물_포트" type="Marker2D" parent="."]
+
+[node name="끝_물_포트" type="Marker2D" parent="."]

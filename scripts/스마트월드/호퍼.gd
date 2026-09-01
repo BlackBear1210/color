@@ -19,11 +19,18 @@ class_name 호퍼
 @export var 높이: float = 56.0:
 	set(v): 높이 = maxf(v, 16.0); _다시_만들기()
 
-## 이 호퍼가 채우는 유체(보통 아래로 내려가는 물줄기).
+## 이 호퍼가 채우는 유체(보통 아래로 내려가는 물줄기). 비우면 출구 포트로 자동 탐색한다.
 @export var 출구_유체: NodePath
+
+## 2D 작업 화면에서 물줄기 시작점이 출구_포트에 닿으면 NodePath를 고르지 않아도 자동 연결한다.
+@export_group("출구 포트 자동 연결")
+@export var 자동_출구_연결: bool = true
+@export_range(8.0, 128.0, 1.0) var 포트_연결거리: float = 36.0
+@export_group("")
 
 var _입구: Area2D
 var _출구: 유체 = null
+var _수동_출구: bool = false
 
 
 func _ready() -> void:
@@ -36,13 +43,15 @@ func _ready() -> void:
 	add_to_group("호퍼")
 	if not 출구_유체.is_empty():
 		_출구 = get_node_or_null(출구_유체) as 유체
+		_수동_출구 = _출구 != null
 		if _출구 == null:
 			push_warning("[호퍼:%s] 출구_유체 경로(%s)에서 유체 노드를 못 찾음" % [name, 출구_유체])
-	elif OS.is_debug_build():
-		print("[호퍼:%s] 출구_유체가 비어있음 — 이 호퍼는 아무 것도 안 함" % name)
+	if _출구 == null and 자동_출구_연결:
+		_출구 = _포트에_닿은_유체_찾기()
 	if _출구:
 		_출구.켜짐 = false             # 물이 들어오기 전엔 꺼둔다
-	set_physics_process(_출구 != null)
+	# 자동 포트는 다른 노드의 _ready 순서보다 늦게 발견될 수 있어, 출구가 아직 없어도 검사한다.
+	set_physics_process(_출구 != null or 자동_출구_연결)
 	queue_redraw()
 
 
@@ -87,11 +96,23 @@ func _다시_만들기() -> void:
 	# 위로 넉넉히(90px) 뻗게 해서 물줄기 배치가 어느 정도 어긋나도 겹치게 만든다.
 	ish.size = Vector2(폭 * 0.9, 90.0)
 	(_입구.get_node("모양") as CollisionShape2D).position = Vector2(0, -높이 - 39.0)
+	var 출구포트 := get_node_or_null("출구_포트") as Marker2D
+	if 출구포트 != null:
+		# 호퍼의 원점 자체가 좁아진 아래 출구다. 물줄기의 시작점을 여기에 스냅해 둔다.
+		출구포트.position = Vector2.ZERO
 	queue_redraw()
 
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint() or _출구 == null or _입구 == null:
+	if Engine.is_editor_hint() or _입구 == null:
+		return
+	if 자동_출구_연결 and not _수동_출구:
+		var 자동출구 := _포트에_닿은_유체_찾기()
+		if 자동출구 != _출구:
+			if _출구 != null:
+				_출구.켜짐 = false
+			_출구 = 자동출구
+	if _출구 == null:
 		return
 	var 받은색 := -1
 	var 겹치는_영역 := _입구.get_overlapping_areas()
@@ -115,6 +136,27 @@ func _physics_process(delta: float) -> void:
 			for a in 겹치는_영역:
 				목록.append("%s(유체=%s)" % [a.name, a is 유체])
 			print("[호퍼:%s] 입구 겹침 %d개: %s" % [name, 겹치는_영역.size(), 목록])
+
+
+## 유체의 원점은 물이 시작되는 출구다. 포트 중심에서 허용 거리 안인 물만 고른다.
+## 이렇게 해야 호퍼 옆을 지나가는 물줄기가 우연히 가까워도 출구로 잘못 잡히지 않는다.
+func _포트에_닿은_유체_찾기() -> 유체:
+	if not 자동_출구_연결 or not is_inside_tree():
+		return null
+	var 포트 := get_node_or_null("출구_포트") as Marker2D
+	if 포트 == null:
+		return null
+	var 가장가까운: 유체 = null
+	var 최소거리제곱 := 포트_연결거리 * 포트_연결거리
+	for 노드 in get_tree().get_nodes_in_group("유체"):
+		var 후보 := 노드 as 유체
+		if 후보 == null or 후보.종류 != 유체.종류_.물:
+			continue
+		var 거리제곱 := 포트.global_position.distance_squared_to(후보.시작점_월드좌표())
+		if 거리제곱 <= 최소거리제곱:
+			가장가까운 = 후보
+			최소거리제곱 = 거리제곱
+	return 가장가까운
 
 
 # ── 페인트코어와의 약속 — 색칠할 수 없다 ────────────────────────────────────

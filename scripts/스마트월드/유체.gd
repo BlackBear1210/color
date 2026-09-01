@@ -23,9 +23,24 @@ class_name 유체
 
 enum 종류_ { 물, 연기 }
 
+## ColorDefs의 고정값(검정=0, 흰색=1, 회색=2)을 그대로 쓰되,
+## 인스펙터에서는 숫자가 아닌 물 색 이름을 선택하게 한다.
+enum 물색_ { 흰색 = 1, 회색 = 2, 검정색 = 0 }
+
+## 유체의 물리·혼합 규칙은 그대로 두고, 물만 같은 실루엣의 SpriteFrames 3종으로 보여 준다.
+## 색이 바뀔 때 프레임 묶음도 교체해야 회색으로 섞인 물이 이전 색 그림으로 남지 않는다.
+const 물_프레임_흰색: SpriteFrames = preload("res://assets/textures/obstacles/liquid/animated_v4/fluid_white_frames_v4.tres")
+const 물_프레임_회색: SpriteFrames = preload("res://assets/textures/obstacles/liquid/animated_v4/fluid_gray_frames_v4.tres")
+const 물_프레임_검정색: SpriteFrames = preload("res://assets/textures/obstacles/liquid/animated_v4/fluid_black_frames_v4.tres")
+## 본체 물결을 바꾸지 않고, 안쪽 물방울만 아래로 움직여 낙하 방향을 읽게 하는 상세 레이어다.
+const 물_상세_프레임_흰색: SpriteFrames = preload("res://assets/textures/obstacles/liquid/flow_details_v1/fluid_white_flow_detail_frames_v1.tres")
+const 물_상세_프레임_회색: SpriteFrames = preload("res://assets/textures/obstacles/liquid/flow_details_v1/fluid_gray_flow_detail_frames_v1.tres")
+const 물_상세_프레임_검정색: SpriteFrames = preload("res://assets/textures/obstacles/liquid/flow_details_v1/fluid_black_flow_detail_frames_v1.tres")
+
 @export var 종류: 종류_ = 종류_.물:
 	set(v):
 		종류 = v
+		_물_그림_갱신()
 		queue_redraw()
 
 ## ⚠[2026-08-07 버그 수정] 예전에는 `색` 만 바꿨는데, 아래 `_physics_process` 의
@@ -34,19 +49,44 @@ enum 종류_ { 물, 연기 }
 ##   (레버로 물 색을 바꾸거나 도구/테스트가 색을 지정할 때 조용히 무시됐다)
 ##   → 바깥에서 색을 지정하면 `_원래색` 도 같이 갱신한다. 섞임 계산이 스스로
 ##     색을 쓸 때만 `_섞는중` 플래그로 그 갱신을 건너뛴다.
-@export var 색: int = ColorDefs.WHITE:
+@export var 색: 물색_ = 물색_.흰색:
 	set(v):
 		색 = v
 		if not _섞는중:
 			_원래색 = v
+		_물_그림_갱신()
 		queue_redraw()
 
 ## 유체가 차지하는 사각 영역(px). 폭 좁고 세로로 길면 "떨어지는 물줄기"가 된다.
 @export var 크기: Vector2 = Vector2(64, 260):
 	set(v):
 		크기 = Vector2(maxf(v.x, 8.0), maxf(v.y, 8.0))
-		_모양_갱신()
+		# 씬을 읽는 중에는 자식 CollisionShape2D가 아직 들어오기 전이다.
+		# 그때 만들면 tscn의 같은 이름 노드와 충돌하므로, 로드 완료 뒤에만 갱신한다.
+		if is_node_ready():
+			_모양_갱신()
 		queue_redraw()
+
+## 물 이미지는 가는 물줄기와 넓게 퍼진 아래 물보라로 구성된다.
+## 큰 직사각형 하나를 쓰면 투명한 좌우 공간도 닿은 것으로 판정되므로, 세 구간 폭을 따로 둔다.
+@export_group("물 판정 범위")
+@export_range(0.10, 1.00, 0.01) var 물줄기_판정_폭_비율: float = 0.332:
+	set(v):
+		물줄기_판정_폭_비율 = clampf(v, 0.10, 1.00)
+		if is_node_ready():
+			_모양_갱신()
+
+@export_range(0.10, 1.00, 0.01) var 중간_물보라_판정_폭_비율: float = 0.766:
+	set(v):
+		중간_물보라_판정_폭_비율 = clampf(v, 0.10, 1.00)
+		if is_node_ready():
+			_모양_갱신()
+
+@export_range(0.10, 1.00, 0.01) var 바닥_물보라_판정_폭_비율: float = 0.953:
+	set(v):
+		바닥_물보라_판정_폭_비율 = clampf(v, 0.10, 1.00)
+		if is_node_ready():
+			_모양_갱신()
 
 ## 흐름 속도(px/s) — 그림이 흐르는 속도. 물리에는 영향 없음.
 @export var 흐름속도: float = 130.0
@@ -65,6 +105,24 @@ var _지운적: Dictionary = {}         ## 같은 지형을 매 프레임 지우
 ## (건드리면 "섞인 결과"가 기준색이 되어 물이 원래 색으로 못 돌아온다).
 var _섞는중: bool = false
 
+## 각 애니메이션 프레임에서 실제 알파가 차지하는 폭 비율이다.
+## 색만 다른 세 SpriteFrames는 같은 실루엣을 쓰므로, 이 표 하나를 공용으로 쓴다.
+const 물_프레임_실루엣_폭: Array[Vector3] = [
+	Vector3(0.332, 0.766, 0.953),
+	Vector3(0.332, 0.805, 0.953),
+	Vector3(0.344, 0.820, 0.953),
+	Vector3(0.344, 0.820, 0.953),
+	Vector3(0.324, 0.820, 0.961),
+	Vector3(0.324, 0.820, 0.961),
+	Vector3(0.328, 0.816, 0.953),
+	Vector3(0.328, 0.816, 0.953),
+]
+const 물_기준_프레임_실루엣_폭 := Vector3(0.332, 0.766, 0.953)
+## 바닥 물보라가 충격 때 위로 튀는 높이다. 물줄기 판정의 끝도 같은 높이에서 멈춘다.
+const 물_프레임_물보라_시작_비율: Array[float] = [0.750, 0.752, 0.713, 0.688, 0.664, 0.684, 0.703, 0.758]
+const 물_바닥_물보라_시작_비율 := 0.875
+var _마지막_판정_프레임: int = -1
+
 
 func _ready() -> void:
 	collision_layer = 32
@@ -73,6 +131,7 @@ func _ready() -> void:
 	monitorable = true
 	_모양_갱신()
 	_원래색 = 색
+	_물_그림_갱신()
 	if Engine.is_editor_hint():
 		queue_redraw()
 		return
@@ -84,24 +143,175 @@ func _ready() -> void:
 
 
 func _모양_갱신() -> void:
-	var c := get_node_or_null("모양") as CollisionShape2D
-	if c == null:
-		c = CollisionShape2D.new()
-		c.name = "모양"
-		add_child(c)
-	var s := c.shape as RectangleShape2D
-	if s == null:
-		s = RectangleShape2D.new()
-		c.shape = s
-	s.size = 크기
-	# 물은 위에서 아래로 흐르니 원점을 위쪽 끝에 둔다 (배관 출구에 맞추기 쉽게).
-	# 연기는 아래에서 위로 흐르므로 원점이 아래쪽 끝.
-	c.position = Vector2(0, 크기.y * 0.5) if 종류 == 종류_.물 else Vector2(0, -크기.y * 0.5)
+	if 종류 == 종류_.물:
+		_물_판정_갱신()
+	else:
+		_물_판정_숨기기()
+		var c := _직사각_판정("모양")
+		var s := c.shape as RectangleShape2D
+		s.size = 크기
+		# 연기는 기존 직사각형 판정을 유지한다. 물보라 전용 3분할을 연기에 적용하면
+		# 위로 퍼지는 기체의 기존 규칙과 보이는 범위가 달라지기 때문이다.
+		c.disabled = false
+		c.position = Vector2(0, -크기.y * 0.5)
+	# 유체 인스턴스마다 물줄기 길이가 다르다. 그림도 같은 판정 크기로 맞춰야
+	# 56x300 기본값 그림이 긴 물줄기 중앙에만 짧게 남지 않는다.
+	var 그림 := 아트슬롯.슬롯(self)
+	if 그림 != null:
+		그림.기준_크기 = 크기
+	_물_애니_크기_맞추기()
+
+
+## 물 그림의 알파 폭(본체 약 35% / 아래로 갈수록 넓어지는 물보라)을 따라
+## 충돌을 세 사각형으로 나눈다. 원점은 배관 출구와 맞추기 위한 물의 윗끝이다.
+func _물_판정_갱신() -> void:
+	var 이전_사각 := get_node_or_null("모양") as CollisionShape2D
+	if 이전_사각 != null:
+		# 이전 버전 씬에 저장된 전체 사각형이 있더라도 중복 판정되지 않게 끈다.
+		이전_사각.disabled = true
+	var 프레임_폭 := _현재_프레임_실루엣_폭()
+	var 물보라_시작 := _현재_프레임_물보라_시작_비율()
+	var 중간_물보라_높이 := 물_바닥_물보라_시작_비율 - 물보라_시작
+	# 인스펙터 비율은 0번 프레임의 기준값이다. 이후 프레임은 실제 알파 변화량만
+	# 곱해서 보정하므로, 디자이너가 조절한 난이도 폭도 유지한 채 애니메이션을 따른다.
+	_판정_사각_설정("물줄기_판정", 물줄기_판정_폭_비율 * 프레임_폭.x / 물_기준_프레임_실루엣_폭.x, 0.00, 물보라_시작)
+	_판정_사각_설정("중간_물보라_판정", 중간_물보라_판정_폭_비율 * 프레임_폭.y / 물_기준_프레임_실루엣_폭.y, 물보라_시작, 중간_물보라_높이)
+	_판정_사각_설정("바닥_물보라_판정", 바닥_물보라_판정_폭_비율 * 프레임_폭.z / 물_기준_프레임_실루엣_폭.z, 물_바닥_물보라_시작_비율, 0.125)
+
+
+func _물_판정_숨기기() -> void:
+	for 이름 in [&"물줄기_판정", &"중간_물보라_판정", &"바닥_물보라_판정"]:
+		var 판정 := get_node_or_null(NodePath(이름)) as CollisionShape2D
+		if 판정 != null:
+			판정.disabled = true
+
+
+func _판정_사각_설정(이름: StringName, 폭_비율: float, 시작_비율: float, 높이_비율: float) -> void:
+	var 판정 := _직사각_판정(이름)
+	var 모양 := 판정.shape as RectangleShape2D
+	모양.size = Vector2(크기.x * 폭_비율, 크기.y * 높이_비율)
+	판정.position = Vector2(0, 크기.y * (시작_비율 + 높이_비율 * 0.5))
+	판정.disabled = false
+
+
+func _직사각_판정(이름: StringName) -> CollisionShape2D:
+	var 판정 := get_node_or_null(NodePath(이름)) as CollisionShape2D
+	if 판정 == null:
+		판정 = CollisionShape2D.new()
+		판정.name = 이름
+		add_child(판정)
+	var 모양 := 판정.shape as RectangleShape2D
+	if 모양 == null:
+		모양 = RectangleShape2D.new()
+		판정.shape = 모양
+	return 판정
 
 
 func _켜짐_반영() -> void:
 	monitoring = 켜짐
 	visible = 켜짐
+
+
+## 물은 반투명 SpriteFrames 3종을 색 규칙과 같은 기준으로 골라 계속 재생한다.
+## 연기는 기존 코드 그림을 유지한다. 물 프레임을 억지로 뒤집어 쓰면 기체처럼 안 보이기 때문이다.
+func _물_그림_갱신() -> void:
+	var 그림 := 아트슬롯.슬롯(self)
+	var 애니 := _물_애니()
+	var 상세 := _물_상세_애니()
+	if 종류 != 종류_.물:
+		# 연기용 커스텀 그림은 보존하고, 물 애니메이션만 숨긴다.
+		if 그림 != null:
+			그림.visible = true
+		if 애니 != null:
+			애니.stop()
+			애니.visible = false
+		if 상세 != null:
+			상세.stop()
+			상세.visible = false
+		return
+	# 물은 정지 Sprite2D 대신 AnimatedSprite2D가 그린다. 그래야 _draw가 아래에 겹쳐 그리지 않는다.
+	if 그림 != null:
+		그림.visible = false
+	if 애니 == null and 상세 == null:
+		return
+	match 색:
+		ColorDefs.BLACK:
+			if 애니 != null: 애니.sprite_frames = 물_프레임_검정색
+			if 상세 != null: 상세.sprite_frames = 물_상세_프레임_검정색
+		ColorDefs.GRAY:
+			if 애니 != null: 애니.sprite_frames = 물_프레임_회색
+			if 상세 != null: 상세.sprite_frames = 물_상세_프레임_회색
+		_:
+			if 애니 != null: 애니.sprite_frames = 물_프레임_흰색
+			if 상세 != null: 상세.sprite_frames = 물_상세_프레임_흰색
+	if 애니 != null:
+		애니.animation = &"흐름"
+		애니.visible = true
+	if 상세 != null:
+		상세.animation = &"흐름"
+		상세.visible = true
+	_물_애니_크기_맞추기()
+	# 에디터에서는 첫 프레임만 보이고, 게임에서는 8fps 루프가 바로 이어서 흐른다.
+	if Engine.is_editor_hint():
+		if 애니 != null: 애니.frame = 0
+		if 상세 != null: 상세.frame = 0
+	else:
+		if 애니 != null: 애니.play(&"흐름")
+		if 상세 != null: 상세.play(&"흐름")
+
+
+## 원점은 물의 출구(윗끝)다. 프레임 중앙을 판정 사각형 중앙으로 옮긴 뒤 같은 크기로 맞춘다.
+func _물_애니_크기_맞추기() -> void:
+	var 애니 := _물_애니()
+	var 상세 := _물_상세_애니()
+	if 종류 != 종류_.물:
+		return
+	var 배율 := Vector2(크기.x / 256.0, 크기.y / 512.0)
+	if 애니 != null:
+		애니.position = Vector2(0, 크기.y * 0.5)
+		애니.scale = 배율
+	if 상세 != null:
+		상세.position = Vector2(0, 크기.y * 0.5)
+		상세.scale = 배율
+
+
+func _물_애니() -> AnimatedSprite2D:
+	return get_node_or_null("물_애니메이션") as AnimatedSprite2D
+
+
+func _물_상세_애니() -> AnimatedSprite2D:
+	return get_node_or_null("물결_상세_애니메이션") as AnimatedSprite2D
+
+
+func _물_애니_재생중() -> bool:
+	var 애니 := _물_애니()
+	return 애니 != null and 애니.visible and 애니.sprite_frames != null
+
+
+func _현재_프레임_실루엣_폭() -> Vector3:
+	var 애니 := _물_애니()
+	if 애니 == null:
+		return 물_기준_프레임_실루엣_폭
+	return 물_프레임_실루엣_폭[clampi(애니.frame, 0, 물_프레임_실루엣_폭.size() - 1)]
+
+
+func _현재_프레임_물보라_시작_비율() -> float:
+	var 애니 := _물_애니()
+	if 애니 == null:
+		return 물_프레임_물보라_시작_비율[0]
+	return 물_프레임_물보라_시작_비율[clampi(애니.frame, 0, 물_프레임_물보라_시작_비율.size() - 1)]
+
+
+## AnimatedSprite2D의 프레임이 바뀐 때만 충돌 폭을 갱신한다.
+## 매 렌더 프레임에 Shape2D를 새로 쓰지 않아도 8fps 물결과 판정이 정확히 같이 움직인다.
+func _물_애니_판정_따르기() -> void:
+	if 종류 != 종류_.물:
+		return
+	var 애니 := _물_애니()
+	if 애니 == null or not 애니.visible or 애니.frame == _마지막_판정_프레임:
+		return
+	_마지막_판정_프레임 = 애니.frame
+	_물_판정_갱신()
 
 
 # ── 규칙 ───────────────────────────────────────────────────────────────────
@@ -133,6 +343,11 @@ func 되돌리기() -> bool:
 
 func 현재색() -> int:
 	return 색
+
+
+## 물은 원점에서 아래로 시작한다. 호퍼·저장고 포트가 이 점을 기준으로 실제 연결을 찾는다.
+func 시작점_월드좌표() -> Vector2:
+	return global_position
 
 
 ## 다른 유체와 섞였을 때의 결과색. 기획의 표를 그대로 옮겼다.
@@ -199,14 +414,15 @@ func _process(delta: float) -> void:
 	if not 켜짐:
 		return
 	_흐름 += delta * 흐름속도
+	_물_애니_판정_따르기()
 	queue_redraw()
 
 
 func _draw() -> void:
 	# ── [2026-08-07 도형] 디자이너 그림 슬롯 ────────────────────────────
-	# 자식 `그림`(아트슬롯.gd) 에 텍스처가 꽂혀 있으면 코드 그리기는 쉰다.
-	# 슬롯이 비어 있으면 지금까지처럼 아래 _draw 코드가 그린다 → 회귀 없음.
-	if 아트슬롯.그림_있나(self):
+	# 자식 `그림`(아트슬롯.gd) 또는 물 애니메이션이 보이면 코드 그리기는 쉰다.
+	# 둘 다 비었을 때만 기존 도형 그림을 써서, 연기와 커스텀 그림의 회귀를 막는다.
+	if 아트슬롯.그림_있나(self) or _물_애니_재생중():
 		return
 
 	if not 켜짐:

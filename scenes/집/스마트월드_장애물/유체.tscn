@@ -2,14 +2,61 @@
 
 [ext_resource type="Script" uid="uid://cyyy5rke8bwet" path="res://scripts/스마트월드/유체.gd" id="1_cf27a"]
 [ext_resource type="Script" uid="uid://c5cus3t8mvbl6" path="res://scripts/스마트월드/아트슬롯.gd" id="2_7jowv"]
+[ext_resource type="SpriteFrames" path="res://assets/textures/obstacles/liquid/animated_v4/fluid_gray_frames_v4.tres" id="3_0qbfb"]
+[ext_resource type="SpriteFrames" path="res://assets/textures/obstacles/liquid/flow_details_v1/fluid_gray_flow_detail_frames_v1.tres" id="4_flow"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_liquid_stream"]
+size = Vector2(18.592, 225)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_liquid_mid_splash"]
+size = Vector2(42.896, 37.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_liquid_bottom_splash"]
+size = Vector2(53.368, 37.5)
 
 [node name="유체" type="Area2D" unique_id=1622344719]
 collision_layer = 32
 collision_mask = 9
 script = ExtResource("1_cf27a")
+"색" = 2
 "크기" = Vector2(56, 300)
+"물줄기_판정_폭_비율" = 0.332
+"중간_물보라_판정_폭_비율" = 0.766
+"바닥_물보라_판정_폭_비율" = 0.953
+
+[node name="물줄기_판정" type="CollisionShape2D" parent="."]
+position = Vector2(0, 112.5)
+shape = SubResource("RectangleShape2D_liquid_stream")
+
+[node name="중간_물보라_판정" type="CollisionShape2D" parent="."]
+position = Vector2(0, 243.75)
+shape = SubResource("RectangleShape2D_liquid_mid_splash")
+
+[node name="바닥_물보라_판정" type="CollisionShape2D" parent="."]
+position = Vector2(0, 281.25)
+shape = SubResource("RectangleShape2D_liquid_bottom_splash")
 
 [node name="그림" type="Sprite2D" parent="." unique_id=1417604682]
+visible = false
 texture_filter = 1
 script = ExtResource("2_7jowv")
 "기준_크기" = Vector2(56, 300)
+
+[node name="물_애니메이션" type="AnimatedSprite2D" parent="." unique_id=1033060633]
+z_index = 1
+texture_filter = 1
+position = Vector2(0, 150)
+scale = Vector2(0.21875, 0.5859375)
+sprite_frames = ExtResource("3_0qbfb")
+animation = &"흐름"
+autoplay = "흐름"
+
+[node name="물결_상세_애니메이션" type="AnimatedSprite2D" parent="."]
+visible = false
+z_index = 2
+texture_filter = 1
+position = Vector2(0, 150)
+scale = Vector2(0.21875, 0.5859375)
+sprite_frames = ExtResource("4_flow")
+animation = &"흐름"
+autoplay = "흐름"

@@ -1,0 +1,95 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/shape.gd" id="1_shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="2_point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_points"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/pipe_v1/tres/배관_회색v1_경로.tres" id="4_material"]
+
+[sub_resource type="Resource" id="Straight_p0"]
+script = ExtResource("2_point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Straight_p1"]
+script = ExtResource("2_point")
+position = Vector2(640, 0)
+
+[sub_resource type="Resource" id="Straight_points"]
+script = ExtResource("3_points")
+_points = {
+0: SubResource("Straight_p0"),
+1: SubResource("Straight_p1")
+}
+_point_order = PackedInt32Array(0, 1)
+_next_key = 2
+
+[sub_resource type="Resource" id="L_p0"]
+script = ExtResource("2_point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="L_p1"]
+script = ExtResource("2_point")
+position = Vector2(512, 0)
+
+[sub_resource type="Resource" id="L_p2"]
+script = ExtResource("2_point")
+position = Vector2(512, 256)
+
+[sub_resource type="Resource" id="L_points"]
+script = ExtResource("3_points")
+_points = {
+0: SubResource("L_p0"),
+1: SubResource("L_p1"),
+2: SubResource("L_p2")
+}
+_point_order = PackedInt32Array(0, 1, 2)
+_next_key = 3
+
+[sub_resource type="Resource" id="R_p0"]
+script = ExtResource("2_point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="R_p1"]
+script = ExtResource("2_point")
+position = Vector2(0, 256)
+
+[sub_resource type="Resource" id="R_p2"]
+script = ExtResource("2_point")
+position = Vector2(-512, 256)
+
+[sub_resource type="Resource" id="R_p3"]
+script = ExtResource("2_point")
+position = Vector2(-512, 512)
+
+[sub_resource type="Resource" id="R_points"]
+script = ExtResource("3_points")
+_points = {
+0: SubResource("R_p0"),
+1: SubResource("R_p1"),
+2: SubResource("R_p2"),
+3: SubResource("R_p3")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3)
+_next_key = 4
+
+[node name="배관_SS2D_경로예제" type="Node2D"]
+
+[node name="직선_두점" type="Node2D" parent="."]
+position = Vector2(128, 128)
+script = ExtResource("1_shape")
+_points = SubResource("Straight_points")
+shape_material = ExtResource("4_material")
+collision_update_mode = 0
+
+[node name="ㄱ자_세점" type="Node2D" parent="."]
+position = Vector2(128, 448)
+script = ExtResource("1_shape")
+_points = SubResource("L_points")
+shape_material = ExtResource("4_material")
+collision_update_mode = 0
+
+[node name="ㄹ자_네점" type="Node2D" parent="."]
+position = Vector2(1024, 128)
+script = ExtResource("1_shape")
+_points = SubResource("R_points")
+shape_material = ExtResource("4_material")
+collision_update_mode = 0

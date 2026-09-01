@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3 uid="uid://iwxr1lcfqjn2"]
+
+[ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="1_meta"]
+[ext_resource type="Script" uid="uid://d0xjijisx1woh" path="res://addons/rmsmartshape/materials/edge_material.gd" id="2_edge"]
+[ext_resource type="Script" uid="uid://d218yx0d1ilsn" path="res://addons/rmsmartshape/normal_range.gd" id="3_range"]
+[ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="4_shape"]
+[ext_resource type="Texture2D" uid="uid://cd7w50ob2i3tk" path="res://assets/textures/smartshape/pipe_v1/source/pipe_base_gray_v2.png" id="5_pipe"]
+
+[sub_resource type="Resource" id="E_pipe"]
+script = ExtResource("2_edge")
+textures = Array[Texture2D]([ExtResource("5_pipe")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.22
+uniform_width = true
+
+[sub_resource type="Resource" id="R_all"]
+script = ExtResource("3_range")
+distance = 360.0
+
+[sub_resource type="Resource" id="M_all"]
+script = ExtResource("1_meta")
+edge_material = SubResource("E_pipe")
+normal_range = SubResource("R_all")
+
+[resource]
+script = ExtResource("4_shape")
+_edge_meta_materials = Array[ExtResource("1_meta")]([SubResource("M_all")])
