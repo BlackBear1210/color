@@ -82,7 +82,7 @@ func _실행() -> void:
 		if 지형 == null:
 			실패 += 1
 			print("  %s
-    ✗ 칠할 수 있는 지형이 없다 (지형.gd 를 안 씀)" % 이름)
+	✗ 칠할 수 있는 지형이 없다 (지형.gd 를 안 씀)" % 이름)
 			n.queue_free()
 			continue
 

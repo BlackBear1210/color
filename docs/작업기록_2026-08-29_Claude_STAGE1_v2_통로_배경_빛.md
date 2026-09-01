@@ -216,7 +216,7 @@ v2 가 넓어진 것은 **벽이 두꺼워졌기 때문**(240→500 ×2)이고 �
 진단_콜리전대_그림   지형 17 개 전부 위/아래/왼/오른 +0.0        ✔
 진단_지형메시        17 개 전부 점 크기 == 렌더 메시 크기         ✔
 레벨검사             밟는 지형 19 개 중 도달 19 (100%)
-                     소프트락 0 · 색 경계 겹침 0                  ✔
+					 소프트락 0 · 색 경계 겹침 0                  ✔
 ```
 
 ### Scene Transition 검증
@@ -265,9 +265,9 @@ test_빛창문 61/61 · test_색경계_분할 53/53 · test_사방재질_칠하�
 
 ```
 수정  tools/build_스테이지_1_2층방.gd      v2 전면 개정 (배경·문간·창문·통로·빛)
-      scenes/집/스테이지_1_2층방.tscn      위 빌더로 다시 구움
-      scenes/집/스마트 매쉬 assets/BRICK_벽돌/TEMPLATE_BRICK_STAIRS.tscn
-          (앞 세션에서 고친 collision_offset 제거 — 아직 커밋 안 됨)
+	  scenes/집/스테이지_1_2층방.tscn      위 빌더로 다시 구움
+	  scenes/집/스마트 매쉬 assets/BRICK_벽돌/TEMPLATE_BRICK_STAIRS.tscn
+		  (앞 세션에서 고친 collision_offset 제거 — 아직 커밋 안 됨)
 신규  docs/작업기록_2026-08-29_Claude_STAGE1_v2_통로_배경_빛.md   이 문서
 ```
 
