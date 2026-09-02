@@ -12,14 +12,100 @@
 [ext_resource type="Texture2D" uid="uid://23v8oi5ie55x" path="res://assets/png/metal.png" id="4_t56xi"]
 [ext_resource type="Texture2D" uid="uid://i8x7xcntvebt" path="res://assets/textures/smartshape/concrete_v1/concrete_trowel_black_game_v2.png" id="5_eykqf"]
 [ext_resource type="Texture2D" uid="uid://dgjxfec778puk" path="res://assets/textures/smartshape/concrete_v1/concrete_edge_black_v1.png" id="6_dkg78"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="6_qlx42"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="7_eecs4"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/CEMENT_시멘트/TEMPLATE_CEMENT_STAIRS.tscn" id="7_klp4i"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/통과플랫폼.tscn" id="8_dqwqi"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/투명블럭.tscn" id="9_05xgt"]
 [ext_resource type="PackedScene" uid="uid://b1dsdmq2515cx" path="res://scenes/집/스마트 매쉬 assets/CEMENT_시멘트/TEMPLATE_CEMENT_SOLID_WHITE.tscn" id="10_m7jj2"]
 [ext_resource type="Texture2D" uid="uid://dk4cqfyv5rol6" path="res://assets/textures/smartshape/concrete_v1/concrete_trowel_white_game_v1.png" id="11_tqh6h"]
 [ext_resource type="Texture2D" uid="uid://bs2ifsclrm6nd" path="res://assets/textures/smartshape/concrete_v1/concrete_edge_white_v1.png" id="12_qlx42"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="16_eecs4"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_m7jj2"]
+[sub_resource type="Resource" id="Resource_k75vk"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-640, -1224)
+
+[sub_resource type="Resource" id="Resource_uej2s"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(544, 0)
+
+[sub_resource type="Resource" id="Resource_vefkh"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(544, 1712)
+
+[sub_resource type="Resource" id="Resource_0yb8m"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-656, 1712)
+
+[sub_resource type="Resource" id="Resource_fyk5w"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-640, -1224)
+
+[sub_resource type="Resource" id="Resource_r7t0k"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-336, 0)
+texture_idx = 12
+
+[sub_resource type="Resource" id="Resource_hyl01"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(6984, -1248)
+
+[sub_resource type="Resource" id="Resource_tv8bi"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(6992, -672)
+
+[sub_resource type="Resource" id="Resource_bulfu"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-328, -640)
+
+[sub_resource type="Resource" id="Resource_ji61n"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(1536, -624)
+
+[sub_resource type="Resource" id="Resource_ofowv"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(2384, -624)
+
+[sub_resource type="Resource" id="Resource_ej6kp"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(2104, -624)
+
+[sub_resource type="Resource" id="Resource_b27st"]
+script = ExtResource("7_eecs4")
+_points = {
+0: SubResource("Resource_k75vk"),
+1: SubResource("Resource_uej2s"),
+2: SubResource("Resource_vefkh"),
+3: SubResource("Resource_0yb8m"),
+4: SubResource("Resource_fyk5w"),
+7: SubResource("Resource_r7t0k"),
+8: SubResource("Resource_hyl01"),
+9: SubResource("Resource_tv8bi"),
+10: SubResource("Resource_bulfu"),
+11: SubResource("Resource_ji61n"),
+13: SubResource("Resource_ofowv"),
+16: SubResource("Resource_ej6kp")
+}
+_point_order = PackedInt32Array(0, 8, 9, 13, 16, 11, 10, 7, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 17
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_0j7qo"]
 _surfaces = [{
 "aabb": AABB(-656, -1248, 0, 7648, 2960, 1e-05),
 "attribute_data": PackedByteArray("/////1g4skBuxn6/WDiyQG7Gfr//////m2yyQMUvCb+bbLJAxS8Jv//////IV/M/bsb+vshX8z9uxv6+/////yrD1j9uxv6+KsPWP27G/r7/////4cicP27G/r7hyJw/bsb+vv////+W64W+ZqcCv5brhb5mpwK//////8Uvib4AAAAAxS+JvgAAAAD/////lBzePgAAAACUHN4+AAAAAP////+UHN4+5r+uP5Qc3j7mv64//////5brBb/mv64/lusFv+a/rj//////ZqcCvyfgeb9mpwK/J+B5vw=="),
@@ -32,13 +118,13 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AEDaRQAAnMQAAAAAAIDaRQAAKMQAAAAAAAAVRQAAHMQAAAAAAIADRQAAHMQAAAAAAADARAAAHMQAAAAAAACkwwAAIMQAAAAAAACowwAAAAAAAAAAAAAIRAAAAAAAAAAAAAAIRAAA1kQAAAAAAAAkxAAA1kQAAAAAAAAgxAAAmcQAAAAA/////////7//////////v/////////+//////////7//////////v//////+//+///////7//7//////////v/////////+//////////7//////////vw==")
 }]
 
-[sub_resource type="Resource" id="Resource_tqh6h"]
+[sub_resource type="Resource" id="Resource_c505s"]
 script = ExtResource("4_jvxlt")
 texture = ExtResource("5_eykqf")
-mesh = SubResource("ArrayMesh_m7jj2")
+mesh = SubResource("ArrayMesh_0j7qo")
 z_index = -1
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_qlx42"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_4rgip"]
 _surfaces = [{
 "aabb": AABB(-656, -1248, 0, 7648, 2960, 1e-05),
 "attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+IwW1CAACAP4jBbUIAAIA//////4jBbUIAAAAAiMFtQgAAAAD/////cEJ/QgAAgD9wQn9CAACAP/////9wQn9CAAAAAHBCf0IAAAAA//////KBx0IAAIA/8oHHQgAAgD//////8oHHQgAAAADygcdCAAAAAP/////G4ctCAACAP8bhy0IAAIA//////8bhy0IAAAAAxuHLQgAAAAD/////pMHUQgAAgD+kwdRCAACAP/////+kwdRCAAAAAKTB1EIAAAAA/////6YB8kIAAIA/pgHyQgAAgD//////pgHyQgAAAACmAfJCAAAAAP////8gQvxCAACAPyBC/EIAAIA//////yBC/EIAAAAAIEL8QgAAAAD/////RAEFQwAAgD9EAQVDAACAP/////9EAQVDAAAAAEQBBUMAAAAA/////0RBEkMAAIA/REESQwAAgD//////REESQwAAAABEQRJDAAAAAP////8tgRtDAACAPy2BG0MAAIA//////y2BG0MAAAAALYEbQwAAAAD/////UFEyQwAAgD9QUTJDAACAP/////9QUTJDAAAAAFBRMkMAAAAA"),
@@ -51,12 +137,101 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAgxAAAmcQAAAAAjAUcxJoBl8QAAAAAxMHZRWj+mcQAAAAAAEDaRQAAnMQAAAAAO/7ZRT31K8QAAAAAAIDaRQAAKMQAAAAApP4URQAAIMQAAAAAAAAVRQAAHMQAAAAAAIADRQAAIMQAAAAAAIADRQAAHMQAAAAAIALARAAAIMQAAAAAAADARAAAHMQAAAAAWOarw7cIJMQAAAAAAACkwwAAIMQAAAAAxBmwwwAAgEEAAAAAAACowwAAAAAAAAAAAAAERAAAgEEAAAAAAAAIRAAAAAAAAAAAAAAERAAA1EQAAAAAAAAIRAAA1kQAAAAAaPofxAAA1EQAAAAAAAAkxAAA1kQAAAAAjAUcxJoBl8QAAAAAAAAgxAAAmcQAAAAA/3//f5j/M0D/f/9/mP8zQP9//3+LwEUg/3//f4rARSD/f/9/xkCcH/9//3/GQJwf/3//f6kAqj//f/9/qQCqP/9//38AAP8//3//fwAA/z//f/9/jABFQP9//3+MAEVA/3//f1M/ViD/f/9/Uz9WIP9//3+Yv8wf/3//f5i/zB//f/9//7//H/9//3//v/8f/3//f/8//x//f/9//z//H/9//38sQBVg/3//fyxAFWD/f/9/sYCmf/9//3+xgKZ/")
 }]
 
-[sub_resource type="Resource" id="Resource_eecs4"]
+[sub_resource type="Resource" id="Resource_uux2l"]
 script = ExtResource("4_jvxlt")
 texture = ExtResource("6_dkg78")
-mesh = SubResource("ArrayMesh_qlx42")
+mesh = SubResource("ArrayMesh_4rgip")
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_k75vk"]
+[sub_resource type="Resource" id="Resource_em146"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-450, 220)
+
+[sub_resource type="Resource" id="Resource_kseo4"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-270, 220)
+
+[sub_resource type="Resource" id="Resource_t35c6"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-270, 110)
+
+[sub_resource type="Resource" id="Resource_rchsq"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-90, 110)
+
+[sub_resource type="Resource" id="Resource_soniw"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-90, 0)
+
+[sub_resource type="Resource" id="Resource_pn28b"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(90, 0)
+
+[sub_resource type="Resource" id="Resource_3sf8t"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(90, -110)
+
+[sub_resource type="Resource" id="Resource_8khdf"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(270, -110)
+
+[sub_resource type="Resource" id="Resource_2hcgt"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(270, -220)
+
+[sub_resource type="Resource" id="Resource_h53el"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(450, -220)
+
+[sub_resource type="Resource" id="Resource_a6mxr"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(450, 412)
+
+[sub_resource type="Resource" id="Resource_khadn"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-450, 412)
+
+[sub_resource type="Resource" id="Resource_ljf6t"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-450, 220)
+
+[sub_resource type="Resource" id="Resource_aj3eg"]
+resource_local_to_scene = true
+script = ExtResource("7_eecs4")
+_points = {
+0: SubResource("Resource_em146"),
+1: SubResource("Resource_kseo4"),
+2: SubResource("Resource_t35c6"),
+3: SubResource("Resource_rchsq"),
+4: SubResource("Resource_soniw"),
+5: SubResource("Resource_pn28b"),
+6: SubResource("Resource_3sf8t"),
+7: SubResource("Resource_8khdf"),
+8: SubResource("Resource_2hcgt"),
+9: SubResource("Resource_h53el"),
+10: SubResource("Resource_a6mxr"),
+11: SubResource("Resource_khadn"),
+12: SubResource("Resource_ljf6t")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+_constraints = {
+Vector2i(0, 12): 15
+}
+_next_key = 13
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_mdb0a"]
 _surfaces = [{
 "aabb": AABB(-450, -220, 0, 900, 632, 1e-05),
 "attribute_data": PackedByteArray("/////4Llz72hE5C9guXPvaETkL3/////guXPvaETEL2C5c+9oRMQvf////8CmQq9oRMQvQKZCr2hExC9/////wKZCr0AAAAAApkKvQAAAAD/////ApkKPQAAAAACmQo9AAAAAP////8CmQo9oRMQPQKZCj2hExA9/////4Llzz2hExA9guXPPaETED3/////guXPPaETkD2C5c89oROQPf////9CPy0+oROQPUI/LT6hE5A9/////0I/LT596Aa+Qj8tPn3oBr7/////Qj8tvn3oBr5CPy2+fegGvv////9CPy2+oROQvUI/Lb6hE5C9"),
@@ -69,31 +244,72 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AACHwwAAXEMAAAAAAACHwwAA3EIAAAAAAAC0wgAA3EIAAAAAAAC0wgAAAAAAAAAAAAC0QgAAAAAAAAAAAAC0QgAA3MIAAAAAAACHQwAA3MIAAAAAAACHQwAAXMMAAAAAAADhQwAAXMMAAAAAAADhQwAAzkMAAAAAAADhwwAAzkMAAAAAAADhwwAAXEMAAAAA//////7//z//////////P/////////8//////////z//////////P/////////8//////////z//////////P/////////8//////////z//////////P/////////8/")
 }]
 
-[sub_resource type="Resource" id="Resource_uej2s"]
+[sub_resource type="Resource" id="Resource_c66w6"]
 script = ExtResource("4_jvxlt")
 texture = ExtResource("5_eykqf")
-mesh = SubResource("ArrayMesh_k75vk")
+mesh = SubResource("ArrayMesh_mdb0a")
 z_index = -1
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_vefkh"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_8db2c"]
 _surfaces = [{
 "aabb": AABB(-450, -220, 0, 900, 632, 1e-05),
-"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AALQ/AACAPwAAtD8AAIA//////wAAtD8AAAAAAAC0PwAAAAD/////AAARQAAAgD8AABFAAACAP/////8AABFAAAAAAAAAEUAAAAAA/////4sYbkAAAIA/ixhuQAAAgD//////ixhuQAAAAACLGG5AAAAAAP/////RiqVAAACAP9GKpUAAAIA//////9GKpUAAAAAA0YqlQAAAAAD/////N0XYQAAAgD83RdhAAACAP/////83RdhAAAAAADdF2EAAAAAA/////5uiAkEAAIA/m6ICQQAAgD//////m6ICQQAAAACbogJBAAAAAP////+bYhBBAACAP5tiEEEAAIA//////5tiEEEAAAAAm2IQQQAAAAD/////m+IkQQAAgD+b4iRBAACAP/////+b4iRBAAAAAJviJEEAAAAA/////5vicUEAAIA/m+JxQQAAgD//////m+JxQQAAAACb4nFBAAAAAP////9OMbBBAACAP04xsEEAAIA//////04xsEEAAAAATjGwQQAAAAD/////TjG7QQAAgD9OMbtBAACAP/////9OMbtBAAAAAE4xu0EAAAAA"),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AALQ/AACAPwAAtD8AAIA//////wAAtD8AAAAAAAC0PwAAAAD/////AAARQAAAgD8AABFAAACAP/////8AABFAAAAAAAAAEUAAAAAA/////wAAa0AAAIA/AABrQAAAgD//////AABrQAAAAAAAAGtAAAAAAP////8AAJFAAACAPwAAkUAAAIA//////wAAkUAAAAAAAACRQAAAAAD/////AAC+QAAAgD8AAL5AAACAP/////8AAL5AAAAAAAAAvkAAAAAA/////wCA2UAAAIA/AIDZQAAAgD//////AIDZQAAAAAAAgNlAAAAAAP////8AQANBAACAPwBAA0EAAIA//////wBAA0EAAAAAAEADQQAAAAD/////AAARQQAAgD8AABFBAACAP/////8AABFBAAAAAAAAEUEAAAAA/////wCAJUEAAIA/AIAlQQAAgD//////AIAlQQAAAAAAgCVBAAAAAP////8AgHJBAACAPwCAckEAAIA//////wCAckEAAAAAAIByQQAAAAD/////AICwQQAAgD8AgLBBAACAP/////8AgLBBAAAAAACAsEEAAAAA/////wCAu0EAAIA/AIC7QQAAgD//////AIC7QQAAAAAAgLtBAAAAAA=="),
 "format": 34359742527,
-"index_count": 66,
-"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcA"),
+"index_count": 72,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 24,
-"vertex_data": PackedByteArray("AADhwwAAXEMAAAAAAADZwwAAbEMAAAAAAAB+wwAAbEMAAAAAAACHwwAAXEMAAAAAAAB+wwAA/EIAAAAAAACHwwAA3EIAAAAAkKmTwsRUI0MAAAAAcFa0wr15V0IAAAAAAADUQivTSUMAAAAAAAC0QgAAAAAAAAAAAADUQgIAvMIAAAAAAAC0QgAA3MIAAAAAAACPQwAAvMIAAAAAAACHQwAA3MIAAAAAAACPQwAATMMAAAAAAACHQwAAXMMAAAAAAADZQwAATMMAAAAAAADhQwAAXMMAAAAAAADZQwAAxkMAAAAAAADhQwAAzkMAAAAAAADZwwAAxkMAAAAAAADhwwAAzkMAAAAAAADZwwAAbEMAAAAAAADhwwAAXEMAAAAA/3//f////z//f/9/////P/9//3//v/9f/3//f/+//1//f/9/4MkPW/9//3/Oxphc/3//fxD9iD7/f/9/5OyNSf9//3/l6wxK/3//fw+jd27/f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//H/9//3//v/8f/3//f/8//x//f/9//z//H/9//3//P/9f/3//f/8//1//f/9//3/+f/9//3//f/5/")
+"vertex_count": 26,
+"vertex_data": PackedByteArray("AADhwwAAXEMAAAAAAADZwwAAbEMAAAAAAAB+wwAAbEMAAAAAAACHwwAAXEMAAAAAAAB+wwAA/EIAAAAAAACHwwAA3EIAAAAAAACUwgAA/EIAAAAAAAC0wgAA3EIAAAAAAACUwgAAgEEAAAAAAAC0wgAAAAAAAAAAAADUQgAAgEEAAAAAAAC0QgAAAAAAAAAAAADUQgAAvMIAAAAAAAC0QgAA3MIAAAAAAACPQwAAvMIAAAAAAACHQwAA3MIAAAAAAACPQwAATMMAAAAAAACHQwAAXMMAAAAAAADZQwAATMMAAAAAAADhQwAAXMMAAAAAAADZQwAAxkMAAAAAAADhQwAAzkMAAAAAAADZwwAAxkMAAAAAAADhwwAAzkMAAAAAAADZwwAAbEMAAAAAAADhwwAAXEMAAAAA/3//f////z//f/9/////P/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//x//f/9//7//H/9//3//P/8f/3//f/8//x//f/9//z//X/9//3//P/9f/3//f/9//n//f/9//3/+fw==")
 }]
 
-[sub_resource type="Resource" id="Resource_0yb8m"]
+[sub_resource type="Resource" id="Resource_odbj3"]
 script = ExtResource("4_jvxlt")
 texture = ExtResource("6_dkg78")
-mesh = SubResource("ArrayMesh_vefkh")
+mesh = SubResource("ArrayMesh_8db2c")
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_fyk5w"]
+[sub_resource type="Resource" id="Resource_57iir"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-264, -96)
+
+[sub_resource type="Resource" id="Resource_6vc5t"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(160, -96)
+
+[sub_resource type="Resource" id="Resource_i6g25"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(152, 864)
+
+[sub_resource type="Resource" id="Resource_xsoax"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-264, 864)
+
+[sub_resource type="Resource" id="Resource_f74a0"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-264, -96)
+
+[sub_resource type="Resource" id="Resource_5ceg4"]
+resource_local_to_scene = true
+script = ExtResource("7_eecs4")
+_points = {
+0: SubResource("Resource_57iir"),
+1: SubResource("Resource_6vc5t"),
+2: SubResource("Resource_i6g25"),
+3: SubResource("Resource_xsoax"),
+4: SubResource("Resource_f74a0")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2mh2k"]
 _surfaces = [{
 "aabb": AABB(-264, -96, 0, 424, 960, 1e-05),
 "attribute_data": PackedByteArray("/////2anAj7hyJy9ZqcCPuHInL3/////Dz74Pf1hMD8PPvg9/WEwP/////82lFe+/WEwPzaUV779YTA//////zaUV77hyJy9NpRXvuHInL0="),
@@ -106,13 +322,13 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAgQwAAwMIAAAAAAAAYQwAAWEQAAAAAAACEwwAAWEQAAAAAAACEwwAAwMIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_r7t0k"]
+[sub_resource type="Resource" id="Resource_mj1cj"]
 script = ExtResource("4_jvxlt")
 texture = ExtResource("11_tqh6h")
-mesh = SubResource("ArrayMesh_fyk5w")
+mesh = SubResource("ArrayMesh_2mh2k")
 z_index = -1
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_hyl01"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_k65do"]
 _surfaces = [{
 "aabb": AABB(-264, -96, 0, 424, 960, 1e-05),
 "attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9u90tAAACAP273S0AAAIA//////273S0AAAAAAbvdLQAAAAAD/////6P4oQQAAgD/o/ihBAACAP//////o/ihBAAAAAOj+KEEAAAAA/////wgBW0EAAIA/CAFbQQAAgD//////CAFbQQAAAAAIAVtBAAAAAP////+EgKhBAACAP4SAqEEAAIA//////4SAqEEAAAAAhICoQQAAAAA="),
@@ -125,10 +341,88 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AACEwwAAwMIAAAAAAAB4wwAAoMIAAAAAut0PQwAAoMIAAAAAAAAgQwAAwMIAAAAA/SEIQ///U0QAAAAAAAAYQwAAWEQAAAAA//93wwAAVEQAAAAAAACEwwAAWEQAAAAAAAB4wwAAoMIAAAAAAACEwwAAwMIAAAAA/3//f////z//f/9/////P/9//3+6v90f/3//f7u/3R//f/9/uz8iIP9//3+7PyIg/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
 }]
 
-[sub_resource type="Resource" id="Resource_tv8bi"]
+[sub_resource type="Resource" id="Resource_pocjq"]
 script = ExtResource("4_jvxlt")
 texture = ExtResource("12_qlx42")
-mesh = SubResource("ArrayMesh_hyl01")
+mesh = SubResource("ArrayMesh_k65do")
+
+[sub_resource type="Resource" id="Resource_ehe27"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-674.67114, -19.180176)
+
+[sub_resource type="Resource" id="Resource_picq7"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-317.1228, -12.449951)
+
+[sub_resource type="Resource" id="Resource_g1qye"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-302.5979, 1699.55)
+
+[sub_resource type="Resource" id="Resource_jwsj2"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-656, 1712)
+
+[sub_resource type="Resource" id="Resource_d1qv1"]
+resource_local_to_scene = true
+script = ExtResource("6_qlx42")
+position = Vector2(-674.67114, -19.180176)
+
+[sub_resource type="Resource" id="Resource_4ommo"]
+resource_local_to_scene = true
+script = ExtResource("7_eecs4")
+_points = {
+0: SubResource("Resource_ehe27"),
+1: SubResource("Resource_picq7"),
+2: SubResource("Resource_g1qye"),
+3: SubResource("Resource_jwsj2"),
+4: SubResource("Resource_d1qv1")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 18
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_vgfjh"]
+_surfaces = [{
+"aabb": AABB(-674.67114, -19.180176, 0, 372.07324, 1731.1802, 1e-05),
+"attribute_data": PackedByteArray("/////6t6gb7ZqSK8q3qBvtmpIrz/////9Rh3vpJ6rT/1GHe+knqtP/////+W6wW/5r+uP5brBb/mv64//////167Cb+zmHq8XrsJv7OYerw="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("uI+ewwAzR8EAAAAAiEyXw5px1EQAAAAAAAAkxAAA1kQAAAAA9KooxABxmcEAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_vurk6"]
+script = ExtResource("4_jvxlt")
+texture = ExtResource("5_eykqf")
+mesh = SubResource("ArrayMesh_vgfjh")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_iyq7y"]
+_surfaces = [{
+"aabb": AABB(-674.67114, -19.180176, 0, 372.07324, 1731.1802, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8byypAAACAPxvLKkAAAIA//////xvLKkAAAAAAG8sqQAAAAAD/////ZsJ+QQAAgD9mwn5BAACAP/////9mwn5BAAAAAGbCfkEAAAAA/////1p7lEEAAIA/WnuUQQAAgD//////WnuUQQAAAABae5RBAAAAAP/////VqP9BAACAP9Wo/0EAAIA//////9Wo/0EAAAAA1aj/QQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("9KooxABxmcEAAAAApJ8kxADaN8AAAAAAvn6mw/REUEAAAAAAuI+ewwAzR8EAAAAAYV2fw3mD0kQAAAAAiEyXw5px1EQAAAAAYQsgxNnt00QAAAAAAAAkxAAA1kQAAAAApJ8kxADaN8AAAAAA9KooxABxmcEAAAAA/3//f6H90T7/f/9/of3RPv9//3+qv9Uf/3//f6q/1R//f/9/ZUFMH/9//39lQUwf/3//f4Y+Q1//f/9/hj5DX/9//3+hflB//3//f6F+UH8=")
+}]
+
+[sub_resource type="Resource" id="Resource_2yec8"]
+script = ExtResource("4_jvxlt")
+texture = ExtResource("6_dkg78")
+mesh = SubResource("ArrayMesh_iyq7y")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vfire"]
 texture = ExtResource("2_s4nsc")
@@ -3755,29 +4049,58 @@ move_speed = 300.0
 [node name="TEMPLATE_CEMENT_SOLID" parent="지형" unique_id=426990818 instance=ExtResource("3_aepxf")]
 position = Vector2(342, 1163)
 "위치별_판정" = true
-_meshes = Array[ExtResource("4_jvxlt")]([SubResource("Resource_tqh6h"), SubResource("Resource_eecs4")])
+_points = SubResource("Resource_b27st")
+_meshes = Array[ExtResource("4_jvxlt")]([SubResource("Resource_c505s"), SubResource("Resource_uux2l")])
 
 [node name="TEMPLATE_CEMENT_STAIRS" parent="지형" unique_id=817326432 instance=ExtResource("7_klp4i")]
 position = Vector2(2312.0002, 695.99994)
 rotation = -3.1415927
 scale = Vector2(-0.47146672, 0.40099466)
 "위치별_판정" = true
-_meshes = Array[ExtResource("4_jvxlt")]([SubResource("Resource_uej2s"), SubResource("Resource_0yb8m")])
+_points = SubResource("Resource_aj3eg")
+_meshes = Array[ExtResource("4_jvxlt")]([SubResource("Resource_c66w6"), SubResource("Resource_odbj3")])
 
 [node name="TEMPLATE_CEMENT_SOLID_WHITE" parent="지형" unique_id=1475092290 instance=ExtResource("10_m7jj2")]
-position = Vector2(1352, 1264)
+position = Vector2(1340, 1273)
 "위치별_판정" = true
-_meshes = Array[ExtResource("4_jvxlt")]([SubResource("Resource_r7t0k"), SubResource("Resource_tv8bi")])
+_points = SubResource("Resource_5ceg4")
+_meshes = Array[ExtResource("4_jvxlt")]([SubResource("Resource_mj1cj"), SubResource("Resource_pocjq")])
 
-[node name="유체_2 검정" parent="." unique_id=1622344719 instance=ExtResource("2_t56xi")]
-position = Vector2(2072, 720)
+[node name="TEMPLATE_CEMENT_SOLID2" parent="지형" unique_id=803265072 instance=ExtResource("3_aepxf")]
+position = Vector2(2280, 1201)
+_points = SubResource("Resource_4ommo")
+_meshes = Array[ExtResource("4_jvxlt")]([SubResource("Resource_vurk6"), SubResource("Resource_2yec8")])
+collision_polygon_node_path = NodePath("../TEMPLATE_CEMENT_SOLID/StaticBody2D/CollisionPolygon2D")
+
+[node name="배관 모음" type="Node2D" parent="." unique_id=1368003873]
+position = Vector2(0, 1)
+
+[node name="배관_1" parent="배관 모음" unique_id=1713569738 instance=ExtResource("16_eecs4")]
+z_index = 2
+position = Vector2(1288, 620)
+rotation = -1.5722936
+"깊이" = 2
+
+[node name="배관_2" parent="배관 모음" unique_id=545131093 instance=ExtResource("16_eecs4")]
+z_index = 3
+position = Vector2(1794, 623.99994)
+rotation = -1.570024
+
+[node name="유체 모음" type="Node2D" parent="." unique_id=148482297]
+position = Vector2(1792, 626)
+
+[node name="유체_1 흰색" parent="유체 모음" unique_id=804676665 instance=ExtResource("2_t56xi")]
+position = Vector2(-505, -7)
+"색" = 1
+"크기" = Vector2(230, 570)
+
+[node name="유체_2 검정" parent="유체 모음" unique_id=619925498 instance=ExtResource("2_t56xi")]
+"크기" = Vector2(230, 570)
+
+[node name="유체_3 회색" parent="유체 모음" unique_id=1622344719 instance=ExtResource("2_t56xi")]
+position = Vector2(245, -145)
 "색" = 0
 "크기" = Vector2(56, 800)
-
-[node name="유체_1 흰색" parent="." unique_id=804676665 instance=ExtResource("2_t56xi")]
-position = Vector2(1296, 384)
-"색" = 0
-"크기" = Vector2(300, 800)
 
 [node name="장애물?" type="Node2D" parent="." unique_id=289513422]
 
@@ -3931,7 +4254,3 @@ collision_mask = 0
 position = Vector2(6831.9995, -8.000122)
 rotation = 0.21768282
 "크기" = Vector2(56, 1400)
-
-[node name="유체6" parent="." unique_id=619925498 instance=ExtResource("2_t56xi")]
-position = Vector2(1728, 1040)
-"크기" = Vector2(56, 900)

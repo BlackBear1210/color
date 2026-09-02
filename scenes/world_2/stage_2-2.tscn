@@ -8,6 +8,10 @@
 [ext_resource type="PackedScene" uid="uid://xopxff8t4a3b" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="6_lqyhe"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/가시.tscn" id="7_f6lqn"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/떨어지는블록.tscn" id="8_0m7sn"]
+[ext_resource type="PackedScene" uid="uid://ovba7agxgmdg" path="res://scenes/집/스마트 매쉬 assets/CEMENT_시멘트/TEMPLATE_CEMENT_SOLID.tscn" id="9_awjo4"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="10_yjncv"]
+[ext_resource type="Texture2D" uid="uid://i8x7xcntvebt" path="res://assets/textures/smartshape/concrete_v1/concrete_trowel_black_game_v2.png" id="11_oqq0u"]
+[ext_resource type="Texture2D" uid="uid://dgjxfec778puk" path="res://assets/textures/smartshape/concrete_v1/concrete_edge_black_v1.png" id="12_xluro"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3s24x"]
 texture = ExtResource("2_lqyhe")
@@ -1603,6 +1607,43 @@ texture = ExtResource("2_lqyhe")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_3s24x")
 
+[sub_resource type="ArrayMesh" id="ArrayMesh_w7cc1"]
+_surfaces = [{
+"aabb": AABB(-656, -1248, 0, 7648, 2960, 1e-05),
+"attribute_data": PackedByteArray("/////1g4skBuxn6/WDiyQG7Gfr//////m2yyQMUvCb+bbLJAxS8Jv//////IV/M/bsb+vshX8z9uxv6+/////yrD1j9uxv6+KsPWP27G/r7/////GyqcP5l/Ib8bKpw/mX8hv//////FL4m+AAAAAMUvib4AAAAA/////5Qc3j4AAAAAlBzePgAAAAD/////lBzePua/rj+UHN4+5r+uP/////+W6wW/5r+uP5brBb/mv64//////69miL7IwyS/r2aIvsjDJL//////ZqcCvyfgeb9mpwK/J+B5vw=="),
+"format": 34359742527,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABQAGAAcAAAACAAQABQAHAAgAAAAEAAkACQAFAAgACAAKAAoACgAAAAkACQAIAAoA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 11,
+"vertex_data": PackedByteArray("AEDaRQAAnMQAAAAAAIDaRQAAKMQAAAAAAAAVRQAAHMQAAAAAAIADRQAAHMQAAAAAkD2/RMLFRcQAAAAAAACowwAAAAAAAAAAAAAIRAAAAAAAAAAAAAAIRAAA1kQAAAAAAAAkxAAA1kQAAAAAwAmnw8LFScQAAAAAAAAgxAAAmcQAAAAA/////////7//////////v/////////+//////////7//////////v//////+//+//////////7//////////v/////////+//////////7//////////vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_rm7n1"]
+script = ExtResource("10_yjncv")
+texture = ExtResource("11_oqq0u")
+mesh = SubResource("ArrayMesh_w7cc1")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_0f7lm"]
+_surfaces = [{
+"aabb": AABB(-656, -1248, 0, 7648, 2960, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+IwW1CAACAP4jBbUIAAIA//////4jBbUIAAAAAiMFtQgAAAAD/////cEJ/QgAAgD9wQn9CAACAP/////9wQn9CAAAAAHBCf0IAAAAA//////KBx0IAAIA/8oHHQgAAgD//////8oHHQgAAAADygcdCAAAAAP////823ctCAACAPzbdy0IAAIA//////zbdy0IAAAAANt3LQgAAAAD/////qjTVQgAAgD+qNNVCAACAP/////+qNNVCAAAAAKo01UIAAAAA/////5B58kIAAIA/kHnyQgAAgD//////kHnyQgAAAACQefJCAAAAAP////81Vv9CAACAPzVW/0IAAIA//////zVW/0IAAAAANVb/QgAAAAD/////JIsGQwAAgD8kiwZDAACAP/////8kiwZDAAAAACSLBkMAAAAA/////yTLE0MAAIA/JMsTQwAAgD//////JMsTQwAAAAAkyxNDAAAAAP////8OCx1DAACAPw4LHUMAAIA//////w4LHUMAAAAADgsdQwAAAAD/////MdszQwAAgD8x2zNDAACAP/////8x2zNDAAAAADHbM0MAAAAA"),
+"format": 34359742527,
+"index_count": 66,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAgxAAAmcQAAAAAjAUcxJoBl8QAAAAAxMHZRWj+mcQAAAAAAEDaRQAAnMQAAAAAO/7ZRT31K8QAAAAAAIDaRQAAKMQAAAAApP4URQAAIMQAAAAAAAAVRQAAHMQAAAAAf6QDRQAAIMQAAAAAAIADRQAAHMQAAAAAuIi/RIHEScQAAAAAkD2/RMLFRcQAAAAA2ASvw5DOTcQAAAAAwAmnw8LFScQAAAAA4wSwwwAAgEEAAAAAAACowwAAAAAAAAAAAAAERAAAgEEAAAAAAAAIRAAAAAAAAAAAAAAERAAA1EQAAAAAAAAIRAAA1kQAAAAAaPofxAAA1EQAAAAAAAAkxAAA1kQAAAAAjAUcxJoBl8QAAAAAAAAgxAAAmcQAAAAA/3//f5j/M0D/f/9/mP8zQP9//3+LwEUg/3//f4rARSD/f/9/xkCcH/9//3/GQJwf/3//f6kAqj//f/9/qQCqP/9//3/4D/xH/3//f/gP/Ef/f/9/ZhAySP9//39mEDJI/3//f6Y/LCD/f/9/pT8sIP9//3/rv/Yf/3//f+u/9h//f/9//7//H/9//3//v/8f/3//f/8//x//f/9//z//H/9//38sQBVg/3//fyxAFWD/f/9/sYCmf/9//3+xgKZ/")
+}]
+
+[sub_resource type="Resource" id="Resource_kiac6"]
+script = ExtResource("10_yjncv")
+texture = ExtResource("12_xluro")
+mesh = SubResource("ArrayMesh_0f7lm")
+
 [node name="Stage_2-2" type="Node2D" unique_id=671778799]
 script = ExtResource("1_kbw8d")
 "스테이지이름" = "스테이지_2-2"
@@ -1974,3 +2015,7 @@ collision_layer = 0
 [node name="떨어지는블록4" parent="." unique_id=590771559 instance=ExtResource("8_0m7sn")]
 position = Vector2(9650, 2292)
 collision_layer = 0
+
+[node name="TEMPLATE_CEMENT_SOLID" parent="." unique_id=426990818 instance=ExtResource("9_awjo4")]
+position = Vector2(-887, -899)
+_meshes = Array[ExtResource("10_yjncv")]([SubResource("Resource_rm7n1"), SubResource("Resource_kiac6")])
