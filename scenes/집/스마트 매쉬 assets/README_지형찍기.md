@@ -27,7 +27,28 @@
 | 잔디 지형 | `GRASS_잔디/TEMPLATE_GRASS_SOLID.tscn` |
 | 잔디 계단 | `GRASS_잔디/TEMPLATE_GRASS_STAIRS.tscn` |
 | 잔디인데 안이 비어야 함 | `GRASS_잔디/TEMPLATE_GRASS_HOLLOW.tscn` |
+| **시멘트 바닥 · 벽 · 플랫폼** | `CEMENT_시멘트/TEMPLATE_CEMENT_SOLID.tscn` |
+| **시멘트 계단** | `CEMENT_시멘트/TEMPLATE_CEMENT_STAIRS.tscn` |
 | 철 (IRON) | **NOT READY — 사용 금지** |
+
+### ★시멘트 (CEMENT) — 2026-09-02 문서에 추가
+
+`stage_2-1` 이 이미 쓰고 있는 재질입니다. 쓰는 법은 BRICK · WOOD · GRASS 와 **완전히 같습니다.**
+
+| 상황 | Template |
+|---|---|
+| 시멘트 바닥 · 벽 · 플랫폼 | `CEMENT_시멘트/TEMPLATE_CEMENT_SOLID.tscn` |
+| 시멘트 계단 | `CEMENT_시멘트/TEMPLATE_CEMENT_STAIRS.tscn` |
+| **흰** 시멘트 바닥 · 벽 | `CEMENT_시멘트/TEMPLATE_CEMENT_SOLID_WHITE.tscn` |
+| **흰** 시멘트 계단 | `CEMENT_시멘트/TEMPLATE_CEMENT_STAIRS_WHITE.tscn` |
+
+- **HOLLOW(속빔)는 없습니다.** 링·터널이 필요하면 BRICK/WOOD/GRASS 의 HOLLOW 를 쓰세요.
+- 흰색판은 다른 재질의 `_WHITE` 와 같은 규칙입니다 — `시작상태 = 흰색`, 에디터에서도 희게 보임.
+- 재질: `assets/textures/smartshape/concrete_v1/tres/지형_시멘트_{black,white}_{기본,계단}.tres`
+  (SOLID 는 `기본`, STAIRS 는 `계단` 을 씁니다. **직접 바꾸지 마세요.**)
+
+> ⚠ CEMENT 의 재질 상태(PRODUCTION 인지 아직 손볼 것이 있는지)는 아래 §16 표에
+> 아직 안 적혀 있습니다. 파이프라인 담당자에게 확인하고 채워 주세요.
 
 ### ★흰색 지형 (2026-08-29 추가)
 
@@ -40,6 +61,8 @@
 | 흰 잔디 지형 | `GRASS_잔디/TEMPLATE_GRASS_SOLID_WHITE.tscn` |
 | 흰 잔디 계단 | `GRASS_잔디/TEMPLATE_GRASS_STAIRS_WHITE.tscn` |
 | 흰 벽돌 계단 | `BRICK_벽돌/벽돌 계단_흰색.tscn` |
+| 흰 시멘트 바닥 · 벽 | `CEMENT_시멘트/TEMPLATE_CEMENT_SOLID_WHITE.tscn` |
+| 흰 시멘트 계단 | `CEMENT_시멘트/TEMPLATE_CEMENT_STAIRS_WHITE.tscn` |
 
 모양·치수·쓰는 법은 **검정판과 완전히 같습니다.** 다른 것은 두 가지뿐입니다.
 
@@ -61,10 +84,14 @@ scenes/집/스마트 매쉬 assets/
 ├─ README_지형찍기.md              ← 지금 읽는 문서
 ├─ WORKER_GUIDE.tscn              ← 먼저 열어 볼 것 (예제 21개 + 규칙)
 ├─ WORKER_EXAMPLE_INTERIOR.tscn   ← 실제로 걸어 다녀 볼 수 있는 실내 샘플
-├─ GRASS_잔디/  TEMPLATE_GRASS_{SOLID,HOLLOW,STAIRS}.tscn  + *_WHITE 2개
-├─ BRICK_벽돌/  TEMPLATE_BRICK_{SOLID,HOLLOW,STAIRS}.tscn  + 벽돌 계단_흰색.tscn
-└─ WOOD_나무/   TEMPLATE_WOOD_{SOLID,HOLLOW,STAIRS}.tscn   + *_WHITE 2개
+├─ GRASS_잔디/   TEMPLATE_GRASS_{SOLID,HOLLOW,STAIRS}.tscn  + *_WHITE 2개
+├─ BRICK_벽돌/   TEMPLATE_BRICK_{SOLID,HOLLOW,STAIRS}.tscn  + 벽돌 계단_흰색.tscn
+├─ CEMENT_시멘트/ TEMPLATE_CEMENT_{SOLID,STAIRS}.tscn        + *_WHITE 2개  (HOLLOW 없음)
+└─ WOOD_나무/    TEMPLATE_WOOD_{SOLID,HOLLOW,STAIRS}.tscn   + *_WHITE 2개
 ```
+
+> `METAL_철판/` 과 `PIPE_배관/` 폴더도 있지만 이 문서에는 아직 안 적었습니다.
+> 상태를 확인한 뒤에 추가할 것.
 
 IRON(하수도 철제)은 원본 작업이 아직 안 끝났습니다. 준비되면 여기에 추가됩니다.
 예전에 있던 `SEWER_하수` 템플릿은 IRON 으로 대체될 예정이라 뺐습니다.
@@ -81,6 +108,47 @@ IRON(하수도 철제)은 원본 작업이 아직 안 끝났습니다. 준비되
 6. 저장한다
 
 끝입니다. 그 다음 맵 씬에 끌어다 놓으면 됩니다.
+
+> ### ★★ Template 을 맵에 바로 여러 번 꽂아도 되나요? — **이제 됩니다** (2026-09-02)
+>
+> **예전에는 안 됐습니다.** 복제하지 않고 맵 씬에 바로 여러 번 인스턴스하면
+> 그 인스턴스들이 점을 나눠 써서, 한 곳에서 점을 끌면 **나머지가 전부 같이 움직였습니다.**
+> 다른 맵 씬에 있는 것까지요.
+>
+> 이유: Godot 은 씬 안의 서브리소스를 **그 씬의 모든 인스턴스가 공유**합니다.
+> SS2D 의 점 배열(`_points`)과 점 하나하나가 바로 그 서브리소스입니다.
+>
+> **2026-09-02 에 키트 Template 26 개를 전부 고쳤습니다.**
+> 점 배열과 점 전부에 `resource_local_to_scene = true` 를 넣어서, 이제 **꽂을 때마다
+> 엔진이 자기 복사본을 만들어 줍니다.** 그냥 여러 번 꽂아도 각자 따로 고칠 수 있습니다.
+> (`tools/생성_템플릿_점독립.gd` 가 넣었고, `tools/test_템플릿_점독립.gd` 가 지킵니다)
+>
+> **그래도 복제(2 번)를 권합니다.** 여러 맵에서 같은 모양을 쓸 거면 이름 붙은 씬 하나로
+> 두는 편이 관리가 쉽고, 맵 씬 파일도 덜 불어납니다.
+>
+> **새 Template 을 만들었다면** 아래 두 줄을 꼭 돌리세요. 안 그러면 그 Template 만
+> 옛날 증상("한 번 더 꽂으니 같은 모양으로 들어온다")이 그대로 납니다.
+>
+> ```bash
+> Godot --headless --path . -s res://tools/생성_템플릿_점독립.gd
+> Godot --headless --path . -s res://tools/check_지형_점공유.gd
+> ```
+>
+> 그래도 두 지형이 같이 움직인다면: 그 노드 선택 → 인스펙터
+> **Geometry → Make Unique → Execute → "Proceed"**.
+>
+> **원본 Template 은 안 다칩니다.** 맵에 꽂은 인스턴스의 점을 아무리 끌어도
+> 그 수정은 **맵 씬 쪽에 저장**되고 Template 파일은 바이트 하나 안 바뀝니다
+> (`tools/test_템플릿_점독립.gd` 가 26 개 전부 파일 대조로 확인합니다).
+> Template 원본이 바뀌는 경우는 **그 Template 씬을 직접 열어서 고쳤을 때뿐**입니다.
+>
+> ⚠ 다만 아래 5 개는 SS2D 가 **껍데기 안의 자식**이라, 맵에서 모양을 고치려면
+> 그 인스턴스에 **Editable Children(자식 편집 가능)** 을 먼저 켜야 합니다.
+> 안 켜면 지형 노드가 아예 선택이 안 되고, 스크립트로 고쳐도 저장이 안 됩니다.
+>
+> `벽돌 테스` · `벽돌 테스_흰색` · `TEMPLATE_METAL_SOLID` · `TEMPLATE_METAL_SOLID_WHITE` · `TEMPLATE_PIPE_OPEN_GRAY`
+>
+> 나머지 21 개는 SS2D 가 인스턴스 뿌리라 그냥 고치면 됩니다.
 
 > 색(검정/흰색)은 **게임이 실행 중에** 정합니다. 인스펙터의 `시작상태` 만 고르세요
 > (무색 / 검정 / 흰색 / 회색). **머티리얼을 직접 만들지 마세요** — 키트에 있는 것만 씁니다.
@@ -188,6 +256,13 @@ Template 의 기본 크기가 이미 512 × 192 라 그대로 늘려 쓰면 됩�
 ### "왜 안쪽이 안 보여요 / 뒤가 비쳐요?"
 SOLID 를 써야 할 자리에 HOLLOW 를 썼거나 그 반대입니다. Template 을 확인하세요.
 
+### "Template 을 한 번 더 꽂았는데 이미 있는 것과 똑같은 모양으로 들어와요"
+### "한쪽 점을 끌었더니 다른 지형까지 같이 움직여요"
+
+점 배열을 나눠 쓰고 있습니다. 키트 Template 26 개는 2026-09-02 에 고쳐 놨으니
+**새로 만든 Template** 이 표시를 빠뜨렸을 때만 이럴 겁니다. **위 §3 의 ★★ 상자**를 보세요.
+급하면: 그 노드 선택 → 인스펙터 **Geometry → Make Unique → Execute → Proceed**.
+
 ### "지형이 이상해 보여서 텍스처를 고쳐도 되나요?"
 **안 됩니다.** 아래 12번 표를 보세요. 먼저 13·14번 체크리스트를 해 보고,
 그래도 이상하면 파이프라인 담당자에게 알려 주세요.
@@ -253,6 +328,7 @@ SOLID 를 써야 할 자리에 HOLLOW 를 썼거나 그 반대입니다. Templat
 | GRASS v4 | **PRODUCTION** (LOCK — 다시 굽지 않음) |
 | BRICK v2 | **PRODUCTION** |
 | WOOD v2 | **PRODUCTION** (gamma 2.80) |
+| CEMENT (concrete v1) | **stage_2-1 에서 사용 중** · 상태 확인 필요 (⚠ 담당자가 채울 것) |
 | IRON v1 | **준비 중 — 사용 금지** |
 | SEWER v1 | IRON 으로 대체 예정. 템플릿 없음 |
 
