@@ -27,7 +27,8 @@ const 시작_위치_방식_에디터_플레이어: int = 1
 ## [2026-08-17 추가] 점(pip) 방식 페인트 HUD + 그 어댑터.
 ## ⚠ class_name 이 아니라 경로 preload 로 잡는다 — 새 스크립트의 전역 클래스 이름은
 ##   에디터가 한 번 훑기 전까지 등록되지 않아서, 헤드리스 검사가 통째로 죽는다.
-const 페인트HUD_스크립트 := preload("res://scripts/ui/페인트_HUD.gd")
+## ★[2026-09-05] 모든 스테이지가 쓰는 **공통 HUD 씬**. stage_lab.gd 도 같은 것을 쓴다.
+const 페인트HUD_씬 := preload("res://scenes/ui/페인트_HUD.tscn")
 const 페인트HUD어댑터_코어 := preload("res://scripts/ui/페인트_HUD_어댑터_코어.gd")
 
 @export var 스테이지_이름: String = "스마트월드 테스트"
@@ -576,9 +577,14 @@ func _발밑에_땅있나() -> bool:
 ##   ③ FIFO 순서가 안 보여서 E 가 "무엇이 풀릴지 모르고 누르는 키"였다.
 ## → `페인트_HUD.gd` 가 세 가지를 한꺼번에 해결한다. 여기서는 붙이기만 한다.
 ##   스마트월드 6개 씬이 전부 이 파일을 쓰므로 이 한 줄로 전부 적용된다.
+## ★★[2026-09-05 STEP 2] HUD 를 **코드로 만들지 않고 공통 씬을 인스턴스**한다.
+##   예전에는 `페인트HUD_스크립트.new()` 로 빈 CanvasLayer 를 만들고 그 안을 전부
+##   코드로 그렸다(얼굴 배지 · 캡슐 바). 그게 인게임의 "이상한 얼굴 UI" 였다.
+##   → 이제 `scenes/ui/페인트_HUD.tscn` **하나를** 여기서도, `stage_lab.gd` 에서도 쓴다.
+##     HUD 모양을 고치려면 그 씬 하나만 고치면 되고, 스테이지가 늘어도 복사할 것이 없다.
 func _HUD_만들기() -> void:
 	if _코어:
-		var 새HUD: CanvasLayer = 페인트HUD_스크립트.new()
+		var 새HUD: CanvasLayer = 페인트HUD_씬.instantiate()
 		새HUD.name = "페인트HUD"
 		add_child(새HUD)
 		새HUD.연결(_플레이어, 페인트HUD어댑터_코어.new(_코어, 새HUD))
@@ -601,10 +607,10 @@ func _HUD_만들기() -> void:
 		layer.name = "HUD"
 		add_child(layer)
 
-	# 탄약 글씨 라벨은 없앴다 — 점 HUD 가 대신한다. 조작 안내만 남긴다.
-	# 점 줄이 y≈34 에 깔리므로 안내문은 그 아래로 내린다.
+	# 탄약 글씨 라벨은 없앴다 — 게이지 HUD 가 대신한다. 조작 안내만 남긴다.
+	# ★[2026-09-05] 초상+게이지 HUD 가 y 20~108 을 쓰므로 안내문을 그 아래로 내렸다.
 	_hud_안내 = Label.new()
-	_hud_안내.position = Vector2(28, 58)
+	_hud_안내.position = Vector2(28, 116)
 	_hud_안내.add_theme_font_size_override("font_size", 17)
 	_hud_안내.add_theme_color_override("font_color", Color(0.80, 0.80, 0.78))
 	_hud_안내.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))

@@ -195,8 +195,21 @@ func _process(delta: float) -> void:
 		return
 	if _player == null:
 		return
-	# 색 접두어 (player.gd 의 player_color)
-	_color = "black" if _player.player_color == ColorDefs.BLACK else "white"
+	# 색 접두어 — 어느 시트를 **부모**로 재생할지 고른다.
+	# ★[2026-09-05 STEP 3] `player_color`(대표색) → `선택색()`(자유색) 으로 바꿨다.
+	#
+	# ▣ 왜 바꿨나 — 보이는 색은 그대로이고, 떨림만 사라진다
+	#   그림의 색을 정하는 것은 이 접두어가 **아니다.** `색분할.gdshader` 가 조각마다
+	#   `color_table` 로 정하고, 짝이 되는 반대색 시트는 `색겹침.gd` 가 항상 같이 깐다.
+	#   즉 흑/백 두 장은 늘 겹쳐 있고, 여기서 고르는 것은 "둘 중 누가 부모냐" 뿐이다.
+	#
+	#   그런데 `대표색` 은 몸이 색 경계에 걸치면 **물리 프레임마다 뒤집히는 파생값**이라,
+	#   그때마다 접두어가 바뀌어 `_switch()` 가 `play()` 를 다시 부른다 →
+	#   걷기 애니메이션이 경계 위에서 **첫 프레임으로 계속 리셋**된다.
+	#   `자유색` 은 Shift 로만 바뀌므로 그 떨림이 원천적으로 없다.
+	#   (HUD 도 STEP 2 부터 같은 이유로 `선택색()` 을 본다 — 출처를 하나로 모은다)
+	var 선택: int = _player.선택색() if _player.has_method("선택색") else _player.player_color
+	_color = "black" if 선택 == ColorDefs.BLACK else "white"
 
 	# 사망 훅: 프로토존이 사망 연출 중 물리를 끄면(set_physics_process(false)) death 재생.
 	# player.gd 자체엔 사망이 없으므로 평상시엔 물리가 켜져 있어 이 분기는 지나간다.

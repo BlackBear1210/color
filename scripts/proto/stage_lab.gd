@@ -33,7 +33,8 @@ const STAGE_HUD := preload("res://scripts/proto/stage_hud.gd")
 ## [2026-08-17] 점(pip) 방식 페인트 HUD + 타일맵용 어댑터.
 ## ⚠ class_name 이 아니라 경로 preload 로 잡는다 (새 스크립트의 전역 클래스 이름은
 ##   에디터가 훑기 전까지 등록되지 않아 헤드리스 검사가 죽는다).
-const 페인트HUD_스크립트 := preload("res://scripts/ui/페인트_HUD.gd")
+## ★[2026-09-05] 월드.gd 와 **똑같은 공통 HUD 씬**을 쓴다. HUD 를 두 벌로 만들지 않는다.
+const 페인트HUD_씬 := preload("res://scenes/ui/페인트_HUD.tscn")
 const 페인트HUD어댑터_타일 := preload("res://scripts/ui/페인트_HUD_어댑터_타일.gd")
 const SHOOT_ANIM := preload("res://scripts/proto/player_shoot_anim.gd")
 const ZONE_VISUALS := preload("res://scripts/proto/zone_visuals.gd")
@@ -251,12 +252,12 @@ func _ready() -> void:
 	#   돌려주므로 점 HUD 가 12칸 줄을 스스로 건너뛰고 회수 묶음만 그린다.
 	if 타일페인트 != null:
 		hud.회수대기_표시 = false          # 매니저 큐가 항상 0 이라 거짓말이 된다
-		var 점HUD: CanvasLayer = 페인트HUD_스크립트.new()
-		점HUD.name = "페인트HUD"
+		var 페인트HUD: CanvasLayer = 페인트HUD_씬.instantiate()
+		페인트HUD.name = "페인트HUD"
 		# StageHUD 가 좌상단 한 줄(스테이지 이름·사망 수)을 이미 쓰고 있다 → 그 아래로 내린다.
-		점HUD.여백 = Vector2(30, 64)
-		add_child(점HUD)
-		점HUD.연결(player, 페인트HUD어댑터_타일.new(타일페인트))
+		페인트HUD.여백 = Vector2(30, 52)
+		add_child(페인트HUD)
+		페인트HUD.연결(player, 페인트HUD어댑터_타일.new(타일페인트))
 
 	# ── 8.5) ★타일맵 페인트 디버그 — 명중 결과를 눈으로 볼 수 있게 한다 ──────
 	# 이게 없으면 blocked/wasted 처럼 "아무 일도 안 일어나는" 판정이 화면에 전혀 안 보여

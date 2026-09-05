@@ -1,0 +1,175 @@
+[gd_scene format=3 uid="uid://b42evbc1xalx1"]
+
+[ext_resource type="Script" uid="uid://3ea58bgvhfqa" path="res://scripts/ui/페인트_HUD.gd" id="1_ctrl"]
+[ext_resource type="Shader" uid="uid://bbd50an67ltaf" path="res://shaders/HUD_구.gdshader" id="2_gu"]
+[ext_resource type="Shader" uid="uid://bvrnusoy6n163" path="res://shaders/HUD_액체.gdshader" id="3_liquid"]
+[ext_resource type="SpriteFrames" uid="uid://ce7va4l5j1ei0" path="res://assets/p/player_frames.tres" id="4_frames"]
+
+[sub_resource type="ShaderMaterial" id="fqxii"]
+shader = ExtResource("2_gu")
+shader_parameter/back_pass = true
+shader_parameter/inner_color = Color(0.1, 0.1, 0.12, 0.92)
+shader_parameter/rim_color = Color(0.62, 0.6, 0.56, 1)
+shader_parameter/rim_dark = Color(0.06, 0.06, 0.07, 1)
+shader_parameter/highlight_color = Color(1, 1, 1, 0.3)
+shader_parameter/rim_width = 0.085
+shader_parameter/feather = 0.03
+shader_parameter/depth = 0.55
+
+[sub_resource type="ShaderMaterial" id="o57uj"]
+shader = ExtResource("2_gu")
+shader_parameter/back_pass = false
+shader_parameter/inner_color = Color(0.1, 0.1, 0.12, 0.92)
+shader_parameter/rim_color = Color(0.62, 0.6, 0.56, 1)
+shader_parameter/rim_dark = Color(0.06, 0.06, 0.07, 1)
+shader_parameter/highlight_color = Color(1, 1, 1, 0.3)
+shader_parameter/rim_width = 0.085
+shader_parameter/feather = 0.03
+shader_parameter/depth = 0.55
+
+[sub_resource type="ShaderMaterial" id="degkk"]
+shader = ExtResource("2_gu")
+shader_parameter/back_pass = true
+shader_parameter/inner_color = Color(0.1, 0.1, 0.12, 0.92)
+shader_parameter/rim_color = Color(0.62, 0.6, 0.56, 1)
+shader_parameter/rim_dark = Color(0.06, 0.06, 0.07, 1)
+shader_parameter/highlight_color = Color(1, 1, 1, 0.3)
+shader_parameter/rim_width = 0.085
+shader_parameter/feather = 0.03
+shader_parameter/depth = 0.55
+
+[sub_resource type="ShaderMaterial" id="27n3w"]
+shader = ExtResource("3_liquid")
+shader_parameter/fill_level = 1.0
+shader_parameter/pending_level = 0.0
+shader_parameter/locked_level = 0.0
+shader_parameter/liquid_color = Color(0.06, 0.06, 0.07, 1)
+shader_parameter/foam_color = Color(1, 1, 1, 0.55)
+shader_parameter/wave_amplitude = 0.0
+shader_parameter/wave_frequency = 2.0
+shader_parameter/wave_speed = 1.0
+shader_parameter/slosh_amount = 0.0
+shader_parameter/impact_shock = 0.0
+shader_parameter/foam_thickness = 0.012
+
+[sub_resource type="ShaderMaterial" id="r4w6k"]
+shader = ExtResource("2_gu")
+shader_parameter/back_pass = false
+shader_parameter/inner_color = Color(0.1, 0.1, 0.12, 0.92)
+shader_parameter/rim_color = Color(0.62, 0.6, 0.56, 1)
+shader_parameter/rim_dark = Color(0.06, 0.06, 0.07, 1)
+shader_parameter/highlight_color = Color(1, 1, 1, 0.3)
+shader_parameter/rim_width = 0.085
+shader_parameter/feather = 0.03
+shader_parameter/depth = 0.55
+
+[node name="페인트HUD" type="CanvasLayer" unique_id=893246874]
+layer = 100
+script = ExtResource("1_ctrl")
+
+[node name="루트" type="Control" parent="." unique_id=2143923671]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="본체" type="Control" parent="루트" unique_id=1035853381]
+anchors_preset = 0
+offset_left = 26.0
+offset_top = 20.0
+offset_right = 194.0
+offset_bottom = 108.0
+scale = Vector2(1.0671775, 1.0873898)
+mouse_filter = 2
+
+[node name="장식" type="Control" parent="루트/본체" unique_id=154673375]
+anchors_preset = 0
+offset_left = 60.0
+offset_top = 24.0
+offset_right = 92.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="초상" type="Control" parent="루트/본체" unique_id=934581197]
+anchors_preset = 0
+offset_top = 12.0
+offset_right = 64.0
+offset_bottom = 76.0
+mouse_filter = 2
+
+[node name="초상_뒤" type="ColorRect" parent="루트/본체/초상" unique_id=1362793652]
+material = SubResource("fqxii")
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="초상_마스크" type="Polygon2D" parent="루트/본체/초상" unique_id=115879337]
+clip_children = 1
+polygon = PackedVector2Array(63, 32, 62.618, 36.849, 61.483, 41.58, 59.621, 46.074, 57.08, 50.221, 53.92, 53.92, 50.221, 57.08, 46.074, 59.621, 41.58, 61.483, 36.849, 62.618, 32, 63, 27.151, 62.618, 22.42, 61.483, 17.926, 59.621, 13.779, 57.08, 10.08, 53.92, 6.92, 50.221, 4.379, 46.074, 2.517, 41.58, 1.382, 36.849, 1, 32, 1.382, 27.151, 2.517, 22.42, 4.379, 17.926, 6.92, 13.779, 10.08, 10.08, 13.779, 6.92, 17.926, 4.379, 22.42, 2.517, 27.151, 1.382, 32, 1, 36.849, 1.382, 41.58, 2.517, 46.074, 4.379, 50.221, 6.92, 53.92, 10.08, 57.08, 13.779, 59.621, 17.926, 61.483, 22.42, 62.618, 27.151)
+
+[node name="초상_그림" type="AnimatedSprite2D" parent="루트/본체/초상/초상_마스크" unique_id=2071047007]
+position = Vector2(30, 56.000008)
+scale = Vector2(0.19488604, 0.19237421)
+sprite_frames = ExtResource("4_frames")
+animation = &"black_walk"
+autoplay = "black_walk"
+
+[node name="초상_앞" type="ColorRect" parent="루트/본체/초상" unique_id=2079517504]
+material = SubResource("o57uj")
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="게이지" type="Control" parent="루트/본체" unique_id=1283787321]
+anchors_preset = 0
+offset_left = 88.0
+offset_top = 4.0
+offset_right = 168.0
+offset_bottom = 84.0
+mouse_filter = 2
+
+[node name="게이지_뒤" type="ColorRect" parent="루트/본체/게이지" unique_id=1593436019]
+material = SubResource("degkk")
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+mouse_filter = 2
+
+[node name="액체_마스크" type="Polygon2D" parent="루트/본체/게이지" unique_id=3902459]
+clip_children = 1
+polygon = PackedVector2Array(75.5, 40, 75.063, 45.553, 73.763, 50.97, 71.631, 56.117, 68.72, 60.866, 65.102, 65.102, 60.866, 68.72, 56.117, 71.631, 50.97, 73.763, 45.553, 75.063, 40, 75.5, 34.447, 75.063, 29.03, 73.763, 23.883, 71.631, 19.134, 68.72, 14.898, 65.102, 11.28, 60.866, 8.369, 56.117, 6.237, 50.97, 4.937, 45.553, 4.5, 40, 4.937, 34.447, 6.237, 29.03, 8.369, 23.883, 11.28, 19.134, 14.898, 14.898, 19.134, 11.28, 23.883, 8.369, 29.03, 6.237, 34.447, 4.937, 40, 4.5, 45.553, 4.937, 50.97, 6.237, 56.117, 8.369, 60.866, 11.28, 65.102, 14.898, 68.72, 19.134, 71.631, 23.883, 73.763, 29.03, 75.063, 34.447)
+
+[node name="액체" type="ColorRect" parent="루트/본체/게이지/액체_마스크" unique_id=1119200957]
+material = SubResource("27n3w")
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 76.0
+offset_bottom = 76.0
+mouse_filter = 2
+
+[node name="게이지_앞" type="ColorRect" parent="루트/본체/게이지" unique_id=1218095872]
+material = SubResource("r4w6k")
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+mouse_filter = 2
+
+[node name="눈금" type="Control" parent="루트/본체/게이지" unique_id=270183001]
+anchors_preset = 0
+offset_right = 80.0
+offset_bottom = 80.0
+mouse_filter = 2
+
+[node name="월드표식" type="Control" parent="루트" unique_id=141646418]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
