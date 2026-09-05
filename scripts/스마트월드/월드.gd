@@ -607,16 +607,33 @@ func _HUD_만들기() -> void:
 		layer.name = "HUD"
 		add_child(layer)
 
-	# 탄약 글씨 라벨은 없앴다 — 게이지 HUD 가 대신한다. 조작 안내만 남긴다.
-	# ★[2026-09-05] 초상+게이지 HUD 가 y 20~108 을 쓰므로 안내문을 그 아래로 내렸다.
+	# ── ★[2026-09-05 비주얼] Production HUD 와 Gameplay Help 를 갈라 놓는다 ──
+	# 예전에는 안내문이 초상+게이지 **바로 아래**(28, 116)에 붙어 있었다.
+	# HUD 를 실화면에서 읽히는 크기(배율 1.35)로 키우니 게이지가 글자 위로 올라타서
+	# 둘이 한 덩어리로 뭉개졌다 — 자원 표시와 임시 안내가 섞여 보이는 것이 최악이다.
+	#
+	# → 안내문은 **화면 상단 가운데**로 옮긴다. 좌상단 HUD 와 자리가 절대 안 겹치고,
+	#   나중에 이 줄을 통째로 지워도(정식 출시 때) HUD 는 한 글자도 안 건드리게 된다.
+	#   ⚠ 이건 여전히 **테스트 안내**다. 지우라는 지시가 오면 이 블록만 지우면 끝이다.
 	_hud_안내 = Label.new()
-	_hud_안내.position = Vector2(28, 116)
+	_hud_안내.name = "조작안내"
+	_hud_안내.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	_hud_안내.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hud_안내.offset_top = 18.0
+	_hud_안내.offset_bottom = 48.0
+	_hud_안내.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hud_안내.add_theme_font_size_override("font_size", 17)
-	_hud_안내.add_theme_color_override("font_color", Color(0.80, 0.80, 0.78))
+	# 안내는 **보조 정보**다 — HUD 보다 어둡게 둬서 시선이 먼저 HUD 로 가게 한다.
+	_hud_안내.add_theme_color_override("font_color", Color(0.72, 0.72, 0.70, 0.80))
 	_hud_안내.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
 	_hud_안내.add_theme_constant_override("outline_size", 5)
 	_hud_안내.text = "A/D 이동  ·  Space 점프  ·  Shift 색전환  ·  좌클릭 발사  ·  E 회수/레버"
-	layer.add_child(_hud_안내)
+	# 자원 HUD(layer 100)와 **다른 층**에 둔다. 층이 같으면 언젠가 또 겹친다.
+	var 안내층 := CanvasLayer.new()
+	안내층.name = "게임플레이_안내"
+	안내층.layer = 90
+	add_child(안내층)
+	안내층.add_child(_hud_안내)
 
 
 ## ESC 메뉴를 붙이고, 저장된 밝기를 화면에 반영한다.

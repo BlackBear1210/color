@@ -1808,6 +1808,24 @@ size = Vector2(202.4, 42)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_03ap0"]
 size = Vector2(220, 30)
 
+[sub_resource type="OccluderPolygon2D" id="빛가림_000"]
+polygon = PackedVector2Array(-150, -228.785, 150, -228.785, 150, 228.785, -150, 228.785)
+
+[sub_resource type="OccluderPolygon2D" id="빛가림_001"]
+polygon = PackedVector2Array(-150, -1175, 150, -1175, 150, 1175, -150, 1175)
+
+[sub_resource type="OccluderPolygon2D" id="빛가림_002"]
+polygon = PackedVector2Array(-150, -1253.785, 150, -1253.785, 150, 1253.785, -150, 1253.785)
+
+[sub_resource type="OccluderPolygon2D" id="빛가림_003"]
+polygon = PackedVector2Array(-178.5, -80, 178.5, -80, 178.5, 80, -178.5, 80)
+
+[sub_resource type="OccluderPolygon2D" id="빛가림_004"]
+polygon = PackedVector2Array(-150, -85, 150, -85, 150, 85, -150, 85)
+
+[sub_resource type="OccluderPolygon2D" id="빛가림_005"]
+polygon = PackedVector2Array(-365.4, -100, 365.4, -100, 365.4, 100, -365.4, 100)
+
 [node name="스테이지_1_2층방" type="Node2D" unique_id=1859569227]
 script = ExtResource("1_qlwet")
 "스테이지_이름" = "1 · 2층 방"
@@ -1820,7 +1838,7 @@ script = ExtResource("1_qlwet")
 script = ExtResource("2_up1dj")
 
 [node name="어둠" type="CanvasModulate" parent="." unique_id=1072413736]
-color = Color(0.72, 0.74, 0.7, 1)
+color = Color(0.62, 0.63, 0.6, 1.0)
 
 [node name="지형" type="Node2D" parent="." unique_id=1307307100]
 
@@ -2304,3 +2322,68 @@ polygon = PackedVector2Array(-96.654785, -558.0513, 197, -548, 203, 227, -65.298
 
 [editable path="ColorZone"]
 [editable path="ColorZone2"]
+
+[node name="빛가림" type="LightOccluder2D" parent="지형/벽_왼위_BRICK_01"]
+occluder = SubResource("빛가림_000")
+
+[node name="빛가림" type="LightOccluder2D" parent="지형/벽_왼아래_BRICK_01"]
+occluder = SubResource("빛가림_001")
+
+[node name="빛가림" type="LightOccluder2D" parent="지형/벽_오른_BRICK_01"]
+occluder = SubResource("빛가림_002")
+
+[node name="빛가림" type="LightOccluder2D" parent="지형/SS_BRICK_POST_CORBEL_01"]
+occluder = SubResource("빛가림_003")
+
+[node name="빛가림" type="LightOccluder2D" parent="지형/SS_BRICK_BREAK_WALL_01"]
+occluder = SubResource("빛가림_004")
+
+[node name="빛가림" type="LightOccluder2D" parent="지형/SS_WOOD_WARDROBE_01"]
+occluder = SubResource("빛가림_005")
+
+[node name="조명" type="Node2D" parent="."]
+
+[node name="창문_주광" type="Node2D" parent="조명"]
+position = Vector2(4950.0, -1150.0)
+script = ExtResource("16_ykm5w")
+"종류" = 1
+"빛색" = Color(0.86, 0.9, 1.0, 1.0)
+"반경" = 1700.0
+"밝기" = 0.85
+"깜빡임" = 0.0
+"크기_흔들림" = 0.05
+"알갱이_보이기" = false
+"그림자" = true
+
+[node name="창문_바닥번짐" type="Node2D" parent="조명"]
+position = Vector2(4450.0, -330.0)
+script = ExtResource("16_ykm5w")
+"종류" = 1
+"빛색" = Color(0.84, 0.88, 1.0, 1.0)
+"반경" = 1150.0
+"밝기" = 0.62
+"깜빡임" = 0.0
+"크기_흔들림" = 0.0
+"알갱이_보이기" = false
+
+[node name="창문_방안번짐" type="Node2D" parent="조명"]
+position = Vector2(4050.0, -800.0)
+script = ExtResource("16_ykm5w")
+"종류" = 1
+"빛색" = Color(0.82, 0.86, 0.96, 1.0)
+"반경" = 2400.0
+"밝기" = 0.62
+"깜빡임" = 0.0
+"크기_흔들림" = 0.0
+"알갱이_보이기" = false
+
+[node name="문_새는빛" type="Node2D" parent="조명"]
+position = Vector2(820.0, -1550.0)
+script = ExtResource("16_ykm5w")
+"종류" = 1
+"빛색" = Color(0.8, 0.8, 0.82, 1.0)
+"반경" = 1900.0
+"밝기" = 1.75
+"깜빡임" = 0.1
+"크기_흔들림" = 0.1
+"알갱이_보이기" = false

@@ -28,6 +28,8 @@ extends SS2D_Shape_Closed
 class_name 스마트지형
 
 const 페인트_셰이더 := preload("res://shaders/지형_페인트.gdshader")
+## ⚠ class_name 이 아니라 **경로 preload** — 헤드리스 검사가 전역 클래스 등록보다 먼저 돈다.
+const 노멀맵표 := preload("res://scripts/스마트월드/노멀맵_표.gd")
 const 페인트진행_S := preload("res://scripts/페인트_진행.gd")
 const 최대_시드: int = 24                      ## 셰이더의 MAX_SEEDS 와 반드시 같아야 한다
 ## Player.tscn의 실제 충돌 높이(260px × 세로 배율 0.3677)를 반올림한 월드 px 값.
@@ -169,6 +171,16 @@ enum 칠방식 {
 @export_range(0.05, 1.0, 0.01) var 유령_반투명도: float = 0.42
 
 @export_group("연출")
+## ★[2026-09-05] 이 지형의 채우기 텍스처에 노멀맵을 입힐지.
+##
+## 켜면 `노멀맵_표.gd` 에 등록된 재질이 "같은 그림 + 노멀맵" CanvasTexture 로 바뀌어
+## Light2D 가 표면 요철에 반응한다(벽돌 줄눈·나뭇결이 살아난다).
+## 표에 없는 재질에는 아무 일도 안 일어난다.
+##
+## ⚠ 끄고 싶어질 때: 특정 지형만 납작하게 보여야 하는 연출이 생기면 여기서 끈다.
+##   전 지형을 한꺼번에 끄려면 표(`노멀맵_표.gd`)를 비우는 쪽이 낫다.
+@export var 노멀맵_사용: bool = true
+
 ## 부분 색칠 얼룩 하나의 반지름(px).
 @export var 부분_반지름: float = 46.0
 ## 부분 칠의 지름을 플레이어 키의 몇 배로 제한할지. 2.2 = 지름 약 211px(반지름 약 106px).
@@ -428,6 +440,18 @@ func _셰이더_설치() -> void:
 		return
 	var 전용: SS2D_Material_Shape = shape_material.duplicate(true)
 	_셰이더들.clear()
+
+	# ── ★[2026-09-05] 노멀맵 입히기 ────────────────────────────────────────
+	# 표에 있는 채우기 텍스처를 "같은 그림 + 노멀맵" CanvasTexture 로 바꿔 낀다.
+	# 여기서 하는 이유: 위에서 이미 **인스턴스 전용 사본**을 떴으므로 원본 .tres 는
+	# 절대 안 바뀐다. 표에 없는 재질은 그대로 통과해서 예전과 100 % 같다.
+	# ⚠ 바꿔 끼는 것은 디스크의 .tres 라 resource_path 가 살아 있다 →
+	#   아래 `_짝_찾기()` 의 black↔white 규칙이 그대로 돈다.
+	if 노멀맵_사용:
+		var 바뀐: Array[Texture2D] = []
+		for t in 전용.fill_textures:
+			바뀐.append(노멀맵표.노멀_입히기(t))
+		전용.fill_textures = 바뀐
 
 	# 채우기
 	var 채우기_텍스처: Texture2D = 전용.fill_textures[0] if not 전용.fill_textures.is_empty() else null
