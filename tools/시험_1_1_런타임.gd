@@ -583,7 +583,7 @@ func _시험_가시() -> void:
 	# ③ 받침을 칠해도 가시는 그대로 위험하다.
 	#    (총알은 레이어 1|8 만 레이캐스트한다 → 레이어 0 인 가시는 통과하고 받침이 맞는다)
 	var 코어 := _루트.get_tree().get_first_node_in_group("페인트코어")
-	var 받침: Node = _루트.get_node_or_null("지형/SS_BRICK_SPIKE_BASE_01")
+	var 받침: Node = _루트.get_node_or_null("지형/SS_WOOD_SPIKE_BASE_01")
 	var 결과 := "—"
 	if 코어 != null and 받침 != null:
 		코어.발사_소모()

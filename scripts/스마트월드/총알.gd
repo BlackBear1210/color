@@ -95,7 +95,7 @@ func _physics_process(delta: float) -> void:
 	var 결과 := 공간.intersect_ray(질의)
 	if 결과:
 		var 맞은것: Object = 결과.get("collider")
-		_소멸(_칠할대상_찾기(맞은것), 결과["position"], true)
+		_소멸(_칠할대상_찾기(맞은것), 결과["position"], true, 결과.get("normal", Vector2.ZERO))
 		return
 
 	global_position = 다음
@@ -117,7 +117,7 @@ func _칠할대상_찾기(맞은것: Object) -> Node:
 	return null
 
 
-func _소멸(대상: Node, 지점: Vector2, 물감_튐: bool = false) -> void:
+func _소멸(대상: Node, 지점: Vector2, 물감_튐: bool = false, 법선: Vector2 = Vector2.ZERO) -> void:
 	_끝남 = true
 	if OS.is_debug_build() and _바람_프레임 > 0:
 		var 방향변화 := rad_to_deg(_바람_시작속도.angle_to(_속도))
@@ -127,7 +127,9 @@ func _소멸(대상: Node, 지점: Vector2, 물감_튐: bool = false) -> void:
 	if _코어:
 		_코어.명중_처리(대상, 색, 지점)
 	if 물감_튐 and _행동효과 and _행동효과.has_method("명중"):
-		_행동효과.명중(지점, _속도, 색)
+		# [2026-09-05] 이미 계산해 둔 레이캐스트 법선을 그대로 넘긴다.
+		#   충돌 판정을 새로 만들지 않는다 — 물감이 칠해지는 자리와 이펙트가 반드시 같은 점이어야 한다.
+		_행동효과.명중(지점, _속도, 색, 법선, "페인트총알")
 	queue_free()
 
 

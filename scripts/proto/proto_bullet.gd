@@ -76,7 +76,9 @@ func _on_body_entered(body: Node2D) -> void:
 
 func _물감_튐() -> void:
 	if _행동효과 and _행동효과.has_method("명중"):
-		_행동효과.명중(global_position, _velocity, _color)
+		# [2026-09-05] 이 총알은 body_entered 로 맞춰서 법선을 모른다 →
+		#   ActionFX 가 진행 반대 방향으로 대신 세운다(기본값 Vector2.ZERO 의 뜻).
+		_행동효과.명중(global_position, _velocity, _color, Vector2.ZERO, "ProtoBullet")
 
 
 ## 콜리전 바디에서 "칠할 수 있는 대상"을 거슬러 올라가 찾는다.

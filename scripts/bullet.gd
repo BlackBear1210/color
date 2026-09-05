@@ -31,7 +31,8 @@ func _on_body_entered(body: Node2D) -> void:
 	var 플레이어 := get_tree().get_first_node_in_group("player")
 	var 행동효과 := 플레이어.get_node_or_null("ActionFX") if 플레이어 else null
 	if 행동효과 and 행동효과.has_method("명중"):
-		행동효과.명중(global_position, direction * speed, color)
+		# [2026-09-05] 옛 타일맵 총알도 같은 공통 이펙트를 쓴다(법선은 없어서 안 넘긴다).
+		행동효과.명중(global_position, direction * speed, color, Vector2.ZERO, "bullet")
 	queue_free()
 
 ## 총알이 맞은 셀만 현재 플레이어 색으로 칠한다. 색별 대체 타일을 한 번 만든 뒤 재사용한다.

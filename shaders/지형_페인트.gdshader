@@ -74,6 +74,36 @@ uniform float organic_aspect = 0.14;
 // 방금 맞은 직후의 젖은 광택(0~1). 코어가 시간에 따라 낮춰준다.
 uniform float wet = 0.0;
 
+// ============================================================================
+// GHOST MODE -- the "transparent platform" look (2026-09-03)
+// ----------------------------------------------------------------------------
+// Requested behaviour: a platform that is not solid until the player paints it,
+// drawn as the REAL tileset art (wood / brick) but mosaicked and smeared
+// sideways, like a motion-blurred after-image. Painted spots stay crisp, so the
+// paint literally "materialises" the platform block by block.
+//
+// Why reuse this shader instead of drawing rectangles (see 투명블럭.gd):
+//   투명블럭.gd draws a plain rectangle with draw_rect(). It cannot show the
+//   wood grain or brick courses, so a ghost platform never looks like the
+//   terrain it is about to become. Here we already sample the tileset texture,
+//   so a mosaic + smear of that same sample costs three lines and keeps the
+//   material identity.
+//
+// ghost_amount 0 = off. Every existing shape leaves it at 0, so nothing that
+// already works changes.
+uniform float ghost_amount = 0.0;
+// Mosaic block edge, in TEXTURE pixels. Larger = chunkier blocks.
+uniform float ghost_mosaic = 12.0;
+// Horizontal smear width, in TEXTURE pixels. This is the motion-blur part.
+uniform float ghost_smear = 7.0;
+// Alpha the ghost fades to where it is not painted. The node's own modulate.a
+// is applied on top of this by 지형.gd.
+uniform float ghost_alpha = 0.55;
+// Cool tint mixed into the ghost so it reads as "not real yet" rather than
+// "badly compressed". Pure art with no tint looks like a rendering bug.
+uniform vec4 ghost_tint : source_color = vec4(0.78, 0.82, 0.88, 1.0);
+uniform float ghost_tint_amount = 0.30;
+
 varying vec2 local_pos;
 
 void vertex() {
@@ -111,6 +141,9 @@ void fragment() {
 
 	vec3 col = base.rgb;                   // 무색 = 기본 아트 그대로
 	float wet_edge = 0.0;
+	// Strongest blot coverage at this pixel. Ghost mode uses it to keep painted
+	// spots solid while the unpainted rest stays mosaicked and see-through.
+	float painted = 0.0;
 
 	// 경계를 흔드는 노이즈는 픽셀마다 한 번만 구해서 모든 시드에 공용으로 쓴다.
 	float n = (vnoise(local_pos * noise_scale) - 0.5) * 2.0 * noise_amount;
@@ -233,11 +266,59 @@ void fragment() {
 		if (seed_c[i] == 1) { target = ink_white; }
 		else if (seed_c[i] == 2) { target = gray; }
 		col = mix(col, target, a);
+		painted = max(painted, a);
 
 		// 얼룩 테두리 근처만 살짝 반짝이게 (갓 칠한 물감 느낌)
 		wet_edge = max(wet_edge, a * (1.0 - a) * 4.0);
 	}
 
 	col += vec3(wet_edge * wet * 0.25);
-	COLOR = vec4(col, base.a * COLOR.a);
+
+	float alpha = base.a * COLOR.a;
+
+	// ── ghost mode -------------------------------------------------------
+	// Applied last so it never disturbs the blot maths above. The weight is
+	// (1 - painted): a fully painted pixel keeps the ordinary solid look, and
+	// the untouched rest is mosaic + smear + partly transparent. That gradient
+	// is the whole readability trick -- the platform appears where you shoot.
+	//
+	// Written inline rather than as a helper because a helper would have to take
+	// the sampler as an argument, and sampler parameters are a portability risk
+	// this project does not need to take for six lines of code.
+	if (ghost_amount > 0.001) {
+		float g = ghost_amount * (1.0 - painted);
+
+		// ★[2026-09-03 fix] Quantise in NODE-LOCAL px, not texture px.
+		// ------------------------------------------------------------------
+		// The bug the player saw: the border (edge mesh) and the interior
+		// (fill mesh) blurred at DIFFERENT sizes. Cause: those two meshes carry
+		// different textures, so TEXTURE_PIXEL_SIZE differs, so a block measured
+		// in "texture px" came out a different physical size on each. The old
+		// code snapped UV by TEXTURE_PIXEL_SIZE -> two mismatched grids meeting
+		// at every platform edge.
+		//
+		// Fix: snap local_pos (VERTEX in node-local space, IDENTICAL on both
+		// meshes) to a grid in local px, then carry that snap back into UV via
+		// screen-space derivatives. UV is affine per triangle, so
+		// fwidth(UV)/fwidth(local_pos) is the UV distance of one local px on
+		// each axis. Both meshes now share one grid and one smear width.
+		vec2 uv_per_lp = fwidth(UV) / max(fwidth(local_pos), vec2(0.0001));
+		float grid = max(ghost_mosaic, 1.0);
+		vec2 lp_snapped = (floor(local_pos / grid) + 0.5) * grid;
+		vec2 uv_base = UV + (lp_snapped - local_pos) * uv_per_lp;
+
+		// Motion blur: five horizontal taps, spaced in local px.
+		float step_x = uv_per_lp.x * ghost_smear * 0.5;
+		vec4 blurred = texture(TEXTURE, uv_base)
+			+ texture(TEXTURE, uv_base + vec2(step_x, 0.0))
+			+ texture(TEXTURE, uv_base - vec2(step_x, 0.0))
+			+ texture(TEXTURE, uv_base + vec2(step_x * 2.0, 0.0))
+			+ texture(TEXTURE, uv_base - vec2(step_x * 2.0, 0.0));
+		blurred *= 0.2;
+
+		vec3 ghost_rgb = mix(blurred.rgb, ghost_tint.rgb, ghost_tint_amount);
+		col = mix(col, ghost_rgb, g);
+		alpha *= mix(1.0, ghost_alpha, g);
+	}
+	COLOR = vec4(col, alpha);
 }

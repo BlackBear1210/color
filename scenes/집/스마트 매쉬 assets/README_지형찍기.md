@@ -24,12 +24,30 @@
 | 나무 바닥 · 선반 · 플랫폼 | `WOOD_나무/TEMPLATE_WOOD_SOLID.tscn` |
 | 나무 계단 | `WOOD_나무/TEMPLATE_WOOD_STAIRS.tscn` |
 | 나무인데 안이 비어야 함 | `WOOD_나무/TEMPLATE_WOOD_HOLLOW.tscn` |
+| **투명(유령) 발판 — 칠해야 밟힌다** | `GHOST_투명발판/TEMPLATE_GHOST_WOOD.tscn` ★ |
+| **투명(유령) 계단** | `GHOST_투명발판/TEMPLATE_GHOST_WOOD_STAIRS.tscn` |
+| **투명(유령) 벽돌 구조물** | `GHOST_투명발판/TEMPLATE_GHOST_BRICK.tscn` |
 | 잔디 지형 | `GRASS_잔디/TEMPLATE_GRASS_SOLID.tscn` |
 | 잔디 계단 | `GRASS_잔디/TEMPLATE_GRASS_STAIRS.tscn` |
 | 잔디인데 안이 비어야 함 | `GRASS_잔디/TEMPLATE_GRASS_HOLLOW.tscn` |
 | **시멘트 바닥 · 벽 · 플랫폼** | `CEMENT_시멘트/TEMPLATE_CEMENT_SOLID.tscn` |
 | **시멘트 계단** | `CEMENT_시멘트/TEMPLATE_CEMENT_STAIRS.tscn` |
 | 철 (IRON) | **NOT READY — 사용 금지** |
+
+### ★투명 발판 (GHOST) — 2026-09-03 신설
+
+**안 칠하면 못 밟고, 칠하면 발판이 되는 지형**입니다. 안 칠한 동안은 그 지형의
+**진짜 타일셋 그림이 모자이크로 뭉개진 반투명 잔상**으로 보이고, 총을 쏘면
+맞은 자리부터 또렷해집니다.
+
+쓰는 법은 다른 Template 과 **완전히 같습니다** — 복제해서 점만 끌면 됩니다.
+인스펙터도 미리 켜 두었으니 안 만져도 됩니다.
+
+★자세한 것(생김새 조절 값 5 개 · 레벨디자인 주의점 · `투명블럭.tscn` 과의 차이)은
+**`GHOST_투명발판/README_투명발판.md`** 를 보세요.
+
+> ⚠ 에디터 화면에서는 보통 지형처럼 보입니다. 유령 연출은 **게임 실행 중에만** 나옵니다.
+>   (아래 §3 의 "색은 실행 중에 정한다" 와 같은 이유입니다)
 
 ### ★시멘트 (CEMENT) — 2026-09-02 문서에 추가
 
@@ -87,7 +105,8 @@ scenes/집/스마트 매쉬 assets/
 ├─ GRASS_잔디/   TEMPLATE_GRASS_{SOLID,HOLLOW,STAIRS}.tscn  + *_WHITE 2개
 ├─ BRICK_벽돌/   TEMPLATE_BRICK_{SOLID,HOLLOW,STAIRS}.tscn  + 벽돌 계단_흰색.tscn
 ├─ CEMENT_시멘트/ TEMPLATE_CEMENT_{SOLID,STAIRS}.tscn        + *_WHITE 2개  (HOLLOW 없음)
-└─ WOOD_나무/    TEMPLATE_WOOD_{SOLID,HOLLOW,STAIRS}.tscn   + *_WHITE 2개
+├─ WOOD_나무/    TEMPLATE_WOOD_{SOLID,HOLLOW,STAIRS}.tscn   + *_WHITE 2개
+└─ GHOST_투명발판/ TEMPLATE_GHOST_{WOOD,WOOD_STAIRS,BRICK}.tscn + README_투명발판.md
 ```
 
 > `METAL_철판/` 과 `PIPE_배관/` 폴더도 있지만 이 문서에는 아직 안 적었습니다.
@@ -277,6 +296,8 @@ SOLID 를 써야 할 자리에 HOLLOW 를 썼거나 그 반대입니다. Templat
 | **Position (위치)** | ✅ 수정 가능 |
 | Scale | ⚠ 되도록 만지지 마세요 (재질 크기가 어긋납니다) |
 | Material (`.tres`) | ❌ (복제해서 수정하는 것도 금지) |
+| **색칠 > 칠하기 허용** (체크박스) | ✅ 만져도 됩니다 — 켜면 칠할 수 있고, 끄면 색 규칙 밖의 구조물이 됩니다 |
+| **유령 발판** 그룹 5개 (모자이크·세기·블록·번짐·반투명도) | ✅ 만져도 됩니다 — 보이는 것만 바뀝니다 |
 | **연출** (`흘러내림_길이`·`흘러내림_속도`·`테두리_선행`) | ✅ 만져도 됩니다 — 보이는 것만 바뀝니다 |
 | Edge 텍스처 | ❌ |
 | Corner 텍스처 | ❌ |
