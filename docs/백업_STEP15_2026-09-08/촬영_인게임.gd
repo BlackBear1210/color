@@ -101,29 +101,6 @@ func _적용(뿌리: Node) -> void:
 			플레이어.set_physics_process(false)
 			플레이어.set("velocity", Vector2.ZERO)
 
-	# ── 카메라 줌 ──
-	# # STEP15:
-	# # 문제: STAGE 2 의 화면이 답답한 원인이 "발판 배치"인지 "카메라가 너무 당겨져 있는 것"인지
-	# #       구분할 방법이 없었다. 실측해 보니 STAGE 2 의 실제 zoom 은 1.442
-	# #       (시야 1332×749) 로, 레퍼런스 stage_1-1.1 의 0.849(2263×1273) 대비
-	# #       **면적 기준 35%** 밖에 못 본다. 같은 집인 STAGE 1 조차 1.000 이다.
-	# # 목적: 지형을 한 점도 안 옮긴 상태에서 "줌만 바꾸면 얼마나 달라지는가"를 화면으로 본다.
-	# # 해결: 런타임에만 zoom 을 덮어쓴다. ⚠ `proto_camera` 가 매 프레임 zoom 을 다시 쓰므로
-	# #       카메라의 **기준 줌**(set_region_zoom)을 바꾸고, 구역 카메라의 `줌_배수` 도 같이 껐다.
-	# #       씬 파일은 저장하지 않는다(이 도구의 원칙).
-	if _인자.has("줌"):
-		var z := float(_인자["줌"])
-		for n in 전부:
-			# 구역 카메라가 매 프레임 기준줌 × 줌_배수 로 덮어쓰기 때문에 배수부터 1 로 만든다.
-			if n.get("줌_배수") != null:
-				n.set("줌_배수", 1.0)
-		for n in 전부:
-			if n is Camera2D:
-				var c := n as Camera2D
-				if c.has_method("set_region_zoom"):
-					c.call("set_region_zoom", z, false)
-				c.zoom = Vector2(z, z)
-
 	# ── CanvasModulate ──
 	if _인자.has("어둠"):
 		var v := float(_인자["어둠"])

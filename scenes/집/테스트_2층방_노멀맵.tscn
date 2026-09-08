@@ -788,6 +788,12 @@ texture = ExtResource("29_tpdmj")
 mesh = SubResource("ArrayMesh_ldkj1")
 force_no_tiling = true
 
+[sub_resource type="OccluderPolygon2D" id="빛가림_000"]
+polygon = PackedVector2Array(-256, -96, 256, -96, 256, 96, -256, 96)
+
+[sub_resource type="OccluderPolygon2D" id="빛가림_001"]
+polygon = PackedVector2Array(-256, -96, 256, -96, 256, 96, -256, 96)
+
 [node name="노멀맵_테스트_랩" type="Node2D" unique_id=1836043837]
 script = ExtResource("1_7iq7q")
 
@@ -809,17 +815,11 @@ position = Vector2(-60, -180)
 _points = SubResource("Resource_5yjst")
 _meshes = Array[ExtResource("6_t00kf")]([SubResource("Resource_018tc"), SubResource("Resource_61xii")])
 
-[node name="빛가림" type="LightOccluder2D" parent="테스트_브릭" unique_id=2029857156]
-occluder = SubResource("fo1vm")
-
 [node name="테스트_벽" parent="." unique_id=1254649395 instance=ExtResource("2_1l10l")]
 position = Vector2(-470, -300)
 rotation = 1.5707964
 _points = SubResource("Resource_06sek")
 _meshes = Array[ExtResource("6_t00kf")]([SubResource("Resource_7iq7q"), SubResource("Resource_eqmso")])
-
-[node name="빛가림" type="LightOccluder2D" parent="테스트_벽" unique_id=1021166031]
-occluder = SubResource("sdeki")
 
 [node name="테스트_우드" parent="." unique_id=850870401 instance=ExtResource("10_5kivq")]
 position = Vector2(600, -180)
@@ -852,3 +852,9 @@ position = Vector2(155, -97)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=358069132]
 position = Vector2(193, -110)
+
+[node name="빛가림" type="LightOccluder2D" parent="테스트_브릭"]
+occluder = SubResource("빛가림_000")
+
+[node name="빛가림" type="LightOccluder2D" parent="테스트_벽"]
+occluder = SubResource("빛가림_001")

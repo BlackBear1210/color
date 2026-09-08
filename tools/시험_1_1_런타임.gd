@@ -1297,7 +1297,14 @@ func _시험_STAGE1_완주() -> void:
 	var 전환됨 := false
 	var 찾은이름 := ""
 	for n in _모두(root):
-		if String(n.name).begins_with("벽_오른위_SS_BRICK") or String(n.name) == "SS_BRICK_STAIRS_01":
+		# # STEP15:
+		# # 문제: 전환 확인을 STAGE 2 의 노드 이름 `벽_오른위_SS_BRICK` 으로 하고 있었는데,
+		# #       STEP 15 재설계에서 껍데기가 `벽_오른_SS_BRICK` 하나로 합쳐지면서 이름이 사라졌다.
+		# #       전환은 멀쩡한데 검사만 FAIL 로 떴다(실측 54/55).
+		# # 목적: 이름 하나에 매달리지 않게 한다.
+		# # 해결: `벽_` 로 시작하는 SS_BRICK 껍데기면 무엇이든 STAGE 2 가 올라온 증거로 본다.
+		var 이름 := String(n.name)
+		if (이름.begins_with("벽_") and 이름.ends_with("_SS_BRICK")) or 이름 == "SS_BRICK_STAIRS_01":
 			전환됨 = true
 			찾은이름 = String(n.name)
 			break

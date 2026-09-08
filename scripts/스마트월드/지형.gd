@@ -181,6 +181,27 @@ enum 칠방식 {
 ##   전 지형을 한꺼번에 끄려면 표(`노멀맵_표.gd`)를 비우는 쪽이 낫다.
 @export var 노멀맵_사용: bool = true
 
+## # STEP16:
+## # 문제: 계단실을 "긴 벽돌 복도" 가 아니라 건축 공간으로 보이게 하려고 기둥·난간·소핏을
+## #       SS2D 로 넣었는데, **콜리전을 끌 방법이 없었다.**
+## #         · StaticBody2D 를 지워도 → 장식은 템플릿 씬의 **인스턴스**라 로드할 때 되살아난다
+## #         · CollisionPolygon2D.disabled 를 켜도 → 인스턴스 **자식의 오버라이드는 저장이 안 된다**
+## #           (owner 가 없어서. owner 를 박으면 CLAUDE.md §6 의 "노드가 두 벌" 사고가 난다)
+## #         · collision_layer 를 0 으로 둬도 → 아래 `_충돌레이어_갱신()` 이 1 로 되돌린다
+## #       그래서 장식이 실제 발판처럼 굴어 통행 시험이 26/26 → **17/26** 으로 떨어졌다.
+## # 목적: "보이기만 하고 절대 안 부딪히는 지형" 을 만들 수 있게 한다.
+## # 해결: **지형 노드 자신의 속성**으로 스위치를 둔다. 노드 자신은 owner 가 있으니
+## #       .tscn 에 확실히 저장되고, 로드 뒤 `_충돌레이어_갱신()` 이 이 값을 보고
+## #       콜리전을 꺼 준다. 기본값 false = 기존 지형은 동작이 한 글자도 안 바뀐다.
+##
+## ⚠ 켜면 **밟을 수 없다.** gameplay 발판에는 절대 켜지 말 것.
+##   쓰는 곳: `tools/patch_STAGE2_STEP16_계단실.gd` 의 기둥·난간·소핏 26 개.
+@export var 장식_전용: bool = false:
+	set(v):
+		장식_전용 = v
+		if is_inside_tree():
+			_충돌레이어_갱신()
+
 ## 부분 색칠 얼룩 하나의 반지름(px).
 @export var 부분_반지름: float = 46.0
 ## 부분 칠의 지름을 플레이어 키의 몇 배로 제한할지. 2.2 = 지름 약 211px(반지름 약 106px).
@@ -890,11 +911,21 @@ func _전체_즉시(새상태: 상태, 즉시: bool = true, 기준점: Variant =
 
 
 func _충돌레이어_갱신() -> void:
-	var 유령 := not 밟을_수_있나()
-	var 새레이어 := 유령_레이어비트 if 유령 else 1
 	var 폴리 := get_collision_polygon_node()
 	if 폴리 == null:
 		return
+	# # STEP16: 장식 전용 지형은 **여기서 판정을 끄고 끝낸다.**
+	#   SS2D 가 폴리곤을 다시 구워도 `disabled` 는 아무도 안 건드리므로 꺼진 채로 남는다.
+	#   (§위 `장식_전용` 주석에 왜 이 자리여야 하는지 적어 두었다)
+	if 장식_전용:
+		폴리.disabled = true
+		var 장식바디 := 폴리.get_parent() as CollisionObject2D
+		if 장식바디:
+			장식바디.set_deferred("collision_layer", 0)
+			장식바디.set_deferred("collision_mask", 0)
+		return
+	var 유령 := not 밟을_수_있나()
+	var 새레이어 := 유령_레이어비트 if 유령 else 1
 	var 바디 := 폴리.get_parent() as CollisionObject2D
 	if 바디 and 바디.collision_layer != 새레이어:
 		바디.set_deferred("collision_layer", 새레이어)

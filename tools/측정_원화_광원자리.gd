@@ -15,7 +15,13 @@ extends SceneTree
 ##   원화 픽셀 → 월드 를 만든다. 씬에서 직접 읽으므로 손으로 배율을 적지 않는다.
 ## ============================================================================
 
-const 씬 := "res://scenes/집/스테이지_1_2층방.tscn"
+## ★[2026-09-08 STEP 13] 씬·배경 노드를 인자로 받게 했다.
+##   STAGE 2 의 복도 원화·거실 원화도 같은 도구로 재야 하는데, 예전에는 스테이지 1 이
+##   상수로 박혀 있었고 배경 노드도 "처음 찾은 것" 이라, 배경이 4 개인 스테이지 2 에서는
+##   엉뚱한 판(맨 위 복도)을 재고 있었다.
+##     -- --씬=res://scenes/집/스테이지_2_복도계단.tscn --노드=배경_1층_거실원화
+var 씬 := "res://scenes/집/스테이지_1_2층방.tscn"
+var 노드이름 := ""      ## 비우면 예전처럼 "그림이 물려 있는 첫 배경"
 var 칸 := 24            ## 격자 칸 수(가로). `-- --칸=48` 로 더 잘게 볼 수 있다.
 
 
@@ -27,9 +33,14 @@ func _go() -> void:
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--칸="):
 			칸 = int(a.substr(4))
+		elif a.begins_with("--씬="):
+			씬 = a.substr(4)
+		elif a.begins_with("--노드="):
+			노드이름 = a.substr(5)
 	var 뿌리 := (load(씬) as PackedScene).instantiate()
 	# 배경 노드에서 그림·영역을 읽는다 (인스턴스화만 하고 트리에 안 넣는다 = 게임 로직 안 돈다)
-	var 배경: Node = _찾기(뿌리, func(n): return n.get("그림_아래") != null and n.get("영역") != null)
+	# ★이름을 주면 그 노드만 본다 — 배경이 여러 장인 씬에서 엉뚱한 판을 재지 않도록.
+	var 배경: Node = _찾기(뿌리, func(n): return _맞나(n))
 	if 배경 == null:
 		print("✗ 실내배경 노드를 못 찾았다")
 		quit(1)
@@ -37,6 +48,12 @@ func _go() -> void:
 	var tex: Texture2D = 배경.get("그림_아래")
 	var 영역: Rect2 = 배경.get("영역")
 	var 원본영역: Rect2 = 배경.get("그림_원본영역")
+	# ★[2026-09-08 STEP 13] `그림_원본영역` 이 비어 있으면 **원화 전체**다.
+	#   `실내배경.gd::_그림_그리기()` 가 런타임에 하는 것과 같은 폴백인데 여기에만 없어서,
+	#   비워 둔 배경(거실 원화)을 재려 하면 칸 크기가 0 이 되어 0 나누기로 멈춰 있었다.
+	if 원본영역.size.x <= 0.0 or 원본영역.size.y <= 0.0:
+		원본영역 = Rect2(Vector2.ZERO, tex.get_size())
+		print("  (그림_원본영역이 비어 있어 원화 전체로 잡는다: %s)" % 원본영역)
 	print("배경 '%s'  월드영역 %s  원화영역 %s" % [배경.name, 영역, 원본영역])
 
 	var img := tex.get_image()
@@ -122,6 +139,13 @@ func _go() -> void:
 		왼합 / maxf(왼쪽.size(), 1), 100.0 * (왼합 / maxf(왼쪽.size(), 1)) / maxf(평균전체, 0.0001)])
 	뿌리.queue_free()
 	quit()
+
+
+## 이 노드가 우리가 재려는 배경인가.
+func _맞나(n: Node) -> bool:
+	if 노드이름 != "":
+		return n.name == 노드이름
+	return n.get("그림_아래") != null and n.get("영역") != null
 
 
 func _찾기(뿌리: Node, 조건: Callable) -> Node:
