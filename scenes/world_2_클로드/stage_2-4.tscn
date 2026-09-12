@@ -1,0 +1,260 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/월드.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/CEMENT_시멘트/TEMPLATE_CEMENT_SOLID.tscn" id="3_cement_black"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/CEMENT_시멘트/TEMPLATE_CEMENT_SOLID_WHITE.tscn" id="4_cement_white"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID.tscn" id="5_wall"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="6_ss2d_pipe"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="7_fluid"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/호퍼.tscn" id="8_hopper"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/물저장고.tscn" id="9_tank"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="10_player"]
+
+[node name="stage_2-4" type="Node2D"]
+script = ExtResource("1_world")
+"스테이지_이름" = "2-4 · 색이 흐른다"
+"카메라_리밋" = Rect2(-124, -520, 8924, 2400)
+"카메라_줌" = 1.0
+"시작_위치" = Vector2(500, 1100)
+"낙사_y" = 1900.0
+"치명_낙하거리" = 520.0
+
+[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+script = ExtResource("2_core")
+"최대_탄약" = 12
+
+[node name="지형" type="Node2D" parent="."]
+
+[node name="SS_CEM_FLOOR_1" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(821.7437, 1102.8806)
+scale = Vector2(0.9527, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_2" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(2070.768, 1105.7606)
+scale = Vector2(1.0831, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_3" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(3418.4486, 1108.6406)
+scale = Vector2(1.1242, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_4" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(4727.5513, 1111.5206)
+scale = Vector2(1.0339, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_5" parent="지형" instance=ExtResource("4_cement_white")]
+position = Vector2(6494.3396, 1126)
+scale = Vector2(3.1604, 0.2708)
+"시작상태" = 2
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_6" parent="지형" instance=ExtResource("4_cement_white")]
+position = Vector2(7859.2453, 1126)
+scale = Vector2(3.2547, 0.2708)
+"시작상태" = 2
+"위치별_판정" = true
+
+[node name="SS_WALL_CEIL_1" parent="지형" instance=ExtResource("5_wall")]
+position = Vector2(1270, -4)
+scale = Vector2(2.95, 0.166667)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_WALL_CEIL_2" parent="지형" instance=ExtResource("5_wall")]
+position = Vector2(3700, -4)
+scale = Vector2(2.75, 0.166667)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_WALL_CEIL_3" parent="지형" instance=ExtResource("5_wall")]
+position = Vector2(7040, -4)
+scale = Vector2(2.45, 0.166667)
+"시작상태" = 2
+"위치별_판정" = true
+
+[node name="SS_WALL_END_L" parent="지형" instance=ExtResource("5_wall")]
+position = Vector2(140, 262)
+scale = Vector2(1, 1.270833)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_WALL_END_R" parent="지형" instance=ExtResource("5_wall")]
+position = Vector2(8640, 262)
+scale = Vector2(1, 1.270833)
+"시작상태" = 2
+"위치별_판정" = true
+
+[node name="SS2D_배관" type="Node2D" parent="."]
+
+[node name="SS_PIPE_1_저장고" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(414, 420)
+scale = Vector2(0.52, 1)
+
+[node name="SS_PIPE_1_낙하" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(960, 430)
+rotation = 1.570796
+scale = Vector2(0.22, 1)
+
+[node name="SS_PIPE_2_저장고" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(1600, 420)
+scale = Vector2(0.70, 1)
+
+[node name="SS_PIPE_2_낙하" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(2300, 430)
+rotation = 1.570796
+scale = Vector2(0.22, 1)
+
+[node name="SS_PIPE_3_우회" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(3010, 350)
+scale = Vector2(0.78, 1)
+
+[node name="SS_PIPE_4_혼합_A" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(4620, 300)
+scale = Vector2(0.34, 1)
+
+[node name="SS_PIPE_4_혼합_B" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(5090, 190)
+rotation = 1.570796
+scale = Vector2(0.20, 1)
+
+[node name="SS_PIPE_5_저장고" parent="SS2D_배관" instance=ExtResource("6_ss2d_pipe")]
+position = Vector2(6580, 420)
+scale = Vector2(0.70, 1)
+
+[node name="장치" type="Node2D" parent="."]
+
+[node name="T1_첫저장고" parent="장치" instance=ExtResource("9_tank")]
+position = Vector2(960, 680)
+"크기" = Vector2(240, 100)
+"필요횟수" = 1
+"자동_공급_연결" = false
+"공급_유체" = NodePath("../F1_첫출구")
+
+[node name="F1_첫출구" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(960, 614)
+"색" = 0
+"크기" = Vector2(96, 340)
+"켜짐" = false
+
+[node name="H1_첫물받이" parent="장치" instance=ExtResource("8_hopper")]
+position = Vector2(960, 1040)
+"폭" = 150.0
+"높이" = 56.0
+
+[node name="T2_큰저장고" parent="장치" instance=ExtResource("9_tank")]
+position = Vector2(2300, 700)
+"크기" = Vector2(360, 130)
+"필요횟수" = 5
+"자동_공급_연결" = false
+"공급_유체" = NodePath("../F2_큰출구")
+
+[node name="F2_큰출구" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(2300, 619)
+"색" = 0
+"크기" = Vector2(112, 340)
+"켜짐" = false
+
+[node name="H2_큰물받이" parent="장치" instance=ExtResource("8_hopper")]
+position = Vector2(2300, 1040)
+"폭" = 180.0
+"높이" = 56.0
+
+[node name="F3_흰조준선" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(3380, 300)
+"색" = 1
+"크기" = Vector2(96, 500)
+
+[node name="T3_우회저장고" parent="장치" instance=ExtResource("9_tank")]
+position = Vector2(3820, 650)
+"크기" = Vector2(240, 100)
+"필요횟수" = 1
+"자동_공급_연결" = false
+"공급_유체" = NodePath("../F4_우회출구")
+
+[node name="F4_우회출구" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(3820, 584)
+"색" = 0
+"크기" = Vector2(96, 350)
+"켜짐" = false
+
+[node name="H3_우회물받이" parent="장치" instance=ExtResource("8_hopper")]
+position = Vector2(3820, 1010)
+"폭" = 150.0
+"높이" = 56.0
+
+[node name="T4_검정저장고" parent="장치" instance=ExtResource("9_tank")]
+position = Vector2(5000, 650)
+"크기" = Vector2(240, 100)
+"필요횟수" = 1
+"자동_공급_연결" = false
+"공급_유체" = NodePath("../F5_검정혼합")
+
+[node name="T5_흰저장고" parent="장치" instance=ExtResource("9_tank")]
+position = Vector2(5000, 400)
+"크기" = Vector2(240, 100)
+"필요횟수" = 1
+"자동_공급_연결" = false
+"공급_유체" = NodePath("../F6_흰혼합")
+
+[node name="F5_검정혼합" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(5000, 584)
+"색" = 0
+"크기" = Vector2(112, 350)
+"켜짐" = false
+
+[node name="F6_흰혼합" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(5000, 334)
+"색" = 1
+"크기" = Vector2(112, 600)
+"켜짐" = false
+
+[node name="H4_회색혼합기" parent="장치" instance=ExtResource("8_hopper")]
+position = Vector2(5000, 1010)
+"폭" = 220.0
+"높이" = 56.0
+"출구_유체" = NodePath("../F7_회색출구")
+"출구_물줄기_폭" = 112.0
+"출구_물줄기_길이" = 100.0
+
+[node name="F7_회색출구" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(5000, 1010)
+"색" = 2
+"크기" = Vector2(112, 100)
+"켜짐" = false
+
+[node name="H5_색전환발판" parent="장치" instance=ExtResource("8_hopper")]
+position = Vector2(5450, 1080)
+"폭" = 180.0
+"높이" = 72.0
+
+[node name="T6_FIFO저장고" parent="장치" instance=ExtResource("9_tank")]
+position = Vector2(7180, 680)
+"크기" = Vector2(420, 140)
+"필요횟수" = 5
+"자동_공급_연결" = false
+"공급_유체" = NodePath("../F8_FIFO출구")
+
+[node name="F8_FIFO출구" parent="장치" instance=ExtResource("7_fluid")]
+position = Vector2(7180, 594)
+"색" = 1
+"크기" = Vector2(120, 340)
+"켜짐" = false
+
+[node name="H6_끝물받이" parent="장치" instance=ExtResource("8_hopper")]
+position = Vector2(7180, 1040)
+"폭" = 200.0
+"높이" = 56.0
+
+[node name="끝도달_검사점" type="Marker2D" parent="."]
+position = Vector2(8200, 1100)
+
+[node name="Player" parent="." instance=ExtResource("10_player")]
+position = Vector2(500, 1100)

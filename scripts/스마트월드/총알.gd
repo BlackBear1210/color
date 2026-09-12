@@ -21,6 +21,15 @@ const 중력: float = 900.0
 const 최대_수명: float = 3.0
 
 var 색: int = ColorDefs.BLACK
+
+## ★[2026-09-07 신규] 이 발이 **장치(페인트 분사기)가 쏜 것**인가.
+##   장치 페인트는 플레이어 탄약이 아니다 → 회수줄에 안 들어가고, 환급도 안 된다.
+##   판정 자체는 플레이어 총알과 **완전히 같은 물리**를 써야 한다. 다르게 만들면
+##   "저건 저기 맞을 것 같은데" 가 어긋나서 화면을 읽는 재미가 죽는다.
+var 장치발: bool = false
+## 탄낙차 배수. 1.0 = 플레이어 총알과 동일. 0 이면 직선으로 날아간다(레이저형 분사기).
+var 중력배수: float = 1.0
+
 var _속도: Vector2 = Vector2.ZERO
 var _수명: float = 0.0
 var _코어: 페인트코어 = null
@@ -34,12 +43,16 @@ var _바람_시작속도: Vector2 = Vector2.ZERO
 var _바람_시작위치: Vector2 = Vector2.ZERO
 
 
-func 시작(시작점: Vector2, 방향: Vector2, 속력: float, 색상: int, 코어: 페인트코어, 행동효과: Node = null) -> void:
+## 마지막 두 인자는 **선택**이라 기존 호출부(총.gd·도구·검사)는 한 글자도 안 바뀐다.
+func 시작(시작점: Vector2, 방향: Vector2, 속력: float, 색상: int, 코어: 페인트코어,
+		행동효과: Node = null, p_장치발: bool = false, p_중력배수: float = 1.0) -> void:
 	global_position = 시작점
 	_속도 = 방향.normalized() * 속력
 	색 = 색상
 	_코어 = 코어
 	_행동효과 = 행동효과
+	장치발 = p_장치발
+	중력배수 = maxf(p_중력배수, 0.0)
 
 
 func _ready() -> void:
@@ -64,7 +77,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# 탄낙차 — 기획의 "투사체로 탄낙차가 있음"
-	_속도.y += 중력 * delta
+	_속도.y += 중력 * 중력배수 * delta
 
 	# 송풍기 바람 — 기획의 "페인트 투사체의 경로에 영향을 준다".
 	# 송풍기가 총알을 감지하는 게 아니라 총알이 물어본다 (총알은 레이어 0 이라 안 잡힌다).
@@ -125,7 +138,11 @@ func _소멸(대상: Node, 지점: Vector2, 물감_튐: bool = false) -> void:
 			[_바람_프레임, _바람_시작속도, rad_to_deg(_바람_시작속도.angle()),
 			 _속도, rad_to_deg(_속도.angle()), 방향변화, _바람_시작위치.distance_to(지점)])
 	if _코어:
-		_코어.명중_처리(대상, 색, 지점)
+		# 장치 페인트는 탄약 경제 밖이다 — 코어의 다른 문으로 들어간다.
+		if 장치발 and _코어.has_method("장치_명중_처리"):
+			_코어.장치_명중_처리(대상, 색, 지점)
+		else:
+			_코어.명중_처리(대상, 색, 지점)
 	if 물감_튐 and _행동효과 and _행동효과.has_method("명중"):
 		_행동효과.명중(지점, _속도, 색)
 	queue_free()

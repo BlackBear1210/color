@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/움직이는발판.gd" id="1_mover"]
+[ext_resource type="Script" path="res://scripts/스마트월드/아트슬롯.gd" id="2_artslot"]
+
+[node name="움직이는발판" type="AnimatableBody2D"]
+collision_layer = 1
+collision_mask = 0
+sync_to_physics = true
+script = ExtResource("1_mover")
+
+[node name="그림" type="Sprite2D" parent="."]
+script = ExtResource("2_artslot")
+"기준_크기" = Vector2(180, 28)

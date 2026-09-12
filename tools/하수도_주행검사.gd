@@ -1,0 +1,689 @@
+extends SceneTree
+## ============================================================================
+## [2026-09-06 신규] 하수도 스테이지 **공략 주행** 검사기
+## ----------------------------------------------------------------------------
+## 실행:
+##   Godot --headless --path . -s res://tools/하수도_주행검사.gd -- <씬경로>
+##   (인자가 없으면 2-1 · 2-2 · 2-3 을 차례로 돈다)
+##
+## ▣ 왜 또 만들었나 — 기존 도구 둘로는 답이 안 나온다
+##   · `레벨검사.gd` 는 **지형만** 본다. 색 규칙(반대색 지형·물에 닿으면 즉사)과
+##     탄약은 전혀 안 본다. 검사를 통과해도 흰 바닥에 검정으로 내려서면 죽는다.
+##   · `측정_스테이지_플레이타임.gd` 의 직진 봇은 총도 못 쏘고 색도 못 바꾼다.
+##     퍼즐 스테이지에서는 첫 관문 앞에서 죽고 끝난다.
+##   → 이 도구는 **사람이 푸는 순서(공략)를 그대로 적어 두고 진짜 물리로 태운다.**
+##     지형·색·물·탄약이 한꺼번에 걸리므로, 통과하면 "이 경로로는 깰 수 있다" 가
+##     실측으로 보장된다. 반대로 어디서 죽었는지도 좌표로 나온다.
+##
+## ▣ 공략은 코드에 적는다 (§공략표)
+##   맵을 고치면 공략도 같이 고쳐야 한다. 그게 **의도한 풀이가 아직 성립하는지**를
+##   확인하는 유일한 방법이다.
+##
+## ▣ 입력 흉내의 규칙 (측정_스테이지_플레이타임.gd 과 같다)
+##   `Input.action_press()` 는 약 2 프레임 뒤에야 `is_action_just_pressed` 로 보인다.
+##   상승 중에 점프를 떼면 JUMP_CUT_MULTIPLIER(0.4)가 점프를 잘라 버리므로
+##   **정점을 지난 뒤에만** 뗀다.
+##
+## ⚠ 이 도구는 씬을 고치지 않는다. 오직 태워 보고 보고만 한다.
+## ============================================================================
+
+const 물리틱 := 60.0
+## 걸음 목표에 이만큼 들어오면 도착으로 본다. 24 로 두면 도약 지점이 최대 24px
+## 밀려 갱도 점프가 통째로 어긋난다(발판 옆구리를 들이받는다).
+const 도착_여유 := 10.0
+const 기본대상 := [
+	"res://scenes/world_2_클로드/stage_2-1.tscn",
+	"res://scenes/world_2_클로드/stage_2-2.tscn",
+	"res://scenes/world_2_클로드/stage_2-3.tscn",
+	"res://scenes/world_2_클로드/stage_2-4.tscn",
+	"res://scenes/world_2_클로드/stage_2-5.tscn",
+	"res://scenes/world_2_클로드/stage_2-6.tscn",
+	"res://scenes/world_2_클로드/stage_2-7.tscn",
+]
+
+# ── 색 상수 (ColorDefs) ──────────────────────────────────────────────────────
+const 검정 := 0
+const 흰색 := 1
+
+# ============================================================================
+# §공략표 — "사람이 이렇게 푼다" 를 그대로 적은 것
+# ----------------------------------------------------------------------------
+#   ["가", x]                        그 x 까지 걸어간다 (벽·구덩이를 만나면 알아서 점프)
+#   ["뛰기", 도약x, 착지x, 착지y]        도약x **가장자리**까지 걸어가 착지x 쪽으로 점프.
+#                                     착지y 를 적어 두면 "그 높이에 실제로 올라섰는가"
+#                                     까지 본다 — 이게 없으면 발판을 놓치고 바닥에
+#                                     떨어져도 성공으로 읽는다(실제로 겪었다).
+#   ["뛰기색", 도약x, 착지x, 착지y, 색]   위와 같되 **공중에서** 색을 바꾼다
+#                                     (착지 바닥 색이 도약 바닥과 다를 때의 유일한 수단)
+#   ["색", 색]                        제자리 색 전환 (회색 바닥·호퍼 위에서만 안전하다)
+#   ["칠", 노드이름, 색]                그 대상을 필요횟수만큼 쏜다 (탄약 소모)
+#   ["쉬", 프레임]                     그냥 기다린다 (물이 페인트를 되돌리는지 볼 때)
+#
+# ★도약x 는 **발판 가장자리 − 몸 반폭(22)** 이다. 여기서 뛰지 않으면 포물선이
+#   30~50px 짧아져 다음 발판 옆구리를 들이받는다. 갱도처럼 좌우로 번갈아 오르는
+#   구조는 이 30px 이 통과와 추락을 가른다.
+# ============================================================================
+const 공략 := {
+	"stage_2-1": [
+		# ★지형에 회색이 없다 — 색은 **틈을 뛰는 동안 공중에서만** 바꿀 수 있다.
+		["가", 2800.0],
+		["뛰기색", 2918.0, 3060.0, 1100.0, 흰색],  # 전환 틈 A(2,940~3,020) → 흰 구간
+		["가", 3240.0],                           # 흰 물 F4(3,170) 를 흰색으로 통과
+		["뛰기색", 3298.0, 3430.0, 980.0, 검정],   # 전환 틈 B(3,320~3,400) → 검정 구간
+		["가", 4460.0],
+		["뛰기색", 4498.0, 4630.0, 1100.0, 흰색],  # 전환 틈 C(4,520~4,600) → 흰 구간
+		["뛰기", 4690.0, 4850.0, 1100.0],         # 관문 3 가시(4,712~4,808)
+		["가", 5300.0],
+		["칠", "SS_CEM_GHOST_4A", 흰색],           # 흰 물이 스치므로 흰색으로 칠해야 안 지워진다
+		["칠", "SS_CEM_GHOST_4B", 흰색],
+		["뛰기", 5958.0, 6130.0, 860.0],          # 관문 4 구덩이
+		["뛰기", 6198.0, 6410.0, 860.0],
+		["뛰기", 6478.0, 6600.0, 980.0],
+		["가", 7400.0],
+		["칠", "SS_CEM_GHOST_5C", 흰색],           # 관문 5 사다리 (각 3발)
+		["칠", "SS_CEM_GHOST_5D", 흰색],
+		["가", 7620.0],
+		["뛰기", 7600.0, 7780.0, 980.0],   # 도약은 발판 왼끝(7,680)에서 22+49px 물러난 자리
+		["뛰기", 7858.0, 8060.0, 860.0],
+		["뛰기", 8138.0, 8250.0, 740.0],          # 출구 선반
+	],
+	"stage_2-2": [
+		# ★갱도는 통째로 검정이다. 색은 **꼭대기 바닥으로 건너뛰는 마지막 점프**에서만 바꾼다.
+		["칠", "SS_CEM_GHOST_1", 검정],            # 검정 물은 검정 페인트를 안 지운다
+		["뛰기", 838.0, 1000.0, 980.0],
+		["뛰기", 1078.0, 1230.0, 977.0],          # 통과 플랫폼 왼쪽 절반(물이 안 닿는 쪽)
+		["뛰기", 1320.0, 1450.0, 1100.0],
+		["가", 2400.0],                           # 갱도아래벽 밑 통로(940~1,100)
+		["뛰기", 2400.0, 2530.0, 977.0],          # 아래 절반 1 — 안 칠한 발판 = 검정 판정
+		["뛰기", 2496.0, 2364.0, 867.0],
+		["뛰기", 2394.0, 2526.0, 757.0],
+		["뛰기", 2496.0, 2364.0, 647.0],
+		["뛰기", 2394.0, 2526.0, 537.0],
+		["뛰기", 2496.0, 2364.0, 427.0],
+		["뛰기", 2394.0, 2526.0, 317.0],          # 7 — 아래 절반 끝
+		# ── 관문 4 곁방 왕복 (선택 관문) ────────────────────────────────
+		#    발판 7 에서 오른벽 위(y 440)로 내려서 터널로 들어간다.
+		["걸어", 2850.0, 440.0],                  # 갱도 → 곁방 통로 (뛰면 위 발판에 머리가 박힌다)
+		["가", 3140.0],
+		["뛰기색", 3166.0, 3320.0, 440.0, 흰색],   # ★82px 틈을 뛰며 공중에서 흰색으로
+		["칠", "SS_CEM_BR_4A", 흰색],              # 흰 물은 흰 페인트를 안 지운다 (2발씩)
+		["칠", "SS_CEM_BR_4B", 흰색],
+		["칠", "SS_CEM_BR_4C", 흰색],
+		["뛰기", 3368.0, 3500.0, 320.0],          # 다리 A
+		["뛰기", 3588.0, 3720.0, 320.0],          # 다리 B
+		["뛰기", 3828.0, 3960.0, 320.0],          # 다리 C
+		["뛰기", 4028.0, 4160.0, 320.0],          # 흰 출구 OUT_4
+		["뛰기", 4112.0, 3990.0, 320.0],          # 돌아온다 — 흰 다리는 안 지워졌다
+		["뛰기", 3932.0, 3810.0, 320.0],
+		["뛰기", 3692.0, 3570.0, 320.0],
+		["뛰기", 3452.0, 3330.0, 440.0],
+		["뛰기색", 3292.0, 3140.0, 440.0, 검정],   # 터널로 내려오며 검정으로 되돌린다
+		["가", 2800.0],
+		["뛰기", 2786.0, 2620.0, 317.0],          # 다시 발판 7 로
+		# ── 곁방 끝 · 갱도 등반 재개 ─────────────────────────────────
+		["뛰기", 2496.0, 2364.0, 207.0],          # 중턱 턱 LEDGE_2
+		["뛰기", 2394.0, 2526.0, 97.0],           # 위 절반 1
+		["뛰기", 2496.0, 2364.0, -13.0],          # 턱 LEDGE_3
+		["뛰기", 2394.0, 2526.0, -123.0],         # 위 절반 2
+		["뛰기", 2496.0, 2364.0, -233.0],         # 위 절반 3
+		["뛰기색", 2394.0, 2526.0, -343.0, 흰색],  # ★공중에서 흰색 — 꼭대기 바닥이 흰색이다
+		["칠", "통과플랫폼_5", 흰색],               # 흰색으로 밟으려면 2발
+		["뛰기", 2510.0, 2640.0, -450.0],
+	],
+	"stage_2-4": [
+		# 물저장고 6개는 **길을 막지 않는다** — 출구 물이 전부 바닥 위(y 934~959)에서 멈춘다.
+		# 그래서 통행은 걷기 + 색 전환 한 번이 전부다(§검사 소견 참고).
+		["가", 5200.0],
+		["뛰기", 5268.0, 5450.0, 1008.0],       # 검정 바닥 → H5 색전환 발판(호퍼 = 색 규칙 밖)
+		["색", 흰색],                            # ★호퍼 위라 안전하게 바꾼다
+		["뛰기", 5518.0, 5700.0, 1100.0],       # 흰 바닥으로
+		["가", 8180.0],
+	],
+	"stage_2-5": [
+		["레버", "L1_원형_첫밸브"],                 # 흰 길막 물을 잠근다
+		["가", 1600.0],
+		["레버", "L2_직선_갈래선택"],                # 흰 갈래 → 검정 배수 갈래
+		["가", 2900.0],
+		["레버", "L3_원형_양자택일"],                # 두 번째 흰 길막을 끈다
+		["가", 5200.0],
+		["뛰기", 5268.0, 5450.0, 1008.0],       # H5 색전환 발판
+		["색", 흰색],
+		["뛰기", 5518.0, 5700.0, 1100.0],       # 흰 구간
+		["레버", "L4_원형_반대색건너"],               # 흰 길의 검정 물문을 잠근다
+		["레버", "L5_직선_검정방향"],                # 검정 폐수를 혼합기로 돌린다
+		["레버", "L6_원형_흰공급"],                  # 기본 닫힘 — 열어야 회색이 나온다
+		["가", 8180.0],
+	],
+	"stage_2-6": [
+		# 양동이는 배우는 대상이고, 통행 자체는 걷기 + 색 전환 한 번이다.
+		# ⚠ 이 스테이지의 양동이는 물줄기까지 못 간다 — 물받이 호퍼가 앞을 막는다.
+		#    (작업기록 2026-09-07 §양동이 호퍼 참고) 그래서 공략에 밀기를 넣지 않았다.
+		#    밀기 동작 자체는 2-7 공략(박스 2 · 양동이 2)이 검증한다.
+		["가", 3900.0],
+		["뛰기색", 3968.0, 4160.0, 1100.0, 흰색],   # 검정→흰 구간 (전환 틈 100px)
+		["가", 8180.0],
+	],
+	"stage_2-7": [
+		["가", 900.0],                              # 관문 1 — 버튼을 밟으면 문이 내려간다
+		["가", 1800.0],
+		["밀기", "박스_1", 3000.0],                  # 관문 2 — 박스를 버튼에 남긴다
+		["가", 4300.0],
+		["밀기", "양동이_검정_1", 5500.0],             # 관문 3 — 물을 채운 양동이만 버튼을 누른다
+		["가", 6300.0],
+		["밀기", "양동이_검정_2", 7200.0],             # 관문 4 — 양동이가 한쪽 버튼을 누르고
+		["가", 7600.0],                             #          플레이어가 다른 버튼을 밟는다
+		["가", 8300.0],
+		["밀기", "박스_2_귀환길", 8500.0],             # 관문 5 — 움직이는 땅을 끌어온다
+		["쉬", 200],                                # 950px 을 420px/s 로 끌어오는 데 2.3초 걸린다
+		["가", 8640.0],
+		["뛰기", 8642.0, 8800.0, 1100.0],           # 틈(8,664~8,739)을 건넌다
+		["가", 10380.0],
+	],
+	"stage_2-3": [
+		["뛰기", 1238.0, 1450.0, 1100.0],         # 관문 1 배수구(120px)를 뛴다
+		["가", 5460.0],                           # 관문 2·3 — 물줄기 밑을 걸어서 지난다
+		["뛰기", 5478.0, 5640.0, 1008.0],         # 관문 4 — 호퍼 H5 (검정 물은 왼쪽 끝)
+		["뛰기", 5678.0, 5860.0, 1008.0],         # H5 → H6 왼쪽
+		["색", 흰색],                              # ★호퍼는 색 규칙 밖이라 여기서 바꿔도 안 죽는다
+		["가", 5958.0],                           # 흰 물을 흰색으로 지나 H6 오른끝으로
+		["뛰기색", 5958.0, 6200.0, 1103.0, 검정],  # 착지 바닥이 검정이라 공중에서 되돌린다
+		["가", 7470.0],                           # 관문 5 — 끝까지
+	],
+}
+
+var _씬: Node2D
+var _p: CharacterBody2D
+var _월드: Node
+var _코어: Node
+var _사망: int = 0
+var _마지막위치: Vector2
+var _실패: String = ""
+var _수다 := false
+
+
+func _initialize() -> void:
+	Engine.max_fps = 0
+	_실행()
+
+
+func _실행() -> void:
+	_수다 = Array(OS.get_cmdline_user_args()).has("--수다")
+	var 인자: Array = Array(OS.get_cmdline_user_args()).filter(
+		func(a): return not String(a).begins_with("--"))
+	var 대상: Array = 기본대상.duplicate() if 인자.is_empty() else 인자
+	print("\n════════ 하수도 공략 주행 검사 ════════")
+	print("※ 공략표(tools/하수도_주행검사.gd §공략)를 실제 물리로 태운다. 색·물·탄약 전부 산다.\n")
+	var 모두통과 := true
+	for 경로 in 대상:
+		if not await _한판(String(경로)):
+			모두통과 = false
+	print("")
+	quit(0 if 모두통과 else 1)
+
+
+func _한판(경로: String) -> bool:
+	var ps := load(경로) as PackedScene
+	if ps == null:
+		print("  %s — 로드 실패" % 경로.get_file())
+		return false
+	_씬 = ps.instantiate() as Node2D
+	root.add_child(_씬)
+	await physics_frame
+	await physics_frame
+	await physics_frame
+
+	_p = _씬.get_node_or_null("Player") as CharacterBody2D
+	_월드 = _씬
+	_코어 = _씬.get_node_or_null("페인트코어")
+	_사망 = 0
+	_실패 = ""
+	_마지막위치 = _p.global_position
+
+	var 이름 := _씬.name
+	var 단계들: Array = 공략.get(이름, [])
+	print("── %s ─────────────────────────────" % 이름)
+	if 단계들.is_empty():
+		print("   공략이 없다 — 건너뛴다")
+		_정리()
+		return true
+
+	for i in 단계들.size():
+		var 단계: Array = 단계들[i]
+		var 이전 := _p.global_position
+		var ok := await _단계_실행(단계)
+		var 지금 := _p.global_position
+		var 표시 := "%2d. %-28s (%.0f,%.0f) → (%.0f,%.0f)" % [
+			i + 1, _단계_이름(단계), 이전.x, 이전.y, 지금.x, 지금.y]
+		if ok and _실패.is_empty():
+			print("   ✔ " + 표시)
+		else:
+			print("   ✖ " + 표시 + "   ← " + (_실패 if _실패 != "" else "시간초과"))
+			print("   ── 여기서 막혔다. 남은 단계는 돌리지 않는다.")
+			_정리()
+			return false
+
+	var 끝 := _씬.get_node_or_null("끝도달_검사점") as Node2D
+	var 결과 := true
+	if 끝 == null:
+		print("   ⚠ 끝도달_검사점 이 없다 — 끝 지점 판정을 못 한다")
+	else:
+		var d := _p.global_position.distance_to(끝.global_position)
+		if d <= 220.0:
+			print("   ★ 끝도달_검사점(%.0f,%.0f) 까지 %.0fpx — 도달" % [
+				끝.global_position.x, 끝.global_position.y, d])
+		else:
+			print("   ✖ 끝도달_검사점 까지 %.0fpx 남았다 — 끝까지 못 갔다" % d)
+			결과 = false
+	print("   사망 %d 회 · 남은 탄약 %s" % [
+		_사망, str(_코어.get("남은_탄약")) if _코어 else "-"])
+	_정리()
+	return 결과
+
+
+func _정리() -> void:
+	_입력_해제()
+	_씬.queue_free()
+	_씬 = null
+
+
+func _단계_이름(단계: Array) -> String:
+	match String(단계[0]):
+		"가":     return "가 x=%.0f" % float(단계[1])
+		"뛰기":   return "뛰기 %.0f→(%.0f,%.0f)" % [float(단계[1]), float(단계[2]), float(단계[3])]
+		"뛰기색": return "뛰기색 %.0f→(%.0f,%.0f) %s" % [float(단계[1]), float(단계[2]),
+			float(단계[3]), ("흰색" if int(단계[4]) == 흰색 else "검정")]
+		"색":     return "색 → %s" % ("흰색" if int(단계[1]) == 흰색 else "검정")
+		"칠":     return "칠 %s" % String(단계[1])
+		"쉬":     return "쉬 %d" % int(단계[1])
+		"확인":   return "확인 %s" % String(단계[1])
+		"걸어":   return "걸어 %.0f→y%.0f" % [float(단계[1]), float(단계[2])]
+		"레버":   return "레버 %s" % String(단계[1])
+		"밀기":   return "밀기 %s → %.0f" % [String(단계[1]), float(단계[2])]
+	return String(단계[0])
+
+
+func _단계_실행(단계: Array) -> bool:
+	match String(단계[0]):
+		"가":     return await _가기(float(단계[1]))
+		"뛰기":   return await _뛰기(float(단계[1]), float(단계[2]), float(단계[3]), -1)
+		"뛰기색": return await _뛰기(float(단계[1]), float(단계[2]), float(단계[3]), int(단계[4]))
+		"색":     return await _색바꾸기(int(단계[1]))
+		"칠":     return _칠하기(String(단계[1]), int(단계[2]))
+		"쉬":     return await _쉬기(int(단계[1]))
+		"확인":   return _확인(String(단계[1]))
+		"걸어":   return await _걸어(float(단계[1]), float(단계[2]))
+		"레버":   return await _레버(String(단계[1]))
+		"밀기":   return await _밀기(String(단계[1]), float(단계[2]))
+	_실패 = "모르는 단계"
+	return false
+
+
+# ============================================================================
+# 이동
+# ============================================================================
+## 목표 x 까지 걸어간다. 벽에 막히거나 앞에 바닥이 없으면 점프한다.
+## 자동점프 = false 면 **절대 안 뛴다.** 발판 가장자리로 걸어갈 때 쓴다 —
+## 가장자리에서는 "앞에 바닥이 없다" 가 언제나 참이라, 켜 두면 도약 지점에
+## 닿는 순간 제멋대로 뛰어 다음 점프를 통째로 날린다.
+func _가기(목표x: float, 최대프레임: int = 900, 자동점프: bool = true) -> bool:
+	var 방향 := "move_right" if 목표x > _p.global_position.x else "move_left"
+	Input.action_press(방향)
+	var 누름 := false
+	var 정체 := 0
+	var 이전x := _p.global_position.x
+	for i in 최대프레임:
+		await physics_frame
+		if not _살아있나():
+			Input.action_release(방향)
+			if 누름: Input.action_release("jump")
+			return false
+		if 자동점프 and not 누름 and _p.is_on_floor() and (_p.is_on_wall() or not _앞에_바닥(방향)):
+			if _수다:
+				print("      · 자동 점프 x=%.0f (벽=%s 앞바닥없음=%s)" % [
+					_p.global_position.x, str(_p.is_on_wall()), str(not _앞에_바닥(방향))])
+			Input.action_press("jump")
+			누름 = true
+		elif 누름 and not _p.is_on_floor() and _p.velocity.y >= 0.0:
+			Input.action_release("jump")
+			누름 = false
+		var x := _p.global_position.x
+		if absf(x - 목표x) < 도착_여유:
+			# ★상승 중이면 정점까지 기다렸다 뗀다. 여기서 그냥 떼면
+			#   JUMP_CUT_MULTIPLIER(0.4)가 점프를 160→40px 로 잘라 버려
+			#   방금 시작한 자동 점프가 구덩이 한복판에 떨어진다(2-3 관문 4에서 실제로 겪음).
+			while 누름 and not _p.is_on_floor() and _p.velocity.y < 0.0:
+				await physics_frame
+				if not _살아있나():
+					Input.action_release(방향)
+					Input.action_release("jump")
+					return false
+			Input.action_release(방향)
+			if 누름: Input.action_release("jump")
+			# ★땅에 닿을 때까지 기다린다. 공중에서 끝내면 다음 단계가 공중에서 시작해
+			#   "칠한 유령 발판이 아직 안 굳었는데 뛰어 통과해 버리는" 일이 생긴다
+			#   (지형.gd 이 collision_layer 를 set_deferred 로 바꾸기 때문).
+			var 착지대기 := 0
+			while not _p.is_on_floor() and 착지대기 < 240:
+				await physics_frame
+				착지대기 += 1
+				if not _살아있나():
+					return false
+			return true
+		if absf(x - 이전x) < 0.5:
+			정체 += 1
+			if 정체 > 150:
+				_실패 = "x=%.0f 에서 막혔다" % x
+				break
+		else:
+			정체 = 0
+			이전x = x
+	Input.action_release(방향)
+	if 누름: Input.action_release("jump")
+	if _실패.is_empty():
+		_실패 = "x=%.0f 까지 못 갔다" % 목표x
+	return false
+
+
+## 도약x 까지 걸어간 뒤 착지x 쪽으로 점프한다.
+## 공중색 >= 0 이면 정점을 지난 뒤 색을 바꾼다 (착지 바닥 색이 다를 때).
+func _뛰기(도약x: float, 착지x: float, 착지y: float, 공중색: int) -> bool:
+	if not await _가기(도약x, 600, false):
+		return false
+	# 발이 완전히 땅에 붙을 때까지 기다린다 — 공중에서 점프를 눌러 봐야 씹힌다
+	var 대기 := 0
+	while (not _p.is_on_floor() or 대기 < 6) and 대기 < 180:
+		await physics_frame
+		대기 += 1
+		if not _살아있나():
+			return false
+	var 방향 := "move_right" if 착지x > _p.global_position.x else "move_left"
+	Input.action_press(방향)
+	Input.action_press("jump")
+	var 색바꿈 := 공중색 < 0
+	var 떴다 := false
+	for i in 240:
+		await physics_frame
+		if not _살아있나():
+			Input.action_release(방향)
+			Input.action_release("jump")
+			return false
+		if not _p.is_on_floor():
+			떴다 = true
+		if _수다 and i < 14:
+			print("        t%3d (%.0f,%.0f) vy=%.0f floor=%s jump=%s" % [
+				i, _p.global_position.x, _p.global_position.y, _p.velocity.y,
+				str(_p.is_on_floor()), str(Input.is_action_pressed("jump"))])
+		# 정점을 지난 뒤에 점프를 뗀다 (JUMP_CUT 방지)
+		if 떴다 and _p.velocity.y >= 0.0 and Input.is_action_pressed("jump"):
+			Input.action_release("jump")
+		if not 색바꿈 and 떴다 and _p.velocity.y >= 0.0:
+			await _색누르기(공중색)
+			색바꿈 = true
+		if 떴다 and _p.is_on_floor():
+			# 착지한 순간이 판정 시점이다. 예전에는 목표 x 에서 40px 넘게 벗어나면
+			# 계속 걸었는데, 그러면 착지 뒤 200 프레임을 그 방향으로 더 달려
+			# (1,300px!) 엉뚱한 자리에서 다음 단계가 시작됐다.
+			Input.action_release(방향)
+			Input.action_release("jump")
+			# ★높이까지 봐야 한다. x 만 보면 **발판을 놓치고 아래 바닥에 떨어진 것**을
+			#   성공으로 읽는다(갱도에서 7칸을 통째로 헛디디고도 전부 ✔ 로 나왔다).
+			if absf(_p.global_position.y - 착지y) > 30.0:
+				_실패 = "발판을 놓쳤다 — y %.0f 에 내려야 하는데 %.0f" % [
+					착지y, _p.global_position.y]
+				return false
+			return true
+	Input.action_release(방향)
+	Input.action_release("jump")
+	if _실패.is_empty():
+		_실패 = "착지 x=%.0f 에 못 내렸다" % 착지x
+	return false
+
+
+func _앞에_바닥(방향: String) -> bool:
+	var 부호 := 1.0 if 방향 == "move_right" else -1.0
+	var 공간 := _p.get_world_2d().direct_space_state
+	# ★레이를 **발 위 20px 에서** 시작한다. 발바닥(원점)에서 쏘면 이미 바닥 면
+	#   안이거나 아래라, Godot 레이는 도형 안에서 시작하면 아무것도 안 맞는다
+	#   (hit_from_inside = false) → "앞에 바닥이 없다" 가 되어 평지에서도 계속 뛴다.
+	var 발 := _p.global_position + Vector2(40.0 * 부호, -20.0)
+	var q := PhysicsRayQueryParameters2D.create(발, 발 + Vector2(0.0, 80.0))
+	q.exclude = [_p.get_rid()]
+	q.collision_mask = _p.collision_mask
+	return not 공간.intersect_ray(q).is_empty()
+
+
+# ============================================================================
+# 색 · 페인트
+# ============================================================================
+func _색바꾸기(목표: int) -> bool:
+	if int(_p.get("player_color")) == 목표:
+		return true
+	await _색누르기(목표)
+	for i in 10:
+		await physics_frame
+		if not _살아있나():
+			return false
+	if int(_p.get("player_color")) != 목표:
+		_실패 = "색이 안 바뀌었다 (경계에 걸쳐 있나?)"
+		return false
+	return true
+
+
+## toggle_color 를 두 프레임 눌러 준다. 한 프레임만 누르면 is_action_just_pressed 를 놓친다.
+func _색누르기(_목표: int) -> void:
+	Input.action_press("toggle_color")
+	await physics_frame
+	await physics_frame
+	Input.action_release("toggle_color")
+
+
+## 총을 쏜 것과 같은 상태를 만든다. 총알 궤적은 흉내내지 않는다 —
+## `총.gd` 이 하는 일(발사_소모 → 명중_처리)을 그대로 부른다.
+func _칠하기(이름: String, 색: int) -> bool:
+	var 대상 := _찾기(_씬, 이름)
+	if 대상 == null:
+		_실패 = "%s 를 못 찾았다" % 이름
+		return false
+	var 횟수 := int(대상.call("필요횟수")) if 대상.has_method("필요횟수") \
+		else int(대상.get("필요횟수"))
+	# ★총알 색은 **플레이어 색**이다(`총.gd`). 검정인 채로 흰 페인트를 쏠 수 없다.
+	#   이걸 안 보면 공략이 "칠할 수 없는 색을 칠했다" 로 조용히 통과해 버린다.
+	var 지금색 := int(_p.get("player_color"))
+	if 지금색 != 색:
+		_실패 = "%s 를 %s 으로 칠하려는데 플레이어는 %s 이다" % [
+			이름, ("흰색" if 색 == 흰색 else "검정"),
+			("흰색" if 지금색 == 흰색 else "검정")]
+		return false
+	var 좌표: Vector2 = (대상 as Node2D).global_position
+	for i in maxi(횟수, 1):
+		if _코어 and not bool(_코어.call("쏠_수_있나")):
+			_실패 = "탄약이 없다 (%s 를 칠하는 중)" % 이름
+			return false
+		if _코어:
+			_코어.call("발사_소모")
+			var r: String = _코어.call("명중_처리", 대상, 색, 좌표)
+			if _수다:
+				print("      · %s %d발째 → %s" % [이름, i + 1, r])
+		else:
+			대상.call("명중", 색, 좌표)
+	if _수다:
+		var 진행 = 대상.get("_진행")
+		print("      · %s 필요=%d 검정발=%s 흰발=%s 긴변=%s 전체가능=%s" % [이름, 횟수,
+			str(진행.횟수(0)) if 진행 else "?", str(진행.횟수(1)) if 진행 else "?",
+			str(대상.get("_긴변")),
+			str(대상.call("전체_색칠_가능")) if 대상.has_method("전체_색칠_가능") else "?"])
+	if _수다 and 대상.has_method("현재색"):
+		print("      · %s 칠한 뒤 현재색=%d" % [이름, int(대상.call("현재색"))])
+	return true
+
+
+## 뛰지 않고 걸어서 간다. 가장자리에서 그냥 **떨어져 내려갈 때** 쓴다 —
+## 자동 점프를 켜 두면 위 발판 밑면에 머리를 박고 제자리에 떨어진다(2-2 발판 7).
+func _걸어(목표x: float, 착지y: float) -> bool:
+	if not await _가기(목표x, 900, false):
+		return false
+	if absf(_p.global_position.y - 착지y) > 30.0:
+		_실패 = "y %.0f 에 내려야 하는데 %.0f" % [착지y, _p.global_position.y]
+		return false
+	return true
+
+
+## 레버 앞까지 걸어가 E 를 누른다. `월드.gd` 의 E 중재와 같은 경로를 쓰되,
+## **`닿아있나()` 가 참일 때만** 조작한다 — 멀리서 조작하면 검사가 거짓말이 된다.
+func _레버(이름: String) -> bool:
+	var n := _찾기(_씬, 이름)
+	if n == null:
+		_실패 = "%s 없음" % 이름
+		return false
+	var 위치: Vector2 = (n as Node2D).global_position
+	if not await _가기(위치.x, 900):
+		return false
+	for i in 6:
+		await physics_frame
+		if not _살아있나():
+			return false
+	if not bool(n.call("닿아있나")):
+		_실패 = "%s 에 손이 안 닿는다 (플레이어 x=%.0f · 레버 x=%.0f)" % [
+			이름, _p.global_position.x, 위치.x]
+		return false
+	n.call("조작")
+	for i in 10:
+		await physics_frame
+		if not _살아있나():
+			return false
+	return true
+
+
+## 양동이·박스를 목표 x 까지 민다. 몸으로 밀어야 하므로 자동 점프는 끈다.
+func _밀기(이름: String, 목표x: float) -> bool:
+	var n := _찾기(_씬, 이름)
+	if n == null:
+		_실패 = "%s 없음" % 이름
+		return false
+	var 물체 := n as Node2D
+	var 방향 := "move_right" if 목표x > 물체.global_position.x else "move_left"
+	# 먼저 물체의 반대쪽으로 가서 붙는다
+	var 뒤 := 물체.global_position.x + (-90.0 if 방향 == "move_right" else 90.0)
+	if not await _가기(뒤, 900):
+		return false
+	Input.action_press(방향)
+	var 이전 := 물체.global_position.x
+	var 정체 := 0
+	for i in 1800:
+		await physics_frame
+		if not _살아있나():
+			Input.action_release(방향)
+			return false
+		var x := 물체.global_position.x
+		if _수다 and i % 30 == 0:
+			print("      · %s x=%.0f · 플레이어 x=%.0f vx=%.0f 벽=%s 충돌수=%d" % [
+				이름, x, _p.global_position.x, _p.velocity.x, str(_p.is_on_wall()),
+				_p.get_slide_collision_count()])
+		if absf(x - 목표x) < 26.0:
+			Input.action_release(방향)
+			return true
+		if absf(x - 이전) < 0.3:
+			정체 += 1
+			if 정체 > 240:
+				_실패 = "%s 가 x=%.0f 에서 안 밀린다 (목표 %.0f)" % [이름, x, 목표x]
+				break
+		else:
+			정체 = 0
+			이전 = x
+	Input.action_release(방향)
+	if _실패.is_empty():
+		_실패 = "%s 를 목표까지 못 밀었다" % 이름
+	return false
+
+
+## 노드가 지금 실제로 어떤 상태인지 찍는다 (유령이 단단해졌는가 등).
+func _확인(이름: String) -> bool:
+	var n := _찾기(_씬, 이름)
+	if n == null:
+		_실패 = "%s 없음" % 이름
+		return false
+	var 색 := int(n.call("현재색")) if n.has_method("현재색") else -9
+	var 레이어 := -1
+	var 폴리 := n.get_node_or_null("StaticBody2D") as CollisionObject2D
+	if 폴리:
+		레이어 = 폴리.collision_layer
+	var 덧 := ""
+	if "물참" in n:
+		덧 = " 물참=%s 물색=%s" % [str(n.get("물참")), str(n.get("물색"))]
+	print("      · %s 현재색=%d 레이어=%d 밟을수있나=%s%s · 위치=(%.0f,%.0f)" % [이름, 색, 레이어,
+		str(n.call("밟을_수_있나")) if n.has_method("밟을_수_있나") else "?", 덧,
+		(n as Node2D).global_position.x, (n as Node2D).global_position.y])
+	return true
+
+
+func _쉬기(프레임: int) -> bool:
+	for i in 프레임:
+		await physics_frame
+		if not _살아있나():
+			return false
+	return true
+
+
+# ============================================================================
+# 사망 감지
+# ============================================================================
+## 월드가 리스폰시키면 좌표가 한 프레임에 크게 튄다. 그걸로 죽음을 잡는다.
+## (`월드.gd` 은 사망 신호를 안 쏘고 `_리스폰()` 에서 위치만 되돌린다)
+func _살아있나() -> bool:
+	var 지금 := _p.global_position
+	var 튐 := 지금.distance_to(_마지막위치)
+	var 직전 := _마지막위치
+	_마지막위치 = 지금
+	if 튐 > 220.0:
+		_사망 += 1
+		# ★죽은 자리는 **리스폰 뒤 좌표가 아니라 직전 프레임 좌표**다.
+		#   리스폰 좌표를 찍으면 언제나 체크포인트가 나와 원인 파악이 안 된다.
+		_실패 = "죽었다 — (%.0f,%.0f) 에서 (%.0f,%.0f) 로 되돌아감%s" % [
+			직전.x, 직전.y, 지금.x, 지금.y, _죽인것(직전)]
+		return false
+	return true
+
+
+## 죽은 자리에서 몸과 겹치는 것을 훑어 "무엇이 죽였나" 를 이름으로 돌려준다.
+## 좌표만 나오면 원인을 못 찾는다 — 벽인지 물인지 발판인지가 안 보인다.
+func _죽인것(자리: Vector2) -> String:
+	var 모양 := RectangleShape2D.new()
+	모양.size = Vector2(44.0, 96.0)
+	var q := PhysicsShapeQueryParameters2D.new()
+	q.shape = 모양
+	q.transform = Transform2D(0.0, 자리 + Vector2(0.0, -48.0))
+	q.collision_mask = 1 | 8 | 32          # 지형 + 유령 + 유체
+	q.collide_with_areas = true
+	q.collide_with_bodies = true
+	q.exclude = [_p.get_rid()]
+	var 목록: Array[String] = []
+	for 항목 in _p.get_world_2d().direct_space_state.intersect_shape(q, 16):
+		var n := 항목.get("collider") as Node
+		while n != null and not (n.has_method("현재색") or n.has_method("반대색인가")):
+			n = n.get_parent()
+		if n == null:
+			continue
+		var c := -1
+		if n.has_method("현재색"):
+			c = int(n.call("현재색"))
+		var 이름색: String = "무색" if c < 0 else ["검정", "흰색", "회색"][mini(c, 2)]
+		var 표 := "%s(%s)" % [n.name, 이름색]
+		if not 목록.has(표):
+			목록.append(표)
+	return "" if 목록.is_empty() else "  ← 닿은 것: " + ", ".join(목록)
+
+
+func _찾기(뿌리: Node, 이름: String) -> Node:
+	if 뿌리.name == 이름:
+		return 뿌리
+	for c in 뿌리.get_children():
+		var r := _찾기(c, 이름)
+		if r != null:
+			return r
+	return null
+
+
+func _입력_해제() -> void:
+	for a in ["move_left", "move_right", "jump", "toggle_color"]:
+		if Input.is_action_pressed(a):
+			Input.action_release(a)

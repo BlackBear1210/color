@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/양동이.gd" id="1_bucket"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(92, 94)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_water"]
+size = Vector2(76, 76)
+
+[node name="양동이" type="CharacterBody2D"]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_bucket")
+
+[node name="몸통" type="CollisionShape2D" parent="."]
+position = Vector2(0, -53)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="물감지" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 32
+
+[node name="모양" type="CollisionShape2D" parent="물감지"]
+position = Vector2(0, -64)
+shape = SubResource("RectangleShape2D_water")

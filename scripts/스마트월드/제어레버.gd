@@ -30,6 +30,13 @@ enum 종류_ { 원형, 직선 }
 @export var 반응반경: float = 74.0:
 	set(v): 반응반경 = maxf(v, 24.0); _모양_갱신(); queue_redraw()
 
+## 레버를 씬에 놓은 순간부터 물이 흐를지, 어느 갈래가 먼저 열릴지 정한다.
+## 기본값은 기존 레버와 같은 "켜짐 + A 갈래"라 이전 스테이지의 동작은 바뀌지 않는다.
+@export_group("초기 상태")
+@export var 시작_켜짐: bool = true
+@export var 시작_갈래_A: bool = true
+@export_group("")
+
 var 켜짐: bool = true
 var _A쪽: bool = true
 var _각도: float = 0.0
@@ -45,6 +52,9 @@ func _ready() -> void:
 		queue_redraw()
 		return
 	add_to_group("제어레버")
+	# 씬 인스펙터 값으로 먼저 맞춘 뒤 유체에 반영해야, 시작 프레임에 닫힌 밸브가 열리지 않는다.
+	켜짐 = 시작_켜짐
+	_A쪽 = 시작_갈래_A
 	_반영()
 	set_process(true)
 	queue_redraw()
@@ -85,16 +95,26 @@ func 조작() -> void:
 
 func _반영() -> void:
 	if 종류 == 종류_.원형:
-		var f := get_node_or_null(대상_유체) as 유체
-		if f:
-			f.켜짐 = 켜짐
+		_켜기(대상_유체, 켜짐)
 	else:
-		var a := get_node_or_null(갈래_A) as 유체
-		var b := get_node_or_null(갈래_B) as 유체
-		if a:
-			a.켜짐 = _A쪽
-		if b:
-			b.켜짐 = not _A쪽
+		_켜기(갈래_A, _A쪽)
+		_켜기(갈래_B, not _A쪽)
+
+
+## ★[2026-09-07] 예전에는 대상을 `as 유체` 로 못박아서 **웅덩이를 못 물렸다**
+##   (`as` 는 형이 다르면 조용히 null 이라, 레버를 당겨도 아무 일도 안 일어났다).
+##   → `켜짐` 을 가진 것이면 무엇이든 켠다. 유체·웅덩이 둘 다, 앞으로 생길 것도 그대로.
+##   덤으로 켜는 순간 `차오르기_시작()` 도 불러 준다 —
+##   "레버를 당기면 물이 차오른다" 가 배선 없이 성립한다.
+func _켜기(경로: NodePath, 값: bool) -> void:
+	var n := get_node_or_null(경로)
+	if n == null or not ("켜짐" in n):
+		return
+	n.set("켜짐", 값)
+	if 값 and n.has_method("차오르기_시작"):
+		n.call("차오르기_시작")
+	elif not 값 and n.has_method("차오르기_멈춤"):
+		n.call("차오르기_멈춤")
 
 
 func _process(delta: float) -> void:

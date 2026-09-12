@@ -1,0 +1,236 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/월드.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/CEMENT_시멘트/TEMPLATE_CEMENT_SOLID.tscn" id="3_cement_black"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID.tscn" id="4_wall_black"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="5_ss2d_pipe"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="6_fluid"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/양동이.tscn" id="7_bucket"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/박스.tscn" id="8_box"]
+[ext_resource type="Script" path="res://scripts/스마트월드/압력버튼.gd" id="9_pressure_button"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="10_player"]
+
+[node name="stage_2-7" type="Node2D"]
+script = ExtResource("1_world")
+"스테이지_이름" = "2-7 · 눌러 두어라"
+"카메라_리밋" = Rect2(-124, -520, 11080, 2400)
+"카메라_줌" = 1.0
+"시작_위치" = Vector2(500, 1100)
+"낙사_y" = 1900.0
+"치명_낙하거리" = 520.0
+
+[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+script = ExtResource("2_core")
+"최대_탄약" = 12
+
+[node name="지형" type="Node2D" parent="."]
+
+[node name="SS_CEM_FLOOR_1" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(799.8532, 1102.8806)
+scale = Vector2(1.0003, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_2" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(2019.4068, 1105.7606)
+scale = Vector2(1.0011, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_3" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(3239.4068, 1108.6406)
+scale = Vector2(1.0011, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_4" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(4459.4068, 1111.5206)
+scale = Vector2(1.0011, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_5" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(5679.4068, 1114.4006)
+scale = Vector2(1.0011, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_6" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(6899.4068, 1117.2806)
+scale = Vector2(1.0011, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_7" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(8119.4068, 1120.1606)
+scale = Vector2(1.0011, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_CEM_FLOOR_8_끝" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(10049.8532, 1105.7606)
+scale = Vector2(1.0003, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="움직이는땅_5_귀환길" parent="지형" instance=ExtResource("3_cement_black")]
+position = Vector2(10080.4038, 1102.8806)
+scale = Vector2(0.5801, 0.1502)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_WALL_END_L" parent="지형" instance=ExtResource("4_wall_black")]
+position = Vector2(130, 262)
+scale = Vector2(1, 1.270833)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS_WALL_END_R" parent="지형" instance=ExtResource("4_wall_black")]
+position = Vector2(10750, 262)
+scale = Vector2(1, 1.270833)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="SS2D_배관" type="Node2D" parent="."]
+
+[node name="SS_PIPE_1_버튼문" parent="SS2D_배관" instance=ExtResource("5_ss2d_pipe")]
+position = Vector2(1500, 250)
+scale = Vector2(0.45, 1)
+
+[node name="SS_PIPE_2_박스" parent="SS2D_배관" instance=ExtResource("5_ss2d_pipe")]
+position = Vector2(3600, 250)
+scale = Vector2(0.45, 1)
+
+[node name="SS_PIPE_3_양동이" parent="SS2D_배관" instance=ExtResource("5_ss2d_pipe")]
+position = Vector2(5100, 250)
+scale = Vector2(0.45, 1)
+
+[node name="SS_PIPE_4_두버튼" parent="SS2D_배관" instance=ExtResource("5_ss2d_pipe")]
+position = Vector2(8000, 250)
+scale = Vector2(0.45, 1)
+
+[node name="SS_PIPE_5_움직이는땅" parent="SS2D_배관" instance=ExtResource("5_ss2d_pipe")]
+position = Vector2(9100, 250)
+scale = Vector2(0.45, 1)
+
+[node name="장치" type="Node2D" parent="."]
+
+[node name="버튼문_1_내려감" type="Node2D" parent="장치"]
+position = Vector2(1500, 300)
+
+[node name="SS_WALL_1" parent="장치/버튼문_1_내려감" instance=ExtResource("4_wall_black")]
+scale = Vector2(0.50, 0.95)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="버튼_1_플레이어" type="AnimatableBody2D" parent="장치"]
+position = Vector2(900, 1125.83)
+script = ExtResource("9_pressure_button")
+"폭" = 128.0
+"작동방식" = 1
+"누름_가능_그룹" = PackedStringArray("player")
+"대상들" = Array[NodePath]([NodePath("../버튼문_1_내려감")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, 940)])
+"이동속도" = 650.0
+
+[node name="박스_1" parent="장치" instance=ExtResource("8_box")]
+position = Vector2(2500, 1100)
+
+[node name="버튼문_2_내려감" type="Node2D" parent="장치"]
+position = Vector2(3600, 300)
+
+[node name="SS_WALL_2" parent="장치/버튼문_2_내려감" instance=ExtResource("4_wall_black")]
+scale = Vector2(0.50, 0.95)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="버튼_2_박스" type="AnimatableBody2D" parent="장치"]
+position = Vector2(3000, 1130.79)
+script = ExtResource("9_pressure_button")
+"폭" = 150.0
+"누름_가능_그룹" = PackedStringArray("박스")
+"대상들" = Array[NodePath]([NodePath("../버튼문_2_내려감")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, 940)])
+"이동속도" = 650.0
+
+[node name="양동이_검정_1" parent="장치" instance=ExtResource("7_bucket")]
+position = Vector2(4550, 1100)
+"색" = 0
+"채운뒤_밀수없음" = false
+
+[node name="양동이용_물_검정_1" parent="장치" instance=ExtResource("6_fluid")]
+position = Vector2(5100, 430)
+"색" = 0
+"크기" = Vector2(96, 630)
+
+[node name="버튼문_3_내려감" type="Node2D" parent="장치"]
+position = Vector2(6000, 300)
+
+[node name="SS_WALL_3" parent="장치/버튼문_3_내려감" instance=ExtResource("4_wall_black")]
+scale = Vector2(0.50, 0.95)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="버튼_3_물찬양동이" type="AnimatableBody2D" parent="장치"]
+position = Vector2(5500, 1136.69)
+script = ExtResource("9_pressure_button")
+"폭" = 150.0
+"누름_가능_그룹" = PackedStringArray("양동이")
+"대상들" = Array[NodePath]([NodePath("../버튼문_3_내려감")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, 940)])
+"이동속도" = 650.0
+
+[node name="양동이_검정_2" parent="장치" instance=ExtResource("7_bucket")]
+position = Vector2(6500, 1100)
+"색" = 0
+"채운뒤_밀수없음" = false
+"채운뒤_밀수없음" = false
+
+[node name="양동이용_물_검정_2" parent="장치" instance=ExtResource("6_fluid")]
+position = Vector2(6800, 430)
+"색" = 0
+"크기" = Vector2(96, 630)
+
+[node name="버튼_4_양동이" type="AnimatableBody2D" parent="장치"]
+position = Vector2(7200, 1140.70)
+script = ExtResource("9_pressure_button")
+"폭" = 150.0
+"누름_가능_그룹" = PackedStringArray("양동이")
+
+[node name="버튼문_4_동시" type="Node2D" parent="장치"]
+position = Vector2(8000, 300)
+
+[node name="SS_WALL_4" parent="장치/버튼문_4_동시" instance=ExtResource("4_wall_black")]
+scale = Vector2(0.50, 0.95)
+"시작상태" = 1
+"위치별_판정" = true
+
+[node name="버튼_4_플레이어" type="AnimatableBody2D" parent="장치"]
+position = Vector2(7600, 1141.65)
+script = ExtResource("9_pressure_button")
+"폭" = 150.0
+"누름_가능_그룹" = PackedStringArray("player")
+"작동방식" = 1
+"동시_버튼들" = Array[NodePath]([NodePath("../버튼_4_양동이")])
+"대상들" = Array[NodePath]([NodePath("../버튼문_4_동시")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, 940)])
+"이동속도" = 650.0
+
+[node name="박스_2_귀환길" parent="장치" instance=ExtResource("8_box")]
+position = Vector2(8100, 1100)
+
+[node name="버튼_5_움직이는땅" type="AnimatableBody2D" parent="장치"]
+position = Vector2(8500, 1143.77)
+script = ExtResource("9_pressure_button")
+"폭" = 160.0
+"누름_가능_그룹" = PackedStringArray("박스")
+"대상들" = Array[NodePath]([NodePath("../../지형/움직이는땅_5_귀환길")])
+"대상_이동량들" = Array[Vector2]([Vector2(-950, 0)])
+"이동속도" = 420.0
+
+[node name="끝도달_검사점" type="Marker2D" parent="."]
+position = Vector2(10400, 1100)
+
+[node name="Player" parent="." instance=ExtResource("10_player")]
+position = Vector2(500, 1100)

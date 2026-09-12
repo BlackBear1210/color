@@ -1,0 +1,1441 @@
+<title>하수도 2-1 ~ 2-3 설계도</title>
+<style>
+/* ══════════════════════════════════════════════════════════════
+   색 토큰 — 2-4~2-7 관문 도면과 같은 계열(같은 시리즈로 읽히게).
+   설계도용 토큰 둘을 더했다: --hatch(구조물 해칭) · --dimc(치수선)
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --paper:#F4F5F1; --ground:#E7E9E4; --sunk:#DDE0D9;
+  --ink:#131714; --body:#39413A; --muted:#69726A; --line:#C7CDC4; --hair:#D9DED6;
+  --accent:#1B6B58; --accent-soft:#DCEAE4; --rust:#A9502C; --rust-soft:#F2E0D7;
+  --gblack:#15191A; --gwhite:#FAFBF8; --ggray:#949B93; --gedge:#5A635B;
+  --hatch:#8E978F; --dimc:#7E5AA8; --dim-soft:#EBE4F3;
+  --shadow:0 1px 2px rgba(19,23,20,.05), 0 8px 24px -12px rgba(19,23,20,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0F1413; --ground:#171D1B; --sunk:#1D2422;
+  --ink:#E9EDE7; --body:#BAC3BB; --muted:#889187; --line:#2B342F; --hair:#232B27;
+  --accent:#57BFA1; --accent-soft:#12312A; --rust:#E2895E; --rust-soft:#332014;
+  --gblack:#0A0D0E; --gwhite:#F2F5EF; --ggray:#7E867E; --gedge:#9AA49B;
+  --hatch:#6C756D; --dimc:#B69BDA; --dim-soft:#241C31;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --paper:#0F1413; --ground:#171D1B; --sunk:#1D2422;
+  --ink:#E9EDE7; --body:#BAC3BB; --muted:#889187; --line:#2B342F; --hair:#232B27;
+  --accent:#57BFA1; --accent-soft:#12312A; --rust:#E2895E; --rust-soft:#332014;
+  --gblack:#0A0D0E; --gwhite:#F2F5EF; --ggray:#7E867E; --gedge:#9AA49B;
+  --hatch:#6C756D; --dimc:#B69BDA; --dim-soft:#241C31;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--body);
+  font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.mono{font-family:"Cascadia Mono","D2Coding",Consolas,ui-monospace,SFMono-Regular,monospace;
+  font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{color:var(--ink);text-wrap:balance;margin:0;line-height:1.2}
+p{margin:0}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ── 상단 바 ─────────────────────────────── */
+.bar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar-in{max-width:1180px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs a{display:block;padding:5px 11px;border-radius:2px;font-size:13px;font-weight:600;
+  color:var(--body);text-decoration:none;border:1px solid transparent}
+.tabs a:hover{background:var(--ground);border-color:var(--line)}
+
+/* ── 레이아웃 ────────────────────────────── */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 100px}
+.hero{padding:56px 0 36px;border-bottom:2px solid var(--ink)}
+.hero h1{font-size:clamp(30px,5.4vw,52px);font-weight:800;letter-spacing:-.02em}
+.hero .sub{margin-top:14px;max-width:64ch;font-size:16px}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+
+section{padding-top:56px}
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:8px}
+.sec-head h2{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.sec-head .meta{font-size:12.5px;color:var(--muted);margin-left:auto}
+.sec-note{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:74ch}
+
+.warn{margin-top:14px;border-left:3px solid var(--rust);background:var(--rust-soft);
+  padding:12px 16px;border-radius:0 3px 3px 0;font-size:13.5px;color:var(--ink)}
+.warn b{color:var(--rust)}
+.rule{margin-top:14px;border-left:3px solid var(--accent);background:var(--accent-soft);
+  padding:12px 16px;border-radius:0 3px 3px 0;font-size:13.5px;color:var(--ink)}
+.rule b{color:var(--accent)}
+
+/* ── 규약 블록 ───────────────────────────── */
+.panel{margin-top:28px;border:1px solid var(--line);border-radius:4px;background:var(--ground);padding:20px}
+.panel h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:700}
+.panel p{font-size:13.5px;max-width:80ch}
+.panel p+p{margin-top:9px}
+.xsec{background:var(--paper);border:1px solid var(--line);border-radius:3px;margin-top:16px;overflow-x:auto}
+.xsec svg{display:block;min-width:620px;width:100%}
+
+.tw{overflow-x:auto}
+table.mat{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+table.mat th{text-align:left;font-weight:700;color:var(--muted);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;padding:0 10px 7px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+table.mat td{padding:9px 10px 9px 0;border-bottom:1px solid var(--hair);vertical-align:top}
+table.mat td:first-child{color:var(--ink);font-weight:650;white-space:nowrap}
+table.mat tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700;
+  font-family:"Cascadia Mono",Consolas,monospace;white-space:nowrap}
+.tag.on{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+.tag.off{background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
+.tag.hold{background:var(--rust-soft);color:var(--rust);border:1px solid var(--rust)}
+
+/* ── 관문 카드 ───────────────────────────── */
+.gate{margin-top:34px;border:1px solid var(--line);border-radius:4px;background:var(--ground);
+  box-shadow:var(--shadow);overflow:hidden}
+.gate-head{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);
+  background:var(--paper);flex-wrap:wrap}
+.gnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--paper);
+  display:grid;place-items:center;font-size:14px;font-weight:800}
+.gate-head h3{font-size:17px;font-weight:700}
+.gate-head .teach{font-size:12.5px;color:var(--accent);font-weight:600;border-left:1px solid var(--line);padding-left:14px}
+.gate-head .xr{margin-left:auto;font-size:12px;color:var(--muted)}
+.gate-head .gtime{flex:none;padding:3px 10px;border:1px solid var(--accent);border-radius:2px;
+  font-size:13px;font-weight:800;color:var(--accent);
+  font-family:"Cascadia Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.gate-head .gtime.short{border-color:var(--rust);color:var(--rust)}
+
+.map{background:var(--paper);border-bottom:1px solid var(--line);overflow-x:auto}
+.map svg{display:block;min-width:680px;width:100%}
+
+.cols{display:grid;grid-template-columns:1.02fr 1fr;gap:0}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.col{padding:18px 20px;min-width:0}
+.col+.col{border-left:1px solid var(--line)}
+@media (max-width:860px){.col+.col{border-left:0;border-top:1px solid var(--line)}}
+.col h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  font-weight:700;margin-bottom:12px}
+.col h4.mt{margin-top:22px}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+ol.steps li{counter-increment:s;position:relative;padding-left:26px;margin-bottom:9px;font-size:13.5px;line-height:1.55}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:17px;height:17px;
+  border:1px solid var(--accent);color:var(--accent);border-radius:50%;
+  font-size:10px;font-weight:700;display:grid;place-items:center;font-family:"Cascadia Mono",Consolas,monospace}
+
+table.blk{width:100%;border-collapse:collapse;font-size:12px}
+table.blk th{text-align:left;font-weight:700;color:var(--muted);font-size:10px;letter-spacing:.09em;
+  text-transform:uppercase;padding:0 8px 6px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+table.blk td{padding:7px 8px 7px 0;border-bottom:1px solid var(--hair);vertical-align:top;color:var(--body)}
+table.blk td:first-child{color:var(--ink);font-weight:650;white-space:nowrap}
+table.blk tr:last-child td{border-bottom:0}
+code{font-family:"Cascadia Mono","D2Coding",Consolas,monospace;font-size:11.5px;
+  background:var(--sunk);padding:1px 5px;border-radius:2px;color:var(--ink);white-space:nowrap}
+.pts{font-family:"Cascadia Mono",Consolas,monospace;font-size:11px;white-space:nowrap}
+
+.ammo{margin-top:14px;padding:10px 12px;background:var(--sunk);border-radius:3px;
+  font-size:12.5px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.ammo b{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tsplit{margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.tsplit div{background:var(--sunk);padding:8px 10px}
+.tsplit b{display:block;font-size:10px;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.tsplit span{display:block;margin-top:2px;font-size:15px;font-weight:700;color:var(--ink);
+  font-family:"Cascadia Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+
+/* 스테이지 시간 막대 */
+.budget{margin-top:20px;border:1px solid var(--line);border-radius:4px;background:var(--ground);padding:18px 20px}
+.budget-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.budget-top h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.budget-top .tot{margin-left:auto;font-size:24px;font-weight:800;color:var(--accent);
+  font-family:"Cascadia Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.budget-top .tot small{font-size:12px;color:var(--muted);font-weight:600;margin-left:6px}
+.tbar{position:relative;display:flex;height:46px;border-radius:3px;overflow:hidden;background:var(--sunk);gap:1px}
+.tbar .seg{display:grid;place-items:center;background:var(--accent-soft);
+  border-bottom:3px solid var(--accent);min-width:0;padding:0 2px;
+  font-size:10.5px;font-weight:700;color:var(--ink);
+  font-family:"Cascadia Mono",Consolas,monospace;white-space:nowrap;overflow:hidden}
+.tbar .seg.move{background:var(--sunk);border-bottom-color:var(--muted);color:var(--muted)}
+.tbar .seg.miss{background:var(--rust-soft);border-bottom-color:var(--rust);color:var(--rust)}
+.mark{position:relative;height:26px;margin-top:6px}
+.mark .m8{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;
+  font-size:11px;font-weight:700;color:var(--ink);font-family:"Cascadia Mono",Consolas,monospace}
+.mark .m8::before{content:"";position:absolute;left:50%;top:-12px;width:2px;height:10px;background:var(--ink)}
+.budget .why{margin-top:14px;font-size:12.5px;color:var(--muted);max-width:80ch}
+
+/* ── 범례 / 규격 ─────────────────────────── */
+.legend{margin-top:28px;border:1px solid var(--line);border-radius:4px;background:var(--ground);padding:20px}
+.legend h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:700}
+.lg{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px 22px}
+.lg-item{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.45}
+.lg-item svg{flex:none;margin-top:1px}
+.lg-item span b{display:block;color:var(--ink);font-weight:650}
+.lg-item span i{font-style:normal;color:var(--muted);font-size:11.5px}
+.specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-top:20px}
+.spec{background:var(--ground);padding:11px 13px}
+.spec b{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.spec span{display:block;margin-top:3px;font-size:16px;font-weight:700;color:var(--ink);
+  font-family:"Cascadia Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.spec i{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:1px}
+
+/* ── 발견 / 순서 ─────────────────────────── */
+.finds{margin-top:56px;border-top:2px solid var(--ink);padding-top:28px}
+.find{border-left:3px solid var(--rust);padding:2px 0 2px 18px;margin-bottom:26px}
+.find h4{font-size:15px;font-weight:700;margin-bottom:7px}
+.find p{font-size:13.5px;margin-bottom:7px;max-width:80ch}
+.find .fix{font-size:13px;color:var(--ink);background:var(--rust-soft);padding:9px 13px;border-radius:3px;display:inline-block}
+pre{background:var(--sunk);border:1px solid var(--line);border-radius:3px;padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono",Consolas,monospace;font-size:12px;color:var(--ink);margin:12px 0 0}
+ul.chk{margin:12px 0 0;padding:0;list-style:none}
+ul.chk li{position:relative;padding-left:24px;margin-bottom:7px;font-size:13.5px}
+ul.chk li::before{content:"";position:absolute;left:0;top:5px;width:12px;height:12px;
+  border:1.5px solid var(--muted);border-radius:2px}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="bar"><div class="bar-in">
+  <div class="brand mono">하수도 · SS2D 시공 설계도</div>
+  <nav class="tabs">
+    <a href="#rules">규약</a>
+    <a href="#s21">2-1 물이 흐르는 곳</a>
+    <a href="#s22">2-2 구멍 난 바닥</a>
+    <a href="#s23">2-3 관을 따라서</a>
+    <a href="#finds">코드와 어긋난 곳</a>
+    <a href="#work">작업 순서</a>
+  </nav>
+</div></div>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow mono">스테이지 2 · 하수도 · 학습 3스테이지 · SmartShape2D 시공</div>
+  <h1>2-1 → 2-3 설계도</h1>
+  <p class="sub">앞선 <b>2-4~2-7 관문 도면</b>이 "무엇을 만들까"였다면, 이 문서는 <b>"어디에 어떤 노드를 몇 픽셀에 꽂을까"</b>입니다. 관문마다 <b>SS2D 지형 배치표</b>(템플릿 · position · 점 배열)와 <b>장치 배치표</b>(씬 · 인스펙터 값)가 붙어 있어 에디터에서 그대로 옮겨 찍을 수 있습니다.</p>
+  <p class="sub">타일맵은 쓰지 않습니다. 지형은 전부 <code>scenes/집/스마트 매쉬 assets/</code> 의 SS2D 키트이고, 하수도의 주자재는 <b>WALL 벽체</b>입니다.</p>
+</header>
+
+<section id="rules">
+  <div class="sec-head">
+    <h2>규약</h2>
+    <span class="meta mono">이 셋을 고정해야 세 스테이지가 한 하수도로 이어진다</span>
+  </div>
+
+  <div class="panel">
+    <h3>1 · 단면 — 하수도는 높이 960의 관이다</h3>
+    <p><b>바닥 윗면 y = 1,100 · 천장 윗면 y = 140.</b> 천장 아랫면은 둘입니다 — 일반 통로 <b>620</b>(높이 480), 관문 4·5 챔버 <b>300</b>(높이 800). 좌우 끝벽은 템플릿 기본 폭 <b>424</b> 그대로.</p><div class="warn"><b>처음엔 960 으로 잡았다가 실측으로 고쳤습니다.</b> <code>WALL_SOLID</code> 기본 높이와 맞춘 값이었는데, 카메라가 플레이어 중심이라 줄 1.0 에서 보이는 것은 <b>y 506‧1,586</b> 뿐이고, 천장(140)이 화면 밖으로 나가 <b>물이 어디서 오는지 안 보였습니다</b>(제작계획 §9 체크리스트 위반). 점 배열은 어차피 직접 찍으므로 템플릿 기본 높이를 맞출 이유가 없었습니다.</div>
+    <p>세 스테이지가 같은 y를 쓰기 때문에, 스테이지 끝의 물줄기와 다음 스테이지 첫 화면의 배관이 같은 높이에서 이어집니다(제작계획 §7-3의 "연출 연속성").</p>
+    <div class="xsec" id="xsec"></div>
+  </div>
+
+  <div class="panel">
+    <h3>2 · 자재 — 무엇으로 찍나</h3>
+    <p>키트 재질을 <b>역할로</b> 나눕니다. 이 배정의 근거는 취향이 아니라 <code>색규칙.gd</code> 입니다 — 칠할 수 없는 것까지 죽이면 흰색으로는 하수도를 지나갈 수가 없습니다. 그래서 <b>벽·천장은 색 규칙 밖</b>(<code>칠하기_허용 = false</code>)이고, <b>바닥과 발판만 색 규칙 안</b>입니다.</p>
+    <div class="tw">
+    <table class="mat">
+      <thead><tr><th>자재</th><th>역할</th><th>Template</th><th>칠하기_허용</th><th>시작상태</th></tr></thead>
+      <tbody>
+        <tr><td>WALL 벽체</td><td><b>주자재.</b> 좌우 벽 · 천장 · 기둥 · 수직 갱도 벽</td><td class="pts">WALL_벽체/TEMPLATE_WALL_SOLID</td><td><span class="tag on">true</span></td><td>무색 (색 규칙 밖)</td></tr>
+        <tr><td>WALL 돌출</td><td>벽면 돌출부 · 관이 뚫고 나오는 자리 악센트</td><td class="pts">TEMPLATE_WALL_SOLID_돌출</td><td><span class="tag on">true</span></td><td>무색</td></tr>
+        <tr><td>WALL 계단</td><td>구조 계단 (밟기만 · 퍼즐 아님)</td><td class="pts">TEMPLATE_WALL_STAIRS</td><td><span class="tag on">true</span></td><td>무색</td></tr>
+        <tr><td>CEMENT 시멘트</td><td><b>퍼즐 바닥.</b> 걸어 다니는 모든 면</td><td class="pts">CEMENT_시멘트/TEMPLATE_CEMENT_SOLID</td><td><span class="tag on">true</span></td><td>검정 / 회색 / 흰색</td></tr>
+        <tr><td>CEMENT 흰색</td><td>흰 바닥 구간 (에디터에서도 희게 보인다)</td><td class="pts">TEMPLATE_CEMENT_SOLID_WHITE</td><td><span class="tag on">true</span></td><td>흰색</td></tr>
+        <tr><td>METAL 철판</td><td colspan="4"><span class="tag hold">사용 보류</span> — 2026-09-05 도형님 지시. 이 설계도의 METAL 자리는 전부 <b>CEMENT 로 내렸고</b>, 퍼즐은 그대로 성립합니다.</td></tr>
+        <tr><td>PIPE 배관</td><td><b>장식 전용.</b> 충돌·색 연동 없음</td><td class="pts">PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY</td><td>—</td><td>—</td></tr>
+        <tr><td>BRICK 벽돌</td><td>무너진 구간 악센트 (2-3 종점)</td><td class="pts">BRICK_벽돌/TEMPLATE_BRICK_SOLID</td><td><span class="tag on">true</span></td><td>무색</td></tr>
+        <tr><td>WOOD · GRASS</td><td class="mono" colspan="4">하수도에서는 쓰지 않는다 — 집·숲 자재다</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="rule"><b>METAL 은 보류로 끝났습니다.</b> <code>README_지형찍기.md</code> §2 는 "IRON — NOT READY", 08-31 작업기록은 배율까지 확정 — 둘이 어깧나 있었고, 2026-09-05 에 <b>안 쓰는 쪽</b>으로 정했습니다. 하수도 발판은 전부 CEMENT 입니다.</div>
+  </div>
+
+  <div class="panel">
+    <h3>3 · 색 규칙 — 이 챕터를 지배하는 네 줄</h3>
+    <p>맵을 찍기 전에 이 넷을 외우고 시작해야 합니다. <b>넷 다 코드에서 확인한 것</b>이고, 셋째 줄은 앞선 2-4 도면이 반대로 알고 있던 것입니다(<a href="#f1">아래 §1</a>).</p>
+    <div class="rule"><b>① 안 칠한 바닥은 검정이다.</b> 무색 지형도 판정은 검정(<code>색규칙.위험한가</code> 의 <code>기본색 = BLACK</code>). 그래서 <b>흰색 플레이어는 안 칠한 바닥 위에서 죽습니다.</b> 하수도 바닥을 흰 플레이어로 지나가려면 그 바닥이 <b>회색이거나 · 흰색이거나 · 흰색으로 칠해져</b> 있어야 합니다.</div>
+    <div class="rule"><b>② 회색만이 둘 다에게 안전하다.</b> 그래서 <b>색을 바꿀 수 있는 자리 = 회색 바닥 위</b>입니다. 이 설계도의 모든 색 전환 지점은 회색 시멘트 띠 위에 있습니다. 이것이 하수도 챕터의 지형 문법입니다.</div>
+    <div class="rule"><b>③ 물은 "내가 칠한 것"만 되돌린다.</b> <code>유체.gd</code> → <code>지형.되돌리기()</code> → <code>_원래대로()</code> 는 <b>시작상태로</b> 되돌립니다. 시작상태가 검정인 바닥에 흰 물을 부어도 <b>다시 검정</b>입니다. <b>물로 길을 여는 설계는 성립하지 않습니다 — 물은 길을 닫습니다.</b></div>
+    <div class="rule"><b>④ 벽도 색 규칙 안에 있다 — 그래서 구간의 벽·천장·바닥은 전부 같은 색이다.</b> 모든 지형이 <code>칠하기_허용 = true</code> 입니다(2026-09-05 도형님 결정). 벽도 칠할 수 있고, 닿으면 죽습니다. 그래서 흰 구간을 검은 천장으로 덮으면 흰 플레이어가 점프하다 천장에 닿아 죽습니다. 대신 이 제약이 화면을 <b>신호</b>로 바꿉니다 — <b>벽 색 = 여기서 있어야 하는 색</b>. 들어서기 전에 보고 알 수 있습니다.</div>
+  </div>
+
+  <div class="panel">
+    <h3>4 · 노드 이름과 점 배열 표기</h3>
+    <p>지형 노드 이름은 <code>README_지형찍기.md</code> §21 규칙 <code>SS_&lt;재질&gt;_&lt;용도&gt;_&lt;번호&gt;</code> 를 그대로 씁니다. 번호는 <b>관문 번호</b>로 맞춥니다 — <code>SS_CEM_FLOOR_2A</code> 는 관문 2의 첫 바닥 조각입니다.</p>
+    <p><b>점 배열은 이 설계도에서 항상 축 정렬 사각형입니다.</b> 표기를 하나로 고정합니다:</p>
+    <pre>노드 position = 사각형의 <b>좌상단 월드 좌표</b>
+점 =  (0,0) → (w,0) → (w,h) → (0,h) → (0,0)</pre>
+    <p>그러니 표의 <code>position</code> 과 <code>w×h</code> 만 보면 점 네 개를 그대로 찍을 수 있습니다. Template 의 기본 점(예: WALL 은 −264,−96 …)은 <b>지우고 새로 찍습니다.</b> 사선·곡선은 쓰지 않습니다 — README §20 의 <code>CLOSED-LOOP-TAPER-01</code>(대각선 폐곡선 테두리 틈) 때문입니다.</p>
+    <p>씬 트리는 스테이지마다 이렇게 셋으로만 나눕니다. 관문별로 나누지 않는 이유는, 지형은 관문을 가로질러 이어지지만 장치는 관문마다 끊기기 때문입니다.</p>
+    <pre>stage_2-N (월드.gd)
+├─ 배경          Sprite2D
+├─ 지형          Node2D   ← SS2D 전부 (SS_*)
+├─ 배관 모음     Node2D   ← 기능 배관(배관.tscn) + 장식 SS2D 배관
+├─ 장치_관문1..5 Node2D   ← 유체 · 호퍼 · 통과플랫폼 · 가시
+└─ Player</pre>
+  </div>
+
+  <div class="legend">
+    <h3>도면 기호</h3>
+    <div class="lg" id="legend"></div>
+  </div>
+
+  <div class="specs" id="specs"></div>
+</section>
+
+<section id="s21"></section>
+<section id="s22"></section>
+<section id="s23"></section>
+
+<div class="finds" id="finds">
+  <div class="eyebrow mono">코드를 읽다 나온 것</div>
+  <h2 style="font-size:26px;font-weight:800;margin-bottom:8px">코드와 어긋난 곳</h2>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:24px;max-width:78ch">설계하면서 실제로 코드를 열어 확인한 것들입니다. <b>1번은 앞선 2-4~2-7 도면을 고쳐야 하는 내용</b>이라 제일 위에 뒀습니다.</p>
+
+  <div class="find" id="f1">
+    <h4>1. 물은 지형을 "무색으로" 만들지 못한다 — <b>시작상태로</b> 되돌린다</h4>
+    <p><code>유체.gd:490</code> 이 부르는 <code>지형.되돌리기()</code> 는 <code>_원래대로()</code> 로 가고, 그 함수는 <b><code>시작상태</code> 로</b> 되돌립니다(<code>지형.gd:689</code>, 2026-08-29 에 일부러 그렇게 고쳤습니다 — 흰 Template 이 리셋 때 사라지던 버그).</p>
+    <p>그래서 <b>시작상태 = 검정인 바닥에 흰 물을 부으면 다시 검정</b>이 됩니다. 게다가 무색이 되더라도 <code>색규칙</code> 이 무색을 검정으로 보므로 흰 플레이어에게는 <b>어느 쪽이든 죽는 바닥</b>입니다.</p>
+    <p><b>2-4 도면의 관문 1</b>("흰 물이 검정 바닥을 지운다 → 무색이 된 바닥을 흰색 그대로 지나간다")과 <b>관문 2·3의 지움 전제</b>가 이 규칙과 어긋납니다. 그 관문들은 성립하지 않습니다.</p>
+    <p class="fix"><b>이 설계도가 쓴 방법:</b> 물의 역할을 뒤집었습니다. 물은 <b>길을 여는 도구가 아니라 내가 칠해 놓은 것을 되돌리는 압력</b>입니다(2-1 관문 4, 2-2 관문 1·4). 길을 여는 것은 언제나 <b>총(칠하기)</b>이고, 물은 그 칠을 지워 다시 하게 만듭니다. 2-4~2-7 도면은 이 규칙으로 한 번 다시 봐야 합니다.</p>
+  </div>
+
+  <div class="find">
+    <h4>2. 물이 시작상태 있는 지형에 닿으면 <b>안 쓴 탄약이 돌아온다</b></h4>
+    <p><code>유체.gd:494</code> → <code>페인트_코어.부분_자동회수(대상, 1)</code> 는 <code>_회수줄_감소()</code> 뒤에 <b>조건 없이 <code>_환급(1)</code></b> 합니다. 그런데 <code>_회수줄_감소()</code> 는 그 지형이 회수줄에 없으면 <b>아무것도 안 하고 돌아옵니다</b>(<code>페인트_코어.gd:205</code>).</p>
+    <p>즉 플레이어가 <b>한 번도 칠하지 않은</b> 시작상태 검정 바닥에 흰 물이 닿기만 해도 <b>탄약 1발이 생깁니다.</b> <code>_지운적</code> 덕에 지형 하나당 한 번이고 <code>최대_탄약(12)</code> 을 넘지는 않지만, <b>다른 데서 쓴 탄약이 공짜로 채워집니다.</b></p>
+    <p class="fix"><b>이 설계도가 한 것:</b> 탄약 예산을 짤 때 이 환급을 <b>0으로 놓고</b> 셌습니다(그래야 고쳐도 안 무너집니다). 다만 2-1 관문 4·5의 탄약 압박은 이 구멍이 열려 있으면 사라집니다. 고친다면 <code>_회수줄_찾기(대상) &lt; 0</code> 일 때 환급하지 않으면 됩니다.</p>
+  </div>
+
+  <div class="find">
+    <h4>3. <code>stage_2-2</code> 는 아직 스테이지가 아니라 실험실이다</h4>
+    <p>씬 루트 스크립트가 <code>월드.gd</code> 가 아니라 <code>scripts/proto/stage_lab.gd</code> 이고, 지형은 전부 <b><code>TileMapLayer</code></b> 입니다. SS2D 는 <code>TEMPLATE_CEMENT_SOLID</code> 하나가 <code>(−887, −899)</code> 에 화면 밖으로 치워져 있을 뿐입니다. 내용물은 <code>장애물_1</code>~<code>장애물_7</code> 로 묶인 호퍼·배관 시연 7세트(x 149 → 10,112 · y 17 → 2,443)입니다.</p>
+    <p class="fix"><b>이 설계도가 정한 것:</b> 2-2 는 <b>고치는 게 아니라 새로 찍습니다.</b> 기존 <code>장애물_*</code> 7세트는 지우지 말고 x 12,000 바깥으로 밀어 <b>부품 창고</b>로 남깁니다 — 배관·호퍼 조합이 이미 손으로 맞춰져 있어 2-3 을 찍을 때 그대로 복사해 쓸 수 있습니다.</p>
+  </div>
+
+  <div class="find">
+    <h4>4. <code>챕터.gd</code> 에 스테이지 2 가 한 줄도 없다</h4>
+    <p><code>스테이지표</code> 는 2026-08-30 에 <b>집 4스테이지 전용</b>으로 갈아엎어졌습니다. 지금 표에 있는 것은 2층 방 · 복도계단 · 거실 · 주방 넷뿐이고, <code>stage_2-1</code>~<code>2-3</code> 은 <b>표에 없어서 게임에서 도달할 수 없습니다.</b> (CLAUDE.md 의 "스테이지 7개가 통로로 이어진다"도 이 표보다 낡았습니다.)</p>
+    <p class="fix"><b>필요한 것:</b> 세 스테이지를 다 찍은 뒤 <code>스테이지표</code> 에 세 줄을 추가하고(낙사y 는 2-1·2-3 이 1,900 / 2-2 는 갱도 때문에 <b>2,600</b>), 각 스테이지 양 끝에 <code>연결통로.tscn</code> 을 둡니다. <b>찍기 전에는 F5 로 확인할 수 없으니</b>, 그동안은 씬을 직접 실행(F6)해서 봅니다.</p>
+  </div>
+
+  <div class="find">
+    <h4>5. 2-1 의 기존 지형은 SS2D 한 장이 스테이지 전체를 덮고 있다</h4>
+    <p><code>지형/TEMPLATE_CEMENT_SOLID</code> 하나의 점이 월드 <b>x −314 ~ 7,406 · y −122 ~ 2,838</b> 까지 벌어져 있고, 점 12개 안에 닫는 점이 두 번 들어가 있습니다. <code>TEMPLATE_CEMENT_SOLID3</code> 아래에는 또 다른 <code>TEMPLATE_CEMENT_SOLID</code> 가 자식으로 들어가 있습니다(<code>(−4408, −864)</code>).</p>
+    <p class="fix"><b>이 설계도가 정한 것:</b> 2-1 지형은 <b>관문별로 조각냅니다.</b> 바닥을 한 장으로 두면 시작상태를 관문마다 다르게 줄 수 없고(검정/회색/흰색이 한 노드에 하나뿐), <b>규칙 ②의 회색 전환 띠를 만들 수가 없습니다.</b> 조각내는 것은 미관이 아니라 퍼즐의 요구입니다.</p>
+  </div>
+
+  <div class="find">
+    <h4>6. 새 Template 을 만들면 점 독립 도구를 돌려야 한다</h4>
+    <p>이 설계도는 키트 Template 을 <b>맵에 여러 번 직접 꽂습니다</b>(2026-09-02 에 26개 전부 <code>resource_local_to_scene</code> 이 들어가 이제 각자 독립입니다). 다만 <b>이 설계도를 찍다가 새 Template 을 만들었다면</b> 그것만은 옛 증상("한 번 더 꽂으니 같은 모양으로 들어온다")이 그대로 납니다.</p>
+    <p class="fix"><b>새 Template 을 만들었으면 두 줄:</b><br>
+    <code>Godot --headless --path . -s res://tools/생성_템플릿_점독립.gd</code><br>
+    <code>Godot --headless --path . -s res://tools/check_지형_점공유.gd</code></p>
+  </div>
+</div>
+
+<section id="work">
+  <div class="sec-head">
+    <h2>작업 순서</h2>
+    <span class="meta mono">한 관문을 다 찍을 때마다 검사한다</span>
+  </div>
+  <div class="panel">
+    <h3>찍는 순서</h3>
+    <p><b>2-1 → 2-3 → 2-2</b> 순서를 권합니다. 2-2 는 수직 갱도라 카메라 작업(<code>카메라공간배치.gd</code>)이 붙고, 셋 중 유일하게 <b>기존 씬을 버리고 새로 만드는</b> 스테이지입니다. 가로 스테이지 둘을 먼저 끝내 규약을 굳힌 뒤에 여는 편이 안전합니다.</p>
+    <p>관문 하나를 찍는 순서는 언제나 같습니다: <b>① 지형 배치표대로 SS2D 를 꽂고 점을 찍는다 → ② 걸어 본다(F6) → ③ 장치 배치표대로 유체·호퍼를 꽂는다 → ④ 색을 바꿔 가며 죽어 본다 → ⑤ 검사를 돌린다.</b> ②를 건너뛰면 계단 높이 실수를 장치까지 다 꽂은 뒤에 발견합니다.</p>
+    <pre>Godot --headless --path . -s res://tools/레벨검사.gd -- res://scenes/world_2_클로드/stage_2-1.tscn --지도</pre>
+    <p style="margin-top:10px">⚠ 콘솔 exe 는 한글 경로에서 본체를 못 찾습니다 — <code>C:\Users\Public\godot46\</code> 에 복사해 둔 것을 씁니다(CLAUDE.md).</p>
+  </div>
+  <div class="panel">
+    <h3>관문마다 확인할 것</h3>
+    <ul class="chk">
+      <li>회색 전환 띠 위에서만 색을 바꿔야 하는가 — 검정 바닥에서 흰색이 되면 <b>즉사</b>가 맞는가</li>
+      <li>계단 한 칸이 <b>폭 180 × 높이 110</b> 인가 (높이 128 을 넘으면 못 올라간다)</li>
+      <li>공중 발판 두께가 <b>180 이상</b> 인가 (140 아래면 검은 막대로 보인다)</li>
+      <li>관문 통과 직후 <b>평지 96px 이상</b> 이 있어 체크포인트가 잡히는가</li>
+      <li>떨어지는 높이가 <b>520px</b> 안인가 — 넘으면 중간에 턱을 둔다</li>
+      <li>물줄기가 <b>어디서 오는지</b> 화면에 보이는가 (천장 배관까지 그렸는가)</li>
+      <li>벽·천장 SS2D 에 <code>칠하기_허용 = false</code> 가 들어갔는가 (기본값이 <b>true</b> 라 빠뜨리기 쉽다)</li>
+      <li><code>레벨검사.gd</code> 의 <b>[도달불가] · [소프트락]</b> 이 0 인가</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="mono">
+  근거 — docs/스테이지2_하수도_제작계획_2026-08-22.md §1·§3·§4·§6·§10 · scenes/집/스마트 매쉬 assets/README_지형찍기.md ·
+  scripts/스마트월드/{색규칙,지형,유체,페인트_코어,호퍼,물저장고,통과플랫폼,배관,챕터}.gd · dev_4 @ 72e60cd<br>
+  좌표는 Godot 월드 좌표(y 는 아래로 증가). 바닥 윗면 y = 1,100 · 천장 아랫면 y = 140 기준.
+</footer>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   도면 렌더러 — 월드 좌표(px)를 그대로 SVG viewBox 로 쓴다.
+   y 는 Godot 과 같이 아래로 증가하므로 변환이 없다.
+   2-4 도면의 렌더러를 가져와, 설계도용으로 셋을 더했다:
+     struct(구조물 해칭) · floor(시작상태별 바닥) · dim/dimv(치수선)
+   ══════════════════════════════════════════════════════════════ */
+const NS="http://www.w3.org/2000/svg";
+const el=(t,a={})=>{const n=document.createElementNS(NS,t);
+  for(const k in a) n.setAttribute(k,a[k]); return n;};
+
+const FILL={black:"var(--gblack)",white:"var(--gwhite)",gray:"var(--ggray)"};
+const KO  ={black:"검정",white:"흰색",gray:"회색"};
+
+function tx(p,x,y,s,o={}){
+  const t=el("text",{x,y,"font-size":o.size||30,"text-anchor":o.anchor||"middle",
+    fill:o.fill||"var(--muted)","font-weight":o.weight||600,
+    "font-family":'"Cascadia Mono",Consolas,monospace'});
+  t.textContent=s; p.appendChild(t); return t;
+}
+
+/* 해칭 — 구조물(칠할 수 없는 것)에만 쓴다. 패턴 정의는 도면마다 하나. */
+let hatchId=0;
+function hatchDef(svg){
+  const id="h"+(++hatchId);
+  const pat=el("pattern",{id,width:34,height:34,patternUnits:"userSpaceOnUse",
+    patternTransform:"rotate(45)"});
+  pat.appendChild(el("rect",{width:34,height:34,fill:"var(--sunk)"}));
+  pat.appendChild(el("line",{x1:0,y1:0,x2:0,y2:34,stroke:"var(--hatch)","stroke-width":7,opacity:.55}));
+  const defs=el("defs",{}); defs.appendChild(pat); svg.appendChild(defs);
+  return id;
+}
+let HATCH="none";
+
+const draw={
+  /* 구조물 — WALL 벽체. 색 규칙 밖이라 절대 죽이지 않는다 */
+  struct(g,[x,y,w,h,lab]){
+    g.appendChild(el("rect",{x,y,width:w,height:h,fill:"url(#"+HATCH+")",
+      stroke:"var(--gedge)","stroke-width":3}));
+    if(lab&&w>260&&h>150) tx(g,x+w/2,y+h/2+10,lab,{size:26,fill:"var(--muted)",weight:700});
+  },
+
+  /* 퍼즐 바닥 — 시작상태로 칠해 그린다. none 이면 무색(=판정은 검정) */
+  floor(g,[x,y,w,h,st,lab]){
+    const f = st==="none" ? "var(--sunk)" : FILL[st];
+    g.appendChild(el("rect",{x,y,width:w,height:h,fill:f,stroke:"var(--gedge)","stroke-width":3}));
+    g.appendChild(el("rect",{x,y,width:w,height:7,fill:"var(--accent)",opacity:.85}));
+    if(st==="none"){
+      g.appendChild(el("line",{x1:x,y1:y+h,x2:x+w,y2:y,stroke:"var(--gedge)","stroke-width":2,opacity:.4}));
+    }
+    const t = lab || (st==="none"?"무색":KO[st]);
+    if(w>210) tx(g,x+14,y+Math.min(h,120)/2+34,t,{size:27,anchor:"start",weight:700,
+      fill:st==="black"?"var(--gwhite)":st==="none"?"var(--muted)":"var(--gblack)"});
+  },
+
+  /* 유령 발판 — 무색일때_통과 = true. 칠해야 밟힌다 */
+  ghost(g,[x,y,w,h,lab]){
+    g.appendChild(el("rect",{x,y,width:w,height:h,fill:"none",
+      stroke:"var(--accent)","stroke-width":4,"stroke-dasharray":"16 11"}));
+    if(lab) tx(g,x+w/2,y+h/2+10,lab,{size:25,fill:"var(--accent)",weight:700});
+  },
+
+  /* 계단 — 폭 180 × 높이 110 한 칸. dir 1 = 오른쪽으로 오름 */
+  stairs(g,[x,by,n,dir,lab]){
+    const W=180,H=110; let p=[];
+    for(let i=0;i<n;i++){
+      const sx = dir>0 ? x+i*W : x+(n-1-i)*W;
+      p.push([sx,by-i*H],[sx+W,by-i*H],[sx+W,by-(i+1)*H]);
+    }
+    const pts = dir>0
+      ? [[x,by],...p.map(q=>q),[x+n*W,by]]
+      : [[x,by],...p.map(q=>q),[x+n*W,by]];
+    g.appendChild(el("polygon",{points:pts.map(q=>q.join(",")).join(" "),
+      fill:"url(#"+HATCH+")",stroke:"var(--gedge)","stroke-width":3}));
+    if(lab) tx(g,x+n*W/2,by+46,lab,{size:25,fill:"var(--muted)",weight:700});
+  },
+
+  /* 물줄기 — 원점이 위쪽 끝 */
+  fluid(g,[x,y,w,h,c,mode,lab,ly]){
+    const st=mode==="always"?"var(--rust)":"var(--accent)";
+    g.appendChild(el("rect",{x,y,width:w,height:h,fill:FILL[c],opacity:mode==="off"?.45:.9,
+      stroke:st,"stroke-width":4,"stroke-dasharray":mode==="off"?"12 9":"none"}));
+    for(let i=1;i<5;i++){const yy=y+h*i/5;
+      g.appendChild(el("line",{x1:x+7,y1:yy,x2:x+w-7,y2:yy,
+        stroke:c==="black"?"var(--gwhite)":"var(--gblack)",opacity:.3,"stroke-width":3}));}
+    if(lab) tx(g,x+w/2,y-14-(ly||0),lab,{size:26,fill:st,weight:700});
+  },
+
+  /* 호퍼 — 원점이 아래쪽 끝, 윗면이 밟는 면 */
+  hopper(g,[cx,by,w,h,lab,ly]){
+    g.appendChild(el("polygon",{points:`${cx-w/2},${by-h} ${cx+w/2},${by-h} ${cx+24},${by} ${cx-24},${by}`,
+      fill:"var(--sunk)",stroke:"var(--accent)","stroke-width":4}));
+    g.appendChild(el("rect",{x:cx-w/2-5,y:by-h-8,width:w+10,height:12,fill:"var(--accent)"}));
+    if(lab) tx(g,cx+w/2+16,by-h/2+4-(ly||0),lab,{size:26,anchor:"start",fill:"var(--accent)",weight:700});
+  },
+
+  /* 배관 — 기능(배관.tscn). c 를 주면 흐르는 물 색으로 물든 상태 */
+  pipe(g,[pts,c]){
+    const s=pts.map(p=>p.join(",")).join(" ");
+    g.appendChild(el("polyline",{points:s,fill:"none",stroke:"var(--gedge)","stroke-width":30,
+      "stroke-linejoin":"round","stroke-linecap":"round",opacity:.75}));
+    g.appendChild(el("polyline",{points:s,fill:"none",stroke:c?FILL[c]:"var(--ground)","stroke-width":13,
+      "stroke-linejoin":"round","stroke-linecap":"round"}));
+  },
+
+  /* 장식 SS2D 배관 — 충돌·색 없음 */
+  deco(g,[pts]){
+    g.appendChild(el("polyline",{points:pts.map(p=>p.join(",")).join(" "),fill:"none",
+      stroke:"var(--hatch)","stroke-width":24,"stroke-linejoin":"round","stroke-linecap":"round",opacity:.35}));
+  },
+
+  /* 통과 플랫폼 224×26 */
+  pass(g,[cx,cy,lab]){
+    const w=224,h=26;
+    g.appendChild(el("rect",{x:cx-w/2,y:cy-h/2,width:w,height:h,fill:"var(--sunk)",
+      stroke:"var(--gedge)","stroke-width":3}));
+    for(let i=0;i<7;i++) g.appendChild(el("circle",{cx:cx-w/2+22+i*30,cy,r:6,fill:"var(--paper)"}));
+    if(lab) tx(g,cx,cy-26,lab,{size:24,fill:"var(--muted)"});
+  },
+
+  /* 가시 */
+  spike(g,[x,by,n]){
+    for(let i=0;i<n;i++)
+      g.appendChild(el("path",{d:`M${x+i*52},${by} l26,-46 l26,46 z`,fill:"var(--rust)",opacity:.8}));
+  },
+
+  /* 낙사·구덩이 */
+  pit(g,[x,y,w,lab]){
+    g.appendChild(el("rect",{x,y,width:w,height:52,fill:"var(--rust)",opacity:.16}));
+    for(let i=0;i<Math.floor(w/38);i++)
+      g.appendChild(el("path",{d:`M${x+i*38+8},${y+50} l14,-34 l14,34`,fill:"none",
+        stroke:"var(--rust)","stroke-width":4,opacity:.7}));
+    tx(g,x+w/2,y+94,lab||"구덩이",{size:26,fill:"var(--rust)",weight:700});
+  },
+
+  /* 플레이어 44×97 — y 는 발 위치 */
+  player(g,[x,fy,lab]){
+    g.appendChild(el("rect",{x:x-22,y:fy-97,width:44,height:97,fill:"none",
+      stroke:"var(--ink)","stroke-width":4}));
+    g.appendChild(el("circle",{cx:x,cy:fy-74,r:13,fill:"var(--ink)"}));
+    tx(g,x,fy-112,lab||"시작",{size:25,fill:"var(--ink)",weight:700});
+  },
+
+  /* 체크포인트 평지 */
+  cp(g,[x,y,w]){
+    g.appendChild(el("rect",{x,y:y-10,width:w,height:10,fill:"var(--accent)"}));
+    tx(g,x+w/2,y-24,"체크포인트 "+w+"px",{size:23,fill:"var(--accent)",weight:700});
+  },
+
+  /* 가로 치수선 */
+  dim(g,[x0,x1,y,lab]){
+    const c="var(--dimc)";
+    g.appendChild(el("line",{x1:x0,y1:y,x2:x1,y2:y,stroke:c,"stroke-width":2.5}));
+    for(const x of [x0,x1])
+      g.appendChild(el("line",{x1:x,y1:y-16,x2:x,y2:y+16,stroke:c,"stroke-width":2.5}));
+    tx(g,(x0+x1)/2,y-12,lab||(x1-x0)+"",{size:25,fill:c,weight:700});
+  },
+  /* 세로 치수선 */
+  dimv(g,[y0,y1,x,lab]){
+    const c="var(--dimc)";
+    g.appendChild(el("line",{x1:x,y1:y0,x2:x,y2:y1,stroke:c,"stroke-width":2.5}));
+    for(const y of [y0,y1])
+      g.appendChild(el("line",{x1:x-16,y1:y,x2:x+16,y2:y,stroke:c,"stroke-width":2.5}));
+    tx(g,x+14,(y0+y1)/2+9,lab||(y1-y0)+"",{size:25,anchor:"start",fill:c,weight:700});
+  },
+
+  note(g,[x,y,s,anchor]){ tx(g,x,y,s,{size:26,anchor:anchor||"middle",fill:"var(--ink)",weight:600}); },
+  danger(g,[x,y,s,anchor]){ tx(g,x,y,s,{size:26,anchor:anchor||"middle",fill:"var(--rust)",weight:700}); }
+};
+
+/* 눈금자 */
+function ruler(g,x0,x1,y){
+  g.appendChild(el("line",{x1:x0,y1:y,x2:x1,y2:y,stroke:"var(--line)","stroke-width":2}));
+  const step=200;
+  for(let x=Math.ceil(x0/step)*step;x<=x1;x+=step){
+    const big=x%1000===0;
+    g.appendChild(el("line",{x1:x,y1:y,x2:x,y2:y+(big?16:8),stroke:"var(--line)","stroke-width":2}));
+    if(big) tx(g,x,y+46,"x "+x.toLocaleString(),{size:26,fill:"var(--muted)",weight:600});
+  }
+}
+
+/* ── 글자 폭 어림 (getBBox 는 레이아웃 전에 0 을 준다) ─────────── */
+const CJK=/[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF\u3000-\u303F\u4E00-\u9FFF]/;
+function textW(s,size){
+  let w=0; for(const ch of String(s)) w+=CJK.test(ch)?size:size*0.58; return w;
+}
+function textSpan(x,s,size,anchor){
+  const w=textW(s,size);
+  if(anchor==="start") return [x,x+w];
+  if(anchor==="end")   return [x-w,x];
+  return [x-w/2,x+w/2];
+}
+
+/* 물줄기·호퍼 라벨 겹침 풀기 */
+const ROW=34;
+function assignRows(items){
+  const labs=[];
+  items.forEach((it,i)=>{
+    if(it[0]==="fluid" && it[7]) labs.push({i,x:it[1]+it[3]/2,w:textW(it[7],26),y:it[2]-14,anchor:"middle"});
+    if(it[0]==="hopper"&& it[5]) labs.push({i,x:it[1]+it[3]/2+16,w:textW(it[5],26),y:it[2]-it[4]/2+4,anchor:"start"});
+  });
+  labs.sort((a,b)=>a.x-b.x);
+  const placed=[], ly={};
+  for(const L of labs){
+    const [x0,x1]=L.anchor==="start"?[L.x,L.x+L.w]:[L.x-L.w/2,L.x+L.w/2];
+    let r=0;
+    for(;r<8;r++){
+      const ey=L.y-r*ROW;
+      if(!placed.some(p=>!(x1<p.x0-16||p.x1<x0-16) && Math.abs(ey-p.ey)<30)) break;
+    }
+    ly[L.i]=r*ROW;
+    placed.push({x0,x1,ey:L.y-r*ROW});
+  }
+  return ly;
+}
+
+/* 항목이 차지하는 범위 — 그리기 코드와 같은 숫자를 쓴다 */
+function extent(type,a,ly){
+  const S=26;
+  const span=(x,s,anchor)=>textSpan(x,s,S,anchor);
+  switch(type){
+    case "struct": case "floor": case "ghost":
+      return [a[0],a[1],a[0]+a[2],a[1]+a[3]];
+    case "stairs": return [a[0],a[1]-a[2]*110,a[0]+a[2]*180,a[1]+46+S];
+    case "fluid":{
+      let b=[a[0],a[1],a[0]+a[2],a[1]+a[3]];
+      if(a[6]){const [l,r]=span(a[0]+a[2]/2,a[6],"middle");
+        b=[Math.min(b[0],l),Math.min(b[1],a[1]-14-ly-S),Math.max(b[2],r),b[3]];}
+      return b;
+    }
+    case "hopper":{
+      let b=[a[0]-a[2]/2,a[1]-a[3]-8,a[0]+a[2]/2,a[1]];
+      if(a[4]){const [l,r]=span(a[0]+a[2]/2+16,a[4],"start");
+        b=[Math.min(b[0],l),Math.min(b[1],a[1]-a[3]/2+4-ly-S),Math.max(b[2],r),b[3]];}
+      return b;
+    }
+    case "pass":   return [a[0]-112,a[1]-13-(a[2]?26+S:0),a[0]+112,a[1]+13];
+    case "spike":  return [a[0],a[1]-46,a[0]+a[2]*52,a[1]];
+    case "pipe": case "deco":{
+      const xs=a[0].map(p=>p[0]), ys=a[0].map(p=>p[1]);
+      return [Math.min(...xs)-18,Math.min(...ys)-18,Math.max(...xs)+18,Math.max(...ys)+18];
+    }
+    case "pit":{
+      const [l,r]=span(a[0]+a[2]/2,a[3]||"구덩이","middle");
+      return [Math.min(a[0],l),a[1],Math.max(a[0]+a[2],r),a[1]+94];
+    }
+    case "player":{
+      const [l,r]=span(a[0],a[2]||"시작","middle");
+      return [Math.min(a[0]-22,l),a[1]-112-S,Math.max(a[0]+22,r),a[1]];
+    }
+    case "cp":{
+      const [l,r]=textSpan(a[0]+a[2]/2,"체크포인트 "+a[2]+"px",23,"middle");
+      return [Math.min(a[0],l),a[1]-24-23,Math.max(a[0]+a[2],r),a[1]];
+    }
+    case "dim":{
+      const [l,r]=span((a[0]+a[1])/2,a[3]||"","middle");
+      return [Math.min(a[0],l),a[2]-12-S,Math.max(a[1],r),a[2]+16];
+    }
+    case "dimv":{
+      const [l,r]=span(a[2]+14,a[3]||"","start");
+      return [a[2]-16,a[0],Math.max(a[2]+16,r),a[1]];
+    }
+    case "note": case "danger":{
+      const [l,r]=span(a[0],a[2],a[3]||"middle");
+      return [l,a[1]-S,r,a[1]+8];
+    }
+    default: return null;
+  }
+}
+
+function renderMap(gate){
+  const rows=assignRows(gate.items);
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  gate.items.forEach((it,i)=>{
+    const e=extent(it[0],it.slice(1),rows[i]||0);
+    if(!e) return;
+    x0=Math.min(x0,e[0]); y0=Math.min(y0,e[1]);
+    x1=Math.max(x1,e[2]); y1=Math.max(y1,e[3]);
+  });
+  if(!isFinite(x0)||x1-x0<400){ const v=gate.view; x0=v[0]; y0=v[1]; x1=v[0]+v[2]; y1=v[1]+v[3]; }
+
+  const pad=70, rulerH=120;
+  const vx=Math.floor(x0-pad), vy=Math.floor(y0-pad);
+  const vw=Math.ceil(x1-x0+pad*2), vh=Math.ceil(y1-y0+pad*2);
+
+  const svg=el("svg",{viewBox:`${vx} ${vy} ${vw} ${vh+rulerH}`,
+    preserveAspectRatio:"xMidYMid meet",role:"img",
+    style:`aspect-ratio:${vw} / ${vh+rulerH}`});
+  svg.setAttribute("aria-label",`관문 ${gate.n} ${gate.title} 배치도`);
+  HATCH=hatchDef(svg);
+
+  const grid=el("g",{});
+  for(let x=Math.ceil(vx/128)*128;x<vx+vw;x+=128)
+    grid.appendChild(el("line",{x1:x,y1:vy,x2:x,y2:vy+vh,stroke:"var(--hair)","stroke-width":1}));
+  for(let y=Math.ceil(vy/128)*128;y<vy+vh;y+=128)
+    grid.appendChild(el("line",{x1:vx,y1:y,x2:vx+vw,y2:y,stroke:"var(--hair)","stroke-width":1}));
+  svg.appendChild(grid);
+
+  const content=el("g",{});
+  gate.items.forEach((it,i)=>{
+    const [type,...args]=it;
+    if(!draw[type]) return;
+    if(type==="fluid")  draw.fluid(content,[...args,rows[i]||0]);
+    else if(type==="hopper") draw.hopper(content,[...args,rows[i]||0]);
+    else draw[type](content,args);
+  });
+  svg.appendChild(content);
+  ruler(svg,vx+30,vx+vw-30,vy+vh+34);
+  return svg;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   단면도 — 규약 §1. 하수도 한 칸의 치수를 그대로 그린다.
+   ══════════════════════════════════════════════════════════════ */
+(function(){
+  const svg=el("svg",{viewBox:"-360 -260 2600 1900",preserveAspectRatio:"xMidYMid meet",
+    role:"img",style:"aspect-ratio:2600 / 1900"});
+  svg.setAttribute("aria-label","하수도 표준 단면 — 바닥 윗면 1100 · 천장 아랫면 140");
+  HATCH=hatchDef(svg);
+  const g=el("g",{});
+  draw.struct(g,[-260,-20,2320,160,"천장 · WALL_SOLID"]);
+  draw.struct(g,[-260,140,424,960,"끝벽"]);
+  draw.floor(g,[164,1100,1896,260,"black","바닥 · CEMENT_SOLID · 시작상태 검정"]);
+  draw.dimv(g,[140,1100,660,"960 = WALL_SOLID 기본 높이"]);
+  draw.dimv(g,[-20,140,1900,"천장 160"]);
+  draw.dimv(g,[1100,1360,1900,"바닥 260"]);
+  draw.dim(g,[-260,164,1500,"끝벽 424"]);
+  draw.player(g,[900,1100,"플레이어 44 × 97"]);
+  draw.note(g,[1500,760,"천장 아랫면 y = 140"]);
+  draw.note(g,[1500,1040,"바닥 윗면 y = 1,100"]);
+  svg.appendChild(g);
+  ruler(svg,-260,2060,1560);
+  document.getElementById("xsec").appendChild(svg);
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   데이터 — 관문 15개
+   ══════════════════════════════════════════════════════════════ */
+
+/* 갱도의 통과 플랫폼 지그재그를 좌표로 뽑는다(손으로 14줄 적지 않는다) */
+function zig(y0,n,step,xL,xR){
+  const out=[];
+  for(let i=0;i<n;i++) out.push(["pass", i%2 ? xR : xL, y0-i*step, null]);
+  return out;
+}
+
+const STAGES=[
+{
+ id:"s21", name:"2-1 · 물이 흐르는 곳", learn:"물", reuse:"—",
+ width:"x 300 – 8,500", time:"학습 · 죽음은 색으로만",
+ between:70, retry:68,
+ why:"시간을 만드는 것은 <b>색 전환의 위험</b>이다. 이 스테이지에는 장치가 하나도 없다 — 조작할 수 있는 것은 총과 색 전환뿐이고, 저장고·레버가 없으니 '조작 시간'으로는 8분이 안 나온다. 그래서 시간을 <b>죽음</b>에서 만든다. 관문 2에서 대부분 한 번 죽고(검정 바닥 위에서 흰색이 됨), 관문 4에서 검정으로 칠했다가 되돌려지고, 관문 5에서 총알을 물에 먹인다. 셋 다 <b>규칙을 배우는 죽음</b>이지 함정이 아니다.",
+ note:"제작계획 §5 철칙 — <b>새 오브젝트가 처음 나오는 관문에서는 죽이지 않는다.</b> 그래서 관문 1은 회색 물 두 줄기를 그냥 지나가는 것뿐이고 52초로 짧다. 죽음은 관문 2부터 시작한다. 기존 <code>stage_2-1</code> 의 지형은 SS2D 한 장이 스테이지 전체를 덮고 있어(<a href='#finds'>§5</a>) 시작상태를 구간마다 줄 수 없다 — <b>관문별로 조각내는 것이 이 설계도의 첫 작업</b>이다.",
+ gates:[
+ {n:1,title:"회색은 벽이 아니다",teach:"물은 벽이 아니다 · 회색은 누구도 안 죽인다",xr:"x 300 – 1,800",
+  view:[-200,-100,2100,1700],
+  items:[
+   ["struct",-124,140,424,960,"끝벽"],
+   ["struct",300,-20,1500,160,"천장"],
+   ["floor",300,1100,1500,260,"black","검정 바닥 — 플레이어와 같은 색"],
+   ["deco",[[420,60],[1420,60]]],
+   ["deco",[[1000,60],[1000,140]]],
+   ["deco",[[1420,60],[1420,140]]],
+   ["fluid",968,140,64,960,"gray","always","F1 회색 · 상시"],
+   ["fluid",1388,140,64,960,"gray","always","F2 회색 · 상시"],
+   ["player",470,1100,"시작 · 검정"],
+   ["cp",1560,1100,240],
+   ["dimv",140,1100,780,"통로 960"],
+   ["dim",1000,1420,1470,"물 사이 420"],
+   ["note",640,1620,"물줄기를 두 줄 두는 이유 — 한 줄이면 '운 좋게 지나갔다'로 읽힌다"]
+  ],
+  steps:[
+   "천장 배관에서 물 두 줄기가 바닥까지 떨어지는 것이 <b>한 화면에</b> 보인다. 물이 어디서 오는지 안 보이면 안 된다(§9 체크리스트).",
+   "대부분 멈춰 선다. 이 게임에서 색이 다른 것은 곧 죽음이라, 물을 처음 본 사람은 벽으로 읽는다.",
+   "회색은 <b>누구에게도 상반되지 않는다</b>(<code>색규칙</code>). 그냥 걸어 들어가면 통과한다.",
+   "두 번째 줄기를 지나며 '이 색은 안 죽는다'가 굳는다.",
+   "체크포인트 평지 240px 위에서 관문이 닫힌다."],
+  trap:"<b>여기서는 절대 죽이지 않는다.</b> 물의 첫 등장이다(제작계획 §5 철칙). 52초로 짧은 것이 맞고, 그만큼을 관문 4·5가 메운다 — 억지로 길이를 늘려 복도를 뽑지 않는다(§3 금지).",
+  terr:[
+   ["SS_WALL_END_L1","WALL_SOLID","(-124, 140)","424 × 960","칠하기_허용 true"],
+   ["SS_WALL_CEIL_1","WALL_SOLID","(300, -20)","1,500 × 160","칠하기_허용 true"],
+   ["SS_CEM_FLOOR_1","CEMENT_SOLID","(300, 1100)","1,500 × 260","시작상태 <b>검정</b> · 칠하기_허용 true"],
+   ["SS_PIPE_DECO_1","PIPE_OPEN_GRAY","(420, 60)","경로 (420,60)→(1420,60)","장식 · 충돌 없음"]],
+  dev:[
+   ["F1","유체.tscn","(1000, 140)","색 <b>회색</b> · 크기 64×960 · 켜짐 true"],
+   ["F2","유체.tscn","(1420, 140)","색 <b>회색</b> · 크기 64×960 · 켜짐 true"],
+   ["Player","Player.tscn","(470, 1052)","발이 y 1,100 에 닿는 높이로 한 번 맞춰 저장"]],
+  ammo:["12 → 12","쓰지 않는다"],
+  t:[24,5,0,23],
+  tw:"관찰 24 = 물 첫 등장(12 + 12). 이동 5 = 1,330px ÷ 390 에 멈칫을 더한 값. 조작 0. 어긋남 23 = 회색을 못 믿고 되돌아와 한 번 더 확인한다."},
+
+ {n:2,title:"검정 바닥 위에서 흰색이 되면 죽는다",teach:"색을 바꿀 수 있는 자리는 회색 바닥 위뿐이다",xr:"x 1,900 – 3,560",
+  view:[1800,-100,1900,1700],
+  items:[
+   ["struct",1900,-20,1660,160,"천장"],
+   ["floor",1900,1100,1080,260,"black"],
+   ["floor",2980,1100,380,260,"gray","회색 전환 띠"],
+   ["floor",3360,1100,200,260,"black"],
+   ["deco",[[2000,60],[3300,60]]],
+   ["fluid",2268,140,64,960,"black","always","F3 검정"],
+   ["fluid",3138,140,64,960,"white","always","F4 흰색"],
+   ["cp",3380,1100,180],
+   ["dim",2980,3360,1470,"회색 띠 380 = 플레이어 44 + 물 64 + 여유"],
+   ["danger",2400,1620,"검정 바닥 위에서 흰색이 되면 그 자리에서 즉사"],
+   ["note",3170,1760,"↑ 여기서만 색을 바꿀 수 있다"]
+  ],
+  steps:[
+   "검정인 채로 F3(검정 물) 아래를 그냥 지나간다 — 같은 색은 안 죽인다.",
+   "F4(흰 물) 앞에서 막힌다. 흰색으로 바꾸면 된다는 건 바로 안다.",
+   "<b>검정 바닥 위에서 흰색으로 바꾸면 그 자리에서 죽는다</b> — 안 칠한 바닥은 검정이다(규칙 ①). 대부분 여기서 처음 죽는다.",
+   "바닥 색이 다른 380px 띠를 찾는다. 회색 위에서만 색이 바뀐다.",
+   "띠에서 흰색 → F4 통과 → 띠 오른쪽 끝에서 다시 검정 → 검정 바닥을 계속 간다."],
+  trap:"회색 띠를 F4 <b>양쪽으로</b> 걸치게 둔다(2,980~3,360, F4 는 3,170). 한쪽에만 두면 물을 지난 뒤 검정으로 돌아갈 자리가 없어 <b>그 자리에서 소프트락</b>이다. 이 실수는 <code>레벨검사.gd</code> 가 못 잡는다 — 색은 안 보기 때문이다.",
+  terr:[
+   ["SS_WALL_CEIL_2","WALL_SOLID","(1900, -20)","1,660 × 160","칠하기_허용 true"],
+   ["SS_CEM_FLOOR_2A","CEMENT_SOLID","(1900, 1100)","1,080 × 260","시작상태 검정"],
+   ["SS_CEM_SWAP_2","CEMENT_SOLID","(2980, 1100)","380 × 260","시작상태 <b>회색</b> ← 전환 띠"],
+   ["SS_CEM_FLOOR_2B","CEMENT_SOLID","(3360, 1100)","200 × 260","시작상태 검정"]],
+  dev:[
+   ["F3","유체.tscn","(2300, 140)","색 검정 · 64×960 · 켜짐 true"],
+   ["F4","유체.tscn","(3170, 140)","색 흰색 · 64×960 · 켜짐 true"]],
+  ammo:["12 → 12","쓰지 않는다"],
+  t:[20,6,14,38],
+  tw:"관찰 20. 이동 6 = 1,660px. 조작 14 = 색 전환 2회 + 회색 띠를 찾는 시간. 어긋남 38 = 검정 바닥에서 흰색이 되어 한 번 죽고 체크포인트에서 다시 걸어온다."},
+
+ {n:3,title:"색을 두 번 바꾼다",teach:"물의 색 = 그 바닥에서 있어야 하는 색",xr:"x 3,700 – 5,420",
+  view:[3600,-100,1950,1700],
+  items:[
+   ["struct",3700,-20,1720,160,"천장"],
+   ["floor",3700,1100,520,260,"black"],
+   ["floor",4220,1100,340,260,"gray"],
+   ["floor",4560,1100,520,260,"white"],
+   ["floor",5080,1100,340,260,"gray"],
+   ["deco",[[3800,60],[5300,60]]],
+   ["fluid",3968,140,64,960,"black","always","F5 검정"],
+   ["fluid",4788,140,64,960,"white","always","F6 흰색"],
+   ["spike",4620,1100,2],
+   ["cp",5240,1100,180],
+   ["dim",4220,4560,1470,"전환 띠 340"],
+   ["dim",5080,5420,1470,"되돌아갈 띠 340"],
+   ["danger",4680,1620,"가시는 색과 무관하게 죽인다 — 점프 거리 160 안으로"]
+  ],
+  steps:[
+   "검정 구간을 검정으로 지나 F5(검정 물) 아래를 통과한다.",
+   "회색 띠에서 <b>흰색</b>으로 바꾼다. 다음 구간 바닥이 <b>흰 시멘트</b>라 검정으로는 밟는 순간 죽는다.",
+   "흰 구간을 지나며 가시 두 개를 뛰어넘는다(가시는 색 규칙 밖 — 무슨 색이든 죽는다).",
+   "F6(흰 물) 아래를 흰색으로 통과한다.",
+   "두 번째 회색 띠에서 <b>검정으로 되돌린다</b>. 다음 스테이지 구간이 다시 검정 바닥이다."],
+  trap:"흰 구간은 반드시 <b>흰색 Template</b>(<code>TEMPLATE_CEMENT_SOLID_WHITE</code>)으로 찍는다. 검정판에 <code>시작상태 = 흰색</code> 만 주면 <b>에디터 화면에서는 검게 보인다</b>(칠하는 셰이더가 실행 중에만 돈다 — README §3). 배치하다 반드시 헷갈린다.",
+  terr:[
+   ["SS_WALL_CEIL_3","WALL_SOLID","(3700, -20)","1,720 × 160","칠하기_허용 true"],
+   ["SS_CEM_FLOOR_3A","CEMENT_SOLID","(3700, 1100)","520 × 260","시작상태 검정"],
+   ["SS_CEM_SWAP_3A","CEMENT_SOLID","(4220, 1100)","340 × 260","시작상태 회색"],
+   ["SS_CEM_FLOOR_3W","<b>CEMENT_SOLID_WHITE</b>","(4560, 1100)","520 × 260","시작상태 흰색(템플릿 기본)"],
+   ["SS_CEM_SWAP_3B","CEMENT_SOLID","(5080, 1100)","340 × 260","시작상태 회색"]],
+  dev:[
+   ["F5","유체.tscn","(4000, 140)","색 검정 · 64×960"],
+   ["F6","유체.tscn","(4820, 140)","색 흰색 · 64×960"],
+   ["가시 ×2","가시.tscn","(4646, 1100) · (4698, 1100)","간격 52 · 넘는 폭 104 &lt; 점프 160"]],
+  ammo:["12 → 12","쓰지 않는다"],
+  t:[18,10,22,36],
+  tw:"관찰 18 = 규칙을 이미 안다. 이동 10 = 1,720px + 가시 앞 멈춤. 조작 22 = 색 전환 2회 + 흰 구간 진입 판단. 어긋남 36 = 되돌아갈 띠를 못 보고 검정 구간으로 흰색인 채 들어간다."},
+
+ {n:4,title:"물은 내가 칠한 것을 되돌린다",teach:"물은 길을 열지 않는다 — 내 페인트를 지운다",xr:"x 5,600 – 6,900",
+  view:[5500,-100,1500,1700],
+  items:[
+   ["struct",5600,-20,1300,160,"천장"],
+   ["floor",5600,1100,380,260,"gray","회색"],
+   ["pit",5980,1100,560,"구덩이 · 낙사"],
+   ["floor",6540,1100,360,260,"white"],
+   ["ghost",6040,980,180,180,"유령 A"],
+   ["ghost",6320,980,180,180,"유령 B"],
+   ["fluid",6098,140,64,840,"white","always","F7 흰색"],
+   ["fluid",6378,140,64,840,"white","always","F8 흰색"],
+   ["cp",6620,1100,260],
+   ["dim",5980,6540,1470,"구덩이 560"],
+   ["danger",5760,1620,"검정으로 칠하면 흰 물이 즉시 되돌린다 — 발판이 사라진다"],
+   ["note",6300,1760,"↑ 흰색으로 칠해야 남는다"]
+  ],
+  steps:[
+   "회색 띠에서 <b>흰색</b>으로 바꾼다 — 건너편 착지 바닥이 흰 시멘트다.",
+   "구덩이 위에 유령 발판 두 장이 점선으로 보인다. 무색이라 <b>아직 없는 발판</b>이다(<code>무색일때_통과 = true</code>).",
+   "검정으로 쏴 보면 발판이 생겼다가, <b>흰 물이 닿는 순간 사라진다.</b> 물이 내 페인트를 시작상태(무색)로 되돌린다.",
+   "흰색으로 두 장을 칠한다(2발 × 2). 흰 물은 흰 페인트를 안 지운다 — 반대색만 지운다.",
+   "흰 발판을 흰색으로 밟고 건넌다."],
+  trap:"검정으로 칠한 두 발은 물이 되돌리면서 <b>회수되어 돌아온다</b> — 손해는 시간뿐이다. 진짜 손해는 <b>회색</b>이다. 흰 발판에 검정을 덮으면 회색이 되고 그 두 발은 스테이지 끝까지 안 돌아온다(<code>페인트_코어</code> 규칙 3·5). 관문 5에 정확히 6발이 필요하다.",
+  terr:[
+   ["SS_WALL_CEIL_4","WALL_SOLID","(5600, -20)","1,300 × 160","칠하기_허용 true"],
+   ["SS_CEM_SWAP_4","CEMENT_SOLID","(5600, 1100)","380 × 260","시작상태 회색"],
+   ["SS_CEM_LAND_4","CEMENT_SOLID_WHITE","(6540, 1100)","360 × 260","시작상태 흰색"],
+   ["SS_CEM_GHOST_4A","CEMENT_SOLID","(6040, 980)","180 × 180","시작상태 <b>무색</b> · <b>무색일때_통과 true</b> · 필요횟수_수동 2"],
+   ["SS_CEM_GHOST_4B","CEMENT_SOLID","(6320, 980)","180 × 180","같음"]],
+  dev:[
+   ["F7","유체.tscn","(6130, 140)","색 흰색 · 64×840 (아래끝 = 발판 윗면 980)"],
+   ["F8","유체.tscn","(6410, 140)","색 흰색 · 64×840"]],
+  ammo:["12 → 8","유령 A·B 각 2발 · 검정 오답분은 물이 되돌리며 회수"],
+  t:[22,8,30,36],
+  tw:"관찰 22 = 유령 발판 첫 등장(12 + 12). 이동 8. 조작 30 = 검정 2발(4.4) + 되돌아가는 걸 보는 10 + 흰색 4발(8.8) + 전환. 어긋남 36 = 구덩이에 한 번 빠진다.",
+  gaps:"뛰는 간격 — 5,980→6,040 = 60 · 6,220→6,320 = 100 · 6,500→6,540 = 40. 올라서는 높이 120 (안전 오름단차 128 안)."},
+
+ {n:5,title:"물이 총알을 막는다",teach:"반대색 물은 투사체를 먹는다 — 각도가 아니라 자리를 바꾼다",xr:"x 6,900 – 8,500",
+  view:[6800,-100,1800,1700],
+  items:[
+   ["struct",6900,-20,1600,160,"천장"],
+   ["floor",6900,1100,420,260,"white"],
+   ["floor",7320,1100,300,260,"gray"],
+   ["floor",7620,1100,580,260,"black"],
+   ["fluid",7438,140,64,620,"black","always","F9 검정 · 아래 340 이 비어 있다"],
+   ["ghost",7680,940,200,180,"유령 C"],
+   ["ghost",7960,780,200,180,"유령 D"],
+   ["struct",8200,620,300,740,"출구 선반"],
+   ["dimv",760,1100,7300,"통로 340"],
+   ["cp",8200,620,300],
+   ["danger",7000,1620,"흰색인 채로 여기서 쏘면 F9 가 총알을 먹는다"],
+   ["note",7850,1760,"물 아래를 지나 오른쪽에서 쏜다"]
+  ],
+  steps:[
+   "오른쪽 높은 곳에 유령 발판 두 장이 보인다. 흰색인 채로 그쪽을 쏜다.",
+   "<b>총알이 검정 물기둥 F9 에 먹힌다</b>(PDF p8-8 · <code>유체.gd</code> 는 반대색 투사체를 막는다). 한 발이 사라진다.",
+   "F9 는 천장에서 y 760 까지만 온다 — <b>그 아래 340px 이 비어 있다.</b> 걸어서 지나갈 수 있다.",
+   "다만 물 건너 바닥이 검정이다. 회색 띠(7,320~7,620)에서 <b>검정</b>으로 바꾸고 물 아래를 지난다.",
+   "물 오른쪽에서 유령 C·D 를 <b>검정 3발씩</b> 칠하고, 밟고 올라가 출구 선반으로 나간다."],
+  trap:"F9 의 아래 끝(760)과 바닥(1,100) 사이를 <b>340</b> 으로 잡는다. 최소 통로 높이 128 의 두 배 반이라 '지나갈 수 있다'가 눈에 보인다. 200 이하로 좁히면 대부분 못 보고 탄약만 태운다 — 그리고 탄약이 모자라면 이 스테이지는 <b>못 깬다</b>(저장고가 없어 회수할 대상도 없다).",
+  terr:[
+   ["SS_WALL_CEIL_5","WALL_SOLID","(6900, -20)","1,600 × 160","칠하기_허용 true"],
+   ["SS_CEM_FLOOR_5W","CEMENT_SOLID_WHITE","(6900, 1100)","420 × 260","시작상태 흰색"],
+   ["SS_CEM_SWAP_5","CEMENT_SOLID","(7320, 1100)","300 × 260","시작상태 회색 · <b>F9 바로 아래</b>"],
+   ["SS_CEM_FLOOR_5B","CEMENT_SOLID","(7620, 1100)","580 × 260","시작상태 검정"],
+   ["SS_CEM_GHOST_5C","CEMENT_SOLID","(7680, 940)","200 × 180","무색 · 무색일때_통과 true · 필요횟수_수동 3"],
+   ["SS_CEM_GHOST_5D","CEMENT_SOLID","(7960, 780)","200 × 180","같음"],
+   ["SS_WALL_EXIT_5","WALL_SOLID","(8200, 620)","300 × 740","칠하기_허용 true · 출구 선반"]],
+  dev:[
+   ["F9","유체.tscn","(7470, 140)","색 <b>검정</b> · 크기 64×<b>620</b> · 켜짐 true"]],
+  ammo:["8 → 2","헛발 2 + 유령 C·D 각 3발"],
+  t:[26,12,26,40],
+  tw:"관찰 26 = 막히는 것을 보고 원인을 찾는다. 이동 12 = 왕복 1,600px. 조작 26 = 헛발 2발(4.4) + 색 전환 + 6발(13.2). 어긋남 40 = 검정으로 바꾸지 않고 물 아래로 들어가 죽는다.",
+  gaps:"7,620→7,680 = 60 · 7,880→7,960 = 80 · 8,160→8,200 = 40. 올라서는 높이 160 = 점프 높이 한계."}
+]},
+
+{
+ id:"s22", name:"2-2 · 구멍 난 바닥", learn:"통과 플랫폼", reuse:"물",
+ width:"x 300 – 4,700 · 갱도 높이 1,600", time:"학습 · 수직",
+ between:70, retry:70,
+ why:"시간을 만드는 것은 <b>탄약과 높이</b>다. 통과 플랫폼은 칠하는 데 <b>2발</b>이 들고(<code>필요횟수 = 2</code>), 안 칠하면 검정 판정이라 흰색으로는 못 밟는다. 그래서 '검정으로 공짜로 오를까, 흰색으로 2발씩 내고 오를까'를 갱도 내내 계산하게 된다. 그리고 수직 구조는 실수의 대가가 크다 — 떨어지면 아래에서 다시 올라와야 한다.",
+ note:"⚠ <code>stage_2-2</code> 는 <b>고치는 게 아니라 새로 찍는다</b>(<a href='#finds'>§3</a>) — 지금 것은 <code>stage_lab.gd</code> + TileMapLayer 실험실이다. 기존 <code>장애물_1</code>~<code>7</code> 은 지우지 말고 x 12,000 바깥으로 밀어 <b>부품 창고</b>로 남긴다(2-3 을 찍을 때 배관·호퍼 조합을 그대로 복사해 쓴다). 갱도에는 <code>scripts/스마트월드/카메라공간배치.gd</code> 를 붙여 세로 구도로 전환한다.",
+ gates:[
+ {n:1,title:"물이 스치면 색이 통째로 사라진다",teach:"통과 플랫폼만이 물길 아래에서 색을 지킨다",xr:"x 300 – 1,700",
+  view:[-200,-100,2100,1700],
+  items:[
+   ["struct",-124,140,424,960,"끝벽"],
+   ["struct",300,-20,1400,160,"천장"],
+   ["floor",300,1100,560,260,"gray","회색 · 출발"],
+   ["pit",860,1100,540,"구덩이"],
+   ["floor",1400,1100,300,260,"white"],
+   ["ghost",900,980,200,180,"일반 발판(유령)"],
+   ["pass",1230,990,"통과 플랫폼"],
+   ["fluid",1068,140,64,840,"black","always","F1 검정 · 발판 끝에 스친다"],
+   ["fluid",1310,140,64,850,"black","always","F2 검정"],
+   ["cp",1440,1100,240],
+   ["dim",860,1400,1470,"구덩이 540"],
+   ["player",480,1100,"시작 · 검정"],
+   ["danger",760,1620,"끝에만 닿아도 페인트가 통째로 되돌아간다"]
+  ],
+  steps:[
+   "출발 바닥이 회색이다 — 여기서 <b>흰색</b>으로 바꾼다(건너편 착지 바닥이 흰색이다).",
+   "유령 발판과 통과 플랫폼을 <b>둘 다 흰색으로</b> 칠한다(2발 + 2발). 나란히 있고 크기도 비슷해 차이가 안 보인다.",
+   "검정 물 두 줄기가 각 발판의 <b>오른쪽 끝</b>을 스친다. 잠깐 뒤 <b>유령 발판의 흰색이 통째로 사라진다</b> — 끝에만 닿았는데 전체가 되돌아간다.",
+   "통과 플랫폼의 흰색은 남는다(<code>물에_안지워짐() = true</code> 라 <code>유체.gd</code> 가 건너뛴다).",
+   "통과 플랫폼의 <b>왼쪽 절반</b>(물이 안 닿는 쪽)을 밟고 건넌다."],
+  trap:"물 판정은 그림 실루엣 폴리곤이라 <b>프레임마다 좌우로 굽이친다</b>(2026-09-02 변경). 물기둥 중심에서 <b>160px 안쪽</b>은 닿을 수 있다고 보고 밟는 자리를 잡는다. 통과 플랫폼 224px 중 왼쪽 112px 만 안전지대로 센다.",
+  terr:[
+   ["SS_WALL_END_L2","WALL_SOLID","(-124, 140)","424 × 960","칠하기_허용 true"],
+   ["SS_WALL_CEIL_1","WALL_SOLID","(300, -20)","1,400 × 160","칠하기_허용 true"],
+   ["SS_CEM_START_1","CEMENT_SOLID","(300, 1100)","560 × 260","시작상태 <b>회색</b>"],
+   ["SS_CEM_LAND_1","CEMENT_SOLID_WHITE","(1400, 1100)","300 × 260","시작상태 흰색"],
+   ["SS_CEM_GHOST_1","CEMENT_SOLID","(900, 980)","200 × 180","무색 · 무색일때_통과 true · 필요횟수_수동 2"]],
+  dev:[
+   ["통과플랫폼_1","통과플랫폼.tscn","(1230, 990)","크기 224×26 · 필요횟수 2"],
+   ["F1","유체.tscn","(1100, 140)","색 검정 · 64×840 · 유령 발판 <b>오른쪽 끝</b>"],
+   ["F2","유체.tscn","(1342, 140)","색 검정 · 64×850 · 통과 플랫폼 오른쪽 끝"]],
+  ammo:["12 → 10","각 2발 · 유령 쪽 2발은 물이 되돌리며 회수"],
+  t:[26,6,20,22],
+  tw:"관찰 26 = 통과 플랫폼 첫 등장 + 두 발판이 어떻게 다른지 지켜보는 시간. 이동 6. 조작 20 = 4발(8.8) + 전환 + 결과를 기다림. 어긋남 22 = 유령 발판을 믿고 밟았다가 떨어진다."},
+
+ {n:2,title:"갱도 아래 절반 — 검정으로 공짜로 오른다",teach:"안 칠한 것은 검정이다 = 검정이면 탄약이 안 든다",xr:"수직 · y 1,100 → 380",
+  view:[1600,200,1700,1100],
+  items:[
+   ["struct",1700,300,424,1060,"갱도 좌벽"],
+   ["struct",2764,300,424,1060,"갱도 우벽"],
+   ["floor",2124,1100,640,260,"gray","갱도 바닥 · 회색"],
+   ...zig(990,7,110,2290,2600),
+   ["fluid",2668,300,64,800,"black","always","F3 검정 · 우벽을 타고 내린다"],
+   ["floor",2124,320,300,120,"gray","중턱 회색 턱"],
+   ["dimv",380,1100,2020,"오르는 높이 720"],
+   ["note",2440,1500,"통과 플랫폼 7장 · 세로 간격 110 (안전 오름단차 128 안)"],
+   ["danger",2440,1620,"떨어져도 520 안 — 턱이 촘촘해 즉사는 없다"]
+  ],
+  steps:[
+   "갱도 바닥이 회색이다. 여기서 <b>검정</b>으로 되돌린다.",
+   "통과 플랫폼 7장은 <b>안 칠해도</b> 검정 판정이라(<code>색규칙</code> 기본색 BLACK) 검정 플레이어는 그냥 밟는다. <b>탄약이 한 발도 안 든다.</b>",
+   "우벽을 타고 내리는 검정 물 F3 도 같은 색이라 안전하다 — 스치면서 올라간다.",
+   "세로 간격은 110 이라 점프 한 번에 한 칸이다. 좌우가 번갈아 나오므로 리듬만 맞추면 된다.",
+   "중턱 회색 턱(y 320)에 올라서면 관문이 닫힌다. 여기가 다음 관문의 전환 자리다."],
+  trap:"갱도 폭은 <b>640</b>(좌벽 안쪽 2,124 ~ 우벽 안쪽 2,764). 통과 플랫폼 224 를 좌우 번갈아 두면 수평 간격이 <b>86</b> 이라 점프 거리 160 안에 넉넉히 든다. 폭을 800 이상으로 벌리면 간격이 246 이 되어 <b>못 건넌다</b> — 폭을 바꾸면 플랫폼 x 도 같이 바꿔야 한다.",
+  terr:[
+   ["SS_WALL_SHAFT_L","WALL_SOLID","(1700, 300)","424 × 1,060","칠하기_허용 true"],
+   ["SS_WALL_SHAFT_R","WALL_SOLID","(2764, 300)","424 × 1,060","칠하기_허용 true"],
+   ["SS_CEM_SHAFT_BOT","CEMENT_SOLID","(2124, 1100)","640 × 260","시작상태 <b>회색</b>"],
+   ["SS_CEM_LEDGE_2","CEMENT_SOLID","(2124, 320)","300 × 120","시작상태 회색 · 중턱 전환 턱"]],
+  dev:[
+   ["통과플랫폼_2A~2G","통과플랫폼.tscn","x 2,290 / 2,600 번갈아 · y 990 → 330 (110 씩)","크기 224×26 · <b>칠하지 않는다</b>"],
+   ["F3","유체.tscn","(2700, 300)","색 검정 · 64×800"],
+   ["카메라공간","카메라공간배치.gd","갱도 전체","세로 구도 전환"]],
+  ammo:["10 → 10","검정으로 오르면 한 발도 안 든다"],
+  t:[20,22,14,36],
+  tw:"관찰 20 = 갱도를 올려다보는 시간. 이동 22 = 720px 를 7번 점프로(÷390 ×1.6 + 착지 대기). 조작 14 = 색 되돌리기 + 리듬 잡기. 어긋남 36 = 한 번 떨어져 바닥부터 다시 오른다."},
+
+ {n:3,title:"갱도 위 절반 — 흰색은 2발씩 든다",teach:"흰색으로 오르는 값 = 통과 플랫폼 한 장당 2발",xr:"수직 · y 380 → -40",
+  view:[1600,-200,1700,800],
+  items:[
+   ["struct",1700,-160,424,600,"갱도 좌벽"],
+   ["struct",2764,-160,424,600,"갱도 우벽"],
+   ["floor",2124,320,300,120,"gray","중턱 회색 턱"],
+   ["pass",2600,210,null],
+   ["pass",2290,100,null],
+   ["pass",2600,-10,null],
+   ["floor",2124,60,240,120,"gray"],
+   ["floor",2560,-160,204,120,"white","착지"],
+   ["fluid",2226,-160,64,540,"white","always","F4 흰색 · 좌벽을 타고 내린다"],
+   ["note",2440,560,"통과 플랫폼 3장만 칠한다 = 6발"],
+   ["danger",2440,680,"일반 발판이었다면 F4 가 흰색을 안 지운다 — 여기선 검정 물이 없다"]
+  ],
+  steps:[
+   "중턱 회색 턱에서 <b>흰색</b>으로 바꾼다. 위쪽은 흰 물 F4 가 좌벽을 타고 내려온다.",
+   "위 절반은 통과 플랫폼이 <b>3장뿐</b>이고, 사이사이에 회색 턱이 있다. 회색 턱은 안 칠해도 흰색으로 밟힌다.",
+   "통과 플랫폼 3장은 안 칠하면 검정 판정이라 <b>흰색으로는 못 밟는다.</b> 한 장에 2발씩 6발을 낸다.",
+   "F4 는 흰 물이라 흰 페인트를 지우지 않는다 — 한 번 칠하면 끝이다.",
+   "꼭대기 흰 착지 바닥(y -160)에 올라서면 관문이 닫힌다."],
+  trap:"여기서 <b>탄약이 6발 나간다.</b> 관문 4에 유령 다리 3장(6발)이 더 필요하므로, 관문 1에서 회색으로 덮는 실수를 했다면 이 지점에서 이미 부족하다. 부족하면 <b>검정으로 되돌아가 아래 절반부터 다시 오르는 것</b>이 유일한 복구다 — 갇히지는 않는다.",
+  terr:[
+   ["SS_CEM_LEDGE_3","CEMENT_SOLID","(2124, 60)","240 × 120","시작상태 회색"],
+   ["SS_CEM_TOP_3","CEMENT_SOLID_WHITE","(2560, -160)","204 × 120","시작상태 흰색 · 착지"]],
+  dev:[
+   ["통과플랫폼_3A","통과플랫폼.tscn","(2600, 210)","필요횟수 2 · <b>흰색 2발</b>"],
+   ["통과플랫폼_3B","통과플랫폼.tscn","(2290, 100)","필요횟수 2 · 흰색 2발"],
+   ["통과플랫폼_3C","통과플랫폼.tscn","(2600, -10)","필요횟수 2 · 흰색 2발"],
+   ["F4","유체.tscn","(2258, -160)","색 흰색 · 64×540"]],
+  ammo:["10 → 4","통과 플랫폼 3장 × 2발"],
+  t:[22,10,20,36],
+  tw:"관찰 22 = 왜 갑자기 못 밟는지 이해하는 시간. 이동 10. 조작 20 = 6발(13.2) + 전환. 어긋남 36 = 안 칠하고 밟으려다 죽는다."},
+
+ {n:4,title:"한 번만 건널 수 있는 다리",teach:"내가 만든 발판을 물이 없앤다 — 순서를 정해야 한다",xr:"곁방 · x 3,190 – 4,300",
+  view:[3100,-300,1300,900],
+  items:[
+   ["struct",3190,-300,1110,160,"천장"],
+   ["floor",3190,320,200,120,"gray","입구"],
+   ["pit",3390,320,700,"아래층으로 떨어진다"],
+   ["floor",4090,320,210,120,"white","출구"],
+   ["ghost",3430,200,180,120,"유령 1"],
+   ["ghost",3670,200,180,120,"유령 2"],
+   ["ghost",3910,200,180,120,"유령 3"],
+   ["pass",3550,20,"귀환로 A"],
+   ["pass",3900,20,"귀환로 B"],
+   ["fluid",3488,-140,64,340,"white","always","F5 흰색"],
+   ["fluid",3968,-140,64,340,"white","always","F6 흰색"],
+   ["danger",3640,640,"검정 다리는 흰 물이 하나씩 되돌린다 — 돌아올 길이 사라진다"],
+   ["note",3700,760,"건너기 전에 귀환로를 먼저 칠한다"]
+  ],
+  steps:[
+   "입구 회색 턱에서 상황을 본다. 아래는 갱도로 도로 떨어지는 구멍이고, 건너편에 흰 출구가 있다.",
+   "유령 발판 3장을 <b>검정</b>으로 칠하면 다리가 생긴다(2발 × 3). 검정으로 건너면 흰 출구 바닥에서 죽는다.",
+   "흰색으로 칠하면? <b>흰 물 F5·F6 이 1·3번 발판을 스치지 않는다</b> — 물은 2번과 4번 자리에 떨어진다. 어느 발판이 살아남는지 <b>물 위치를 먼저 읽어야</b> 한다.",
+   "위쪽 통과 플랫폼 2장(귀환로)을 <b>먼저</b> 흰색으로 칠해 둔다. 물이 지나도 안 지워지는 유일한 발판이다.",
+   "다리를 건너 출구로 나간다. 다리가 사라져도 귀환로가 남아 있어 갇히지 않는다."],
+  trap:"<b>순서가 곧 퍼즐이다.</b> 다리를 먼저 칠하고 건너면 탄약이 모자라 귀환로를 못 만든다. 귀환로를 먼저 만들면 다리 몫이 남는다. 어느 쪽이든 <b>갇히지는 않게</b> — 아래로 떨어지면 갱도 바닥에서 다시 오를 수 있다(제작계획 §2-4 의 '되돌릴 수 없는 설계 금지').",
+  terr:[
+   ["SS_WALL_CEIL_4","WALL_SOLID","(3190, -300)","1,110 × 160","칠하기_허용 true"],
+   ["SS_CEM_IN_4","CEMENT_SOLID","(3190, 320)","200 × 120","시작상태 회색"],
+   ["SS_CEM_OUT_4","CEMENT_SOLID_WHITE","(4090, 320)","210 × 120","시작상태 흰색"],
+   ["SS_CEM_BR_4A/B/C","CEMENT_SOLID","(3430 / 3670 / 3910, 200)","180 × 120","무색 · 무색일때_통과 true · 필요횟수_수동 2"]],
+  dev:[
+   ["통과플랫폼_4A","통과플랫폼.tscn","(3550, 20)","귀환로 · 필요횟수 2"],
+   ["통과플랫폼_4B","통과플랫폼.tscn","(3900, 20)","귀환로 · 필요횟수 2"],
+   ["F5","유체.tscn","(3520, -140)","색 흰색 · 64×340"],
+   ["F6","유체.tscn","(4000, -140)","색 흰색 · 64×340"]],
+  ammo:["4 → 0","귀환로 2장(4발) 또는 다리 2장 — 둘 다는 못 한다"],
+  t:[24,10,26,36],
+  tw:"관찰 24 = 물이 어느 발판에 떨어지는지 세는 시간. 이동 10. 조작 26 = 4~6발 + 순서 판단. 어긋남 36 = 다리부터 칠했다가 되돌아와 아래로 떨어진다."},
+
+ {n:5,title:"꼭대기 좁은 구멍",teach:"1~4 종합 — 색·발판·탄약을 한 번에",xr:"수직 · y -160 → -560",
+  view:[2000,-700,1300,700],
+  items:[
+   ["struct",2124,-700,340,540,"천장 구조"],
+   ["struct",2660,-700,528,540,"천장 구조"],
+   ["floor",2124,-160,640,120,"white","꼭대기 바닥"],
+   ["pass",2560,-300,"마지막 발판"],
+   ["fluid",2432,-700,64,400,"white","always","F7 흰색 · 폭 96 구멍"],
+   ["fluid",2596,-700,64,290,"black","always","F8 검정"],
+   ["dim",2464,2660,-620,"구멍 196"],
+   ["danger",2400,120,"두 구멍 중 하나만 나갈 수 있다 — 탄약이 남아 있는 쪽으로"],
+   ["note",2400,240,"흰색이면 왼쪽 · 검정이면 오른쪽. 발판은 한 장뿐이다"]
+  ],
+  steps:[
+   "꼭대기 바닥(흰색)에 올라서면 천장에 구멍이 둘 보이고, 각각 흰 물과 검정 물이 쏟아진다.",
+   "왼쪽 구멍은 흰 물이라 <b>흰색</b>으로, 오른쪽은 검정 물이라 <b>검정</b>으로 지나야 한다.",
+   "그런데 꼭대기 바닥이 <b>흰색</b>이다 — 검정으로 바꾸면 그 자리에서 죽는다. 오른쪽을 고르려면 발판 위에서 바꿔야 한다.",
+   "마지막 통과 플랫폼 한 장이 두 구멍 사이에 있다. 안 칠하면 검정 판정이라 <b>흰색으로는 못 밟고</b>, 칠하려면 2발이 든다.",
+   "탄약이 남았으면 칠하고 왼쪽으로, 없으면 발판을 검정 그대로 밟되 <b>발판 위에서</b> 검정으로 바꿔 오른쪽으로 나간다."],
+  trap:"이 관문은 <b>탄약 잔량에 따라 답이 갈린다.</b> 두 길이 다 열려 있어야 하고, 어느 쪽으로 나가도 2-3 의 시작으로 이어져야 한다. 한쪽만 열어 두면 앞 관문에서 탄약을 태운 플레이어가 여기서 갇힌다.",
+  terr:[
+   ["SS_WALL_TOP_L","WALL_SOLID","(2124, -700)","340 × 540","칠하기_허용 true"],
+   ["SS_WALL_TOP_R","WALL_SOLID","(2660, -700)","528 × 540","칠하기_허용 true"],
+   ["SS_CEM_TOP_5","CEMENT_SOLID_WHITE","(2124, -160)","640 × 120","시작상태 흰색"]],
+  dev:[
+   ["통과플랫폼_5","통과플랫폼.tscn","(2560, -300)","필요횟수 2 · 칠해도 되고 안 해도 된다"],
+   ["F7","유체.tscn","(2464, -700)","색 흰색 · 64×400"],
+   ["F8","유체.tscn","(2628, -700)","색 검정 · 64×290"]],
+  ammo:["0~2 → 0","남았으면 흰 길 · 없으면 검정 길"],
+  t:[24,14,26,40],
+  tw:"관찰 24 = 두 길을 재는 시간. 이동 14. 조작 26 = 전환 위치 판단 + 0~2발. 어긋남 40 = 흰 바닥에서 검정으로 바꿔 죽는다(관문 2의 규칙을 여기서 한 번 더 시험한다)."}
+]},
+
+{
+ id:"s23", name:"2-3 · 관을 따라서", learn:"기본 배관 + 호퍼", reuse:"물 · 통과 플랫폼",
+ width:"x 300 – 7,600", time:"학습 → 응용",
+ between:70, retry:66,
+ why:"시간을 만드는 것은 <b>읽는 거리</b>다. 2-3 에는 아직 조작할 장치가 없다 — 저장고도 레버도 2-4·2-5 것이다. 배관과 호퍼는 <b>보고 예측하는</b> 대상이지 만지는 대상이 아니다. 그래서 시간은 '어느 관이 어디로 가는지 확인하러 걸어갔다 오는 왕복'에서 나온다. 관문 3 이 그 정점이고 이 스테이지에서 가장 길다(1:48).",
+ note:"관문 3 이 <b>이 챕터 전체의 핵심 문법</b>이다(제작계획 §6) — 흑 + 백 = 회색. 회색은 누구도 안 죽이므로, <b>두 색을 한 호퍼에 모으는 것이 곧 안전 통로를 여는 것</b>이다. 여기서 확실히 각인시켜야 2-4 의 저장고 퍼즐이 성립한다. 배관은 <b>둘</b>이다 — 기능 배관(<code>배관.tscn</code>, 물 색으로 물든다)과 장식 SS2D 배관(<code>TEMPLATE_PIPE_OPEN_GRAY</code>, 충돌·색 없음). 물이 흐르는 관은 <b>반드시</b> 기능 배관으로 찍는다.",
+ gates:[
+ {n:1,title:"관이 물든다",teach:"배관은 흐르는 물의 색으로 물든다 (조작 없음)",xr:"x 300 – 1,900",
+  view:[200,-100,1900,1700],
+  items:[
+   ["struct",-124,140,424,960,"끝벽"],
+   ["struct",300,-20,1600,160,"천장"],
+   ["floor",300,1100,940,260,"black"],
+   ["pit",1240,1100,140,"배수구"],
+   ["floor",1380,1100,520,260,"black"],
+   ["pipe",[[320,300],[1310,300],[1310,540]],"white"],
+   ["fluid",1278,540,64,560,"white","always","F1 흰색"],
+   ["player",470,1100,"시작 · 검정"],
+   ["cp",1700,1100,200],
+   ["dim",1240,1380,1470,"배수구 140 &lt; 점프 160"],
+   ["note",800,1620,"관이 흰색으로 물들어 있다 — 나오기 전에 무슨 색인지 알 수 있다"]
+  ],
+  steps:[
+   "천장을 따라 관이 지나간다. 관이 <b>흰색으로 물들어</b> 있다(PDF p10-3).",
+   "관 끝에서 흰 물 F1 이 떨어져 바닥 배수구로 빠진다. <b>길 위가 아니라 옆</b>이라 죽지 않는다.",
+   "여기서 배우는 것은 하나다 — <b>관 색을 보면 무엇이 나올지 미리 안다.</b> 관문 5 가 이것만으로 풀린다.",
+   "배수구는 폭 140 이라 그냥 뛰어넘는다(점프 거리 160).",
+   "체크포인트."],
+  trap:"물을 <b>길 위에 떨어뜨리지 않는다.</b> 배관·호퍼의 첫 등장 스테이지이므로 죽음과 엮지 않는다(§5 철칙). 배수구로 빠지게 두면 '관 → 물 → 어디로 가는가'가 한눈에 읽힌다.",
+  terr:[
+   ["SS_WALL_END_L3","WALL_SOLID","(-124, 140)","424 × 960","칠하기_허용 true"],
+   ["SS_WALL_CEIL_1","WALL_SOLID","(300, -20)","1,600 × 160","칠하기_허용 true"],
+   ["SS_CEM_FLOOR_1A","CEMENT_SOLID","(300, 1100)","940 × 260","시작상태 검정"],
+   ["SS_CEM_FLOOR_1B","CEMENT_SOLID","(1380, 1100)","520 × 260","시작상태 검정"]],
+  dev:[
+   ["배관_1A~1D","배관.tscn","(320~1310, 300) 직선 4칸","모양 직선 · 길이 128 · <b>연결_유체 = F1</b> · 깊이 3"],
+   ["배관_1E","배관.tscn","(1310, 300)","모양 <b>꺾임</b> · 세로 true"],
+   ["F1","유체.tscn","(1310, 540)","색 흰색 · 64×560"]],
+  ammo:["12 → 12","쓰지 않는다"],
+  t:[26,6,0,24],
+  tw:"관찰 26 = 배관·호퍼 챕터의 첫 화면(12 + 12 + 관 색을 알아채는 2). 이동 6. 조작 0. 어긋남 24 = 물이 무섭게 보여 한참 안 지나간다."},
+
+ {n:2,title:"호퍼는 받아서 아래로 낸다",teach:"위에서 받은 물이 출구로 나온다 · 호퍼는 밟을 수 있다",xr:"x 2,100 – 3,000",
+  view:[2000,-100,1200,1700],
+  items:[
+   ["struct",2100,-20,900,160,"천장"],
+   ["floor",2100,1100,300,260,"black"],
+   ["floor",2400,1100,300,260,"gray","전환 띠"],
+   ["floor",2700,1100,300,260,"black"],
+   ["fluid",2518,140,64,504,"white","always","F2 흰색"],
+   ["hopper",2550,700,120,56,"호퍼 H1 · 밟을 수 있다"],
+   ["fluid",2518,700,64,400,"white","always","F3 = H1 출구"],
+   ["cp",2760,1100,200],
+   ["dimv",644,700,2700,"호퍼 56"],
+   ["note",2550,1620,"들어간 색이 그대로 나온다 — 섞을 것이 없으니까"]
+  ],
+  steps:[
+   "흰 물 F2 가 호퍼 H1 로 들어가고, H1 <b>아래 출구</b>에서 F3 이 나와 바닥까지 이어진다.",
+   "들어간 색이 그대로 나온다 — 섞을 두 번째 물이 없으니까. 관문 3 의 준비다.",
+   "F3 이 길을 막는다. 아래 바닥이 <b>회색 띠</b>라 그 위에서 흰색으로 바꾼다.",
+   "흰색으로 F3 을 지난다. 호퍼 윗면은 밟을 수 있으니 위로 올라가 봐도 된다(PDF p12-2).",
+   "띠 오른쪽 끝에서 검정으로 되돌리고 체크포인트."],
+  trap:"호퍼의 <b>출구_유체</b> 를 비워 두면 출구 포트에서 36px 안의 유체를 자동으로 찾는다(<code>README_유체_포트_연결</code>). F3 의 원점을 H1 출구 포트에 <b>정확히</b> 얹지 않으면 조용히 연결이 안 되고, 물은 나오는데 색이 안 따라간다. 어긋나면 <code>출구_유체</code> 에 NodePath 를 직접 지정한다 — 수동이 자동을 이긴다.",
+  terr:[
+   ["SS_WALL_CEIL_2","WALL_SOLID","(2100, -20)","900 × 160","칠하기_허용 true"],
+   ["SS_CEM_FLOOR_2A","CEMENT_SOLID","(2100, 1100)","300 × 260","시작상태 검정"],
+   ["SS_CEM_SWAP_2","CEMENT_SOLID","(2400, 1100)","300 × 260","시작상태 <b>회색</b>"],
+   ["SS_CEM_FLOOR_2B","CEMENT_SOLID","(2700, 1100)","300 × 260","시작상태 검정"]],
+  dev:[
+   ["H1","호퍼.tscn","(2550, 700)","폭 120 · 높이 56 · 자동_출구_연결 true"],
+   ["F2","유체.tscn","(2550, 140)","색 흰색 · 64×504 (아래끝 = 호퍼 윗면 644)"],
+   ["F3","유체.tscn","(2550, 700)","색 흰색 · 64×400 · 원점을 <b>출구 포트에</b>"]],
+  ammo:["12 → 12","쓰지 않는다"],
+  t:[22,8,12,34],
+  tw:"관찰 22 = 호퍼 첫 등장. 이동 8. 조작 12 = 색 전환 2회. 어긋남 34 = 회색 띠를 못 찾고 검정인 채로 F3 에 들어간다."},
+
+ {n:3,title:"어느 호퍼가 회색을 내는가 ★",teach:"흑 + 백 = 회색 · 회색은 누구도 안 죽인다",xr:"x 3,200 – 5,000",
+  view:[3100,-400,2000,2000],
+  items:[
+   ["struct",3200,-400,1800,160,"위층 바닥 = 아래층 천장"],
+   ["floor",3200,1100,1800,260,"black"],
+   ["struct",3800,140,120,960,"칸막이"],
+   ["struct",4300,140,120,960,"칸막이"],
+   ["pipe",[[3300,-260],[3600,-260],[3600,-100]],"black"],
+   ["pipe",[[4700,-260],[4100,-260],[4100,-180],[3600,-180]],"white"],
+   ["pipe",[[4700,-320],[4600,-320],[4600,-100]],"white"],
+   ["hopper",3600,60,120,56,"H2"],
+   ["hopper",4100,60,120,56,"H3"],
+   ["hopper",4600,60,120,56,"H4"],
+   ["fluid",3568,60,64,1040,"black","always","H2 출구 = 검정"],
+   ["fluid",4068,60,64,1040,"gray","always","H3 출구 = 회색"],
+   ["fluid",4568,60,64,1040,"white","always","H4 출구 = 흰색"],
+   ["cp",4880,1100,200],
+   ["danger",3600,1620,"아래에서는 칸막이에 가려 물 색이 안 보인다"],
+   ["note",4100,1760,"위층으로 올라가 배관을 따라 읽고 내려온다 — 왕복 1,600px"]
+  ],
+  steps:[
+   "아래층에 세로 통로 셋이 있고 각각 물이 쏟아진다. <b>칸막이에 가려 색이 안 보인다.</b>",
+   "위층으로 올라가면 호퍼 셋과 그 위 배관이 보인다. 검정 관 하나가 H2 로, 흰 관 하나가 H4 로, 그리고 <b>검정과 흰색이 둘 다</b> H3 으로 들어간다.",
+   "<code>유체.섞기()</code> — 검 + 흰 = <b>회색</b>. H3 출구만 회색이다.",
+   "회색은 누구도 안 죽인다. 아래로 내려와 <b>가운데 통로</b>로 지나간다.",
+   "잘못 고르면 죽고, 체크포인트에서 다시 와 <b>왕복을 한 번 더</b> 한다."],
+  trap:"칸막이를 <b>세워 두는 것</b>이 이 관문의 전부다. 아래에서 물 색이 보이면 배관을 읽을 이유가 사라져 5초짜리 관문이 된다. 칸막이는 <code>칠하기_허용 = false</code> 인 WALL 이라 스쳐도 안 죽는다 — <b>가리기만 하고 위협하지 않는다.</b>",
+  terr:[
+   ["SS_WALL_MID_3","WALL_SOLID","(3200, -400)","1,800 × 160","위층 바닥 겸 아래층 천장 · 칠하기_허용 true"],
+   ["SS_WALL_DIV_3A","WALL_SOLID","(3800, 140)","120 × 960","칸막이 · 칠하기_허용 true"],
+   ["SS_WALL_DIV_3B","WALL_SOLID","(4300, 140)","120 × 960","칸막이 · 칠하기_허용 true"],
+   ["SS_CEM_FLOOR_3","CEMENT_SOLID","(3200, 1100)","1,800 × 260","시작상태 검정"]],
+  dev:[
+   ["H2","호퍼.tscn","(3600, 60)","입구에 <b>검정 하나</b> → 출구 검정"],
+   ["H3","호퍼.tscn","(4100, 60)","입구에 <b>검정 + 흰색</b> → 출구 <b>회색</b>"],
+   ["H4","호퍼.tscn","(4600, 60)","입구에 흰색 하나 → 출구 흰색"],
+   ["배관 (위층)","배관.tscn","y -320 / -260 / -180","연결_유체를 각 입구 물줄기로 · 색이 관에 나타난다"],
+   ["출구 유체 ×3","유체.tscn","(3600 / 4100 / 4600, 60)","각 64×1,040 · 색은 호퍼가 정한다"]],
+  ammo:["12 → 12","쓰지 않는다"],
+  t:[28,20,12,48],
+  tw:"관찰 28 = 아래에서 세 통로를 보고 못 고르는 시간. 이동 20 = 위층 왕복 1,600px + 계단. 조작 12. 어긋남 48 = 찍어서 들어갔다 죽고, 다시 올라가 배관을 제대로 읽는다. <b>이 스테이지에서 가장 긴 관문(1:48)이고 그래야 한다.</b>"},
+
+ {n:4,title:"호퍼를 밟고 건넌다",teach:"장치가 곧 지형이다 — 호퍼는 색 규칙 밖이다",xr:"x 5,200 – 6,300",
+  view:[5100,-100,1300,1700],
+  items:[
+   ["struct",5200,-20,1100,160,"천장"],
+   ["floor",5200,1100,300,260,"gray"],
+   ["pit",5500,1100,600,"낙사"],
+   ["floor",6100,1100,200,260,"black"],
+   ["hopper",5620,880,160,72,"H5"],
+   ["hopper",5860,880,160,72,"H6"],
+   ["fluid",5568,140,64,668,"black","always","H5 왼쪽 끝"],
+   ["fluid",5908,140,64,668,"white","always","H6 오른쪽 끝"],
+   ["cp",6120,1100,180],
+   ["dim",5500,6100,1470,"낙사 600"],
+   ["note",5740,1620,"호퍼는 기계다 — 칠할 수 없으니 색 규칙 밖이고, 무슨 색으로도 밟힌다"],
+   ["danger",5740,1740,"죽이는 것은 호퍼가 아니라 그 위에 떨어지는 물이다"]
+  ],
+  steps:[
+   "낙사 구덩이 위에 호퍼 두 개가 발판처럼 놓여 있다(PDF p12-2).",
+   "호퍼는 <b>칠할 수 없는 기계</b>라 색 규칙 밖이다 — 무슨 색이든 밟아도 안 죽는다(<code>색규칙.gd</code> 참여 목록).",
+   "죽이는 것은 호퍼 위로 떨어지는 물이다. H5 는 <b>왼쪽 끝</b>에 검정 물이, H6 은 <b>오른쪽 끝</b>에 흰 물이 떨어진다.",
+   "검정으로 H5 왼쪽을 피해 오른쪽에 내려서고, <b>호퍼 위에서</b> 흰색으로 바꾼다(호퍼는 죽이지 않으니 전환대가 된다).",
+   "흰색으로 H6 왼쪽에 내려서서 오른쪽 물을 피해 건너간다. 착지 바닥이 검정이라 마지막에 검정으로 되돌린다."],
+  trap:"호퍼 폭을 <b>160</b> 으로 키운다(기본 120). 플레이어 44 + 물 64 로는 서 있을 자리가 12px 밖에 안 남는다. 160 이면 물 반대쪽에 48px 이 남아 발이 온전히 들어간다.",
+  terr:[
+   ["SS_WALL_CEIL_4","WALL_SOLID","(5200, -20)","1,100 × 160","칠하기_허용 true"],
+   ["SS_CEM_SWAP_4","CEMENT_SOLID","(5200, 1100)","300 × 260","시작상태 회색"],
+   ["SS_CEM_LAND_4","CEMENT_SOLID","(6100, 1100)","200 × 260","시작상태 검정"]],
+  dev:[
+   ["H5","호퍼.tscn","(5700, 880)","폭 <b>160</b> · 높이 72"],
+   ["H6","호퍼.tscn","(5940, 880)","폭 160 · 높이 72"],
+   ["F 검정","유체.tscn","(5600, 140)","64×668 · H5 왼쪽 끝에 떨어진다"],
+   ["F 흰색","유체.tscn","(5940, 140)","64×668 · H6 오른쪽 끝"]],
+  ammo:["12 → 12","쓰지 않는다"],
+  t:[20,14,14,34],
+  tw:"관찰 20. 이동 14 = 두 번 뛰어 건넌다(간격 120 · 240). 조작 14 = 호퍼 위 전환 1회 + 착지 전환 1회. 어긋남 34 = 물 쪽 끝에 내려서 죽는다."},
+
+ {n:5,title:"3갈래를 읽는다",teach:"물이 어디로 나올지 예측해 미리 자리를 잡는다",xr:"x 6,500 – 7,600",
+  view:[6400,-400,1300,1800],
+  items:[
+   ["struct",6500,-400,1100,160,"천장"],
+   ["floor",6500,1100,1100,260,"black"],
+   ["pipe",[[6520,-160],[7000,-160]],"white"],
+   ["pipe",[[7000,-160],[7000,-40]],"white"],
+   ["pipe",[[6740,-160],[6740,-40]],null],
+   ["pipe",[[7300,-160],[7300,-40]],null],
+   ["fluid",6968,-40,64,1140,"white","always","여기로 나온다"],
+   ["floor",6640,760,200,120,"gray","대기 발판 A"],
+   ["floor",7220,760,200,120,"gray","대기 발판 B"],
+   ["floor",6940,760,120,120,"black","가운데 · 함정"],
+   ["cp",7400,1100,180],
+   ["note",7050,1620,"3갈래는 들어온 방향의 반대 두 갈래로 나눈다 — 관 색이 이미 답을 알려 준다"],
+   ["danger",6800,1740,"가운데 발판에 서 있으면 물이 그대로 내려온다"]
+  ],
+  steps:[
+   "천장 배관이 <b>3갈래</b>로 갈라지고, 세 갈래 중 하나에서만 물이 나온다.",
+   "관문 1 에서 배운 것 — <b>물이 흐르는 관만 색으로 물든다.</b> 흰 물이 든 관을 눈으로 따라간다.",
+   "물든 관은 가운데 갈래로 이어진다. 가운데 발판에 서면 그대로 맞는다.",
+   "좌우 대기 발판(회색)은 안전하다. 물이 나오기 전에 <b>미리</b> 한쪽에 자리를 잡는다.",
+   "물이 쏟아진 뒤 반대쪽으로 건너 체크포인트로 나간다."],
+  trap:"3갈래 배관(<code>배관.gd</code> <code>모양 = 3갈래</code>)은 <b>연결_유체를 하나만</b> 받는다 — 갈래마다 다른 물을 물들일 수 없다. 그래서 나머지 두 갈래는 <b>색이 안 든 회색 관</b>으로 남고, 그것이 곧 답이다. 세 갈래를 다 물들이고 싶으면 배관 인스턴스를 세 개로 쪼개 각각 연결한다.",
+  terr:[
+   ["SS_WALL_CEIL_5","WALL_SOLID","(6500, -400)","1,100 × 160","칠하기_허용 true"],
+   ["SS_CEM_FLOOR_5","CEMENT_SOLID","(6500, 1100)","1,100 × 260","시작상태 검정"],
+   ["SS_CEM_WAIT_5A","CEMENT_SOLID","(6640, 760)","200 × 120","시작상태 회색 · 대기"],
+   ["SS_CEM_WAIT_5B","CEMENT_SOLID","(7220, 760)","200 × 120","시작상태 회색 · 대기"],
+   ["SS_CEM_BAIT_5","CEMENT_SOLID","(6940, 760)","120 × 120","시작상태 검정 · 함정"]],
+  dev:[
+   ["배관_5 (3갈래)","배관.tscn","(7000, -160)","모양 <b>3갈래</b> · 연결_유체 = 출구 유체"],
+   ["배관_5 좌/우 더미","배관.tscn","(6740 / 7300, -160)","연결_유체 <b>비움</b> → 색이 안 든다"],
+   ["출구 유체","유체.tscn","(7000, -40)","색 흰색 · 64×1,140"]],
+  ammo:["12 → 12","쓰지 않는다 — 2-4 로 12발을 그대로 넘긴다"],
+  t:[26,16,20,44],
+  tw:"관찰 26 = 3갈래를 올려다보고 관 색을 세는 시간. 이동 16 = 좌우 발판 사이 왕복. 조작 20 = 자리 선택 + 전환. 어긋남 44 = 가운데 함정 발판에 서서 한 번 맞는다."}
+]}
+];
+
+/* ══════════════════════════════════════════════════════════════
+   조립
+   ══════════════════════════════════════════════════════════════ */
+const mmss=s=>`${Math.floor(s/60)}:${String(Math.round(s%60)).padStart(2,"0")}`;
+const gsum=g=>g.t.reduce((a,b)=>a+b,0);
+
+function buildBudget(st){
+  const segs=st.gates.map(g=>({lab:`관문 ${g.n}`,v:gsum(g),cls:""}));
+  segs.push({lab:"이동·관찰",v:st.between,cls:"move"});
+  segs.push({lab:"실수 1회",v:st.retry,cls:"miss"});
+  const total=segs.reduce((a,s)=>a+s.v,0);
+  const box=document.createElement("div");
+  box.className="budget";
+  box.innerHTML=`
+    <div class="budget-top">
+      <h4>플레이 타임 예산</h4>
+      <span class="mono" style="font-size:12px;color:var(--muted)">실수 1회 포함 · 관문 5개</span>
+      <span class="tot">${mmss(total)}<small>목표 8:00</small></span>
+    </div>
+    <div class="tbar">${segs.map(s=>
+      `<div class="seg ${s.cls}" style="flex:${s.v}" title="${s.lab} ${s.v}초">${s.lab}<br>${mmss(s.v)}</div>`
+    ).join("")}</div>
+    <div class="mark"><span class="m8" style="left:${(480/total*100).toFixed(1)}%">8:00</span></div>
+    <p class="why">${st.why}</p>`;
+  return box;
+}
+
+function buildStage(st){
+  const sec=document.getElementById(st.id);
+  const head=document.createElement("div");
+  head.className="sec-head";
+  head.innerHTML=`<h2>${st.name}</h2>
+    <span class="mono" style="font-size:12.5px;color:var(--accent);font-weight:700">학습 ${st.learn}</span>
+    <span class="meta mono">재활용 ${st.reuse} · ${st.width} · ${st.time}</span>`;
+  sec.appendChild(head);
+
+  const note=document.createElement("p");
+  note.className="sec-note"; note.innerHTML=st.note; sec.appendChild(note);
+  sec.appendChild(buildBudget(st));
+
+  for(const g of st.gates){
+    const card=document.createElement("article");
+    card.className="gate";
+    const secs=gsum(g);
+    const gh=document.createElement("div");
+    gh.className="gate-head";
+    gh.innerHTML=`<div class="gnum mono">${g.n}</div><h3>${g.title}</h3>
+      <div class="teach">${g.teach}</div>
+      <div class="xr mono" style="margin-left:auto">${g.xr}</div>
+      <div class="gtime${secs<70?" short":""}">${mmss(secs)}</div>`;
+    card.appendChild(gh);
+
+    const mapBox=document.createElement("div");
+    mapBox.className="map";
+    mapBox.appendChild(renderMap(g));
+    card.appendChild(mapBox);
+
+    const cols=document.createElement("div");
+    cols.className="cols";
+
+    const c1=document.createElement("div"); c1.className="col";
+    c1.innerHTML=`<h4>푸는 순서</h4><ol class="steps">${
+      g.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+      <div class="warn" style="margin-top:16px">${g.trap}</div>
+      ${g.gaps?`<p style="margin-top:12px;font-size:12px;color:var(--muted)"><b>간격 검산</b> — ${g.gaps}</p>`:""}`;
+
+    const c2=document.createElement("div"); c2.className="col";
+    c2.innerHTML=`
+      <h4>지형 — SS2D 배치</h4>
+      <div class="tw"><table class="blk"><thead><tr><th>노드</th><th>Template</th><th>position</th><th>w × h</th><th>설정</th></tr></thead>
+      <tbody>${g.terr.map(n=>`<tr><td>${n[0]}</td><td class="pts">${n[1]}</td><td class="pts">${n[2]}</td><td class="pts">${n[3]}</td><td>${n[4]}</td></tr>`).join("")}</tbody></table></div>
+      <h4 class="mt">장치 배치</h4>
+      <div class="tw"><table class="blk"><thead><tr><th>노드</th><th>씬</th><th>position</th><th>인스펙터</th></tr></thead>
+      <tbody>${g.dev.map(n=>`<tr><td>${n[0]}</td><td class="pts">${n[1]}</td><td class="pts">${n[2]}</td><td>${n[3]}</td></tr>`).join("")}</tbody></table></div>
+      <div class="ammo"><b>탄약</b><span class="mono" style="font-weight:700;color:var(--ink)">${g.ammo[0]}</span><span style="color:var(--muted)">${g.ammo[1]}</span></div>
+      <div class="tsplit">
+        <div><b>관찰</b><span>${g.t[0]}초</span></div>
+        <div><b>이동</b><span>${g.t[1]}초</span></div>
+        <div><b>조작</b><span>${g.t[2]}초</span></div>
+        <div><b>어긋남</b><span>${g.t[3]}초</span></div>
+      </div>
+      <p style="margin-top:10px;font-size:12px;color:var(--muted)">${g.tw}</p>`;
+
+    cols.appendChild(c1); cols.appendChild(c2);
+    card.appendChild(cols);
+    sec.appendChild(card);
+  }
+}
+STAGES.forEach(buildStage);
+
+/* 범례 */
+const LEGEND=[
+ ["struct","구조물 (WALL 벽체)","칠하기_허용 true · <b>색 규칙 밖 — 절대 안 죽인다</b>"],
+ ["floor-b","검정 바닥","시작상태 검정 · 흰색 플레이어는 즉사"],
+ ["floor-w","흰 바닥","CEMENT_SOLID_WHITE · 검정 플레이어는 즉사"],
+ ["floor-g","회색 바닥","<b>색을 바꿀 수 있는 유일한 자리</b>"],
+ ["ghost","유령 발판","무색일때_통과 true · 칠해야 실체가 된다"],
+ ["fluid-b","물줄기 (상시)","켜짐 true · 반대색이면 죽고 반대색 총알을 먹는다"],
+ ["pass","통과 플랫폼","224×26 · 필요횟수 2 · <b>물이 페인트를 못 지운다</b>"],
+ ["hopper","호퍼","받은 물을 섞어 아래로 · 밟을 수 있다 · 색 규칙 밖"],
+ ["pipe","기능 배관","배관.tscn · 흐르는 물 색으로 물든다"],
+ ["deco","장식 배관","SS2D PIPE 키트 · 충돌·색 없음"],
+ ["spike","가시","색과 무관하게 죽인다"],
+ ["pit","구덩이 · 낙사","520px 넘게 떨어지면 즉사"],
+ ["cp","체크포인트 평지","관문 통과 직후 96px 이상"],
+ ["dim","치수선","이 도면이 못 박는 값 — 바꾸면 다른 값도 같이 바꾼다"]
+];
+const lgBox=document.getElementById("legend");
+for(const [k,name,desc] of LEGEND){
+  const d=document.createElement("div"); d.className="lg-item";
+  const s=el("svg",{width:58,height:36,viewBox:"0 0 224 136"});
+  HATCH=hatchDef(s);
+  const g=el("g",{});
+  const M={
+   struct :()=>draw.struct(g,[8,40,208,88,null]),
+   "floor-b":()=>draw.floor(g,[8,52,208,76,"black",""]),
+   "floor-w":()=>draw.floor(g,[8,52,208,76,"white",""]),
+   "floor-g":()=>draw.floor(g,[8,52,208,76,"gray",""]),
+   ghost  :()=>draw.ghost(g,[10,44,204,84,null]),
+   "fluid-b":()=>draw.fluid(g,[80,6,64,124,"black","always",null]),
+   pass   :()=>draw.pass(g,[112,68,null]),
+   hopper :()=>draw.hopper(g,[112,120,150,56,null]),
+   pipe   :()=>draw.pipe(g,[[[16,100],[110,100],[110,30],[208,30]],"white"]),
+   deco   :()=>draw.deco(g,[[[16,68],[208,68]]]),
+   spike  :()=>draw.spike(g,[36,120,3]),
+   pit    :()=>draw.pit(g,[16,50,192,""]),
+   cp     :()=>draw.cp(g,[24,110,176]),
+   dim    :()=>draw.dim(g,[20,204,80,""])
+  };
+  M[k]&&M[k]();
+  s.appendChild(g); d.appendChild(s);
+  const sp=document.createElement("span");
+  sp.innerHTML=`<b>${name}</b><i>${desc}</i>`;
+  d.appendChild(sp); lgBox.appendChild(d);
+}
+
+/* 규격 카드 */
+const SPECS=[
+ ["이동 속도","390","px/s"],["점프 높이·거리","160","px"],["플레이어","44×97","px"],
+ ["최대 단차","48","px"],["안전 오름단차","128","px"],["최소 수평 간격","64","px"],
+ ["최소 통로 높이","128","px"],["낙하 즉사","520","px"],
+ ["체크포인트 유예","0.45","초 · 평지 96px"],["기본 탄약","12","발 · FIFO 회수"],
+ ["유체 기본","64×260","흐름 130 px/s"],["통과 플랫폼","224×26","필요횟수 2"],
+ ["호퍼","120×56","포트 연결 36px"],["WALL_SOLID","424×960","템플릿 기본"],
+ ["계단 한 칸","180×110","폭 최소 90 · 높이 최대 128"],["공중 발판 두께","180","최소 140"]
+];
+const spBox=document.getElementById("specs");
+for(const [n,v,u] of SPECS){
+  const d=document.createElement("div"); d.className="spec";
+  d.innerHTML=`<b>${n}</b><span>${v}</span><i>${u}</i>`;
+  spBox.appendChild(d);
+}
+</script>

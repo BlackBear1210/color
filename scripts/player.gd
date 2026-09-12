@@ -181,7 +181,13 @@ func _physics_process(delta: float) -> void:
 	velocity.x = dir * move_speed
 
 	var 착지_직전속도 := velocity.y
+	# ★[2026-09-07] 미는 방향은 `move_and_slide()` **전에** 붙잡는다.
+	#   슬라이드는 벽 법선 방향 성분을 지운다. 박스·양동이를 **정면으로** 밀면
+	#   그 순간 velocity.x 가 0 이 되고, 밀기 시도가 "안 움직이는 중"으로 보고
+	#   그냥 돌아가 버렸다 — 즉 **정면으로는 한 번도 안 밀렸다**(하수도 2-7 관문 2).
+	var 밀_방향 := signf(velocity.x)
 	move_and_slide()
+	_양동이_밀기_시도(밀_방향)
 	var 바닥 := is_on_floor()
 	if _착지_감시_시작 and 바닥 and not _지난_바닥:
 		# 첫 물리 프레임의 스폰은 제외하고, 실제 낙하 뒤 착지에만 반응한다.
@@ -195,6 +201,21 @@ func _physics_process(delta: float) -> void:
 	# 같은 프레임의 판정이 방금 선 자리를 기준으로 이뤄진다.
 	_대표색_갱신()
 	_분할_갱신()
+
+
+## 이동 후의 충돌만 보면 "양동이 옆면을 밀었다"를 정확히 구분할 수 있다.
+## 점프해서 양동이 위에 올라선 경우까지 밀어 버리면 디딤대 퍼즐이 무너지므로,
+## 수평 충돌일 때만 양동이 쪽에 다음 물리 프레임의 이동을 요청한다.
+func _양동이_밀기_시도(밀_방향: float) -> void:
+	if absf(밀_방향) < 0.5:
+		return
+	for i in get_slide_collision_count():
+		var 충돌 := get_slide_collision(i)
+		if absf(충돌.get_normal().x) < 0.7:
+			continue
+		var 대상 := 충돌.get_collider() as Node
+		if 대상 != null and 대상.has_method("밀기"):
+			대상.call("밀기", 밀_방향, player_color)
 
 
 # ── 색 ─────────────────────────────────────────────────────────────────────
