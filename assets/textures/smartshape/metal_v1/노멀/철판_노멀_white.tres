@@ -1,0 +1,30 @@
+[gd_resource type="CanvasTexture" format=3]
+
+; ============================================================================
+; [2026-09-05 자동생성] 철판 white 아트 + 노멀맵 묶음
+;   만든 도구: tools/생성_지형_노멀맵.gd  ← 손으로 고치지 말 것 (다시 돌리면 덮어쓴다)
+; ----------------------------------------------------------------------------
+; ▣ 왜 CanvasTexture 인가
+;   SmartShape2D 애드온에는 normal_texture 슬롯이 없다. 대신
+;   `SS2D_Material_Shape.fill_textures` 가 Array[Texture2D] 이고 CanvasTexture 는
+;   Texture2D 라서 그대로 들어간다. SS2D 는 canvas_item_add_mesh 로 그리는데
+;   CanvasTexture 의 RID 에 diffuse + normal 이 함께 실려 그대로 전달된다.
+;   → 애드온을 한 줄도 안 고치고 노멀맵이 들어간다 (2026-09-05 BRICK 에서 실측 확인).
+;
+; ▣ 왜 인라인이 아니라 별도 파일인가  ★중요
+;   `지형.gd` 의 `_짝_찾기()` 가 resource_path 파일명의 black ↔ white 토큰을 보고
+;   반대색 아트를 찾는다. 인라인이면 resource_path 가 비어 짝 찾기가 실패하고
+;   페인트 셰이더가 밝기 반전 폴백으로 떨어진다.
+;   → 짝 = 같은 폴더의 `철판_노멀_black.tres`
+;
+; ▣ texture_filter / texture_repeat 를 일부러 안 적는다
+;   기본값 "부모를 따름" 이라 SS2D 가 캔버스 아이템에 거는 REPEAT_ENABLED 를
+;   그대로 물려받는다. 여기서 값을 박으면 지형 텍스처 반복이 깨진다.
+; ============================================================================
+
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/metal_v1/white/fill_patchwork.png" id="1_diffuse"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/metal_v1/노멀/철판_노멀_white.png" id="2_normal"]
+
+[resource]
+diffuse_texture = ExtResource("1_diffuse")
+normal_texture = ExtResource("2_normal")

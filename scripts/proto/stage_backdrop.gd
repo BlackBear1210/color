@@ -39,6 +39,10 @@ extends RefCounted
 ## ============================================================================
 class_name StageBackdrop
 
+## ⚠ class_name 대신 **경로 preload** 로 잡는다 — 새 스크립트의 전역 클래스 이름은
+##   에디터가 한 번 훑어야 등록돼서, 그 전에 헤드리스 검사를 돌리면 통째로 죽는다.
+const 조명표준 := preload("res://scripts/스마트월드/조명표준.gd")
+
 const PROPS := "res://assets/textures/props/"
 const FLICKER := "res://scripts/proto/light_flicker.gd"
 
@@ -386,6 +390,8 @@ static func 광원(parent: Node, owner: Node, 이름: String, pos: Vector2,
 	light.texture_scale = 반경 * 2.0 / 256.0
 	light.energy = 세기
 	light.color = 색
+	# ★[2026-09-05] 조명 표준 — height 128 · ADD.
+	조명표준.적용(light)
 	light.position = pos
 	parent.add_child(light)
 	light.owner = owner

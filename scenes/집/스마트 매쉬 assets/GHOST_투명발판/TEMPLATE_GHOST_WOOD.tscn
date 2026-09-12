@@ -1,0 +1,123 @@
+; ============================================================================
+; TEMPLATE_GHOST_WOOD — 나무 투명 발판 (칠해야 밟히는 유령 발판)
+; ----------------------------------------------------------------------------
+; TEMPLATE_WOOD_SOLID 를 그대로 복사하고 인스펙터 값 세 개만 켠 것이다.
+;   칠하기_허용   = true   플레이어가 칠할 수 있다  ★끄면 그냥 단단한 나무 발판이 된다
+;   무색일때_통과 = true   안 칠하면 몸이 통과한다 (= 아직 발판이 아니다)
+;   위치별_판정   = true   칠한 자리의 색으로 죽음 판정 (화면과 판정이 같은 말을 한다)
+; 모자이크·번짐·반투명도는 인스펙터 "유령 발판" 그룹에서 조절한다.
+; 쓰는 법은 같은 폴더의 README_투명발판.md.
+; ============================================================================
+[gd_scene format=4]
+
+[ext_resource type="Script" uid="uid://qsashlrklll3" path="res://scripts/스마트월드/지형.gd" id="1_p7j1u"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="2_lrc6y"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="3_xh3mk"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_ick6f"]
+[ext_resource type="Texture2D" uid="uid://bwn2b1081olaf" path="res://assets/textures/smartshape/wood_v2/black/fill_detail.png" id="5_m2lq1"]
+[ext_resource type="Texture2D" uid="uid://dj1q1sitixcqo" path="res://assets/textures/smartshape/wood_v2/black/edge_top_thin.png" id="6_pg6cn"]
+[ext_resource type="Resource" uid="uid://ckheo3aretsqu" path="res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_detail_얇은_사방.tres" id="7_pg6cn"]
+
+[sub_resource type="Resource" id="Resource_ogowm"]
+script = ExtResource("2_lrc6y")
+resource_local_to_scene = true
+position = Vector2(-256, -96)
+
+[sub_resource type="Resource" id="Resource_imjw2"]
+script = ExtResource("2_lrc6y")
+resource_local_to_scene = true
+position = Vector2(256, -96)
+
+[sub_resource type="Resource" id="Resource_5ngsh"]
+script = ExtResource("2_lrc6y")
+resource_local_to_scene = true
+position = Vector2(256, 96)
+
+[sub_resource type="Resource" id="Resource_ed7i8"]
+script = ExtResource("2_lrc6y")
+resource_local_to_scene = true
+position = Vector2(-256, 96)
+
+[sub_resource type="Resource" id="Resource_f0r1x"]
+script = ExtResource("2_lrc6y")
+resource_local_to_scene = true
+position = Vector2(-256, -96)
+
+[sub_resource type="Resource" id="Resource_5armn"]
+script = ExtResource("3_xh3mk")
+resource_local_to_scene = true
+_points = {
+0: SubResource("Resource_ogowm"),
+1: SubResource("Resource_imjw2"),
+2: SubResource("Resource_5ngsh"),
+3: SubResource("Resource_ed7i8"),
+4: SubResource("Resource_f0r1x")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 7
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_nxy5u"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////27bNj+SJIm+bts2P5Ikib7/////bts2P5IkiT5u2zY/kiSJPv////9u2za/kiSJPm7bNr+SJIk+/////27bNr+SJIm+bts2v5Ikib4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQwAAwMIAAAAAAACAQwAAwEIAAAAAAACAwwAAwEIAAAAAAACAwwAAwMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_hntwl"]
+script = ExtResource("4_ick6f")
+texture = ExtResource("5_m2lq1")
+mesh = SubResource("ArrayMesh_nxy5u")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_pru2t"]
+_surfaces = [{
+"aabb": AABB(-256, -96, 0, 512, 192, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9uO6k/AACAP247qT8AAIA//////247qT8AAAAAbjupPwAAAAD/////ty3gPwAAgD+3LeA/AACAP/////+3LeA/AAAAALct4D8AAAAA/////5K0REAAAIA/krREQAAAgD//////krREQAAAAACStERAAAAAAP////+3LWBAAACAP7ctYEAAAIA//////7ctYEAAAAAAty1gQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwwAAwMIAAAAAmtlZw2dmZ8IAAAAAmtlZQ2dmZ8IAAAAAAACAQwAAwMIAAAAAmtlZQ2dmZ0IAAAAAAACAQwAAwEIAAAAAmtlZw2dmZ0IAAAAAAACAwwAAwEIAAAAAmtlZw2dmZ8IAAAAAAACAwwAAwMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_j3f05"]
+script = ExtResource("4_ick6f")
+texture = ExtResource("6_pg6cn")
+mesh = SubResource("ArrayMesh_pru2t")
+
+[node name="TEMPLATE_GHOST_WOOD" type="Node2D" unique_id=850870401]
+script = ExtResource("1_p7j1u")
+"칠하기_허용" = true
+"무색일때_통과" = true
+"위치별_판정" = true
+_points = SubResource("Resource_5armn")
+_meshes = Array[ExtResource("4_ick6f")]([SubResource("Resource_hntwl"), SubResource("Resource_j3f05")])
+shape_material = ExtResource("7_pg6cn")
+collision_update_mode = 2
+collision_size = 24.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="@ColorRect@18754" type="ColorRect" parent="." unique_id=1144091744]
+modulate = Color(1, 1, 1, 0)
+offset_left = -256.0
+offset_top = -96.0
+offset_right = 256.0
+offset_bottom = 96.0
+metadata/__ss2d_click_rect__ = true
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=260973852]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=1742468315]
+visible = false
+polygon = PackedVector2Array(-256, -96, 256, -96, 256, 96, -256, 96)

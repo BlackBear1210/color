@@ -1,5 +1,8 @@
 @tool
 extends Area2D
+
+## ⚠ class_name 대신 **경로 preload** — 헤드리스에서 전역 클래스 이름이 아직 없을 수 있다.
+const 조명표준 := preload("res://scripts/스마트월드/조명표준.gd")
 ## ============================================================================
 ## 🏮 체크포인트 = 잉크 등불 (Ink Lantern)  —  [2026-07-25 재디자인]
 ## ----------------------------------------------------------------------------
@@ -98,6 +101,8 @@ func _재구성() -> void:
 		_light.texture_scale = 360.0 / 256.0
 		_light.color = Color(1.0, 0.90, 0.70)
 		_light.energy = 0.0                 # 꺼짐
+		# ★[2026-09-05] 조명 표준 — height 128 · ADD. energy 는 켜기/끄기가 굴리므로 안 건드린다.
+		조명표준.적용(_light)
 		add_child(_light)
 	_light.position = Vector2(0, -44.0 - float(걸이높이))
 	queue_redraw()

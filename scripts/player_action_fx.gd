@@ -3,7 +3,6 @@ extends Node2D
 ## 카메라 줌 0.85에서도 실루엣을 가리지 않도록 작은 입자의 방향과 수명으로 동작을 읽힌다.
 
 const 점프_쪽당_개수 := 5
-const 명중_큰조각 := 7
 const 명중_잔점 := 9
 
 @export_group("파티클 크기")
@@ -34,17 +33,47 @@ func 착지(색: int, 낙하속도: float) -> void:
 	_먼지_한쪽(위치, Vector2(1.0, -0.12), 색, 개수, 최소속도, 최대속도, 0.30, 0.30)
 
 
-func 명중(지점: Vector2, 속도: Vector2, 색: int) -> void:
+const 스플래시_S := preload("res://scripts/스마트월드/물감_스플래시.gd")
+const 명중효과_씬 := preload("res://scenes/effects/PaintImpactEffect.tscn")
+
+## 명중 연출을 무엇으로 낼지. 스테이지가 아니라 **여기 한 곳**에서만 정해진다.
+enum 명중연출 {
+	원화_물이펙트,     ## [2026-09-05 기본] 도형님이 준 water_05~08 원본 애니메이션
+	손그림_스플래시,   ## [2026-09-03] 코드로 그리던 물줄기 — 비교·되돌리기용으로 남겨 뒀다
+}
+@export var 명중_연출: 명중연출 = 명중연출.원화_물이펙트
+## [2026-09-05 임시] 명중마다 `[PAINT IMPACT] …` 한 줄을 찍는다.
+## 모든 스테이지에서 같은 이펙트가 나오는지 확인하려고 켜 뒀다. 확인이 끝나면 꺼도 된다.
+@export var 명중_디버그로그 := true
+
+
+## 발사체가 지형에 맞은 그 자리에서 부른다. **모든 발사체의 공통 출구**다.
+##   페인트총알(집·2-1) / ProtoBullet(1-1·2-2·2-3) / bullet(옛 타일맵 씬) 셋 다 여기로 온다.
+##   → 스테이지 코드에 이펙트를 심을 필요가 없다. 스테이지가 늘어도 이 줄 하나면 된다.
+## `법선` 은 지형 표면의 바깥 방향. 레이캐스트로 쏘는 총알만 줄 수 있어서 기본값을 둔다.
+## `발사체` 는 디버그 로그에 찍을 이름.
+func 명중(지점: Vector2, 속도: Vector2, 색: int,
+		법선: Vector2 = Vector2.ZERO, 발사체: String = "") -> void:
 	if 속도.is_zero_approx():
 		return
-	# 진행 반대 방향을 충돌면 바깥쪽으로 삼으면 벽·바닥 모두 한 방향으로 튀어 자연스럽다.
-	var 바깥방향 := -속도.normalized()
-	_물감_얼룩(지점 + 바깥방향 * 2.0, 바깥방향, 색)
-	_물감_뿌리기(지점 + 바깥방향 * 3.0, 바깥방향, 색, 명중_큰조각,
-		48.0, 105.0, 235.0, 0.34, 0.30, 480.0)
+	# 지형 법선을 받았으면 그게 제일 정확하다. 못 받으면 진행 반대 방향으로 대신한다
+	# (벽·바닥 모두 한 방향으로 튀어 자연스럽다).
+	var 바깥방향 := 법선.normalized() if not 법선.is_zero_approx() else -속도.normalized()
+
+	if 명중_연출 == 명중연출.원화_물이펙트:
+		var 효과: Node2D = 명중효과_씬.instantiate()
+		효과.시작(지점 + 바깥방향 * 2.0, 바깥방향, 색, 크기_배율, 발사체, 명중_디버그로그)
+		get_tree().current_scene.add_child(효과)
+	else:
+		# ★[2026-09-03 도형님] "블럭이 날라가는 느낌" → 매번 다른 물줄기 스플래시로 바꿨다.
+		#   예전엔 여기서 큰 타원 얼룩(_물감_얼룩) 하나를 그려서 "네모가 찍힌" 인상이었다.
+		var 스플래시: Node2D = 스플래시_S.new()
+		스플래시.시작(지점 + 바깥방향 * 2.0, 바깥방향, 색, 크기_배율)  # 값 저장 (아직 트리 밖)
+		get_tree().current_scene.add_child(스플래시)                # _ready 가 _바깥 반영해 생성
+
+	# 잔점 파티클은 남긴다 — 물줄기 사이를 채우는 미세한 물보라라 형태 연출을 해치지 않는다.
 	_물감_뿌리기(지점 + 바깥방향 * 2.0, 바깥방향, 색, 명중_잔점,
 		112.0, 48.0, 135.0, 0.20, 0.22, 560.0)
-
 
 func _먼지_한쪽(위치: Vector2, 방향: Vector2, 색: int, 개수: int,
 		최소속도: float, 최대속도: float, 크기: float, 수명: float) -> void:
@@ -160,25 +189,3 @@ func _물감_텍스처_가져오기() -> Texture2D:
 	return _물감_텍스처
 
 
-func _물감_얼룩(지점: Vector2, 바깥방향: Vector2, 색: int) -> void:
-	var 얼룩 := Polygon2D.new()
-	var 점들 := PackedVector2Array()
-	for i in 10:
-		var 각도 := TAU * float(i) / 10.0
-		var 반경 := 5.0 if i % 2 == 0 else 3.6
-		점들.append(Vector2.RIGHT.rotated(각도) * 반경)
-	얼룩.polygon = 점들
-	얼룩.color = _물감색(색)
-	얼룩.top_level = true
-	얼룩.global_position = 지점
-	얼룩.rotation = Vector2(-바깥방향.y, 바깥방향.x).angle()
-	얼룩.z_as_relative = false
-	얼룩.z_index = 29
-	add_child(얼룩)
-	# 충돌면을 따라 납작하게 붙었다가 빠르게 사라져 큰 원이 번쩍이는 인상을 없앤다.
-	var 목표크기 := Vector2(1.45, 0.52) * 크기_배율
-	얼룩.scale = 목표크기 * 0.42
-	var 트윈 := 얼룩.create_tween()
-	트윈.tween_property(얼룩, "scale", 목표크기, 0.06).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	트윈.parallel().tween_property(얼룩, "modulate:a", 0.0, 0.28).set_delay(0.05)
-	트윈.tween_callback(얼룩.queue_free)

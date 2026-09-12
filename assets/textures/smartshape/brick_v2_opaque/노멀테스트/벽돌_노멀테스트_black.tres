@@ -1,0 +1,33 @@
+[gd_resource type="CanvasTexture" format=3]
+
+; ============================================================================
+; [2026-09-05 노멀맵 테스트] 벽돌 검정 아트 + 노멀맵 묶음
+; ----------------------------------------------------------------------------
+; ▣ 왜 CanvasTexture 인가
+;   SmartShape2D 애드온에는 normal_texture 슬롯이 없다(애드온 전체 검색 0건).
+;   대신 `SS2D_Material_Shape.fill_textures` 가 `Array[Texture2D]` 이고,
+;   CanvasTexture 는 Texture2D 를 상속하므로 여기에 그대로 넣을 수 있다.
+;   SS2D 는 `RenderingServer.canvas_item_add_mesh(..., texture.get_rid())` 로 그리는데,
+;   CanvasTexture 의 RID 에는 diffuse + normal 이 함께 실려 그대로 전달된다.
+;   → 애드온을 한 줄도 안 고치고 노멀맵을 넣을 수 있다. (실측으로 확인함)
+;
+; ▣ 왜 인라인이 아니라 **별도 파일**인가  ★중요
+;   `scripts/스마트월드/지형.gd` 의 `_짝_찾기()` 는 텍스처의 `resource_path` 파일명에서
+;   black ↔ white 토큰을 바꿔 짝을 찾는다. 씬/재질 안에 인라인 서브리소스로 넣으면
+;   resource_path 가 비어 있어 짝 탐색이 실패하고, 페인트 셰이더가 밝기 반전
+;   폴백(alt_invert)으로 떨어져 **칠하기 표현이 달라진다.**
+;   → 파일로 저장하고 이름에 `black` / `white` 토큰을 남겨 기존 규칙을 그대로 태운다.
+;     (짝 = 같은 폴더의 `벽돌_노멀테스트_white.tres`)
+;
+; ▣ texture_filter / texture_repeat 를 일부러 지정하지 않는다
+;   기본값이 "부모 노드를 따름" 이라, SS2D 렌더러가 캔버스 아이템에 걸어 두는
+;   `CANVAS_ITEM_TEXTURE_REPEAT_ENABLED` 를 그대로 물려받는다.
+;   여기서 값을 박으면 지형의 텍스처 반복이 깨진다.
+; ============================================================================
+
+[ext_resource type="Texture2D" uid="uid://bkxx7iiakjcia" path="res://assets/tileset/brick_black_seamless_341x307.png" id="1_diffuse"]
+[ext_resource type="Texture2D" uid="uid://bms74xuwhnwv8" path="res://assets/png/brick_black_seamless_341x307_normal.png" id="2_normal"]
+
+[resource]
+diffuse_texture = ExtResource("1_diffuse")
+normal_texture = ExtResource("2_normal")

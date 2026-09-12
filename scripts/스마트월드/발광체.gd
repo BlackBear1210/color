@@ -20,6 +20,10 @@ extends Node2D
 ## ============================================================================
 class_name 발광체
 
+## ⚠ class_name 대신 **경로 preload** 로 잡는다 — 새 스크립트의 전역 클래스 이름은
+##   에디터가 한 번 훑어야 등록돼서, 그 전에 헤드리스 검사를 돌리면 통째로 죽는다.
+const 조명표준 := preload("res://scripts/스마트월드/조명표준.gd")
+
 enum 종류_ { 가로등, 구슬, 반사 }
 
 @export var 종류: 종류_ = 종류_.가로등:
@@ -60,6 +64,18 @@ enum 종류_ { 가로등, 구슬, 반사 }
 ## 등은 이걸 끄고 빛만 쓰고, 반딧불이는 켜 둔다. 기본값 true = 예전과 똑같다.
 @export var 알갱이_보이기: bool = true:
 	set(v): 알갱이_보이기 = v; queue_redraw()
+
+## ★[2026-09-05 추가] 이 광원이 그림자를 드리우나 (LightOccluder2D 를 만난 곳이 어두워진다).
+##
+## 왜 기본값이 꺼짐인가 — 그림자는 **광원마다 켤지 정해야 하는 연출**이지,
+## 켤수록 좋은 옵션이 아니다. 방을 채우는 약한 채움광까지 그림자를 만들면
+## 그림자 방향이 여러 개로 겹쳐서 "어디서 오는 빛"인지가 오히려 사라지고,
+## 플레이어가 통째로 검게 묻힌다(지시서 §4 의 경고가 그것이다).
+## → **주광 하나만** 켠다.
+@export var 그림자: bool = false:
+	set(v):
+		그림자 = v
+		if _빛: _빛.shadow_enabled = v
 
 var _빛: PointLight2D
 var _시간: float = 0.0
@@ -103,7 +119,15 @@ func _다시_만들기() -> void:
 	_빛.energy = 밝기
 	# 곱하기 대신 더하기 블렌드 = 어두운 배경 위에 "빛이 얹히는" 느낌
 	_빛.blend_mode = Light2D.BLEND_MODE_ADD
-	_빛.shadow_enabled = false
+	# ★[2026-09-05] 조명 표준 — PointLight2D.height 128.
+	#   여기가 0 이던 것이 "노멀맵이 게임에서 안 보이던" 진짜 원인이다.
+	조명표준.적용(_빛, 밝기)
+	_빛.shadow_enabled = 그림자
+	# 그림자 경계가 픽셀로 딱 끊기면 2D 라이트가 "잘라낸 종이"처럼 보인다 → 부드럽게.
+	_빛.shadow_filter = Light2D.SHADOW_FILTER_PCF13
+	_빛.shadow_filter_smooth = 8.0
+	# 완전한 검정이 아니라 "덜 밝은 곳"으로 남긴다. 새까맣게 만들면 플레이어가 묻힌다.
+	_빛.shadow_color = Color(0, 0, 0, 조명표준.그림자_알파)
 	# 텍스처가 256px 기준이므로 원하는 반경에 맞춰 스케일을 잡는다
 	_빛.texture_scale = 반경 / 128.0
 	match 종류:
@@ -119,26 +143,11 @@ func _다시_만들기() -> void:
 	queue_redraw()
 
 
-## 코드로 만드는 방사형 그라데이션 — 외부 이미지 없이 광원 텍스처를 얻는다.
-## ★[성능] 256×256 픽셀 루프라 인스턴스마다 만들면 스테이지 로딩이 눈에 띄게 느려진다.
-##   모양이 전부 같으므로 **한 번 만들어 전 인스턴스가 공유**한다 (색·크기는 노드 속성으로 조절).
-static var _공용_텍스처: Texture2D = null
-
+## ★[2026-09-05] 광원 텍스처를 여기서 만들지 않고 **조명표준**이 만든 것을 나눠 쓴다.
+## 같은 코드가 발광체·실험실·보조광 세 곳에 복사돼 있었다 — 한 곳만 고치면
+## 빛의 모양이 서로 달라져서 실험실에서 고른 값이 본 스테이지에서 재현되지 않는다.
 func _빛_텍스처() -> Texture2D:
-	if _공용_텍스처 != null:
-		return _공용_텍스처
-	var 크기 := 256
-	var img := Image.create(크기, 크기, false, Image.FORMAT_RGBA8)
-	var 중심 := Vector2(크기, 크기) * 0.5
-	for y in 크기:
-		for x in 크기:
-			var d := Vector2(x, y).distance_to(중심) / (float(크기) * 0.5)
-			# 제곱으로 떨어뜨리면 중심이 또렷하고 바깥이 부드럽다
-			var a := clampf(1.0 - d, 0.0, 1.0)
-			a = a * a
-			img.set_pixel(x, y, Color(1, 1, 1, a))
-	_공용_텍스처 = ImageTexture.create_from_image(img)
-	return _공용_텍스처
+	return 조명표준.방사형_텍스처()
 
 
 func _process(delta: float) -> void:

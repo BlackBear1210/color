@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/페인트_명중효과.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://assets/vfx/water_impact/물감_명중_프레임.tres" id="2_frames"]
+[ext_resource type="Shader" path="res://shaders/물감_명중.gdshader" id="3_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_받침"]
+shader = ExtResource("3_shader")
+shader_parameter/paint_tint = Color(0.93, 0.95, 0.99, 1)
+shader_parameter/paint_alpha = 0.42
+shader_parameter/key_low = 0.04
+shader_parameter/key_high = 0.28
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_본체"]
+shader = ExtResource("3_shader")
+shader_parameter/paint_tint = Color(0.055, 0.055, 0.065, 1)
+shader_parameter/paint_alpha = 1.0
+shader_parameter/key_low = 0.04
+shader_parameter/key_high = 0.28
+
+[node name="PaintImpactEffect" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="받침" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_받침")
+sprite_frames = ExtResource("2_frames")
+animation = &"water_05"
+
+[node name="본체" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_본체")
+sprite_frames = ExtResource("2_frames")
+animation = &"water_05"

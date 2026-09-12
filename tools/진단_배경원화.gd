@@ -12,10 +12,10 @@ func _go() -> void:
 		if c.get_script() == null: continue
 		if not String(c.get_script().resource_path).ends_with("실내배경.gd"): continue
 		var t = c.get("그림_아래")
-		print("  %-22s 그림_아래=%s  맞춤=%s  원본영역=%s  영역=%s  밝기=%s  앞에=%s  z=%d" % [
+		print("  %-22s 그림_아래=%s  맞춤=%s  원본영역=%s  영역=%s  밝기=%s  깊이=%s  z=%d" % [
 			c.name, ("null ✗" if t == null else "%s %s ✔" % [t.resource_path.get_file(), t.get_size()]),
 			c.get("그림_맞춤"), c.get("그림_원본영역"), c.get("영역"),
-			c.get("그림_밝기"), c.get("앞에_그리기"), c.z_index])
+			c.get("그림_밝기"), c.get("깊이"), c.z_index])
 	quit()
 func _모두(n: Node) -> Array:
 	var r := [n]

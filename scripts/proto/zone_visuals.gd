@@ -16,6 +16,10 @@ extends Node
 ## 사용법: 존 루트에 add_child 후 setup(player) 호출. (모든 씬 파일 무수정)
 class_name ZoneVisuals
 
+## ⚠ class_name 대신 **경로 preload** 로 잡는다 — 새 스크립트의 전역 클래스 이름은
+##   에디터가 한 번 훑어야 등록돼서, 그 전에 헤드리스 검사를 돌리면 통째로 죽는다.
+const 조명표준 := preload("res://scripts/스마트월드/조명표준.gd")
+
 ## 환경광 — 1.0(무효)보다 조금 낮춰 라이트 대비를 만든다. 너무 낮으면 가독성 붕괴.
 const AMBIENT := Color(0.82, 0.82, 0.88)
 ## 플레이어 광원 세기·반경(px)
@@ -61,6 +65,9 @@ func _add_player_light() -> void:
 	_light.texture = tex
 	_light.texture_scale = LIGHT_RADIUS * 2.0 / 256.0
 	_light.energy = LIGHT_ENERGY
+	# ★[2026-09-05] 조명 표준 — height 128 · ADD.
+	#   이 빛이 지형/배경의 노멀맵을 깨우는 주광이라 height 0 이면 노멀맵이 죽는다.
+	조명표준.적용(_light)
 	add_child(_light)
 
 func _process(_delta: float) -> void:

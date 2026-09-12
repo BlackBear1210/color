@@ -1,0 +1,19 @@
+[gd_resource type="CanvasTexture" format=3]
+
+; ============================================================================
+; [2026-09-05 노멀맵 테스트] 벽돌 흰색 아트 + 노멀맵 묶음
+; ----------------------------------------------------------------------------
+; `벽돌_노멀테스트_black.tres` 의 흰색 짝. 파일 이름의 black ↔ white 토큰만 다르다.
+; `지형.gd` 의 `_짝_찾기()` 가 이 파일을 찾아야 페인트 셰이더가 진짜 흰색 아트를 쓴다.
+;
+; ▣ 노멀맵은 검정 짝과 **같은 파일**을 쓴다
+;   요철(벽돌 모양)은 색과 무관하게 동일하고, 흰색 아트도 같은 벽돌 배치라
+;   노멀맵을 따로 만들 이유가 없다. 흰색 전용 노멀맵이 나중에 생기면 여기만 바꾸면 된다.
+; ============================================================================
+
+[ext_resource type="Texture2D" uid="uid://dfub88xoala8l" path="res://assets/tileset/brick_white_seamless_341x307.png" id="1_diffuse"]
+[ext_resource type="Texture2D" uid="uid://bms74xuwhnwv8" path="res://assets/png/brick_black_seamless_341x307_normal.png" id="2_normal"]
+
+[resource]
+diffuse_texture = ExtResource("1_diffuse")
+normal_texture = ExtResource("2_normal")
