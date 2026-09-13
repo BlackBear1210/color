@@ -1,0 +1,114 @@
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/shape_material.gd" id="shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material.gd" id="edge"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="meta"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/normal_range.gd" id="range"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/sewer_masonry_v01/top.tres" id="top"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/sewer_masonry_v01/side.tres" id="side"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/sewer_masonry_v01/corner.tres" id="corner"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/sewer_masonry_v01/brick_fill.png" id="fill"]
+
+[ext_resource type="Shader" path="res://assets/textures/smartshape/sewer_masonry_v01/trim_tone.gdshader" id="tone"]
+
+[sub_resource type="ShaderMaterial" id="tone_material"]
+shader = ExtResource("tone")
+
+[sub_resource type="Resource" id="edge0"]
+script = ExtResource("edge")
+textures = Array[Texture2D]([ExtResource("top")])
+textures_corner_outer = Array[Texture2D]([ExtResource("corner")])
+use_corner_texture = true
+use_taper_texture = false
+texture_scale = 0.16
+uniform_width = true
+fit_mode = 1
+material = SubResource("tone_material")
+
+[sub_resource type="Resource" id="range0"]
+script = ExtResource("range")
+begin = 45.0
+distance = 90.0
+
+[sub_resource type="Resource" id="meta0"]
+script = ExtResource("meta")
+edge_material = SubResource("edge0")
+normal_range = SubResource("range0")
+offset = -1.0
+weld = true
+
+[sub_resource type="Resource" id="edge1"]
+script = ExtResource("edge")
+textures = Array[Texture2D]([ExtResource("side")])
+textures_corner_outer = Array[Texture2D]([ExtResource("corner")])
+use_corner_texture = true
+use_taper_texture = false
+texture_scale = 0.16
+uniform_width = true
+fit_mode = 1
+material = SubResource("tone_material")
+
+[sub_resource type="Resource" id="range1"]
+script = ExtResource("range")
+begin = 135.0
+distance = 90.0
+
+[sub_resource type="Resource" id="meta1"]
+script = ExtResource("meta")
+edge_material = SubResource("edge1")
+normal_range = SubResource("range1")
+offset = -1.0
+weld = true
+
+[sub_resource type="Resource" id="edge2"]
+script = ExtResource("edge")
+textures = Array[Texture2D]([ExtResource("side")])
+textures_corner_outer = Array[Texture2D]([ExtResource("corner")])
+use_corner_texture = true
+use_taper_texture = false
+texture_scale = 0.16
+uniform_width = true
+fit_mode = 1
+material = SubResource("tone_material")
+
+[sub_resource type="Resource" id="range2"]
+script = ExtResource("range")
+begin = 225.0
+distance = 90.0
+
+[sub_resource type="Resource" id="meta2"]
+script = ExtResource("meta")
+edge_material = SubResource("edge2")
+normal_range = SubResource("range2")
+offset = -1.0
+weld = true
+
+[sub_resource type="Resource" id="edge3"]
+script = ExtResource("edge")
+textures = Array[Texture2D]([ExtResource("side")])
+textures_corner_outer = Array[Texture2D]([ExtResource("corner")])
+use_corner_texture = true
+use_taper_texture = false
+texture_scale = 0.16
+uniform_width = true
+fit_mode = 1
+material = SubResource("tone_material")
+
+[sub_resource type="Resource" id="range3"]
+script = ExtResource("range")
+begin = 315.0
+distance = 90.0
+
+[sub_resource type="Resource" id="meta3"]
+script = ExtResource("meta")
+edge_material = SubResource("edge3")
+normal_range = SubResource("range3")
+offset = -1.0
+weld = true
+
+[resource]
+script = ExtResource("shape")
+_edge_meta_materials = Array[ExtResource("meta")]([SubResource("meta0"), SubResource("meta1"), SubResource("meta2"), SubResource("meta3")])
+fill_textures = Array[Texture2D]([ExtResource("fill")])
+fill_texture_scale = 0.28
+fill_texture_absolute_position = true
+fill_texture_z_index = -1
