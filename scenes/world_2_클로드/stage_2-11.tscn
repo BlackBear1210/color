@@ -1,0 +1,2707 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/하강수로_월드.gd" id="world"]
+[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="core"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/mesh.gd" id="mesh"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID.tscn" id="black"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID_WHITE.tscn" id="white"]
+[ext_resource type="Script" path="res://scripts/스마트월드/SS2D_붕괴발판.gd" id="crumble"]
+[ext_resource type="Script" path="res://scripts/스마트월드/폭포_수문묶음.gd" id="valveGroup"]
+[ext_resource type="Script" path="res://scripts/스마트월드/압력버튼.gd" id="button"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="moving"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/통과플랫폼.tscn" id="grate"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="water"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/웅덩이.tscn" id="pool"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/제어레버.tscn" id="lever"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="pipe"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/페인트분사기.tscn" id="sprayer"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="checkpoint"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="exit"]
+
+[sub_resource type="Resource" id="terrain0p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -848)
+
+[sub_resource type="Resource" id="terrain0p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1216, -848)
+
+[sub_resource type="Resource" id="terrain0p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1216, -944)
+
+[sub_resource type="Resource" id="terrain0p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-960, -944)
+
+[sub_resource type="Resource" id="terrain0p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-960, -848)
+
+[sub_resource type="Resource" id="terrain0p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -848)
+
+[sub_resource type="Resource" id="terrain0p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -464)
+
+[sub_resource type="Resource" id="terrain0p7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -464)
+
+[sub_resource type="Resource" id="terrain0p8"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -848)
+
+[sub_resource type="Resource" id="terrain0p9"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(704, -848)
+
+[sub_resource type="Resource" id="terrain0p10"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -752)
+
+[sub_resource type="Resource" id="terrain0p11"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -528)
+
+[sub_resource type="Resource" id="terrain0p12"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -432)
+
+[sub_resource type="Resource" id="terrain0p13"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -208)
+
+[sub_resource type="Resource" id="terrain0p14"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, -112)
+
+[sub_resource type="Resource" id="terrain0p15"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, 112)
+
+[sub_resource type="Resource" id="terrain0p16"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 208)
+
+[sub_resource type="Resource" id="terrain0p17"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 432)
+
+[sub_resource type="Resource" id="terrain0p18"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 432)
+
+[sub_resource type="Resource" id="terrain0p19"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 944)
+
+[sub_resource type="Resource" id="terrain0p20"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, 944)
+
+[sub_resource type="Resource" id="terrain0p21"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -848)
+
+[sub_resource type="Resource" id="terrain0"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain0p0"),
+1: SubResource("terrain0p1"),
+2: SubResource("terrain0p2"),
+3: SubResource("terrain0p3"),
+4: SubResource("terrain0p4"),
+5: SubResource("terrain0p5"),
+6: SubResource("terrain0p6"),
+7: SubResource("terrain0p7"),
+8: SubResource("terrain0p8"),
+9: SubResource("terrain0p9"),
+10: SubResource("terrain0p10"),
+11: SubResource("terrain0p11"),
+12: SubResource("terrain0p12"),
+13: SubResource("terrain0p13"),
+14: SubResource("terrain0p14"),
+15: SubResource("terrain0p15"),
+16: SubResource("terrain0p16"),
+17: SubResource("terrain0p17"),
+18: SubResource("terrain0p18"),
+19: SubResource("terrain0p19"),
+20: SubResource("terrain0p20"),
+21: SubResource("terrain0p21")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
+_constraints = { Vector2i(0, 21): 15 }
+_next_key = 22
+
+[sub_resource type="Resource" id="terrain1p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain1p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, -128)
+
+[sub_resource type="Resource" id="terrain1p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, 128)
+
+[sub_resource type="Resource" id="terrain1p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, 128)
+
+[sub_resource type="Resource" id="terrain1p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain1"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain1p0"),
+1: SubResource("terrain1p1"),
+2: SubResource("terrain1p2"),
+3: SubResource("terrain1p3"),
+4: SubResource("terrain1p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain2p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, -72)
+
+[sub_resource type="Resource" id="terrain2p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(96, -72)
+
+[sub_resource type="Resource" id="terrain2p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(96, 72)
+
+[sub_resource type="Resource" id="terrain2p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, 72)
+
+[sub_resource type="Resource" id="terrain2p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, -72)
+
+[sub_resource type="Resource" id="terrain2"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain2p0"),
+1: SubResource("terrain2p1"),
+2: SubResource("terrain2p2"),
+3: SubResource("terrain2p3"),
+4: SubResource("terrain2p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain3p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, -72)
+
+[sub_resource type="Resource" id="terrain3p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, -72)
+
+[sub_resource type="Resource" id="terrain3p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 72)
+
+[sub_resource type="Resource" id="terrain3p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, 72)
+
+[sub_resource type="Resource" id="terrain3p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, -72)
+
+[sub_resource type="Resource" id="terrain3"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain3p0"),
+1: SubResource("terrain3p1"),
+2: SubResource("terrain3p2"),
+3: SubResource("terrain3p3"),
+4: SubResource("terrain3p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain4p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-432, -72)
+
+[sub_resource type="Resource" id="terrain4p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(432, -72)
+
+[sub_resource type="Resource" id="terrain4p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(432, 72)
+
+[sub_resource type="Resource" id="terrain4p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-432, 72)
+
+[sub_resource type="Resource" id="terrain4p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-432, -72)
+
+[sub_resource type="Resource" id="terrain4"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain4p0"),
+1: SubResource("terrain4p1"),
+2: SubResource("terrain4p2"),
+3: SubResource("terrain4p3"),
+4: SubResource("terrain4p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain5p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -256)
+
+[sub_resource type="Resource" id="terrain5p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, -256)
+
+[sub_resource type="Resource" id="terrain5p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, 256)
+
+[sub_resource type="Resource" id="terrain5p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, 256)
+
+[sub_resource type="Resource" id="terrain5p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -256)
+
+[sub_resource type="Resource" id="terrain5"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain5p0"),
+1: SubResource("terrain5p1"),
+2: SubResource("terrain5p2"),
+3: SubResource("terrain5p3"),
+4: SubResource("terrain5p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain6p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -896)
+
+[sub_resource type="Resource" id="terrain6p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -896)
+
+[sub_resource type="Resource" id="terrain6p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -512)
+
+[sub_resource type="Resource" id="terrain6p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -512)
+
+[sub_resource type="Resource" id="terrain6p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -896)
+
+[sub_resource type="Resource" id="terrain6p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(704, -896)
+
+[sub_resource type="Resource" id="terrain6p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -800)
+
+[sub_resource type="Resource" id="terrain6p7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -576)
+
+[sub_resource type="Resource" id="terrain6p8"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -480)
+
+[sub_resource type="Resource" id="terrain6p9"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -256)
+
+[sub_resource type="Resource" id="terrain6p10"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, -160)
+
+[sub_resource type="Resource" id="terrain6p11"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, 64)
+
+[sub_resource type="Resource" id="terrain6p12"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 160)
+
+[sub_resource type="Resource" id="terrain6p13"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 384)
+
+[sub_resource type="Resource" id="terrain6p14"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 384)
+
+[sub_resource type="Resource" id="terrain6p15"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 896)
+
+[sub_resource type="Resource" id="terrain6p16"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, 896)
+
+[sub_resource type="Resource" id="terrain6p17"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -896)
+
+[sub_resource type="Resource" id="terrain6"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain6p0"),
+1: SubResource("terrain6p1"),
+2: SubResource("terrain6p2"),
+3: SubResource("terrain6p3"),
+4: SubResource("terrain6p4"),
+5: SubResource("terrain6p5"),
+6: SubResource("terrain6p6"),
+7: SubResource("terrain6p7"),
+8: SubResource("terrain6p8"),
+9: SubResource("terrain6p9"),
+10: SubResource("terrain6p10"),
+11: SubResource("terrain6p11"),
+12: SubResource("terrain6p12"),
+13: SubResource("terrain6p13"),
+14: SubResource("terrain6p14"),
+15: SubResource("terrain6p15"),
+16: SubResource("terrain6p16"),
+17: SubResource("terrain6p17")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+_constraints = { Vector2i(0, 17): 15 }
+_next_key = 18
+
+[sub_resource type="Resource" id="terrain7p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain7p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, -128)
+
+[sub_resource type="Resource" id="terrain7p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, 128)
+
+[sub_resource type="Resource" id="terrain7p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, 128)
+
+[sub_resource type="Resource" id="terrain7p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain7"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain7p0"),
+1: SubResource("terrain7p1"),
+2: SubResource("terrain7p2"),
+3: SubResource("terrain7p3"),
+4: SubResource("terrain7p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain8p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -896)
+
+[sub_resource type="Resource" id="terrain8p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -896)
+
+[sub_resource type="Resource" id="terrain8p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -512)
+
+[sub_resource type="Resource" id="terrain8p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -512)
+
+[sub_resource type="Resource" id="terrain8p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -896)
+
+[sub_resource type="Resource" id="terrain8p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(704, -896)
+
+[sub_resource type="Resource" id="terrain8p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -800)
+
+[sub_resource type="Resource" id="terrain8p7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -576)
+
+[sub_resource type="Resource" id="terrain8p8"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -480)
+
+[sub_resource type="Resource" id="terrain8p9"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -256)
+
+[sub_resource type="Resource" id="terrain8p10"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, -160)
+
+[sub_resource type="Resource" id="terrain8p11"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, 64)
+
+[sub_resource type="Resource" id="terrain8p12"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 160)
+
+[sub_resource type="Resource" id="terrain8p13"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 384)
+
+[sub_resource type="Resource" id="terrain8p14"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 384)
+
+[sub_resource type="Resource" id="terrain8p15"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 896)
+
+[sub_resource type="Resource" id="terrain8p16"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, 896)
+
+[sub_resource type="Resource" id="terrain8p17"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -896)
+
+[sub_resource type="Resource" id="terrain8"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain8p0"),
+1: SubResource("terrain8p1"),
+2: SubResource("terrain8p2"),
+3: SubResource("terrain8p3"),
+4: SubResource("terrain8p4"),
+5: SubResource("terrain8p5"),
+6: SubResource("terrain8p6"),
+7: SubResource("terrain8p7"),
+8: SubResource("terrain8p8"),
+9: SubResource("terrain8p9"),
+10: SubResource("terrain8p10"),
+11: SubResource("terrain8p11"),
+12: SubResource("terrain8p12"),
+13: SubResource("terrain8p13"),
+14: SubResource("terrain8p14"),
+15: SubResource("terrain8p15"),
+16: SubResource("terrain8p16"),
+17: SubResource("terrain8p17")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+_constraints = { Vector2i(0, 17): 15 }
+_next_key = 18
+
+[sub_resource type="Resource" id="terrain9p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain9p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, -128)
+
+[sub_resource type="Resource" id="terrain9p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, 128)
+
+[sub_resource type="Resource" id="terrain9p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, 128)
+
+[sub_resource type="Resource" id="terrain9p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain9"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain9p0"),
+1: SubResource("terrain9p1"),
+2: SubResource("terrain9p2"),
+3: SubResource("terrain9p3"),
+4: SubResource("terrain9p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain10p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, -72)
+
+[sub_resource type="Resource" id="terrain10p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, -72)
+
+[sub_resource type="Resource" id="terrain10p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 72)
+
+[sub_resource type="Resource" id="terrain10p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, 72)
+
+[sub_resource type="Resource" id="terrain10p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, -72)
+
+[sub_resource type="Resource" id="terrain10"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain10p0"),
+1: SubResource("terrain10p1"),
+2: SubResource("terrain10p2"),
+3: SubResource("terrain10p3"),
+4: SubResource("terrain10p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain11p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, -72)
+
+[sub_resource type="Resource" id="terrain11p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, -72)
+
+[sub_resource type="Resource" id="terrain11p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 72)
+
+[sub_resource type="Resource" id="terrain11p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, 72)
+
+[sub_resource type="Resource" id="terrain11p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-128, -72)
+
+[sub_resource type="Resource" id="terrain11"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain11p0"),
+1: SubResource("terrain11p1"),
+2: SubResource("terrain11p2"),
+3: SubResource("terrain11p3"),
+4: SubResource("terrain11p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain12p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -896)
+
+[sub_resource type="Resource" id="terrain12p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -896)
+
+[sub_resource type="Resource" id="terrain12p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-832, -512)
+
+[sub_resource type="Resource" id="terrain12p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -512)
+
+[sub_resource type="Resource" id="terrain12p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -896)
+
+[sub_resource type="Resource" id="terrain12p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(704, -896)
+
+[sub_resource type="Resource" id="terrain12p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -800)
+
+[sub_resource type="Resource" id="terrain12p7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(896, -576)
+
+[sub_resource type="Resource" id="terrain12p8"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -480)
+
+[sub_resource type="Resource" id="terrain12p9"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, -256)
+
+[sub_resource type="Resource" id="terrain12p10"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, -160)
+
+[sub_resource type="Resource" id="terrain12p11"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1280, 64)
+
+[sub_resource type="Resource" id="terrain12p12"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 160)
+
+[sub_resource type="Resource" id="terrain12p13"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1472, 384)
+
+[sub_resource type="Resource" id="terrain12p14"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 384)
+
+[sub_resource type="Resource" id="terrain12p15"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1600, 896)
+
+[sub_resource type="Resource" id="terrain12p16"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, 896)
+
+[sub_resource type="Resource" id="terrain12p17"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1600, -896)
+
+[sub_resource type="Resource" id="terrain12"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain12p0"),
+1: SubResource("terrain12p1"),
+2: SubResource("terrain12p2"),
+3: SubResource("terrain12p3"),
+4: SubResource("terrain12p4"),
+5: SubResource("terrain12p5"),
+6: SubResource("terrain12p6"),
+7: SubResource("terrain12p7"),
+8: SubResource("terrain12p8"),
+9: SubResource("terrain12p9"),
+10: SubResource("terrain12p10"),
+11: SubResource("terrain12p11"),
+12: SubResource("terrain12p12"),
+13: SubResource("terrain12p13"),
+14: SubResource("terrain12p14"),
+15: SubResource("terrain12p15"),
+16: SubResource("terrain12p16"),
+17: SubResource("terrain12p17")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+_constraints = { Vector2i(0, 17): 15 }
+_next_key = 18
+
+[sub_resource type="Resource" id="terrain13p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain13p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, -128)
+
+[sub_resource type="Resource" id="terrain13p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, 128)
+
+[sub_resource type="Resource" id="terrain13p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, 128)
+
+[sub_resource type="Resource" id="terrain13p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain13"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain13p0"),
+1: SubResource("terrain13p1"),
+2: SubResource("terrain13p2"),
+3: SubResource("terrain13p3"),
+4: SubResource("terrain13p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain14p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -256)
+
+[sub_resource type="Resource" id="terrain14p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, -256)
+
+[sub_resource type="Resource" id="terrain14p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, 256)
+
+[sub_resource type="Resource" id="terrain14p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, 256)
+
+[sub_resource type="Resource" id="terrain14p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -256)
+
+[sub_resource type="Resource" id="terrain14"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain14p0"),
+1: SubResource("terrain14p1"),
+2: SubResource("terrain14p2"),
+3: SubResource("terrain14p3"),
+4: SubResource("terrain14p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain15p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-2112, -896)
+
+[sub_resource type="Resource" id="terrain15p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1344, -896)
+
+[sub_resource type="Resource" id="terrain15p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1344, -512)
+
+[sub_resource type="Resource" id="terrain15p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-320, -512)
+
+[sub_resource type="Resource" id="terrain15p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-320, -896)
+
+[sub_resource type="Resource" id="terrain15p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, -896)
+
+[sub_resource type="Resource" id="terrain15p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(384, -800)
+
+[sub_resource type="Resource" id="terrain15p7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(384, -576)
+
+[sub_resource type="Resource" id="terrain15p8"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(576, -480)
+
+[sub_resource type="Resource" id="terrain15p9"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(576, -256)
+
+[sub_resource type="Resource" id="terrain15p10"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(768, -160)
+
+[sub_resource type="Resource" id="terrain15p11"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(768, 64)
+
+[sub_resource type="Resource" id="terrain15p12"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(960, 160)
+
+[sub_resource type="Resource" id="terrain15p13"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(960, 384)
+
+[sub_resource type="Resource" id="terrain15p14"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, 384)
+
+[sub_resource type="Resource" id="terrain15p15"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(2112, 384)
+
+[sub_resource type="Resource" id="terrain15p16"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(2112, 896)
+
+[sub_resource type="Resource" id="terrain15p17"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-2112, 896)
+
+[sub_resource type="Resource" id="terrain15p18"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-2112, -896)
+
+[sub_resource type="Resource" id="terrain15"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain15p0"),
+1: SubResource("terrain15p1"),
+2: SubResource("terrain15p2"),
+3: SubResource("terrain15p3"),
+4: SubResource("terrain15p4"),
+5: SubResource("terrain15p5"),
+6: SubResource("terrain15p6"),
+7: SubResource("terrain15p7"),
+8: SubResource("terrain15p8"),
+9: SubResource("terrain15p9"),
+10: SubResource("terrain15p10"),
+11: SubResource("terrain15p11"),
+12: SubResource("terrain15p12"),
+13: SubResource("terrain15p13"),
+14: SubResource("terrain15p14"),
+15: SubResource("terrain15p15"),
+16: SubResource("terrain15p16"),
+17: SubResource("terrain15p17"),
+18: SubResource("terrain15p18")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+_constraints = { Vector2i(0, 18): 15 }
+_next_key = 19
+
+[sub_resource type="Resource" id="terrain16p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain16p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, -128)
+
+[sub_resource type="Resource" id="terrain16p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1152, 128)
+
+[sub_resource type="Resource" id="terrain16p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, 128)
+
+[sub_resource type="Resource" id="terrain16p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1152, -128)
+
+[sub_resource type="Resource" id="terrain16"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain16p0"),
+1: SubResource("terrain16p1"),
+2: SubResource("terrain16p2"),
+3: SubResource("terrain16p3"),
+4: SubResource("terrain16p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain17p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, -72)
+
+[sub_resource type="Resource" id="terrain17p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(96, -72)
+
+[sub_resource type="Resource" id="terrain17p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(96, 72)
+
+[sub_resource type="Resource" id="terrain17p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, 72)
+
+[sub_resource type="Resource" id="terrain17p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, -72)
+
+[sub_resource type="Resource" id="terrain17"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain17p0"),
+1: SubResource("terrain17p1"),
+2: SubResource("terrain17p2"),
+3: SubResource("terrain17p3"),
+4: SubResource("terrain17p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain18p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, -72)
+
+[sub_resource type="Resource" id="terrain18p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(96, -72)
+
+[sub_resource type="Resource" id="terrain18p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(96, 72)
+
+[sub_resource type="Resource" id="terrain18p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, 72)
+
+[sub_resource type="Resource" id="terrain18p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-96, -72)
+
+[sub_resource type="Resource" id="terrain18"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain18p0"),
+1: SubResource("terrain18p1"),
+2: SubResource("terrain18p2"),
+3: SubResource("terrain18p3"),
+4: SubResource("terrain18p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain19p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -72)
+
+[sub_resource type="Resource" id="terrain19p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, -72)
+
+[sub_resource type="Resource" id="terrain19p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, 72)
+
+[sub_resource type="Resource" id="terrain19p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, 72)
+
+[sub_resource type="Resource" id="terrain19p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -72)
+
+[sub_resource type="Resource" id="terrain19"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain19p0"),
+1: SubResource("terrain19p1"),
+2: SubResource("terrain19p2"),
+3: SubResource("terrain19p3"),
+4: SubResource("terrain19p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain20p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -256)
+
+[sub_resource type="Resource" id="terrain20p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, -256)
+
+[sub_resource type="Resource" id="terrain20p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(64, 256)
+
+[sub_resource type="Resource" id="terrain20p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, 256)
+
+[sub_resource type="Resource" id="terrain20p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-64, -256)
+
+[sub_resource type="Resource" id="terrain20"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain20p0"),
+1: SubResource("terrain20p1"),
+2: SubResource("terrain20p2"),
+3: SubResource("terrain20p3"),
+4: SubResource("terrain20p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain21p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1024, -4352)
+
+[sub_resource type="Resource" id="terrain21p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1024, -4352)
+
+[sub_resource type="Resource" id="terrain21p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1024, 4352)
+
+[sub_resource type="Resource" id="terrain21p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1024, 4352)
+
+[sub_resource type="Resource" id="terrain21p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1024, -4352)
+
+[sub_resource type="Resource" id="terrain21"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain21p0"),
+1: SubResource("terrain21p1"),
+2: SubResource("terrain21p2"),
+3: SubResource("terrain21p3"),
+4: SubResource("terrain21p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain22p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1024, -4352)
+
+[sub_resource type="Resource" id="terrain22p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1024, -4352)
+
+[sub_resource type="Resource" id="terrain22p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1024, 4352)
+
+[sub_resource type="Resource" id="terrain22p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1024, 4352)
+
+[sub_resource type="Resource" id="terrain22p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-1024, -4352)
+
+[sub_resource type="Resource" id="terrain22"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain22p0"),
+1: SubResource("terrain22p1"),
+2: SubResource("terrain22p2"),
+3: SubResource("terrain22p3"),
+4: SubResource("terrain22p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain23p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-10880, -1024)
+
+[sub_resource type="Resource" id="terrain23p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(10880, -1024)
+
+[sub_resource type="Resource" id="terrain23p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(10880, 1024)
+
+[sub_resource type="Resource" id="terrain23p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-10880, 1024)
+
+[sub_resource type="Resource" id="terrain23p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-10880, -1024)
+
+[sub_resource type="Resource" id="terrain23"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain23p0"),
+1: SubResource("terrain23p1"),
+2: SubResource("terrain23p2"),
+3: SubResource("terrain23p3"),
+4: SubResource("terrain23p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="terrain24p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-10880, -1024)
+
+[sub_resource type="Resource" id="terrain24p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(10880, -1024)
+
+[sub_resource type="Resource" id="terrain24p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(10880, 1024)
+
+[sub_resource type="Resource" id="terrain24p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-10880, 1024)
+
+[sub_resource type="Resource" id="terrain24p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-10880, -1024)
+
+[sub_resource type="Resource" id="terrain24"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("terrain24p0"),
+1: SubResource("terrain24p1"),
+2: SubResource("terrain24p2"),
+3: SubResource("terrain24p3"),
+4: SubResource("terrain24p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="RectangleShape2D" id="grate220"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate221"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate222"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate223"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate224"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate225"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate226"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate227"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate228"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate229"]
+size = Vector2(96, 24)
+
+[sub_resource type="RectangleShape2D" id="grate230"]
+size = Vector2(96, 24)
+
+[sub_resource type="RectangleShape2D" id="grate231"]
+size = Vector2(96, 24)
+
+[sub_resource type="RectangleShape2D" id="grate232"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate233"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate234"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate235"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate236"]
+size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="grate237"]
+size = Vector2(128, 24)
+
+[sub_resource type="Resource" id="pipe238p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-192, -128)
+
+[sub_resource type="Resource" id="pipe238p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, -128)
+
+[sub_resource type="Resource" id="pipe238p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="pipe238"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("pipe238p0"),
+1: SubResource("pipe238p1"),
+2: SubResource("pipe238p2")
+}
+_point_order = PackedInt32Array(0, 1, 2)
+_next_key = 3
+
+[sub_resource type="Resource" id="pipe242p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-192, -128)
+
+[sub_resource type="Resource" id="pipe242p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, -128)
+
+[sub_resource type="Resource" id="pipe242p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="pipe242"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("pipe242p0"),
+1: SubResource("pipe242p1"),
+2: SubResource("pipe242p2")
+}
+_point_order = PackedInt32Array(0, 1, 2)
+_next_key = 3
+
+[sub_resource type="Resource" id="pipe246p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-192, -128)
+
+[sub_resource type="Resource" id="pipe246p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, -128)
+
+[sub_resource type="Resource" id="pipe246p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="pipe246"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("pipe246p0"),
+1: SubResource("pipe246p1"),
+2: SubResource("pipe246p2")
+}
+_point_order = PackedInt32Array(0, 1, 2)
+_next_key = 3
+
+[sub_resource type="Resource" id="pipe250p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-192, -128)
+
+[sub_resource type="Resource" id="pipe250p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, -128)
+
+[sub_resource type="Resource" id="pipe250p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="pipe250"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("pipe250p0"),
+1: SubResource("pipe250p1"),
+2: SubResource("pipe250p2")
+}
+_point_order = PackedInt32Array(0, 1, 2)
+_next_key = 3
+
+[sub_resource type="Resource" id="pipe254p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-192, -128)
+
+[sub_resource type="Resource" id="pipe254p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, -128)
+
+[sub_resource type="Resource" id="pipe254p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="pipe254"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("pipe254p0"),
+1: SubResource("pipe254p1"),
+2: SubResource("pipe254p2")
+}
+_point_order = PackedInt32Array(0, 1, 2)
+_next_key = 3
+
+[sub_resource type="Resource" id="pipe258p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(-192, -128)
+
+[sub_resource type="Resource" id="pipe258p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, -128)
+
+[sub_resource type="Resource" id="pipe258p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="pipe258"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("pipe258p0"),
+1: SubResource("pipe258p1"),
+2: SubResource("pipe258p2")
+}
+_point_order = PackedInt32Array(0, 1, 2)
+_next_key = 3
+
+[node name="stage_2-11" type="Node2D"]
+script = ExtResource("world")
+"스테이지_이름" = "2-11 · 잠긴 폭포의 계단"
+"시작_위치" = Vector2(384, 1024)
+"카메라_리밋" = Rect2(128, 256, 17664, 8704)
+"카메라_줌" = 0.85
+"낙사_y" = 8928.0
+"안전구역들" = Array[Rect2]([Rect2(352, 1016, 544, 16), Rect2(2080, 1016, 224, 16), Rect2(3680, 2552, 544, 16), Rect2(5408, 2552, 224, 16), Rect2(7008, 4088, 544, 16), Rect2(8736, 4088, 224, 16), Rect2(10336, 5624, 544, 16), Rect2(12064, 5624, 224, 16), Rect2(13664, 7160, 544, 16), Rect2(15392, 7160, 224, 16)])
+metadata/design = "좌측 최상단 → 우측 최하단. 물·밸브·압력발판·투명·붕괴. 실제 주행 미실행."
+
+[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+script = ExtResource("core")
+"최대_탄약" = 12
+
+[node name="지형" type="Node2D" parent="."]
+
+
+[node name="구역1_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(1856, 1872)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain0")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "foundation"
+
+[node name="CollisionPolygon2D" parent="지형/구역1_일체형_수로바닥/StaticBody2D"]
+polygon = PackedVector2Array(-1600, -848, -1216, -848, -1216, -944, -960, -944, -960, -848, -832, -848, -832, -464, 192, -464, 192, -848, 704, -848, 896, -752, 896, -528, 1088, -432, 1088, -208, 1280, -112, 1280, 112, 1472, 208, 1472, 432, 1600, 432, 1600, 944, -1600, 944)
+
+[node name="구역1_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(1408, 384)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain1")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ceiling"
+
+[node name="CollisionPolygon2D" parent="지형/구역1_천장/StaticBody2D"]
+polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
+
+[node name="구역1_징검다리1" parent="지형" instance=ExtResource("black")]
+position = Vector2(1376, 1096)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain2")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "platform"
+
+[node name="CollisionPolygon2D" parent="지형/구역1_징검다리1/StaticBody2D"]
+polygon = PackedVector2Array(-96, -72, 96, -72, 96, 72, -96, 72)
+
+[node name="구역1_징검다리2" parent="지형" instance=ExtResource("black")]
+position = Vector2(1792, 1096)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain3")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "platform"
+
+[node name="CollisionPolygon2D" parent="지형/구역1_징검다리2/StaticBody2D"]
+polygon = PackedVector2Array(-128, -72, 128, -72, 128, 72, -128, 72)
+
+[node name="구역1_투명_상부지름길" parent="지형" instance=ExtResource("black")]
+position = Vector2(1552, 904)
+"시작상태" = 0
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+"무색일때_통과" = true
+"유령_반투명도" = 0.42
+"전체_색칠_최대긴변" = 1024.0
+_points = SubResource("terrain4")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ghost"
+
+[node name="CollisionPolygon2D" parent="지형/구역1_투명_상부지름길/StaticBody2D"]
+polygon = PackedVector2Array(-432, -72, 432, -72, 432, 72, -432, 72)
+
+[node name="구역1_밸브수문" parent="지형" instance=ExtResource("black")]
+position = Vector2(2432, 768)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain5")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "gate"
+
+[node name="CollisionPolygon2D" parent="지형/구역1_밸브수문/StaticBody2D"]
+polygon = PackedVector2Array(-64, -256, 64, -256, 64, 256, -64, 256)
+
+[node name="구역2_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(5184, 3456)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain6")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "foundation"
+
+[node name="CollisionPolygon2D" parent="지형/구역2_일체형_수로바닥/StaticBody2D"]
+polygon = PackedVector2Array(-1600, -896, -832, -896, -832, -512, 192, -512, 192, -896, 704, -896, 896, -800, 896, -576, 1088, -480, 1088, -256, 1280, -160, 1280, 64, 1472, 160, 1472, 384, 1600, 384, 1600, 896, -1600, 896)
+
+[node name="구역2_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(4736, 1920)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain7")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ceiling"
+
+[node name="CollisionPolygon2D" parent="지형/구역2_천장/StaticBody2D"]
+polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
+
+[node name="구역3_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(8512, 4992)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain8")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "foundation"
+
+[node name="CollisionPolygon2D" parent="지형/구역3_일체형_수로바닥/StaticBody2D"]
+polygon = PackedVector2Array(-1600, -896, -832, -896, -832, -512, 192, -512, 192, -896, 704, -896, 896, -800, 896, -576, 1088, -480, 1088, -256, 1280, -160, 1280, 64, 1472, 160, 1472, 384, 1600, 384, 1600, 896, -1600, 896)
+
+[node name="구역3_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(8064, 3456)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain9")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ceiling"
+
+[node name="CollisionPolygon2D" parent="지형/구역3_천장/StaticBody2D"]
+polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
+
+[node name="구역3_투명발판1" parent="지형" instance=ExtResource("black")]
+position = Vector2(8064, 4168)
+"시작상태" = 0
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+"무색일때_통과" = true
+"유령_반투명도" = 0.42
+"전체_색칠_최대긴변" = 1024.0
+_points = SubResource("terrain10")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ghost"
+
+[node name="CollisionPolygon2D" parent="지형/구역3_투명발판1/StaticBody2D"]
+polygon = PackedVector2Array(-128, -72, 128, -72, 128, 72, -128, 72)
+
+[node name="구역3_투명발판2" parent="지형" instance=ExtResource("black")]
+position = Vector2(8448, 4168)
+"시작상태" = 0
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+"무색일때_통과" = true
+"유령_반투명도" = 0.42
+"전체_색칠_최대긴변" = 1024.0
+_points = SubResource("terrain11")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ghost"
+
+[node name="CollisionPolygon2D" parent="지형/구역3_투명발판2/StaticBody2D"]
+polygon = PackedVector2Array(-128, -72, 128, -72, 128, 72, -128, 72)
+
+[node name="구역4_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(11840, 6528)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain12")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "foundation"
+
+[node name="CollisionPolygon2D" parent="지형/구역4_일체형_수로바닥/StaticBody2D"]
+polygon = PackedVector2Array(-1600, -896, -832, -896, -832, -512, 192, -512, 192, -896, 704, -896, 896, -800, 896, -576, 1088, -480, 1088, -256, 1280, -160, 1280, 64, 1472, 160, 1472, 384, 1600, 384, 1600, 896, -1600, 896)
+
+[node name="구역4_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(11392, 4992)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain13")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ceiling"
+
+[node name="CollisionPolygon2D" parent="지형/구역4_천장/StaticBody2D"]
+polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
+
+[node name="구역4_밸브수문" parent="지형" instance=ExtResource("black")]
+position = Vector2(12416, 5376)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain14")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "gate"
+
+[node name="CollisionPolygon2D" parent="지형/구역4_밸브수문/StaticBody2D"]
+polygon = PackedVector2Array(-64, -256, 64, -256, 64, 256, -64, 256)
+
+[node name="구역5_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(15680, 8064)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain15")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "foundation"
+
+[node name="CollisionPolygon2D" parent="지형/구역5_일체형_수로바닥/StaticBody2D"]
+polygon = PackedVector2Array(-2112, -896, -1344, -896, -1344, -512, -320, -512, -320, -896, 192, -896, 384, -800, 384, -576, 576, -480, 576, -256, 768, -160, 768, 64, 960, 160, 960, 384, 1088, 384, 2112, 384, 2112, 896, -2112, 896)
+
+[node name="구역5_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(14720, 6528)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain16")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "ceiling"
+
+[node name="CollisionPolygon2D" parent="지형/구역5_천장/StaticBody2D"]
+polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
+
+[node name="구역5_붕괴발판1" parent="지형" instance=ExtResource("black")]
+position = Vector2(14688, 7240)
+script = ExtResource("crumble")
+"붕괴_대기" = 0.9
+"복구_대기" = 3.0
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain17")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "crumble"
+
+[node name="CollisionPolygon2D" parent="지형/구역5_붕괴발판1/StaticBody2D"]
+polygon = PackedVector2Array(-96, -72, 96, -72, 96, 72, -96, 72)
+
+[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판1"]
+points = PackedVector2Array(-57.599999999999994, -64, -19.200000000000003, -40, 19.200000000000003, -56, 57.599999999999994, -24)
+width = 3.0
+default_color = Color(0.7, 0.7, 0.7, 0.8)
+
+[node name="구역5_붕괴발판2" parent="지형" instance=ExtResource("black")]
+position = Vector2(15008, 7240)
+script = ExtResource("crumble")
+"붕괴_대기" = 0.9
+"복구_대기" = 3.0
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain18")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "crumble"
+
+[node name="CollisionPolygon2D" parent="지형/구역5_붕괴발판2/StaticBody2D"]
+polygon = PackedVector2Array(-96, -72, 96, -72, 96, 72, -96, 72)
+
+[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판2"]
+points = PackedVector2Array(-57.599999999999994, -64, -19.200000000000003, -40, 19.200000000000003, -56, 57.599999999999994, -24)
+width = 3.0
+default_color = Color(0.7, 0.7, 0.7, 0.8)
+
+[node name="구역5_붕괴발판3" parent="지형" instance=ExtResource("black")]
+position = Vector2(15264, 7240)
+script = ExtResource("crumble")
+"붕괴_대기" = 0.9
+"복구_대기" = 3.0
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain19")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "crumble"
+
+[node name="CollisionPolygon2D" parent="지형/구역5_붕괴발판3/StaticBody2D"]
+polygon = PackedVector2Array(-64, -72, 64, -72, 64, 72, -64, 72)
+
+[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판3"]
+points = PackedVector2Array(-38.4, -64, -12.8, -40, 12.8, -56, 38.4, -24)
+width = 3.0
+default_color = Color(0.7, 0.7, 0.7, 0.8)
+
+[node name="구역5_밸브수문" parent="지형" instance=ExtResource("black")]
+position = Vector2(15744, 6912)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain20")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "gate"
+
+[node name="CollisionPolygon2D" parent="지형/구역5_밸브수문/StaticBody2D"]
+polygon = PackedVector2Array(-64, -256, 64, -256, 64, 256, -64, 256)
+
+[node name="외곽_왼벽" parent="지형" instance=ExtResource("black")]
+position = Vector2(-896, 4608)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain21")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "exterior"
+
+[node name="CollisionPolygon2D" parent="지형/외곽_왼벽/StaticBody2D"]
+polygon = PackedVector2Array(-1024, -4352, 1024, -4352, 1024, 4352, -1024, 4352)
+
+[node name="외곽_오른벽" parent="지형" instance=ExtResource("black")]
+position = Vector2(18816, 4608)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain22")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "exterior"
+
+[node name="CollisionPolygon2D" parent="지형/외곽_오른벽/StaticBody2D"]
+polygon = PackedVector2Array(-1024, -4352, 1024, -4352, 1024, 4352, -1024, 4352)
+
+[node name="외곽_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(8960, -768)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain23")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "exterior"
+
+[node name="CollisionPolygon2D" parent="지형/외곽_천장/StaticBody2D"]
+polygon = PackedVector2Array(-10880, -1024, 10880, -1024, 10880, 1024, -10880, 1024)
+
+[node name="외곽_바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(8960, 9984)
+"시작상태" = 1
+"칠하기_방식" = 0
+"칠하기_허용" = true
+"필요횟수_수동" = 1
+_points = SubResource("terrain24")
+_meshes = Array[ExtResource("mesh")]([])
+collision_size = 0.0
+collision_offset = 0.0
+metadata/role = "exterior"
+
+[node name="CollisionPolygon2D" parent="지형/외곽_바닥/StaticBody2D"]
+polygon = PackedVector2Array(-10880, -1024, 10880, -1024, 10880, 1024, -10880, 1024)
+
+[node name="장치" type="Node2D" parent="."]
+
+
+[node name="구역1_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(1536, 1408)
+"색" = 2
+"크기" = Vector2(1024, 192)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역1_복귀발판1" parent="장치" instance=ExtResource("grate")]
+position = Vector2(1120, 1132)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판1"]
+shape = SubResource("grate220")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역1_복귀발판2" parent="장치" instance=ExtResource("grate")]
+position = Vector2(1120, 1228)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판2"]
+shape = SubResource("grate221")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역1_복귀발판3" parent="장치" instance=ExtResource("grate")]
+position = Vector2(1120, 1324)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판3"]
+shape = SubResource("grate222")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역1_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+position = Vector2(2656, 1120)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역1_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+position = Vector2(2848, 1440)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역1_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+position = Vector2(3040, 1760)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역1_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+position = Vector2(3232, 2080)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역1_폭포1" parent="장치" instance=ExtResource("water")]
+position = Vector2(1344, 512)
+"색" = 1
+"크기" = Vector2(256, 560)
+"켜짐" = true
+"낙하_받아줌" = false
+
+[node name="구역1_폭포2" parent="장치" instance=ExtResource("water")]
+position = Vector2(1792, 512)
+"색" = 0
+"크기" = Vector2(256, 560)
+"켜짐" = true
+"낙하_받아줌" = false
+
+[node name="구역1_폭포묶음" type="Node2D" parent="장치"]
+position = Vector2(0, 0)
+script = ExtResource("valveGroup")
+"유체들" = Array[NodePath]([NodePath("../구역1_폭포1"), NodePath("../구역1_폭포2")])
+"수문" = NodePath("../../지형/구역1_밸브수문")
+"열림_이동량" = Vector2(0, -640)
+
+[node name="구역1_폭포차단_레버" parent="장치" instance=ExtResource("lever")]
+position = Vector2(672, 864)
+"종류" = 0
+"반응반경" = 96.0
+"대상_유체" = NodePath("../구역1_폭포묶음")
+"시작_켜짐" = true
+
+[node name="구역2_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(4864, 2944)
+"색" = 0
+"크기" = Vector2(1024, 192)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역2_복귀발판1" parent="장치" instance=ExtResource("grate")]
+position = Vector2(4448, 2668)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판1"]
+shape = SubResource("grate223")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역2_복귀발판2" parent="장치" instance=ExtResource("grate")]
+position = Vector2(4448, 2764)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판2"]
+shape = SubResource("grate224")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역2_복귀발판3" parent="장치" instance=ExtResource("grate")]
+position = Vector2(4448, 2860)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판3"]
+shape = SubResource("grate225")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역2_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+position = Vector2(5984, 2656)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역2_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+position = Vector2(6176, 2976)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역2_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+position = Vector2(6368, 3296)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역2_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+position = Vector2(6560, 3616)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역2_진입_완충수" parent="장치" instance=ExtResource("pool")]
+position = Vector2(3744, 2560)
+"색" = 2
+"크기" = Vector2(320, 96)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역2_버튼이동다리" parent="장치" instance=ExtResource("moving")]
+position = Vector2(4864, 1944)
+"크기" = Vector2(768, 48)
+"이동거리" = 0.0
+"필요횟수" = 1
+
+[node name="구역2_압력발판" type="AnimatableBody2D" parent="장치"]
+position = Vector2(4160, 2584)
+script = ExtResource("button")
+"폭" = 160.0
+"작동방식" = 1
+"누름_가능_그룹" = PackedStringArray("player")
+"대상들" = Array[NodePath]([NodePath("../구역2_버튼이동다리")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, 640)])
+"이동속도" = 320.0
+
+[node name="구역2_발판변색_분사기" parent="장치" instance=ExtResource("sprayer")]
+position = Vector2(5120, 2256)
+"각도" = 90.0
+"총구거리" = 32.0
+"탄속" = 560.0
+"탄낙차" = 0.0
+"발사간격" = 4.0
+"색_번갈아" = true
+"색_전환주기" = 8.0
+"발사색" = 1
+
+[node name="구역3_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(8192, 4480)
+"색" = 0
+"크기" = Vector2(1024, 192)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역3_복귀발판1" parent="장치" instance=ExtResource("grate")]
+position = Vector2(7776, 4204)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판1"]
+shape = SubResource("grate226")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역3_복귀발판2" parent="장치" instance=ExtResource("grate")]
+position = Vector2(7776, 4300)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판2"]
+shape = SubResource("grate227")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역3_복귀발판3" parent="장치" instance=ExtResource("grate")]
+position = Vector2(7776, 4396)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판3"]
+shape = SubResource("grate228")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역3_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+position = Vector2(9312, 4192)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역3_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+position = Vector2(9504, 4512)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역3_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+position = Vector2(9696, 4832)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역3_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+position = Vector2(9888, 5152)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역3_진입_완충수" parent="장치" instance=ExtResource("pool")]
+position = Vector2(7072, 4096)
+"색" = 2
+"크기" = Vector2(320, 96)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역3_물길우회_출구발판1" parent="장치" instance=ExtResource("grate")]
+position = Vector2(8640, 4204)
+"크기" = Vector2(96, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판1"]
+shape = SubResource("grate229")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역3_물길우회_출구발판2" parent="장치" instance=ExtResource("grate")]
+position = Vector2(8640, 4300)
+"크기" = Vector2(96, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판2"]
+shape = SubResource("grate230")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역3_물길우회_출구발판3" parent="장치" instance=ExtResource("grate")]
+position = Vector2(8640, 4396)
+"크기" = Vector2(96, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판3"]
+shape = SubResource("grate231")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역3_발판변색_분사기" parent="장치" instance=ExtResource("sprayer")]
+position = Vector2(8448, 3792)
+"각도" = 90.0
+"총구거리" = 32.0
+"탄속" = 560.0
+"탄낙차" = 0.0
+"발사간격" = 4.0
+"색_번갈아" = true
+"색_전환주기" = 8.0
+"발사색" = 1
+
+[node name="구역4_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(11520, 6016)
+"색" = 2
+"크기" = Vector2(1024, 192)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역4_복귀발판1" parent="장치" instance=ExtResource("grate")]
+position = Vector2(11104, 5740)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판1"]
+shape = SubResource("grate232")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역4_복귀발판2" parent="장치" instance=ExtResource("grate")]
+position = Vector2(11104, 5836)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판2"]
+shape = SubResource("grate233")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역4_복귀발판3" parent="장치" instance=ExtResource("grate")]
+position = Vector2(11104, 5932)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판3"]
+shape = SubResource("grate234")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역4_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+position = Vector2(12640, 5728)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역4_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+position = Vector2(12832, 6048)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역4_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+position = Vector2(13024, 6368)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역4_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+position = Vector2(13216, 6688)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역4_진입_완충수" parent="장치" instance=ExtResource("pool")]
+position = Vector2(10400, 5632)
+"색" = 2
+"크기" = Vector2(320, 96)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역4_버튼이동다리" parent="장치" instance=ExtResource("moving")]
+position = Vector2(11520, 5016)
+"크기" = Vector2(768, 48)
+"이동거리" = 0.0
+"필요횟수" = 1
+
+[node name="구역4_압력발판" type="AnimatableBody2D" parent="장치"]
+position = Vector2(10816, 5656)
+script = ExtResource("button")
+"폭" = 160.0
+"작동방식" = 1
+"누름_가능_그룹" = PackedStringArray("player")
+"대상들" = Array[NodePath]([NodePath("../구역4_버튼이동다리")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, 640)])
+"이동속도" = 320.0
+
+[node name="구역4_폭포1" parent="장치" instance=ExtResource("water")]
+position = Vector2(11328, 5120)
+"색" = 1
+"크기" = Vector2(256, 560)
+"켜짐" = true
+"낙하_받아줌" = false
+
+[node name="구역4_폭포2" parent="장치" instance=ExtResource("water")]
+position = Vector2(11776, 5120)
+"색" = 0
+"크기" = Vector2(256, 560)
+"켜짐" = true
+"낙하_받아줌" = false
+
+[node name="구역4_폭포묶음" type="Node2D" parent="장치"]
+position = Vector2(0, 0)
+script = ExtResource("valveGroup")
+"유체들" = Array[NodePath]([NodePath("../구역4_폭포1"), NodePath("../구역4_폭포2")])
+"수문" = NodePath("../../지형/구역4_밸브수문")
+"열림_이동량" = Vector2(0, -640)
+
+[node name="구역4_폭포차단_레버" parent="장치" instance=ExtResource("lever")]
+position = Vector2(10656, 5568)
+"종류" = 0
+"반응반경" = 96.0
+"대상_유체" = NodePath("../구역4_폭포묶음")
+"시작_켜짐" = true
+
+[node name="구역5_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(14848, 7552)
+"색" = 0
+"크기" = Vector2(1024, 192)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역5_복귀발판1" parent="장치" instance=ExtResource("grate")]
+position = Vector2(14432, 7276)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판1"]
+shape = SubResource("grate235")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역5_복귀발판2" parent="장치" instance=ExtResource("grate")]
+position = Vector2(14432, 7372)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판2"]
+shape = SubResource("grate236")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역5_복귀발판3" parent="장치" instance=ExtResource("grate")]
+position = Vector2(14432, 7468)
+"크기" = Vector2(128, 24)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판3"]
+shape = SubResource("grate237")
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="구역5_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+position = Vector2(15968, 7264)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역5_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+position = Vector2(16160, 7584)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역5_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+position = Vector2(16352, 7904)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역5_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+position = Vector2(16544, 8224)
+"색" = 2
+"크기" = Vector2(192, 160)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역5_진입_완충수" parent="장치" instance=ExtResource("pool")]
+position = Vector2(13728, 7168)
+"색" = 2
+"크기" = Vector2(320, 96)
+"낙하_받아줌" = true
+"페인트_지움" = false
+
+[node name="구역5_폭포1" parent="장치" instance=ExtResource("water")]
+position = Vector2(14656, 6656)
+"색" = 1
+"크기" = Vector2(256, 560)
+"켜짐" = true
+"낙하_받아줌" = false
+
+[node name="구역5_폭포2" parent="장치" instance=ExtResource("water")]
+position = Vector2(15104, 6656)
+"색" = 0
+"크기" = Vector2(256, 560)
+"켜짐" = true
+"낙하_받아줌" = false
+
+[node name="구역5_폭포묶음" type="Node2D" parent="장치"]
+position = Vector2(0, 0)
+script = ExtResource("valveGroup")
+"유체들" = Array[NodePath]([NodePath("../구역5_폭포1"), NodePath("../구역5_폭포2")])
+"수문" = NodePath("../../지형/구역5_밸브수문")
+"열림_이동량" = Vector2(0, -640)
+
+[node name="구역5_폭포차단_레버" parent="장치" instance=ExtResource("lever")]
+position = Vector2(13984, 7104)
+"종류" = 0
+"반응반경" = 96.0
+"대상_유체" = NodePath("../구역5_폭포묶음")
+"시작_켜짐" = true
+
+[node name="구역5_발판변색_분사기" parent="장치" instance=ExtResource("sprayer")]
+position = Vector2(15008, 6864)
+"각도" = 90.0
+"총구거리" = 32.0
+"탄속" = 560.0
+"탄낙차" = 0.0
+"발사간격" = 4.0
+"색_번갈아" = true
+"색_전환주기" = 8.0
+"발사색" = 1
+
+[node name="구역1_폭포1_급수관" parent="장치" instance=ExtResource("pipe")]
+position = Vector2(1344, 512)
+
+[node name="경로" parent="장치/구역1_폭포1_급수관"]
+_points = SubResource("pipe238")
+
+[node name="시작_물_포트" parent="장치/구역1_폭포1_급수관"]
+position = Vector2(-192, -128)
+
+[node name="끝_물_포트" parent="장치/구역1_폭포1_급수관"]
+position = Vector2(0, 0)
+
+[node name="구역1_폭포2_급수관" parent="장치" instance=ExtResource("pipe")]
+position = Vector2(1792, 512)
+
+[node name="경로" parent="장치/구역1_폭포2_급수관"]
+_points = SubResource("pipe242")
+
+[node name="시작_물_포트" parent="장치/구역1_폭포2_급수관"]
+position = Vector2(-192, -128)
+
+[node name="끝_물_포트" parent="장치/구역1_폭포2_급수관"]
+position = Vector2(0, 0)
+
+[node name="구역4_폭포1_급수관" parent="장치" instance=ExtResource("pipe")]
+position = Vector2(11328, 5120)
+
+[node name="경로" parent="장치/구역4_폭포1_급수관"]
+_points = SubResource("pipe246")
+
+[node name="시작_물_포트" parent="장치/구역4_폭포1_급수관"]
+position = Vector2(-192, -128)
+
+[node name="끝_물_포트" parent="장치/구역4_폭포1_급수관"]
+position = Vector2(0, 0)
+
+[node name="구역4_폭포2_급수관" parent="장치" instance=ExtResource("pipe")]
+position = Vector2(11776, 5120)
+
+[node name="경로" parent="장치/구역4_폭포2_급수관"]
+_points = SubResource("pipe250")
+
+[node name="시작_물_포트" parent="장치/구역4_폭포2_급수관"]
+position = Vector2(-192, -128)
+
+[node name="끝_물_포트" parent="장치/구역4_폭포2_급수관"]
+position = Vector2(0, 0)
+
+[node name="구역5_폭포1_급수관" parent="장치" instance=ExtResource("pipe")]
+position = Vector2(14656, 6656)
+
+[node name="경로" parent="장치/구역5_폭포1_급수관"]
+_points = SubResource("pipe254")
+
+[node name="시작_물_포트" parent="장치/구역5_폭포1_급수관"]
+position = Vector2(-192, -128)
+
+[node name="끝_물_포트" parent="장치/구역5_폭포1_급수관"]
+position = Vector2(0, 0)
+
+[node name="구역5_폭포2_급수관" parent="장치" instance=ExtResource("pipe")]
+position = Vector2(15104, 6656)
+
+[node name="경로" parent="장치/구역5_폭포2_급수관"]
+_points = SubResource("pipe258")
+
+[node name="시작_물_포트" parent="장치/구역5_폭포2_급수관"]
+position = Vector2(-192, -128)
+
+[node name="끝_물_포트" parent="장치/구역5_폭포2_급수관"]
+position = Vector2(0, 0)
+
+[node name="체크포인트" type="Node2D" parent="."]
+
+
+[node name="구역1_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(512, 1024)
+
+[node name="구역1_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(2192, 1024)
+
+[node name="구역2_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(3840, 2560)
+
+[node name="구역2_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(5520, 2560)
+
+[node name="구역3_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(7168, 4096)
+
+[node name="구역3_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(8848, 4096)
+
+[node name="구역4_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(10496, 5632)
+
+[node name="구역4_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(12176, 5632)
+
+[node name="구역5_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(13824, 7168)
+
+[node name="구역5_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+position = Vector2(15504, 7168)
+
+[node name="출구통로" parent="." instance=ExtResource("exit")]
+position = Vector2(16896, 8448)
+"높이" = 256.0
+"깊이" = 512.0
+"두께" = 96.0
+"다음_씬" = "res://scenes/lobby/lobby.tscn"
+
+[node name="끝도달_검사점" type="Marker2D" parent="."]
+position = Vector2(17216, 8448)
+
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector2(384, 1024)
+"점프_높이_칸" = 10.0
+"점프_거리_칸" = 20.0

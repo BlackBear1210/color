@@ -31,6 +31,7 @@
 | **작업을 시작한다** | `docs/다음작업_프롬프트.md` ★ 여기부터. 검사 명령·할 일·지뢰밭이 전부 있다 |
 | 카메라를 만진다 | `docs/카메라_공간전환_가이드.md` |
 | 새 스테이지를 만든다 | `docs/레벨디자인_4스테이지_2026-08-17_도형.md` + `docs/레벨디자인_가이드.md` |
+| **하수도에 새 맵을 만든다 (분기형)** | `scenes/world_2_클로드/가이드라인_스테이지2_분기형맵_2026-09-12.md` ★ FBWG 식 갈림길·모양 어휘·SS2D 붙이기 규칙 · 아스트라용 프롬프트는 옆 `프롬프트_아스트라_스테이지2_맵제작.md` |
 | **하수도 챕터가 어떤 게임인가** | `docs/맵분석_2026-09-07_Claude_하수도_2-1_2-7.md` ★ 재미·지루함·고칠 순서 |
 | **최근에 뭘 했나** | `docs/작업기록_2026-09-08_Claude_STEP16_계단실_건축장식_비주얼패스.md` ★ 계단실을 건축 공간으로. 카메라 `시선_오프셋`(0,300)으로 **아래층이 한 화면에** · 기둥/난간/소핏 26개 · 유령 오칠 복구 검증(소프트락 아님). ⚠ `지형.gd` 에 `장식_전용` 신설 |
 | 그 전 | `docs/작업기록_2026-09-08_Claude_STEP15_STAGE2_공간구조_전면재설계.md` ★ STAGE 2 전면 재설계. **카메라 줌 1.35 → 0.85**(레퍼런스와 동일) · 긴 연속 바닥 중심 · 통행 26/26 · 경로 29,260px. 공간감은 `tools/진단_공간감.gd` 로 잰다 |
@@ -132,3 +133,13 @@
 | 집 3장(거실·굴뚝·지붕) 옛 배치 | `tools/build_원본_집.gd` |
 | 지형 점 생성 규칙 | `scripts/스마트월드/지형규칙.gd` |
 | 공중에 뜬 지형 찾기·고치기 | `tools/지형_다듬기.gd` |
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
