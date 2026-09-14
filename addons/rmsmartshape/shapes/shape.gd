@@ -198,8 +198,21 @@ func set_point_array(a: SS2D_Point_Array) -> void:
 	if a == null:
 		a = SS2D_Point_Array.new()
 	_points = a
-	_points.connect("update_finished", self._points_modified)
-	_points.material_override_changed.connect(_handle_material_override_change)
+	# ★[2026-09-15 Claude] 새 리소스에 **이 노드의 같은 콜러블**이 이미 붙어 있으면 다시 붙이지 않는다.
+	# 왜: 인스턴스 씬(예: TEMPLATE_WALL_SOLID)의 노드에 부모 씬(stage_2-1)이 `script` 를
+	#     오버라이드하면 엔진(SceneState::instantiate, packed_scene.cpp · issue #2958 우회)이
+	#     ① 옛 스크립트의 프로퍼티 상태를 통째로 저장하고 ② 새 스크립트를 붙인 뒤(→ _init 이
+	#     새 빈 점배열을 만들어 `_points` 가 바뀐다) ③ 저장해 둔 값을 전부 다시 set 한다.
+	#     ③ 에서 옛 점배열 리소스가 이 setter 로 돌아오는데, 그 리소스에는 옛 스크립트 인스턴스가
+	#     붙여 둔 연결(같은 오브젝트 · 같은 메서드명)이 그대로 살아 있다. 스크립트가 바뀌어도
+	#     시그널 연결은 오브젝트 ID 기준이라 지워지지 않기 때문이다. 그래서 무조건 connect 하면
+	#     "Signal ... is already connected" 가 지형 하나당 3 건씩 났다 (stage_2-1: 36 × 3 = 108).
+	#     `_enter_tree()` 의 재질 재연결이 이미 쓰는 것과 같은 방어다. 연결이 없으면 예전과
+	#     똑같이 연결되고, 연결은 항상 정확히 하나만 남는다. 다른 노드의 연결은 건드리지 않는다.
+	if not _points.is_connected("update_finished", self._points_modified):
+		_points.connect("update_finished", self._points_modified)
+	if not _points.material_override_changed.is_connected(_handle_material_override_change):
+		_points.material_override_changed.connect(_handle_material_override_change)
 	set_as_dirty()
 	notify_property_list_changed()
 
@@ -300,7 +313,10 @@ func _set_material(value: SS2D_Material_Shape) -> void:
 		shape_material.disconnect("changed", self._handle_material_change)
 
 	shape_material = value
-	if shape_material != null:
+	# ★[2026-09-15 Claude] set_point_array() 와 같은 이유 — script 오버라이드 복원 경로에서
+	# 옛 스크립트 인스턴스가 이미 붙여 둔 재질 리소스가 그대로 다시 들어온다. 이미 붙어 있으면
+	# 그 하나를 유지하고, 없을 때만 붙인다 (`_enter_tree()` 와 동일한 방어).
+	if shape_material != null and not shape_material.is_connected("changed", self._handle_material_change):
 		shape_material.connect("changed", self._handle_material_change)
 	set_as_dirty()
 	notify_property_list_changed()
