@@ -1,0 +1,255 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_벽돌지형.gd" id="shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v01/masonry_black.tres" id="material"]
+[ext_resource type="Script" path="res://scripts/스마트월드/월드.gd" id="viewer"]
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v01/far_wall.png" id="far"]
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v01/mid_arches.png" id="mid"]
+
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_얇은발판.tscn" id="floating0"]
+
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_두꺼운발판_흰색.tscn" id="floating1"]
+
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_경사발판.tscn" id="floating2"]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="core"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
+
+[ext_resource type="Shader" path="res://shaders/sewer_background_fog.gdshader" id="fog"]
+
+[sub_resource type="ShaderMaterial" id="background_fog"]
+shader = ExtResource("fog")
+
+[sub_resource type="Resource" id="p0_0"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(0, 460)
+
+[sub_resource type="Resource" id="p0_1"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(400, 460)
+
+[sub_resource type="Resource" id="p0_2"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(600, 360)
+
+[sub_resource type="Resource" id="p0_3"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(900, 360)
+
+[sub_resource type="Resource" id="p0_4"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(900, 660)
+
+[sub_resource type="Resource" id="p0_5"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1450, 660)
+
+[sub_resource type="Resource" id="p0_6"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1450, 1100)
+
+[sub_resource type="Resource" id="p0_7"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(0, 1100)
+
+[sub_resource type="Resource" id="p0_8"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(0, 460)
+
+[sub_resource type="Resource" id="a0"]
+script = ExtResource("points")
+resource_local_to_scene = true
+_points = {
+0: SubResource("p0_0"),
+1: SubResource("p0_1"),
+2: SubResource("p0_2"),
+3: SubResource("p0_3"),
+4: SubResource("p0_4"),
+5: SubResource("p0_5"),
+6: SubResource("p0_6"),
+7: SubResource("p0_7"),
+8: SubResource("p0_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = { Vector2i(0, 8): 15 }
+_next_key = 9
+
+[sub_resource type="Resource" id="p1_0"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1600, 420)
+
+[sub_resource type="Resource" id="p1_1"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1950, 420)
+
+[sub_resource type="Resource" id="p1_2"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1950, 1100)
+
+[sub_resource type="Resource" id="p1_3"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1600, 1100)
+
+[sub_resource type="Resource" id="p1_4"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1600, 420)
+
+[sub_resource type="Resource" id="a1"]
+script = ExtResource("points")
+resource_local_to_scene = true
+_points = {
+0: SubResource("p1_0"),
+1: SubResource("p1_1"),
+2: SubResource("p1_2"),
+3: SubResource("p1_3"),
+4: SubResource("p1_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[sub_resource type="Resource" id="p2_0"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1080, 400)
+
+[sub_resource type="Resource" id="p2_1"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1350, 400)
+
+[sub_resource type="Resource" id="p2_2"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1350, 495)
+
+[sub_resource type="Resource" id="p2_3"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1080, 495)
+
+[sub_resource type="Resource" id="p2_4"]
+script = ExtResource("point")
+resource_local_to_scene = true
+position = Vector2(1080, 400)
+
+[sub_resource type="Resource" id="a2"]
+script = ExtResource("points")
+resource_local_to_scene = true
+_points = {
+0: SubResource("p2_0"),
+1: SubResource("p2_1"),
+2: SubResource("p2_2"),
+3: SubResource("p2_3"),
+4: SubResource("p2_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[node name="하수도_지형_재질시험" type="Node2D"]
+script = ExtResource("viewer")
+"시작_위치" = Vector2(160, 455)
+"안전지점_자동저장" = false
+"카메라_리밋" = Rect2(-500, -400, 3100, 1800)
+낙사_y = 1500.0
+"치명_낙하거리" = 1500.0
+"카메라_줌" = 1.0
+
+[node name="먼벽" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.25, 0.25)
+z_index = -20
+
+[node name="그림" type="Sprite2D" parent="먼벽"]
+texture = ExtResource("far")
+centered = false
+scale = Vector2(3.2, 3.2)
+position = Vector2(-1600, -1000)
+
+[node name="아치배관" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.6, 0.6)
+z_index = -10
+
+[node name="그림" type="Sprite2D" parent="아치배관"]
+material = SubResource("background_fog")
+texture = ExtResource("mid")
+centered = false
+scale = Vector2(1.8, 1.8)
+position = Vector2(-500, -400)
+
+[node name="연속_경사_꺾임" type="Node2D" parent="."]
+script = ExtResource("shape")
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("a0")
+shape_material = ExtResource("material")
+texture_repeat = 2
+collision_update_mode = 2
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="연속_경사_꺾임"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="연속_경사_꺾임/StaticBody2D"]
+polygon = PackedVector2Array(0, 460, 400, 460, 600, 360, 900, 360, 900, 660, 1450, 660, 1450, 1100, 0, 1100)
+
+[node name="수직벽_모서리" type="Node2D" parent="."]
+script = ExtResource("shape")
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("a1")
+shape_material = ExtResource("material")
+texture_repeat = 2
+collision_update_mode = 2
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="수직벽_모서리"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="수직벽_모서리/StaticBody2D"]
+polygon = PackedVector2Array(1600, 420, 1950, 420, 1950, 1100, 1600, 1100)
+
+[node name="낮은_직사각" type="Node2D" parent="."]
+script = ExtResource("shape")
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("a2")
+shape_material = ExtResource("material")
+texture_repeat = 2
+collision_update_mode = 2
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="낮은_직사각"]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="낮은_직사각/StaticBody2D"]
+polygon = PackedVector2Array(1080, 400, 1350, 400, 1350, 495, 1080, 495)
+
+[node name="공중_얇은발판" parent="." instance=ExtResource("floating0")]
+position = Vector2(150, 180)
+
+[node name="공중_두꺼운발판" parent="." instance=ExtResource("floating1")]
+position = Vector2(650, 100)
+
+[node name="공중_경사발판" parent="." instance=ExtResource("floating2")]
+position = Vector2(1150, 110)
+
+[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+script = ExtResource("core")
+
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector2(160, 455)
+"점프_높이_칸" = 10.0
+"점프_거리_칸" = 20.0

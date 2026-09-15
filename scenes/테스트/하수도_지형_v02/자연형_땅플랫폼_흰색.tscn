@@ -1,0 +1,73 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_자연발판.gd" id="shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="array"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v02/땅_white.tres" id="material"]
+
+[sub_resource type="Resource" id="p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(336, 0)
+
+[sub_resource type="Resource" id="p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(340, 4)
+
+[sub_resource type="Resource" id="p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(340, 288)
+
+[sub_resource type="Resource" id="p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 288)
+
+[sub_resource type="Resource" id="p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 5)
+
+[sub_resource type="Resource" id="p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="points"]
+resource_local_to_scene = true
+script = ExtResource("array")
+_points = {
+0: SubResource("p0"),
+1: SubResource("p1"),
+2: SubResource("p2"),
+3: SubResource("p3"),
+4: SubResource("p4"),
+5: SubResource("p5"),
+6: SubResource("p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {Vector2i(0, 6): 15}
+_next_key = 7
+
+[node name="자연형_땅플랫폼_흰색" type="Node2D"]
+editor_description = "땅 전용 외곽. SS2D 점으로 편집하고 Scale은 1을 유지하세요. 외곽과 충돌은 같은 점입니다. 땅 하단은 아래 지형 또는 화면 밖으로 연결하세요."
+script = ExtResource("shape")
+texture_repeat = 2
+texture_filter = 2
+"땅지형" = true
+"시작상태" = 2
+"위치별_판정" = true
+_points = SubResource("points")
+shape_material = ExtResource("material")
+collision_update_mode = 2
+collision_size = 0.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(4, 0, 336, 0, 340, 4, 340, 288, 0, 288, 0, 5)

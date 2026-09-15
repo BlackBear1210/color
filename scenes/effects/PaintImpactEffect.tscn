@@ -4,14 +4,14 @@
 [ext_resource type="SpriteFrames" path="res://assets/vfx/water_impact/물감_명중_프레임.tres" id="2_frames"]
 [ext_resource type="Shader" path="res://shaders/물감_명중.gdshader" id="3_shader"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_받침"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_base"]
 shader = ExtResource("3_shader")
 shader_parameter/paint_tint = Color(0.93, 0.95, 0.99, 1)
 shader_parameter/paint_alpha = 0.42
 shader_parameter/key_low = 0.04
 shader_parameter/key_high = 0.28
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_본체"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_body"]
 shader = ExtResource("3_shader")
 shader_parameter/paint_tint = Color(0.055, 0.055, 0.065, 1)
 shader_parameter/paint_alpha = 1.0
@@ -22,11 +22,11 @@ shader_parameter/key_high = 0.28
 script = ExtResource("1_script")
 
 [node name="받침" type="AnimatedSprite2D" parent="."]
-material = SubResource("ShaderMaterial_받침")
+material = SubResource("ShaderMaterial_base")
 sprite_frames = ExtResource("2_frames")
 animation = &"water_05"
 
 [node name="본체" type="AnimatedSprite2D" parent="."]
-material = SubResource("ShaderMaterial_본체")
+material = SubResource("ShaderMaterial_body")
 sprite_frames = ExtResource("2_frames")
 animation = &"water_05"

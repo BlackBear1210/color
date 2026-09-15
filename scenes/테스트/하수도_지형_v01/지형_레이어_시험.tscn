@@ -1,11 +1,22 @@
 [gd_scene format=3]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/shape.gd" id="shape"]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_벽돌지형.gd" id="shape"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
 [ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v01/masonry_black.tres" id="material"]
 [ext_resource type="Script" path="res://scenes/테스트/하수도_지형_v01/보기.gd" id="viewer"]
 [ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v01/far_wall.png" id="far"]
 [ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v01/mid_arches.png" id="mid"]
+
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_얇은발판.tscn" id="floating0"]
+
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_두꺼운발판_흰색.tscn" id="floating1"]
+
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_경사발판.tscn" id="floating2"]
+
+[ext_resource type="Shader" path="res://shaders/sewer_background_fog.gdshader" id="fog"]
+
+[sub_resource type="ShaderMaterial" id="background_fog"]
+shader = ExtResource("fog")
 
 [sub_resource type="Resource" id="p0_0"]
 script = ExtResource("point")
@@ -158,14 +169,15 @@ z_index = -20
 [node name="그림" type="Sprite2D" parent="먼벽"]
 texture = ExtResource("far")
 centered = false
-scale = Vector2(1.8, 1.8)
-position = Vector2(-500, -400)
+scale = Vector2(3.2, 3.2)
+position = Vector2(-1600, -1000)
 
 [node name="아치배관" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.6, 0.6)
 z_index = -10
 
 [node name="그림" type="Sprite2D" parent="아치배관"]
+material = SubResource("background_fog")
 texture = ExtResource("mid")
 centered = false
 scale = Vector2(1.8, 1.8)
@@ -177,6 +189,8 @@ zoom = Vector2(0.7, 0.7)
 
 [node name="연속_경사_꺾임" type="Node2D" parent="."]
 script = ExtResource("shape")
+"시작상태" = 1
+"위치별_판정" = true
 _points = SubResource("a0")
 shape_material = ExtResource("material")
 texture_repeat = 2
@@ -190,6 +204,8 @@ polygon = PackedVector2Array(0, 460, 400, 460, 600, 360, 900, 360, 900, 660, 145
 
 [node name="수직벽_모서리" type="Node2D" parent="."]
 script = ExtResource("shape")
+"시작상태" = 1
+"위치별_판정" = true
 _points = SubResource("a1")
 shape_material = ExtResource("material")
 texture_repeat = 2
@@ -203,6 +219,8 @@ polygon = PackedVector2Array(1600, 420, 1950, 420, 1950, 1100, 1600, 1100)
 
 [node name="낮은_직사각" type="Node2D" parent="."]
 script = ExtResource("shape")
+"시작상태" = 1
+"위치별_판정" = true
 _points = SubResource("a2")
 shape_material = ExtResource("material")
 texture_repeat = 2
@@ -213,3 +231,12 @@ collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="낮은_직사각/StaticBody2D"]
 polygon = PackedVector2Array(1080, 400, 1350, 400, 1350, 495, 1080, 495)
+
+[node name="공중_얇은발판" parent="." instance=ExtResource("floating0")]
+position = Vector2(150, 180)
+
+[node name="공중_두꺼운발판" parent="." instance=ExtResource("floating1")]
+position = Vector2(650, 100)
+
+[node name="공중_경사발판" parent="." instance=ExtResource("floating2")]
+position = Vector2(1150, 110)

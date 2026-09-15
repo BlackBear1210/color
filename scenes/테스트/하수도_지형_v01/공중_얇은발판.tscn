@@ -1,0 +1,109 @@
+[gd_scene format=4 uid="uid://ce2ipcnq3pqho"]
+
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_bcqry"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/sewer_masonry_v01/black/fill.tres" id="5_7jxob"]
+[ext_resource type="Texture2D" uid="uid://copp83bgm527r" path="res://assets/textures/smartshape/sewer_masonry_v01/black/top.png" id="6_tqcqu"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v01/masonry_black.tres" id="material"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
+[ext_resource type="Script" uid="uid://d0xj7fk4ylot7" path="res://scripts/스마트월드/하수도_벽돌지형.gd" id="shape"]
+
+[sub_resource type="Resource" id="p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+
+[sub_resource type="Resource" id="p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(340, 0)
+
+[sub_resource type="Resource" id="p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(340, 48)
+
+[sub_resource type="Resource" id="p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 48)
+
+[sub_resource type="Resource" id="p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+
+[sub_resource type="Resource" id="array"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("p0"),
+1: SubResource("p1"),
+2: SubResource("p2"),
+3: SubResource("p3"),
+4: SubResource("p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_a7naf"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 340, 48, 1e-05),
+"attribute_data": PackedByteArray("/////3jkdz8AAAAAeOR3PwAAAAD/////eOR3P4D8Cz545Hc/gPwLPv////8AAAAAgPwLPgAAAACA/As+/////wAAAAAAAAAAAAAAAAAAAAA="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACqQwAAAAAAAAAAAACqQwAAQEIAAAAAAAAAAAAAQEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_6o1x5"]
+script = ExtResource("4_bcqry")
+texture = ExtResource("5_7jxob")
+mesh = SubResource("ArrayMesh_a7naf")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_57066"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 340, 48, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP//////9dulAAACAP/126UAAAIA///////126UAAAAAA/XbpQAAAAAD/////3KUCQQAAgD/cpQJBAACAP//////cpQJBAAAAANylAkEAAAAA/////1phd0EAAIA/WmF3QQAAgD//////WmF3QQAAAABaYXdBAAAAAP/////cpYJBAACAP9ylgkEAAIA//////9ylgkEAAAAA3KWCQQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAAAAAAAAAAAAAAAF64HQRSuB0EAAAAAkMKlQxSuB0EAAAAAAACqQwAAAAAAAAAAkMKlQ3wUHkIAAAAAAACqQwAAQEIAAAAAIK4HQXwUHkIAAAAAAAAAAAAAQEIAAAAAF64HQRSuB0EAAAAAAAAAAAAAAAAAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_6viti"]
+script = ExtResource("4_bcqry")
+texture = ExtResource("6_tqcqu")
+mesh = SubResource("ArrayMesh_57066")
+
+[node name="공중_얇은발판" type="Node2D" unique_id=2115697416]
+editor_description = "크기는 SS2D 점을 이동해서 변경하세요. 노드와 부모 Scale은 (1,1)을 유지합니다. 테두리는 고정 밀도로 반복되며, 두께 24px 미만이나 매우 예리한 꼭짓점은 피하세요."
+texture_repeat = 2
+script = ExtResource("shape")
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("array")
+_meshes = Array[ExtResource("4_bcqry")]([SubResource("Resource_6o1x5"), SubResource("Resource_6viti")])
+shape_material = ExtResource("material")
+collision_update_mode = 2
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="@ColorRect@31742" type="ColorRect" parent="." unique_id=896905490]
+modulate = Color(1, 1, 1, 0)
+offset_right = 340.0
+offset_bottom = 48.0
+metadata/__ss2d_click_rect__ = true
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1990359495]
+visible = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=538857945]
+polygon = PackedVector2Array(0, 0, 340, 0, 340, 48, 0, 48)
