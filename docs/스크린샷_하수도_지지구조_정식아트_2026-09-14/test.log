@@ -1,0 +1,88 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+
+════════ 하수도 지지구조 검사 ════════
+WARNING: 쇠사슬 오류7_끊긴경로: 시작점 경로 '../없는노드/연결점' 를 못 찾았다 — 그 쪽은 안 그린다
+   at: push_warning (core/variant/variant_utility.cpp:1034)
+   GDScript backtrace (most recent call first):
+       [0] _경고 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:190)
+       [1] _노드 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:175)
+       [2] 끝점_로컬 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:151)
+       [3] _다시_계산 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:137)
+       [4] _ready (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:118)
+       [5] _열기 (res://tools/test_하수도_지지구조.gd:53)
+       [6] _실행 (res://tools/test_하수도_지지구조.gd:87)
+PASS C01 길이 4 단계 — 고리 간격 유지 · 고리 수만 변함
+PASS C02 반복 경계(95/96/97) 전후 — 위상 기준 = 끝점 고정
+PASS C03 승강기 이동 중 천장점 고정 · 끝점 추적 · 끊김 없음  — 승강기 y=1232 체인 180→1198; 승강기 y=1429 체인 180→1395; 승강기 y=1497 체인 180→1463
+PASS C04 왕복 3 회 뒤 노드 수 같음 · 오차 누적 없음 · 경고 반복 없음 · 정적 체인은 다시 안 그림  — 노드 161→161 · 오차 0.00 · 경고 0 · 동적 그리기 1110회 · 정적 그리기 +0
+PASS C05 이동된 부모(2000,400) 밑 체인 — 월드 Marker 와 일치 · 원점(0,0) 아님  — 체인 (2000.0, 420.0)→(2000.0, 700.0)
+WARNING: 쇠사슬 쇠사슬: 텍스처가 없다
+   at: push_warning (core/variant/variant_utility.cpp:1034)
+   GDScript backtrace (most recent call first):
+       [0] _경고 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:190)
+       [1] _draw (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:232)
+WARNING: 쇠사슬 쇠사슬: 길이 9000 가 최대 4000 를 넘는다 — 끝점에서 최대 길이만 그린다
+   at: push_warning (core/variant/variant_utility.cpp:1034)
+   GDScript backtrace (most recent call first):
+       [0] _경고 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:190)
+       [1] _draw (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:238)
+PASS C06 끊긴 경로·길이 0·텍스처 없음 → 안 그림 · 경고는 한 번 · 최대 길이 초과는 잘라 그림  — 끊긴경로 경고 1회(30프레임 뒤 1) · 초과 체인 그린길이 3988
+PASS B01 좌우 변경 — 부착점 유지 · 그림만 flip · 지형 scale 그대로 · 충돌/게임 그룹 없음
+PASS B02 지지대 두 개 — 같은 크기 · 겹치지 않음 · 배율은 균일하고 0.75~1.5 로 잘림  — a=[P: (1700.0, 1316.0), S: (96.0, 96.0)] b=[P: (2020.0, 1316.0), S: (96.0, 96.0)]
+PASS B03 발판 이동 → 지지대 따라옴 · 천장 고정구는 승강기와 독립
+PASS G01 흰 몸이 검정 지지대·체인만 통과 — 사망 없음
+PASS G02 흰 몸이 검정 발판에 닿으면 기존대로 사망
+PASS G03 총알이 체인(560,1000~1195)을 통과해 뒤 발판1(윗면 1200)에 명중 — 흰 발 진행 +1  — 흰 발 0→1 (필요횟수 4) · 탄약 12→11
+PASS G04 발판1 을 흰색으로 다 칠함 · 지지대 색조 불변 · 지지대는 게임 색 상태가 아님  — 명중_처리=painted 현재색=1
+PASS G05 승강기 탑승 유지 · 체인이 승강기 움직임을 바꾸지 않음  — 승강기 1300.0 · 비교 1300.0 · 플레이어 발 1296.9
+WARNING: 쇠사슬 오류7_끊긴경로: 시작점 경로 '../없는노드/연결점' 를 못 찾았다 — 그 쪽은 안 그린다
+   at: push_warning (core/variant/variant_utility.cpp:1034)
+   GDScript backtrace (most recent call first):
+       [0] _경고 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:190)
+       [1] _노드 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:175)
+       [2] 끝점_로컬 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:151)
+       [3] _다시_계산 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:137)
+       [4] _ready (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:118)
+       [5] _S_저장 (res://tools/test_하수도_지지구조.gd:354)
+       [6] _실행 (res://tools/test_하수도_지지구조.gd:91)
+       [7] _G_게임규칙 (res://tools/test_하수도_지지구조.gd:336)
+       [8] 프레임 (res://tools/test_하수도_지지구조.gd:47)
+PASS S01 다시 저장 → 다시 로드: 노드 수·끝점 경로·길이·방향 유지  — pack=OK save=OK · 노드 145→145 · 끝점경로=../../장치/승강기5/연결구_L/연결점 · 긴체인 고정_끝=(0.0, 700.0) · 지지대2 방향=1
+PASS S02 인스턴스 독립 — 한 체인·지지대의 값 변경이 다른 것에 안 퍼짐 · 텍스처는 공유
+WARNING: 쇠사슬 오류7_끊긴경로: 시작점 경로 '../없는노드/연결점' 를 못 찾았다 — 그 쪽은 안 그린다
+   at: push_warning (core/variant/variant_utility.cpp:1034)
+   GDScript backtrace (most recent call first):
+       [0] _경고 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:190)
+       [1] _노드 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:175)
+       [2] 끝점_로컬 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:151)
+       [3] _다시_계산 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:137)
+       [4] _ready (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:118)
+       [5] _열기 (res://tools/test_하수도_지지구조.gd:53)
+       [6] _C07_재진입 (res://tools/test_하수도_지지구조.gd:389)
+       [7] _실행 (res://tools/test_하수도_지지구조.gd:93)
+       [8] _닫기 (res://tools/test_하수도_지지구조.gd:64)
+       [9] 프레임 (res://tools/test_하수도_지지구조.gd:47)
+WARNING: 쇠사슬 체인5_L: 끝점 경로 '../../장치/승강기5/연결구_L/연결점' 를 못 찾았다 — 그 쪽은 안 그린다
+   at: push_warning (core/variant/variant_utility.cpp:1034)
+   GDScript backtrace (most recent call first):
+       [0] _경고 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:190)
+       [1] _노드 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:175)
+       [2] 끝점_로컬 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:152)
+       [3] _다시_계산 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:137)
+       [4] _process (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:130)
+WARNING: 쇠사슬 오류7_끊긴경로: 시작점 경로 '../없는노드/연결점' 를 못 찾았다 — 그 쪽은 안 그린다
+   at: push_warning (core/variant/variant_utility.cpp:1034)
+   GDScript backtrace (most recent call first):
+       [0] _경고 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:190)
+       [1] _노드 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:175)
+       [2] 끝점_로컬 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:151)
+       [3] _다시_계산 (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:137)
+       [4] _ready (res://scripts/스마트월드/장식/하수도_쇠사슬.gd:118)
+       [5] _열기 (res://tools/test_하수도_지지구조.gd:53)
+       [6] _C07_재진입 (res://tools/test_하수도_지지구조.gd:400)
+       [7] _닫기 (res://tools/test_하수도_지지구조.gd:64)
+       [8] 프레임 (res://tools/test_하수도_지지구조.gd:47)
+PASS C07 끝점 삭제 → 안 그리고 오류 없음 · 씬 나갔다 들어와도 체인 수 같고 다시 그려짐  — 체인 7/7
+
+SUPPORT_RESULT 17/17 PASS

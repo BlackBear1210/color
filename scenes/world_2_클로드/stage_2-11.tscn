@@ -1,25 +1,26 @@
-[gd_scene format=3]
+[gd_scene format=4 uid="uid://cg6guw6t67cut"]
 
-[ext_resource type="Script" path="res://scripts/스마트월드/하강수로_월드.gd" id="world"]
-[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="core"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/mesh.gd" id="mesh"]
+[ext_resource type="Texture2D" uid="uid://dw7g6rpenprq7" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_black.png" id="7_gi4lh"]
+[ext_resource type="Texture2D" uid="uid://cnrulj44img8x" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_edge_black.png" id="8_166j4"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID.tscn" id="black"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID_WHITE.tscn" id="white"]
-[ext_resource type="Script" path="res://scripts/스마트월드/SS2D_붕괴발판.gd" id="crumble"]
-[ext_resource type="Script" path="res://scripts/스마트월드/폭포_수문묶음.gd" id="valveGroup"]
-[ext_resource type="Script" path="res://scripts/스마트월드/압력버튼.gd" id="button"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="moving"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/통과플랫폼.tscn" id="grate"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="water"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/웅덩이.tscn" id="pool"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/제어레버.tscn" id="lever"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="pipe"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/페인트분사기.tscn" id="sprayer"]
+[ext_resource type="Script" uid="uid://gp4t7lfxp2fn" path="res://scripts/스마트월드/압력버튼.gd" id="button"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="checkpoint"]
-[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
+[ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="core"]
+[ext_resource type="Script" uid="uid://c4s20dfl4kmb1" path="res://scripts/스마트월드/SS2D_붕괴발판.gd" id="crumble"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="exit"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/통과플랫폼.tscn" id="grate"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/제어레버.tscn" id="lever"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="mesh"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="moving"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="pipe"]
+[ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="player"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/웅덩이.tscn" id="pool"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/페인트분사기.tscn" id="sprayer"]
+[ext_resource type="Script" uid="uid://ns6skh0ewqy7" path="res://scripts/스마트월드/폭포_수문묶음.gd" id="valveGroup"]
+[ext_resource type="PackedScene" uid="uid://xopxff8t4a3b" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="water"]
+[ext_resource type="Script" uid="uid://h8ly6hcq72io" path="res://scripts/스마트월드/하강수로_월드.gd" id="world"]
 
 [sub_resource type="Resource" id="terrain0p0"]
 resource_local_to_scene = true
@@ -131,7 +132,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1600, -848)
 
-[sub_resource type="Resource" id="terrain0"]
+[sub_resource type="Resource" id="Resource_kr45t"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -159,8 +160,47 @@ _points = {
 21: SubResource("terrain0p21")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
-_constraints = { Vector2i(0, 21): 15 }
+_constraints = {
+Vector2i(0, 21): 15
+}
 _next_key = 22
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ogy3t"]
+_surfaces = [{
+"aabb": AABB(-1600, -944, 0, 3200, 1888, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVHsBW1dy/VlUewFbV3L//////VlUewFfV9b9WVR7AV9X1v/////8BAPq/V9X1vwEA+r9X1fW//////wEA+r9W1dy/AQD6v1bV3L//////rKrYv1bV3L+sqti/VtXcv/////+sqti/rKpxv6yq2L+sqnG//////wEAyD6sqnG/AQDIPqyqcb//////AQDIPlbV3L8BAMg+VtXcv/////9WVbc/VtXcv1ZVtz9W1dy//////1ZV6T9W1cO/VlXpP1bVw7//////VlXpPwGAib9WVek/AYCJv/////+rqg1AAQBhv6uqDUABAGG//////6uqDUCsqti+q6oNQKyq2L7/////rKomQFZVab6sqiZAVlVpvv////+sqiZAVlVpPqyqJkBWVWk+/////6yqP0Csqtg+rKo/QKyq2D7/////rKo/QAEAYT+sqj9AAQBhP/////9WVVBAAQBhP1ZVUEABAGE//////1ZVUEBX1fU/VlVQQFfV9T//////VlVQwFfV9T9WVVDAV9X1P/////9WVVDAVtXcv1ZVUMBW1dy/"),
+"format": 34359742527,
+"index_count": 60,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACAAJAAoACgALAAwADAANAA4ADgAPABAAEAARABIAAAACAAMABgAIAAoADgAQABIAAAADAAUABgAKAAwADAAOABIABQAGAAwADAASABMABQAMABMAAAAFABMAEwAUABQAFAAAABMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 21,
+"vertex_data": PackedByteArray("AACYxAAAVMQAAAAAAACYxAAAbMQAAAAAAABwxAAAbMQAAAAAAABwxAAAVMQAAAAAAABQxAAAVMQAAAAAAABQxAAA6MMAAAAAAABAQwAA6MMAAAAAAABAQwAAVMQAAAAAAAAwRAAAVMQAAAAAAABgRAAAPMQAAAAAAABgRAAABMQAAAAAAACIRAAA2MMAAAAAAACIRAAAUMMAAAAAAACgRAAA4MIAAAAAAACgRAAA4EIAAAAAAAC4RAAAUEMAAAAAAAC4RAAA2EMAAAAAAADIRAAA2EMAAAAAAADIRAAAbEQAAAAAAADIxAAAbEQAAAAAAADIxAAAVMQAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v//////+//+//////////7//////////v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_57jsb"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_ogy3t")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_85li8"]
+_surfaces = [{
+"aabb": AABB(-1600, -944, 0, 3200, 1888, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAMA/AACAPwAAwD8AAIA//////wAAwD8AAAAAAADAPwAAAAD/////AADwPwAAgD8AAPA/AACAP/////8AAPA/AAAAAAAA8D8AAAAA/////wAAMEAAAIA/AAAwQAAAgD//////AAAwQAAAAAAAADBAAAAAAP////8AAEhAAACAPwAASEAAAIA//////wAASEAAAAAAAABIQAAAAAD/////AABoQAAAgD8AAGhAAACAP/////8AAGhAAAAAAAAAaEAAAAAA/////wAApEAAAIA/AACkQAAAgD//////AACkQAAAAAAAAKRAAAAAAP////8AABRBAACAPwAAFEEAAIA//////wAAFEEAAAAAAAAUQQAAAAD/////AAAsQQAAgD8AACxBAACAP/////8AACxBAAAAAAAALEEAAAAA/////5HDSkEAAIA/kcNKQQAAgD//////kcNKQQAAAACRw0pBAAAAAP////+EU1dBAACAP4RTV0EAAIA//////4RTV0EAAAAAhFNXQQAAAAD/////hFNlQQAAgD+EU2VBAACAP/////+EU2VBAAAAAIRTZUEAAAAA/////x6+ckEAAIA/Hr5yQQAAgD//////Hr5yQQAAAAAevnJBAAAAAP////8PX4BBAACAPw9fgEEAAIA//////w9fgEEAAAAAD1+AQQAAAAD/////XBSHQQAAgD9cFIdBAACAP/////9cFIdBAAAAAFwUh0EAAAAA/////1wUjkEAAIA/XBSOQQAAgD//////XBSOQQAAAABcFI5BAAAAAP////+pyZRBAACAP6nJlEEAAIA//////6nJlEEAAAAAqcmUQQAAAAD/////jfqbQQAAgD+N+ptBAACAP/////+N+ptBAAAAAI36m0EAAAAA/////436n0EAAIA/jfqfQQAAgD//////jfqfQQAAAACN+p9BAAAAAP////+N+q5BAACAP436rkEAAIA//////436rkEAAAAAjfquQQAAAAD/////Rv0IQgAAgD9G/QhCAACAP/////9G/QhCAAAAAEb9CEIAAAAA/////0Z9JEIAAIA/Rn0kQgAAgD//////Rn0kQgAAAABGfSRCAAAAAA=="),
+"format": 34359742527,
+"index_count": 126,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkAGQAYABoAGQAaABsAGwAaABwAGwAcAB0AHQAcAB4AHQAeAB8AHwAeACAAHwAgACEAIQAgACIAIQAiACMAIwAiACQAIwAkACUAJQAkACYAJQAmACcAJwAmACgAJwAoACkAKQAoACoAKQAqACsA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 44,
+"vertex_data": PackedByteArray("AADIxAAAVMQAAAAAAADExAAATMQAAAAAAACUxAAATMQAAAAAAACYxAAAVMQAAAAAAACUxAAAZMQAAAAAAACYxAAAbMQAAAAAAAB4xAAAZMQAAAAAAABwxAAAbMQAAAAAAAB4xAAATMQAAAAAAABwxAAAVMQAAAAAAABYxAAATMQAAAAAAABQxAAAVMQAAAAAAABYxAAA2MMAAAAAAABQxAAA6MMAAAAAAABgQwAA2MMAAAAAAABAQwAA6MMAAAAAAABgQwAATMQAAAAAAABAQwAAVMQAAAAAiBwuRAAATMQAAAAAAAAwRAAAVMQAAAAAAABYREQON8QAAAAAAABgRAAAPMQAAAAAAABYRIoc/sMAAAAAAABgRAAABMQAAAAAAACERIoczsMAAAAAAACIRAAA2MMAAAAAAACERBE5PMMAAAAAAACIRAAAUMMAAAAAAACcRCRyuMIAAAAAAACgRAAA4MIAAAAAAACcRO3GA0MAAAAAAACgRAAA4EIAAAAAAAC0RO7GY0MAAAAAAAC4RAAAUEMAAAAAAAC0RAAA6EMAAAAAAAC4RAAA2EMAAAAAAADERAAA6EMAAAAAAADIRAAA2EMAAAAAAADERAAAZEQAAAAAAADIRAAAbEQAAAAAAADExAAAZEQAAAAAAADIxAAAbEQAAAAAAADExAAATMQAAAAAAADIxAAAVMQAAAAA/3//f////z//f/9/////P/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/9f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f4znxjP/f/9/jOfGM/9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9//7//H/9//3//v/8f/3//f/+//x//f/9//7//H/9//3//P/8f/3//f/8//x//f/9//z//X/9//3//P/9f/3//f/9//n//f/9//3/+fw==")
+}]
+
+[sub_resource type="Resource" id="Resource_gbtd4"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_85li8")
 
 [sub_resource type="Resource" id="terrain1p0"]
 resource_local_to_scene = true
@@ -187,7 +227,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1152, -128)
 
-[sub_resource type="Resource" id="terrain1"]
+[sub_resource type="Resource" id="Resource_v25jh"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -198,8 +238,47 @@ _points = {
 4: SubResource("terrain1p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_xera2"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wEAFkBWVYW+AQAWQFZVhb7/////AQAWQFZVhT4BABZAVlWFPv////8BABbAVlWFPgEAFsBWVYU+/////wEAFsBWVYW+AQAWwFZVhb4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACQRAAAAMMAAAAAAACQRAAAAEMAAAAAAACQxAAAAEMAAAAAAACQxAAAAMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_v1so4"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_xera2")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ekrgy"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAA5BAACAPwAADkEAAIA//////wAADkEAAAAAAAAOQQAAAAD/////AAAcQQAAgD8AABxBAACAP/////8AABxBAAAAAAAAHEEAAAAA/////wAAlUEAAIA/AACVQQAAgD//////AACVQQAAAAAAAJVBAAAAAP////8AAJxBAACAPwAAnEEAAIA//////wAAnEEAAAAAAACcQQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACQxAAAAMMAAAAAAACMxAAAwMIAAAAAAACMRAAAwMIAAAAAAACQRAAAAMMAAAAAAACMRAAAwEIAAAAAAACQRAAAAEMAAAAAAACMxAAAwEIAAAAAAACQxAAAAEMAAAAAAACMxAAAwMIAAAAAAACQxAAAAMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_xi6xu"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_ekrgy")
 
 [sub_resource type="Resource" id="terrain2p0"]
 resource_local_to_scene = true
@@ -226,7 +305,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-96, -72)
 
-[sub_resource type="Resource" id="terrain2"]
+[sub_resource type="Resource" id="Resource_ohhac"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -237,8 +316,47 @@ _points = {
 4: SubResource("terrain2p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_af2uc"]
+_surfaces = [{
+"aabb": AABB(-96, -72, 0, 192, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wEASD4BABa+AQBIPgEAFr7/////AQBIPgEAFj4BAEg+AQAWPv////8BAEi+AQAWPgEASL4BABY+/////wEASL4BABa+AQBIvgEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADAQgAAkMIAAAAAAADAQgAAkEIAAAAAAADAwgAAkEIAAAAAAADAwgAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_hbey3"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_af2uc")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_htww1"]
+_surfaces = [{
+"aabb": AABB(-96, -72, 0, 192, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AACA/AACAPwAAID8AAIA//////wAAID8AAAAAAAAgPwAAAAD/////AACIPwAAgD8AAIg/AACAP/////8AAIg/AAAAAAAAiD8AAAAA/////wAA2D8AAIA/AADYPwAAgD//////AADYPwAAAAAAANg/AAAAAP////8AAAhAAACAPwAACEAAAIA//////wAACEAAAAAAAAAIQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AADAwgAAkMIAAAAAAACAwgAAIMIAAAAAAACAQgAAIMIAAAAAAADAQgAAkMIAAAAAAACAQgAAIEIAAAAAAADAQgAAkEIAAAAAAACAwgAAIEIAAAAAAADAwgAAkEIAAAAAAACAwgAAIMIAAAAAAADAwgAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_mlidm"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_htww1")
 
 [sub_resource type="Resource" id="terrain3p0"]
 resource_local_to_scene = true
@@ -265,7 +383,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-128, -72)
 
-[sub_resource type="Resource" id="terrain3"]
+[sub_resource type="Resource" id="Resource_3jjdh"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -276,8 +394,47 @@ _points = {
 4: SubResource("terrain3p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_kkqf6"]
+_surfaces = [{
+"aabb": AABB(-128, -72, 0, 256, 144, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVhT4BABa+VlWFPgEAFr7/////VlWFPgEAFj5WVYU+AQAWPv////9WVYW+AQAWPlZVhb4BABY+/////1ZVhb4BABa+VlWFvgEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAAQwAAkMIAAAAAAAAAQwAAkEIAAAAAAAAAwwAAkEIAAAAAAAAAwwAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_npcge"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_kkqf6")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ofdys"]
+_surfaces = [{
+"aabb": AABB(-128, -72, 0, 256, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAGA/AACAPwAAYD8AAIA//////wAAYD8AAAAAAABgPwAAAAD/////AACoPwAAgD8AAKg/AACAP/////8AAKg/AAAAAAAAqD8AAAAA/////wAADEAAAIA/AAAMQAAAgD//////AAAMQAAAAAAAAAxAAAAAAP////8AAChAAACAPwAAKEAAAIA//////wAAKEAAAAAAAAAoQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAAAwwAAkMIAAAAAAADAwgAAIMIAAAAAAADAQgAAIMIAAAAAAAAAQwAAkMIAAAAAAADAQgAAIEIAAAAAAAAAQwAAkEIAAAAAAADAwgAAIEIAAAAAAAAAwwAAkEIAAAAAAADAwgAAIMIAAAAAAAAAwwAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_g7li4"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_ofdys")
 
 [sub_resource type="Resource" id="terrain4p0"]
 resource_local_to_scene = true
@@ -304,7 +461,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-432, -72)
 
-[sub_resource type="Resource" id="terrain4"]
+[sub_resource type="Resource" id="Resource_encnc"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -315,8 +472,47 @@ _points = {
 4: SubResource("terrain4p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_kvdhx"]
+_surfaces = [{
+"aabb": AABB(-432, -72, 0, 864, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wEAYT8BABa+AQBhPwEAFr7/////AQBhPwEAFj4BAGE/AQAWPv////8BAGG/AQAWPgEAYb8BABY+/////wEAYb8BABa+AQBhvwEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADYQwAAkMIAAAAAAADYQwAAkEIAAAAAAADYwwAAkEIAAAAAAADYwwAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_1ir07"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_kvdhx")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_p5krs"]
+_surfaces = [{
+"aabb": AABB(-432, -72, 0, 864, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAFBAAACAPwAAUEAAAIA//////wAAUEAAAAAAAABQQAAAAAD/////AABsQAAAgD8AAGxAAACAP/////8AAGxAAAAAAAAAbEAAAAAA/////wAA3kAAAIA/AADeQAAAgD//////AADeQAAAAAAAAN5AAAAAAP////8AAOxAAACAPwAA7EAAAIA//////wAA7EAAAAAAAADsQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AADYwwAAkMIAAAAAAADIwwAAIMIAAAAAAADIQwAAIMIAAAAAAADYQwAAkMIAAAAAAADIQwAAIEIAAAAAAADYQwAAkEIAAAAAAADIwwAAIEIAAAAAAADYwwAAkEIAAAAAAADIwwAAIMIAAAAAAADYwwAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_800gx"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_p5krs")
 
 [sub_resource type="Resource" id="terrain5p0"]
 resource_local_to_scene = true
@@ -343,7 +539,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-64, -256)
 
-[sub_resource type="Resource" id="terrain5"]
+[sub_resource type="Resource" id="Resource_4lh86"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -354,8 +550,47 @@ _points = {
 4: SubResource("terrain5p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_brhg1"]
+_surfaces = [{
+"aabb": AABB(-64, -256, 0, 128, 512, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVBT5WVQW/VlUFPlZVBb//////VlUFPlZVBT9WVQU+VlUFP/////9WVQW+VlUFP1ZVBb5WVQU//////1ZVBb5WVQW/VlUFvlZVBb8="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQgAAgMMAAAAAAACAQgAAgEMAAAAAAACAwgAAgEMAAAAAAACAwgAAgMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_2x2tl"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_brhg1")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_grgy2"]
+_surfaces = [{
+"aabb": AABB(-64, -256, 0, 128, 512, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAMA+AACAPwAAwD4AAIA//////wAAwD4AAAAAAADAPgAAAAD/////AAAQQAAAgD8AABBAAACAP/////8AABBAAAAAAAAAEEAAAAAA/////wAAKEAAAIA/AAAoQAAAgD//////AAAoQAAAAAAAAChAAAAAAP////8AAJBAAACAPwAAkEAAAIA//////wAAkEAAAAAAAACQQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwgAAgMMAAAAAAAAAwgAAYMMAAAAAAAAAQgAAYMMAAAAAAACAQgAAgMMAAAAAAAAAQgAAYEMAAAAAAACAQgAAgEMAAAAAAAAAwgAAYEMAAAAAAACAwgAAgEMAAAAAAAAAwgAAYMMAAAAAAACAwgAAgMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_fatff"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_grgy2")
 
 [sub_resource type="Resource" id="terrain6p0"]
 resource_local_to_scene = true
@@ -447,7 +682,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1600, -896)
 
-[sub_resource type="Resource" id="terrain6"]
+[sub_resource type="Resource" id="Resource_p6p1d"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -471,8 +706,47 @@ _points = {
 17: SubResource("terrain6p17")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
-_constraints = { Vector2i(0, 17): 15 }
+_constraints = {
+Vector2i(0, 17): 15
+}
 _next_key = 18
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_m1gp1"]
+_surfaces = [{
+"aabb": AABB(-1600, -896, 0, 3200, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////wEAyD5WVYW/AQDIPlZVhb//////AQDIPlZV6b8BAMg+VlXpv/////9WVbc/VlXpv1ZVtz9WVem//////1ZV6T9WVdC/VlXpP1ZV0L//////VlXpPwEAlr9WVek/AQCWv/////+rqg1AAQB6v6uqDUABAHq//////6uqDUBWVQW/q6oNQFZVBb//////rKomQKyqpr6sqiZArKqmvv////+sqiZAVlUFPqyqJkBWVQU+/////6yqP0CsqqY+rKo/QKyqpj7/////rKo/QAEASD+sqj9AAQBIP/////9WVVBAAQBIP1ZVUEABAEg//////1ZVUEBWVek/VlVQQFZV6T//////rKrYv1ZVhb+sqti/VlWFv/////9WVVDAVlXpP1ZVUMBWVek//////6yq2L9WVem/rKrYv1ZV6b//////VlVQwFZV6b9WVVDAVlXpvw=="),
+"format": 34359742527,
+"index_count": 48,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACAAJAAoACgALAAwAAAACAAQACAAKAAwAAAAEAAYABgAIAAwADQAAAAYABgAMAA4ADQAGAA4ADwANAA4ADgAQABAAEAAPAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 17,
+"vertex_data": PackedByteArray("AABAQwAAAMQAAAAAAABAQwAAYMQAAAAAAAAwRAAAYMQAAAAAAABgRAAASMQAAAAAAABgRAAAEMQAAAAAAACIRAAA8MMAAAAAAACIRAAAgMMAAAAAAACgRAAAIMMAAAAAAACgRAAAgEIAAAAAAAC4RAAAIEMAAAAAAAC4RAAAwEMAAAAAAADIRAAAwEMAAAAAAADIRAAAYEQAAAAAAABQxAAAAMQAAAAAAADIxAAAYEQAAAAAAABQxAAAYMQAAAAAAADIxAAAYMQAAAAA/////////7//////////v/////////+//////////7//////////v//////+//+//////////7///////v//v//////+//+//////////7///////v//v/////////+///////7//7//////////v/////////+//////////7//////////vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_h1i5n"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_m1gp1")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_b0byf"]
+_surfaces = [{
+"aabb": AABB(-1600, -896, 0, 3200, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AADhAAACAPwAAOEAAAIA//////wAAOEAAAAAAAAA4QAAAAAD/////AACMQAAAgD8AAIxAAACAP/////8AAIxAAAAAAAAAjEAAAAAA/////wAACEEAAIA/AAAIQQAAgD//////AAAIQQAAAAAAAAhBAAAAAP////8AACBBAACAPwAAIEEAAIA//////wAAIEEAAAAAAAAgQQAAAAD/////kcM+QQAAgD+Rwz5BAACAP/////+Rwz5BAAAAAJHDPkEAAAAA/////4RTS0EAAIA/hFNLQQAAgD//////hFNLQQAAAACEU0tBAAAAAP////+EU1lBAACAP4RTWUEAAIA//////4RTWUEAAAAAhFNZQQAAAAD/////Hr5mQQAAgD8evmZBAACAP/////8evmZBAAAAAB6+ZkEAAAAA/////x6+dEEAAIA/Hr50QQAAgD//////Hr50QQAAAAAevnRBAAAAAP////9cFIFBAACAP1wUgUEAAIA//////1wUgUEAAAAAXBSBQQAAAAD/////XBSIQQAAgD9cFIhBAACAP/////9cFIhBAAAAAFwUiEEAAAAA/////6nJjkEAAIA/qcmOQQAAgD//////qcmOQQAAAACpyY5BAAAAAP////+N+pVBAACAP436lUEAAIA//////436lUEAAAAAjfqVQQAAAAD/////jfqZQQAAgD+N+plBAACAP/////+N+plBAAAAAI36mUEAAAAA/////436qEEAAIA/jfqoQQAAgD//////jfqoQQAAAACN+qhBAAAAAP////9H/QVCAACAP0f9BUIAAIA//////0f9BUIAAAAAR/0FQgAAAAD/////R30hQgAAgD9HfSFCAACAP/////9HfSFCAAAAAEd9IUIAAAAA"),
+"format": 34359742527,
+"index_count": 102,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkAGQAYABoAGQAaABsAGwAaABwAGwAcAB0AHQAcAB4AHQAeAB8AHwAeACAAHwAgACEAIQAgACIAIQAiACMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 36,
+"vertex_data": PackedByteArray("AADIxAAAYMQAAAAAAADExAAAWMQAAAAAAABYxAAAWMQAAAAAAABQxAAAYMQAAAAAAABYxAAA8MMAAAAAAABQxAAAAMQAAAAAAABgQwAA8MMAAAAAAABAQwAAAMQAAAAAAABgQwAAWMQAAAAAAABAQwAAYMQAAAAAiBwuRAAAWMQAAAAAAAAwRAAAYMQAAAAAAABYREQOQ8QAAAAAAABgRAAASMQAAAAAAABYREQOC8QAAAAAAABgRAAAEMQAAAAAAACERIoc5sMAAAAAAACIRAAA8MMAAAAAAACERBE5bMMAAAAAAACIRP7/f8MAAAAAAACcRBI5DMMAAAAAAACgRAAAIMMAAAAAAACcRNqNp0IAAAAAAACgRAAAgEIAAAAAAAC0RO7GM0MAAAAAAAC4RAAAIEMAAAAAAAC0RAAA0EMAAAAAAAC4RAAAwEMAAAAAAADERAAA0EMAAAAAAADIRAAAwEMAAAAAAADERAAAWEQAAAAAAADIRAAAYEQAAAAAAADExAAAWEQAAAAAAADIxAAAYEQAAAAAAADExAAAWMQAAAAAAADIxAAAYMQAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9/jOfGM/9//3+M58Yz/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/8//x//f/9//z//H/9//3//P/9f/3//f/8//1//f/9//3/+f/9//3//f/5/")
+}]
+
+[sub_resource type="Resource" id="Resource_fbs5n"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_b0byf")
 
 [sub_resource type="Resource" id="terrain7p0"]
 resource_local_to_scene = true
@@ -499,7 +773,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1152, -128)
 
-[sub_resource type="Resource" id="terrain7"]
+[sub_resource type="Resource" id="Resource_c72ov"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -510,8 +784,47 @@ _points = {
 4: SubResource("terrain7p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_kxjct"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wEAFkBWVYW+AQAWQFZVhb7/////AQAWQFZVhT4BABZAVlWFPv////8BABbAVlWFPgEAFsBWVYU+/////wEAFsBWVYW+AQAWwFZVhb4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACQRAAAAMMAAAAAAACQRAAAAEMAAAAAAACQxAAAAEMAAAAAAACQxAAAAMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_ki2jf"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_kxjct")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_8eric"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAA5BAACAPwAADkEAAIA//////wAADkEAAAAAAAAOQQAAAAD/////AAAcQQAAgD8AABxBAACAP/////8AABxBAAAAAAAAHEEAAAAA/////wAAlUEAAIA/AACVQQAAgD//////AACVQQAAAAAAAJVBAAAAAP////8AAJxBAACAPwAAnEEAAIA//////wAAnEEAAAAAAACcQQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACQxAAAAMMAAAAAAACMxAAAwMIAAAAAAACMRAAAwMIAAAAAAACQRAAAAMMAAAAAAACMRAAAwEIAAAAAAACQRAAAAEMAAAAAAACMxAAAwEIAAAAAAACQxAAAAEMAAAAAAACMxAAAwMIAAAAAAACQxAAAAMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_sjr6c"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_8eric")
 
 [sub_resource type="Resource" id="terrain8p0"]
 resource_local_to_scene = true
@@ -603,7 +916,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1600, -896)
 
-[sub_resource type="Resource" id="terrain8"]
+[sub_resource type="Resource" id="Resource_26cw8"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -627,8 +940,47 @@ _points = {
 17: SubResource("terrain8p17")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
-_constraints = { Vector2i(0, 17): 15 }
+_constraints = {
+Vector2i(0, 17): 15
+}
 _next_key = 18
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2s5cv"]
+_surfaces = [{
+"aabb": AABB(-1600, -896, 0, 3200, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////wEAyD5WVYW/AQDIPlZVhb//////AQDIPlZV6b8BAMg+VlXpv/////9WVbc/VlXpv1ZVtz9WVem//////1ZV6T9WVdC/VlXpP1ZV0L//////VlXpPwEAlr9WVek/AQCWv/////+rqg1AAQB6v6uqDUABAHq//////6uqDUBWVQW/q6oNQFZVBb//////rKomQKyqpr6sqiZArKqmvv////+sqiZAVlUFPqyqJkBWVQU+/////6yqP0CsqqY+rKo/QKyqpj7/////rKo/QAEASD+sqj9AAQBIP/////9WVVBAAQBIP1ZVUEABAEg//////1ZVUEBWVek/VlVQQFZV6T//////rKrYv1ZVhb+sqti/VlWFv/////9WVVDAVlXpP1ZVUMBWVek//////6yq2L9WVem/rKrYv1ZV6b//////VlVQwFZV6b9WVVDAVlXpvw=="),
+"format": 34359742527,
+"index_count": 48,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACAAJAAoACgALAAwAAAACAAQACAAKAAwAAAAEAAYABgAIAAwADQAAAAYABgAMAA4ADQAGAA4ADwANAA4ADgAQABAAEAAPAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 17,
+"vertex_data": PackedByteArray("AABAQwAAAMQAAAAAAABAQwAAYMQAAAAAAAAwRAAAYMQAAAAAAABgRAAASMQAAAAAAABgRAAAEMQAAAAAAACIRAAA8MMAAAAAAACIRAAAgMMAAAAAAACgRAAAIMMAAAAAAACgRAAAgEIAAAAAAAC4RAAAIEMAAAAAAAC4RAAAwEMAAAAAAADIRAAAwEMAAAAAAADIRAAAYEQAAAAAAABQxAAAAMQAAAAAAADIxAAAYEQAAAAAAABQxAAAYMQAAAAAAADIxAAAYMQAAAAA/////////7//////////v/////////+//////////7//////////v//////+//+//////////7///////v//v//////+//+//////////7///////v//v/////////+///////7//7//////////v/////////+//////////7//////////vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_ngv4w"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_2s5cv")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_3wx0c"]
+_surfaces = [{
+"aabb": AABB(-1600, -896, 0, 3200, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AADhAAACAPwAAOEAAAIA//////wAAOEAAAAAAAAA4QAAAAAD/////AACMQAAAgD8AAIxAAACAP/////8AAIxAAAAAAAAAjEAAAAAA/////wAACEEAAIA/AAAIQQAAgD//////AAAIQQAAAAAAAAhBAAAAAP////8AACBBAACAPwAAIEEAAIA//////wAAIEEAAAAAAAAgQQAAAAD/////kcM+QQAAgD+Rwz5BAACAP/////+Rwz5BAAAAAJHDPkEAAAAA/////4RTS0EAAIA/hFNLQQAAgD//////hFNLQQAAAACEU0tBAAAAAP////+EU1lBAACAP4RTWUEAAIA//////4RTWUEAAAAAhFNZQQAAAAD/////Hr5mQQAAgD8evmZBAACAP/////8evmZBAAAAAB6+ZkEAAAAA/////x6+dEEAAIA/Hr50QQAAgD//////Hr50QQAAAAAevnRBAAAAAP////9cFIFBAACAP1wUgUEAAIA//////1wUgUEAAAAAXBSBQQAAAAD/////XBSIQQAAgD9cFIhBAACAP/////9cFIhBAAAAAFwUiEEAAAAA/////6nJjkEAAIA/qcmOQQAAgD//////qcmOQQAAAACpyY5BAAAAAP////+N+pVBAACAP436lUEAAIA//////436lUEAAAAAjfqVQQAAAAD/////jfqZQQAAgD+N+plBAACAP/////+N+plBAAAAAI36mUEAAAAA/////436qEEAAIA/jfqoQQAAgD//////jfqoQQAAAACN+qhBAAAAAP////9H/QVCAACAP0f9BUIAAIA//////0f9BUIAAAAAR/0FQgAAAAD/////R30hQgAAgD9HfSFCAACAP/////9HfSFCAAAAAEd9IUIAAAAA"),
+"format": 34359742527,
+"index_count": 102,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkAGQAYABoAGQAaABsAGwAaABwAGwAcAB0AHQAcAB4AHQAeAB8AHwAeACAAHwAgACEAIQAgACIAIQAiACMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 36,
+"vertex_data": PackedByteArray("AADIxAAAYMQAAAAAAADExAAAWMQAAAAAAABYxAAAWMQAAAAAAABQxAAAYMQAAAAAAABYxAAA8MMAAAAAAABQxAAAAMQAAAAAAABgQwAA8MMAAAAAAABAQwAAAMQAAAAAAABgQwAAWMQAAAAAAABAQwAAYMQAAAAAiBwuRAAAWMQAAAAAAAAwRAAAYMQAAAAAAABYREQOQ8QAAAAAAABgRAAASMQAAAAAAABYREQOC8QAAAAAAABgRAAAEMQAAAAAAACERIoc5sMAAAAAAACIRAAA8MMAAAAAAACERBE5bMMAAAAAAACIRP7/f8MAAAAAAACcRBI5DMMAAAAAAACgRAAAIMMAAAAAAACcRNqNp0IAAAAAAACgRAAAgEIAAAAAAAC0RO7GM0MAAAAAAAC4RAAAIEMAAAAAAAC0RAAA0EMAAAAAAAC4RAAAwEMAAAAAAADERAAA0EMAAAAAAADIRAAAwEMAAAAAAADERAAAWEQAAAAAAADIRAAAYEQAAAAAAADExAAAWEQAAAAAAADIxAAAYEQAAAAAAADExAAAWMQAAAAAAADIxAAAYMQAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9/jOfGM/9//3+M58Yz/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/8//x//f/9//z//H/9//3//P/9f/3//f/8//1//f/9//3/+f/9//3//f/5/")
+}]
+
+[sub_resource type="Resource" id="Resource_cq186"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_3wx0c")
 
 [sub_resource type="Resource" id="terrain9p0"]
 resource_local_to_scene = true
@@ -655,7 +1007,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1152, -128)
 
-[sub_resource type="Resource" id="terrain9"]
+[sub_resource type="Resource" id="Resource_lipx3"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -666,8 +1018,47 @@ _points = {
 4: SubResource("terrain9p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5miir"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wEAFkBWVYW+AQAWQFZVhb7/////AQAWQFZVhT4BABZAVlWFPv////8BABbAVlWFPgEAFsBWVYU+/////wEAFsBWVYW+AQAWwFZVhb4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACQRAAAAMMAAAAAAACQRAAAAEMAAAAAAACQxAAAAEMAAAAAAACQxAAAAMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_qtbth"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_5miir")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_pmsbn"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAA5BAACAPwAADkEAAIA//////wAADkEAAAAAAAAOQQAAAAD/////AAAcQQAAgD8AABxBAACAP/////8AABxBAAAAAAAAHEEAAAAA/////wAAlUEAAIA/AACVQQAAgD//////AACVQQAAAAAAAJVBAAAAAP////8AAJxBAACAPwAAnEEAAIA//////wAAnEEAAAAAAACcQQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACQxAAAAMMAAAAAAACMxAAAwMIAAAAAAACMRAAAwMIAAAAAAACQRAAAAMMAAAAAAACMRAAAwEIAAAAAAACQRAAAAEMAAAAAAACMxAAAwEIAAAAAAACQxAAAAEMAAAAAAACMxAAAwMIAAAAAAACQxAAAAMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_ybewx"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_pmsbn")
 
 [sub_resource type="Resource" id="terrain10p0"]
 resource_local_to_scene = true
@@ -694,7 +1085,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-128, -72)
 
-[sub_resource type="Resource" id="terrain10"]
+[sub_resource type="Resource" id="Resource_8esu8"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -705,8 +1096,47 @@ _points = {
 4: SubResource("terrain10p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_48vgu"]
+_surfaces = [{
+"aabb": AABB(-128, -72, 0, 256, 144, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVhT4BABa+VlWFPgEAFr7/////VlWFPgEAFj5WVYU+AQAWPv////9WVYW+AQAWPlZVhb4BABY+/////1ZVhb4BABa+VlWFvgEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAAQwAAkMIAAAAAAAAAQwAAkEIAAAAAAAAAwwAAkEIAAAAAAAAAwwAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_eo6o1"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_48vgu")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_b8si0"]
+_surfaces = [{
+"aabb": AABB(-128, -72, 0, 256, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAGA/AACAPwAAYD8AAIA//////wAAYD8AAAAAAABgPwAAAAD/////AACoPwAAgD8AAKg/AACAP/////8AAKg/AAAAAAAAqD8AAAAA/////wAADEAAAIA/AAAMQAAAgD//////AAAMQAAAAAAAAAxAAAAAAP////8AAChAAACAPwAAKEAAAIA//////wAAKEAAAAAAAAAoQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAAAwwAAkMIAAAAAAADAwgAAIMIAAAAAAADAQgAAIMIAAAAAAAAAQwAAkMIAAAAAAADAQgAAIEIAAAAAAAAAQwAAkEIAAAAAAADAwgAAIEIAAAAAAAAAwwAAkEIAAAAAAADAwgAAIMIAAAAAAAAAwwAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_0kep4"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_b8si0")
 
 [sub_resource type="Resource" id="terrain11p0"]
 resource_local_to_scene = true
@@ -733,7 +1163,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-128, -72)
 
-[sub_resource type="Resource" id="terrain11"]
+[sub_resource type="Resource" id="Resource_sg5up"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -744,8 +1174,47 @@ _points = {
 4: SubResource("terrain11p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_mxk5a"]
+_surfaces = [{
+"aabb": AABB(-128, -72, 0, 256, 144, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVhT4BABa+VlWFPgEAFr7/////VlWFPgEAFj5WVYU+AQAWPv////9WVYW+AQAWPlZVhb4BABY+/////1ZVhb4BABa+VlWFvgEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAAQwAAkMIAAAAAAAAAQwAAkEIAAAAAAAAAwwAAkEIAAAAAAAAAwwAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_b1xm2"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_mxk5a")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ktlw1"]
+_surfaces = [{
+"aabb": AABB(-128, -72, 0, 256, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAGA/AACAPwAAYD8AAIA//////wAAYD8AAAAAAABgPwAAAAD/////AACoPwAAgD8AAKg/AACAP/////8AAKg/AAAAAAAAqD8AAAAA/////wAADEAAAIA/AAAMQAAAgD//////AAAMQAAAAAAAAAxAAAAAAP////8AAChAAACAPwAAKEAAAIA//////wAAKEAAAAAAAAAoQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAAAwwAAkMIAAAAAAADAwgAAIMIAAAAAAADAQgAAIMIAAAAAAAAAQwAAkMIAAAAAAADAQgAAIEIAAAAAAAAAQwAAkEIAAAAAAADAwgAAIEIAAAAAAAAAwwAAkEIAAAAAAADAwgAAIMIAAAAAAAAAwwAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_5u0s3"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_ktlw1")
 
 [sub_resource type="Resource" id="terrain12p0"]
 resource_local_to_scene = true
@@ -837,7 +1306,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1600, -896)
 
-[sub_resource type="Resource" id="terrain12"]
+[sub_resource type="Resource" id="Resource_yugc5"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -861,8 +1330,47 @@ _points = {
 17: SubResource("terrain12p17")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
-_constraints = { Vector2i(0, 17): 15 }
+_constraints = {
+Vector2i(0, 17): 15
+}
 _next_key = 18
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_lk63u"]
+_surfaces = [{
+"aabb": AABB(-1600, -896, 0, 3200, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////wEAyD5WVYW/AQDIPlZVhb//////AQDIPlZV6b8BAMg+VlXpv/////9WVbc/VlXpv1ZVtz9WVem//////1ZV6T9WVdC/VlXpP1ZV0L//////VlXpPwEAlr9WVek/AQCWv/////+rqg1AAQB6v6uqDUABAHq//////6uqDUBWVQW/q6oNQFZVBb//////rKomQKyqpr6sqiZArKqmvv////+sqiZAVlUFPqyqJkBWVQU+/////6yqP0CsqqY+rKo/QKyqpj7/////rKo/QAEASD+sqj9AAQBIP/////9WVVBAAQBIP1ZVUEABAEg//////1ZVUEBWVek/VlVQQFZV6T//////rKrYv1ZVhb+sqti/VlWFv/////9WVVDAVlXpP1ZVUMBWVek//////6yq2L9WVem/rKrYv1ZV6b//////VlVQwFZV6b9WVVDAVlXpvw=="),
+"format": 34359742527,
+"index_count": 48,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACAAJAAoACgALAAwAAAACAAQACAAKAAwAAAAEAAYABgAIAAwADQAAAAYABgAMAA4ADQAGAA4ADwANAA4ADgAQABAAEAAPAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 17,
+"vertex_data": PackedByteArray("AABAQwAAAMQAAAAAAABAQwAAYMQAAAAAAAAwRAAAYMQAAAAAAABgRAAASMQAAAAAAABgRAAAEMQAAAAAAACIRAAA8MMAAAAAAACIRAAAgMMAAAAAAACgRAAAIMMAAAAAAACgRAAAgEIAAAAAAAC4RAAAIEMAAAAAAAC4RAAAwEMAAAAAAADIRAAAwEMAAAAAAADIRAAAYEQAAAAAAABQxAAAAMQAAAAAAADIxAAAYEQAAAAAAABQxAAAYMQAAAAAAADIxAAAYMQAAAAA/////////7//////////v/////////+//////////7//////////v//////+//+//////////7///////v//v//////+//+//////////7///////v//v/////////+///////7//7//////////v/////////+//////////7//////////vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_qf65l"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_lk63u")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_d8bdq"]
+_surfaces = [{
+"aabb": AABB(-1600, -896, 0, 3200, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AADhAAACAPwAAOEAAAIA//////wAAOEAAAAAAAAA4QAAAAAD/////AACMQAAAgD8AAIxAAACAP/////8AAIxAAAAAAAAAjEAAAAAA/////wAACEEAAIA/AAAIQQAAgD//////AAAIQQAAAAAAAAhBAAAAAP////8AACBBAACAPwAAIEEAAIA//////wAAIEEAAAAAAAAgQQAAAAD/////kcM+QQAAgD+Rwz5BAACAP/////+Rwz5BAAAAAJHDPkEAAAAA/////4RTS0EAAIA/hFNLQQAAgD//////hFNLQQAAAACEU0tBAAAAAP////+EU1lBAACAP4RTWUEAAIA//////4RTWUEAAAAAhFNZQQAAAAD/////Hr5mQQAAgD8evmZBAACAP/////8evmZBAAAAAB6+ZkEAAAAA/////x6+dEEAAIA/Hr50QQAAgD//////Hr50QQAAAAAevnRBAAAAAP////9cFIFBAACAP1wUgUEAAIA//////1wUgUEAAAAAXBSBQQAAAAD/////XBSIQQAAgD9cFIhBAACAP/////9cFIhBAAAAAFwUiEEAAAAA/////6nJjkEAAIA/qcmOQQAAgD//////qcmOQQAAAACpyY5BAAAAAP////+N+pVBAACAP436lUEAAIA//////436lUEAAAAAjfqVQQAAAAD/////jfqZQQAAgD+N+plBAACAP/////+N+plBAAAAAI36mUEAAAAA/////436qEEAAIA/jfqoQQAAgD//////jfqoQQAAAACN+qhBAAAAAP////9H/QVCAACAP0f9BUIAAIA//////0f9BUIAAAAAR/0FQgAAAAD/////R30hQgAAgD9HfSFCAACAP/////9HfSFCAAAAAEd9IUIAAAAA"),
+"format": 34359742527,
+"index_count": 102,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkAGQAYABoAGQAaABsAGwAaABwAGwAcAB0AHQAcAB4AHQAeAB8AHwAeACAAHwAgACEAIQAgACIAIQAiACMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 36,
+"vertex_data": PackedByteArray("AADIxAAAYMQAAAAAAADExAAAWMQAAAAAAABYxAAAWMQAAAAAAABQxAAAYMQAAAAAAABYxAAA8MMAAAAAAABQxAAAAMQAAAAAAABgQwAA8MMAAAAAAABAQwAAAMQAAAAAAABgQwAAWMQAAAAAAABAQwAAYMQAAAAAiBwuRAAAWMQAAAAAAAAwRAAAYMQAAAAAAABYREQOQ8QAAAAAAABgRAAASMQAAAAAAABYREQOC8QAAAAAAABgRAAAEMQAAAAAAACERIoc5sMAAAAAAACIRAAA8MMAAAAAAACERBE5bMMAAAAAAACIRP7/f8MAAAAAAACcRBI5DMMAAAAAAACgRAAAIMMAAAAAAACcRNqNp0IAAAAAAACgRAAAgEIAAAAAAAC0RO7GM0MAAAAAAAC4RAAAIEMAAAAAAAC0RAAA0EMAAAAAAAC4RAAAwEMAAAAAAADERAAA0EMAAAAAAADIRAAAwEMAAAAAAADERAAAWEQAAAAAAADIRAAAYEQAAAAAAADExAAAWEQAAAAAAADIxAAAYEQAAAAAAADExAAAWMQAAAAAAADIxAAAYMQAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9/jOfGM/9//3+M58Yz/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/8//x//f/9//z//H/9//3//P/9f/3//f/8//1//f/9//3/+f/9//3//f/5/")
+}]
+
+[sub_resource type="Resource" id="Resource_46h0n"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_d8bdq")
 
 [sub_resource type="Resource" id="terrain13p0"]
 resource_local_to_scene = true
@@ -889,7 +1397,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1152, -128)
 
-[sub_resource type="Resource" id="terrain13"]
+[sub_resource type="Resource" id="Resource_8kpqa"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -900,8 +1408,47 @@ _points = {
 4: SubResource("terrain13p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ggpcx"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wEAFkBWVYW+AQAWQFZVhb7/////AQAWQFZVhT4BABZAVlWFPv////8BABbAVlWFPgEAFsBWVYU+/////wEAFsBWVYW+AQAWwFZVhb4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACQRAAAAMMAAAAAAACQRAAAAEMAAAAAAACQxAAAAEMAAAAAAACQxAAAAMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_0nwst"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_ggpcx")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_p3ymv"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAA5BAACAPwAADkEAAIA//////wAADkEAAAAAAAAOQQAAAAD/////AAAcQQAAgD8AABxBAACAP/////8AABxBAAAAAAAAHEEAAAAA/////wAAlUEAAIA/AACVQQAAgD//////AACVQQAAAAAAAJVBAAAAAP////8AAJxBAACAPwAAnEEAAIA//////wAAnEEAAAAAAACcQQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACQxAAAAMMAAAAAAACMxAAAwMIAAAAAAACMRAAAwMIAAAAAAACQRAAAAMMAAAAAAACMRAAAwEIAAAAAAACQRAAAAEMAAAAAAACMxAAAwEIAAAAAAACQxAAAAEMAAAAAAACMxAAAwMIAAAAAAACQxAAAAMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_1b257"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_p3ymv")
 
 [sub_resource type="Resource" id="terrain14p0"]
 resource_local_to_scene = true
@@ -928,7 +1475,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-64, -256)
 
-[sub_resource type="Resource" id="terrain14"]
+[sub_resource type="Resource" id="Resource_5wfw4"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -939,8 +1486,47 @@ _points = {
 4: SubResource("terrain14p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_nwepb"]
+_surfaces = [{
+"aabb": AABB(-64, -256, 0, 128, 512, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVBT5WVQW/VlUFPlZVBb//////VlUFPlZVBT9WVQU+VlUFP/////9WVQW+VlUFP1ZVBb5WVQU//////1ZVBb5WVQW/VlUFvlZVBb8="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQgAAgMMAAAAAAACAQgAAgEMAAAAAAACAwgAAgEMAAAAAAACAwgAAgMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_f82le"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_nwepb")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_okipe"]
+_surfaces = [{
+"aabb": AABB(-64, -256, 0, 128, 512, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAMA+AACAPwAAwD4AAIA//////wAAwD4AAAAAAADAPgAAAAD/////AAAQQAAAgD8AABBAAACAP/////8AABBAAAAAAAAAEEAAAAAA/////wAAKEAAAIA/AAAoQAAAgD//////AAAoQAAAAAAAAChAAAAAAP////8AAJBAAACAPwAAkEAAAIA//////wAAkEAAAAAAAACQQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwgAAgMMAAAAAAAAAwgAAYMMAAAAAAAAAQgAAYMMAAAAAAACAQgAAgMMAAAAAAAAAQgAAYEMAAAAAAACAQgAAgEMAAAAAAAAAwgAAYEMAAAAAAACAwgAAgEMAAAAAAAAAwgAAYMMAAAAAAACAwgAAgMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_l08g5"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_okipe")
 
 [sub_resource type="Resource" id="terrain15p0"]
 resource_local_to_scene = true
@@ -1037,7 +1623,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-2112, -896)
 
-[sub_resource type="Resource" id="terrain15"]
+[sub_resource type="Resource" id="Resource_4sxcx"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1062,8 +1648,47 @@ _points = {
 18: SubResource("terrain15p18")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
-_constraints = { Vector2i(0, 18): 15 }
+_constraints = {
+Vector2i(0, 18): 15
+}
 _next_key = 19
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ofxe3"]
+_surfaces = [{
+"aabb": AABB(-2112, -896, 0, 4224, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////6yqJr9WVYW/rKomv1ZVhb//////rKomv1ZV6b+sqia/VlXpv/////8BAMg+VlXpvwEAyD5WVem//////wEASD9WVdC/AQBIP1ZV0L//////AQBIPwEAlr8BAEg/AQCWv/////8BAJY/AQB6vwEAlj8BAHq//////wEAlj9WVQW/AQCWP1ZVBb//////AQDIP6yqpr4BAMg/rKqmvv////8BAMg/VlUFPgEAyD9WVQU+/////wEA+j+sqqY+AQD6P6yqpj7/////AQD6PwEASD8BAPo/AQBIP/////+rqg1AAQBIP6uqDUABAEg//////wGAiUABAEg/AYCJQAEASD//////AYCJQFZV6T8BgIlAVlXpP/////8BgInAVlXpPwGAicBWVek//////wEAL8BWVYW/AQAvwFZVhb//////AQAvwFZV6b8BAC/AVlXpv/////8BgInAVlXpvwGAicBWVem/"),
+"format": 34359742527,
+"index_count": 51,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACAAJAAoACwAMAA0AAAACAAQACgALAA0AAAAEAAYACgANAA4ADwAAAAYACAAKAA4ADwAGAAgADwAIAA4AEAAPAA4ADgARABEAEQAQAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 18,
+"vertex_data": PackedByteArray("AACgwwAAAMQAAAAAAACgwwAAYMQAAAAAAABAQwAAYMQAAAAAAADAQwAASMQAAAAAAADAQwAAEMQAAAAAAAAQRAAA8MMAAAAAAAAQRAAAgMMAAAAAAABARAAAIMMAAAAAAABARAAAgEIAAAAAAABwRAAAIEMAAAAAAABwRAAAwEMAAAAAAACIRAAAwEMAAAAAAAAERQAAwEMAAAAAAAAERQAAYEQAAAAAAAAExQAAYEQAAAAAAACoxAAAAMQAAAAAAACoxAAAYMQAAAAAAAAExQAAYMQAAAAA/////////7//////////v/////////+//////////7//////////v//////+//+//////////7///////v//v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_maxro"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_ofxe3")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_86aeq"]
+_surfaces = [{
+"aabb": AABB(-2112, -896, 0, 4224, 1792, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AADhAAACAPwAAOEAAAIA//////wAAOEAAAAAAAAA4QAAAAAD/////AACMQAAAgD8AAIxAAACAP/////8AAIxAAAAAAAAAjEAAAAAA/////wAACEEAAIA/AAAIQQAAgD//////AAAIQQAAAAAAAAhBAAAAAP////8AACBBAACAPwAAIEEAAIA//////wAAIEEAAAAAAAAgQQAAAAD/////kcM+QQAAgD+Rwz5BAACAP/////+Rwz5BAAAAAJHDPkEAAAAA/////4RTS0EAAIA/hFNLQQAAgD//////hFNLQQAAAACEU0tBAAAAAP////+EU1lBAACAP4RTWUEAAIA//////4RTWUEAAAAAhFNZQQAAAAD/////Hr5mQQAAgD8evmZBAACAP/////8evmZBAAAAAB6+ZkEAAAAA/////x6+dEEAAIA/Hr50QQAAgD//////Hr50QQAAAAAevnRBAAAAAP////9cFIFBAACAP1wUgUEAAIA//////1wUgUEAAAAAXBSBQQAAAAD/////XBSIQQAAgD9cFIhBAACAP/////9cFIhBAAAAAFwUiEEAAAAA/////6nJjkEAAIA/qcmOQQAAgD//////qcmOQQAAAACpyY5BAAAAAP////+N+pVBAACAP436lUEAAIA//////436lUEAAAAAjfqVQQAAAAD/////oXqaQQAAgD+heppBAACAP/////+heppBAAAAAKF6mkEAAAAA/////6T6uUEAAIA/pPq5QQAAgD//////pPq5QQAAAACk+rlBAAAAAP////9u+shBAACAP276yEEAAIA//////276yEEAAAAAbvrIQQAAAAD/////N/0lQgAAgD83/SVCAACAP/////83/SVCAAAAADf9JUIAAAAA/////zd9QUIAAIA/N31BQgAAgD//////N31BQgAAAAA3fUFCAAAAAA=="),
+"format": 34359742527,
+"index_count": 108,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkACQAIAAoACQAKAAsACwAKAAwACwAMAA0ADQAMAA4ADQAOAA8ADwAOABAADwAQABEAEQAQABIAEQASABMAEwASABQAEwAUABUAFQAUABYAFQAWABcAFwAWABgAFwAYABkAGQAYABoAGQAaABsAGwAaABwAGwAcAB0AHQAcAB4AHQAeAB8AHwAeACAAHwAgACEAIQAgACIAIQAiACMAIwAiACQAIwAkACUA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 38,
+"vertex_data": PackedByteArray("AAAExQAAYMQAAAAAAAACxQAAWMQAAAAAAACsxAAAWMQAAAAAAACoxAAAYMQAAAAAAACsxAAA8MMAAAAAAACoxAAAAMQAAAAAAACQwwAA8MMAAAAAAACgwwAAAMQAAAAAAACQwwAAWMQAAAAAAACgwwAAYMQAAAAAHHI4QwAAWMQAAAAAAABAQwAAYMQAAAAAAACwQ0QOQ8QAAAAAAADAQwAASMQAAAAAAACwQ0MOC8QAAAAAAADAQwAAEMQAAAAAAAAIRIoc5sMAAAAAAAAQRAAA8MMAAAAAAAAIRBE5bMMAAAAAAAAQRP7/f8MAAAAAAAA4RBI5DMMAAAAAAABARAAAIMMAAAAAAAA4RNqNp0IAAAAAAABARAAAgEIAAAAAAABoRO7GM0MAAAAAAABwRAAAIEMAAAAAAABoRAAA0EMAAAAAAABwRAAAwEMAAAAAAACIRBTU0EMAAAAAAACIROwrv0MAAAAAAAACRaEG0EMAAAAAAAAERQAAwEMAAAAAAAACRQAAWEQAAAAAAAAERQAAYEQAAAAAAAACxQAAWEQAAAAAAAAExQAAYEQAAAAAAAACxQAAWMQAAAAAAAAExQAAYMQAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//7//H/9//3//v/8f/3//f/+//1//f/9//7//X/9//3//v/9f/3//f/+//1//f/9/jOfGM/9//3+M58Yz/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//3/jsHIY/3//f+Owchj/f/9/47ByGP9//38UwAog/3//f+y/9h//f/9/Tv9YQP9//38T/3VA/3//f/K/+R//f/9/E8AKIP9//3//P/8f/3//f/8//x//f/9//z//X/9//3//P/9f/3//f/9//n//f/9//3/+fw==")
+}]
+
+[sub_resource type="Resource" id="Resource_c3ioe"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_86aeq")
 
 [sub_resource type="Resource" id="terrain16p0"]
 resource_local_to_scene = true
@@ -1090,7 +1715,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1152, -128)
 
-[sub_resource type="Resource" id="terrain16"]
+[sub_resource type="Resource" id="Resource_0sckg"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1101,8 +1726,47 @@ _points = {
 4: SubResource("terrain16p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_o6vuv"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wEAFkBWVYW+AQAWQFZVhb7/////AQAWQFZVhT4BABZAVlWFPv////8BABbAVlWFPgEAFsBWVYU+/////wEAFsBWVYW+AQAWwFZVhb4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACQRAAAAMMAAAAAAACQRAAAAEMAAAAAAACQxAAAAEMAAAAAAACQxAAAAMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_r55g0"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_o6vuv")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_vpibe"]
+_surfaces = [{
+"aabb": AABB(-1152, -128, 0, 2304, 256, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAA5BAACAPwAADkEAAIA//////wAADkEAAAAAAAAOQQAAAAD/////AAAcQQAAgD8AABxBAACAP/////8AABxBAAAAAAAAHEEAAAAA/////wAAlUEAAIA/AACVQQAAgD//////AACVQQAAAAAAAJVBAAAAAP////8AAJxBAACAPwAAnEEAAIA//////wAAnEEAAAAAAACcQQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACQxAAAAMMAAAAAAACMxAAAwMIAAAAAAACMRAAAwMIAAAAAAACQRAAAAMMAAAAAAACMRAAAwEIAAAAAAACQRAAAAEMAAAAAAACMxAAAwEIAAAAAAACQxAAAAEMAAAAAAACMxAAAwMIAAAAAAACQxAAAAMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_t5paa"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_vpibe")
 
 [sub_resource type="Resource" id="terrain17p0"]
 resource_local_to_scene = true
@@ -1129,7 +1793,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-96, -72)
 
-[sub_resource type="Resource" id="terrain17"]
+[sub_resource type="Resource" id="Resource_cnpgh"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1140,8 +1804,47 @@ _points = {
 4: SubResource("terrain17p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_axitu"]
+_surfaces = [{
+"aabb": AABB(-96, -72, 0, 192, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wEASD4BABa+AQBIPgEAFr7/////AQBIPgEAFj4BAEg+AQAWPv////8BAEi+AQAWPgEASL4BABY+/////wEASL4BABa+AQBIvgEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADAQgAAkMIAAAAAAADAQgAAkEIAAAAAAADAwgAAkEIAAAAAAADAwgAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_0rdsg"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_axitu")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_wbedi"]
+_surfaces = [{
+"aabb": AABB(-96, -72, 0, 192, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AACA/AACAPwAAID8AAIA//////wAAID8AAAAAAAAgPwAAAAD/////AACIPwAAgD8AAIg/AACAP/////8AAIg/AAAAAAAAiD8AAAAA/////wAA2D8AAIA/AADYPwAAgD//////AADYPwAAAAAAANg/AAAAAP////8AAAhAAACAPwAACEAAAIA//////wAACEAAAAAAAAAIQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AADAwgAAkMIAAAAAAACAwgAAIMIAAAAAAACAQgAAIMIAAAAAAADAQgAAkMIAAAAAAACAQgAAIEIAAAAAAADAQgAAkEIAAAAAAACAwgAAIEIAAAAAAADAwgAAkEIAAAAAAACAwgAAIMIAAAAAAADAwgAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_4bqog"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_wbedi")
 
 [sub_resource type="Resource" id="terrain18p0"]
 resource_local_to_scene = true
@@ -1168,7 +1871,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-96, -72)
 
-[sub_resource type="Resource" id="terrain18"]
+[sub_resource type="Resource" id="Resource_oinfd"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1179,8 +1882,47 @@ _points = {
 4: SubResource("terrain18p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_l5y3e"]
+_surfaces = [{
+"aabb": AABB(-96, -72, 0, 192, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wEASD4BABa+AQBIPgEAFr7/////AQBIPgEAFj4BAEg+AQAWPv////8BAEi+AQAWPgEASL4BABY+/////wEASL4BABa+AQBIvgEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADAQgAAkMIAAAAAAADAQgAAkEIAAAAAAADAwgAAkEIAAAAAAADAwgAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_wmik4"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_l5y3e")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_8ayh4"]
+_surfaces = [{
+"aabb": AABB(-96, -72, 0, 192, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AACA/AACAPwAAID8AAIA//////wAAID8AAAAAAAAgPwAAAAD/////AACIPwAAgD8AAIg/AACAP/////8AAIg/AAAAAAAAiD8AAAAA/////wAA2D8AAIA/AADYPwAAgD//////AADYPwAAAAAAANg/AAAAAP////8AAAhAAACAPwAACEAAAIA//////wAACEAAAAAAAAAIQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AADAwgAAkMIAAAAAAACAwgAAIMIAAAAAAACAQgAAIMIAAAAAAADAQgAAkMIAAAAAAACAQgAAIEIAAAAAAADAQgAAkEIAAAAAAACAwgAAIEIAAAAAAADAwgAAkEIAAAAAAACAwgAAIMIAAAAAAADAwgAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_gqwln"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_8ayh4")
 
 [sub_resource type="Resource" id="terrain19p0"]
 resource_local_to_scene = true
@@ -1207,7 +1949,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-64, -72)
 
-[sub_resource type="Resource" id="terrain19"]
+[sub_resource type="Resource" id="Resource_1yfam"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1218,8 +1960,47 @@ _points = {
 4: SubResource("terrain19p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_cp1ws"]
+_surfaces = [{
+"aabb": AABB(-64, -72, 0, 128, 144, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVBT4BABa+VlUFPgEAFr7/////VlUFPgEAFj5WVQU+AQAWPv////9WVQW+AQAWPlZVBb4BABY+/////1ZVBb4BABa+VlUFvgEAFr4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQgAAkMIAAAAAAACAQgAAkEIAAAAAAACAwgAAkEIAAAAAAACAwgAAkMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_u17dg"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_cp1ws")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_bnm40"]
+_surfaces = [{
+"aabb": AABB(-64, -72, 0, 128, 144, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAMA+AACAPwAAwD4AAIA//////wAAwD4AAAAAAADAPgAAAAD/////AABQPwAAgD8AAFA/AACAP/////8AAFA/AAAAAAAAUD8AAAAA/////wAAmD8AAIA/AACYPwAAgD//////AACYPwAAAAAAAJg/AAAAAP////8AANA/AACAPwAA0D8AAIA//////wAA0D8AAAAAAADQPwAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwgAAkMIAAAAAAAAAwgAAIMIAAAAAAAAAQgAAIMIAAAAAAACAQgAAkMIAAAAAAAAAQgAAIEIAAAAAAACAQgAAkEIAAAAAAAAAwgAAIEIAAAAAAACAwgAAkEIAAAAAAAAAwgAAIMIAAAAAAACAwgAAkMIAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_rphes"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_bnm40")
 
 [sub_resource type="Resource" id="terrain20p0"]
 resource_local_to_scene = true
@@ -1246,7 +2027,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-64, -256)
 
-[sub_resource type="Resource" id="terrain20"]
+[sub_resource type="Resource" id="Resource_u78ns"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1257,8 +2038,47 @@ _points = {
 4: SubResource("terrain20p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_j78lt"]
+_surfaces = [{
+"aabb": AABB(-64, -256, 0, 128, 512, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVBT5WVQW/VlUFPlZVBb//////VlUFPlZVBT9WVQU+VlUFP/////9WVQW+VlUFP1ZVBb5WVQU//////1ZVBb5WVQW/VlUFvlZVBb8="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACAQgAAgMMAAAAAAACAQgAAgEMAAAAAAACAwgAAgEMAAAAAAACAwgAAgMMAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_a6s2h"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_j78lt")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_567hf"]
+_surfaces = [{
+"aabb": AABB(-64, -256, 0, 128, 512, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAMA+AACAPwAAwD4AAIA//////wAAwD4AAAAAAADAPgAAAAD/////AAAQQAAAgD8AABBAAACAP/////8AABBAAAAAAAAAEEAAAAAA/////wAAKEAAAIA/AAAoQAAAgD//////AAAoQAAAAAAAAChAAAAAAP////8AAJBAAACAPwAAkEAAAIA//////wAAkEAAAAAAAACQQAAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAwgAAgMMAAAAAAAAAwgAAYMMAAAAAAAAAQgAAYMMAAAAAAACAQgAAgMMAAAAAAAAAQgAAYEMAAAAAAACAQgAAgEMAAAAAAAAAwgAAYEMAAAAAAACAwgAAgEMAAAAAAAAAwgAAYMMAAAAAAACAwgAAgMMAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_h76cg"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_567hf")
 
 [sub_resource type="Resource" id="terrain21p0"]
 resource_local_to_scene = true
@@ -1285,7 +2105,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1024, -4352)
 
-[sub_resource type="Resource" id="terrain21"]
+[sub_resource type="Resource" id="Resource_1vi3b"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1296,8 +2116,47 @@ _points = {
 4: SubResource("terrain21p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6oe65"]
+_surfaces = [{
+"aabb": AABB(-1024, -4352, 0, 2048, 8704, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVBUCrqg3BVlUFQKuqDcH/////VlUFQKuqDUFWVQVAq6oNQf////9WVQXAq6oNQVZVBcCrqg1B/////1ZVBcCrqg3BVlUFwKuqDcE="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACARAAAiMUAAAAAAACARAAAiEUAAAAAAACAxAAAiEUAAAAAAACAxAAAiMUAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_x3tcr"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_6oe65")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_541ms"]
+_surfaces = [{
+"aabb": AABB(-1024, -4352, 0, 2048, 8704, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAPxAAACAPwAA/EAAAIA//////wAA/EAAAAAAAAD8QAAAAAD/////AAAnQgAAgD8AACdCAACAP/////8AACdCAAAAAAAAJ0IAAAAA/////wCARkIAAIA/AIBGQgAAgD//////AIBGQgAAAAAAgEZCAAAAAP////8AAKdCAACAPwAAp0IAAIA//////wAAp0IAAAAAAACnQgAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAxAAAiMUAAAAAAAB4xAAAh8UAAAAAAAB4RAAAh8UAAAAAAACARAAAiMUAAAAAAAB4RAAAh0UAAAAAAACARAAAiEUAAAAAAAB4xAAAh0UAAAAAAACAxAAAiEUAAAAAAAB4xAAAh8UAAAAAAACAxAAAiMUAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_5ucvy"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_541ms")
 
 [sub_resource type="Resource" id="terrain22p0"]
 resource_local_to_scene = true
@@ -1324,7 +2183,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-1024, -4352)
 
-[sub_resource type="Resource" id="terrain22"]
+[sub_resource type="Resource" id="Resource_3hfjs"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1335,8 +2194,47 @@ _points = {
 4: SubResource("terrain22p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_clihn"]
+_surfaces = [{
+"aabb": AABB(-1024, -4352, 0, 2048, 8704, 1e-05),
+"attribute_data": PackedByteArray("/////1ZVBUCrqg3BVlUFQKuqDcH/////VlUFQKuqDUFWVQVAq6oNQf////9WVQXAq6oNQVZVBcCrqg1B/////1ZVBcCrqg3BVlUFwKuqDcE="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACARAAAiMUAAAAAAACARAAAiEUAAAAAAACAxAAAiEUAAAAAAACAxAAAiMUAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_f7xpy"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_clihn")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_njiiu"]
+_surfaces = [{
+"aabb": AABB(-1024, -4352, 0, 2048, 8704, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAPxAAACAPwAA/EAAAIA//////wAA/EAAAAAAAAD8QAAAAAD/////AAAnQgAAgD8AACdCAACAP/////8AACdCAAAAAAAAJ0IAAAAA/////wCARkIAAIA/AIBGQgAAgD//////AIBGQgAAAAAAgEZCAAAAAP////8AAKdCAACAPwAAp0IAAIA//////wAAp0IAAAAAAACnQgAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACAxAAAiMUAAAAAAAB4xAAAh8UAAAAAAAB4RAAAh8UAAAAAAACARAAAiMUAAAAAAAB4RAAAh0UAAAAAAACARAAAiEUAAAAAAAB4xAAAh0UAAAAAAACAxAAAiEUAAAAAAAB4xAAAh8UAAAAAAACAxAAAiMUAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//P/8f/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_ky37y"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_njiiu")
 
 [sub_resource type="Resource" id="terrain23p0"]
 resource_local_to_scene = true
@@ -1363,7 +2261,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-10880, -1024)
 
-[sub_resource type="Resource" id="terrain23"]
+[sub_resource type="Resource" id="Resource_w83pd"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1374,13 +2272,53 @@ _points = {
 4: SubResource("terrain23p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_yrae7"]
+_surfaces = [{
+"aabb": AABB(-10880, -1024, 0, 21760, 2048, 1e-05),
+"attribute_data": PackedByteArray("/////1YVsUFWVQXAVhWxQVZVBcD/////VhWxQVZVBUBWFbFBVlUFQP////9WFbHBVlUFQFYVscFWVQVA/////1YVscFWVQXAVhWxwVZVBcA="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAqRgAAgMQAAAAAAAAqRgAAgEQAAAAAAAAqxgAAgEQAAAAAAAAqxgAAgMQAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_qibj6"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_yrae7")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_jteff"]
+_surfaces = [{
+"aabb": AABB(-10880, -1024, 0, 21760, 2048, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AwKlCAACAPwDAqUIAAIA//////wDAqUIAAAAAAMCpQgAAAAD/////AIC5QgAAgD8AgLlCAACAP/////8AgLlCAAAAAACAuUIAAAAA/////wCgMUMAAIA/AKAxQwAAgD//////AKAxQwAAAAAAoDFDAAAAAP////8AgDlDAACAPwCAOUMAAIA//////wCAOUMAAAAAAIA5QwAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAAqxgAAgMQAAAAAAIApxgAAeMQAAAAAAIApRgAAeMQAAAAAAAAqRgAAgMQAAAAAAIApRgAAeEQAAAAAAAAqRgAAgEQAAAAAAIApxgAAeEQAAAAAAAAqxgAAgEQAAAAAAIApxgAAeMQAAAAAAAAqxgAAgMQAAAAA/3//f////z//f/9/////P/9//3//v/8f/3//f/+//x//f/9//z//H/9//3//PwAg/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_o5m7h"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_jteff")
 
 [sub_resource type="Resource" id="terrain24p0"]
 resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-10880, -1024)
+width = 2.5000000000000013
 
 [sub_resource type="Resource" id="terrain24p1"]
 resource_local_to_scene = true
@@ -1401,8 +2339,9 @@ position = Vector2(-10880, 1024)
 resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-10880, -1024)
+width = 2.5000000000000013
 
-[sub_resource type="Resource" id="terrain24"]
+[sub_resource type="Resource" id="Resource_3i0n4"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1413,8 +2352,47 @@ _points = {
 4: SubResource("terrain24p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_36tvu"]
+_surfaces = [{
+"aabb": AABB(-10880, -1024, 0, 21760, 2048, 1e-05),
+"attribute_data": PackedByteArray("/////1YVsUFWVQXAVhWxQVZVBcD/////VhWxQVZVBUBWFbFBVlUFQP////9WFbHBVlUFQFYVscFWVQVA/////1YVscFWVQXAVhWxwVZVBcA="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAqRgAAgMQAAAAAAAAqRgAAgEQAAAAAAAAqxgAAgEQAAAAAAAAqxgAAgMQAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_gfl82"]
+script = ExtResource("mesh")
+texture = ExtResource("7_gi4lh")
+mesh = SubResource("ArrayMesh_36tvu")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hkbqf"]
+_surfaces = [{
+"aabb": AABB(-10880, -1024, 0, 21760, 2048, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AwKlCAACAPwDAqUIAAIA//////wDAqUIAAAAAAMCpQgAAAAD/////AFC5QgAAgD8AULlCAACAP/////8AULlCAAAAAABQuUIAAAAA/////wCIMUMAAIA/AIgxQwAAgD//////AIgxQwAAAAAAiDFDAAAAAP////8AUDlDAACAPwBQOUMAAIA//////wBQOUMAAAAAAFA5QwAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAAqxgAAgMQAAAAAAIApxgAAbMQAAAAAAIApRgAAbMQAAAAAAAAqRgAAgMQAAAAAAIApRgAAeEQAAAAAAAAqRgAAgEQAAAAAAIApxgAAeEQAAAAAAAAqxgAAgEQAAAAAAIApxgAAbMQAAAAAAAAqxgAAgMQAAAAA/3//f////z//f/9/////P/9//3//tIAa/3//f/3gfjD/f/9//z//H/9//3//PwAg/3//f/8//1//f/9//z//X/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_t0l6u"]
+script = ExtResource("mesh")
+texture = ExtResource("8_166j4")
+mesh = SubResource("ArrayMesh_hkbqf")
 
 [sub_resource type="RectangleShape2D" id="grate220"]
 size = Vector2(128, 24)
@@ -1433,6 +2411,15 @@ size = Vector2(128, 24)
 
 [sub_resource type="RectangleShape2D" id="grate225"]
 size = Vector2(128, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jmcvk"]
+size = Vector2(768, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7sc3x"]
+size = Vector2(137.6, 44)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v0xqm"]
+size = Vector2(160, 24)
 
 [sub_resource type="RectangleShape2D" id="grate226"]
 size = Vector2(128, 24)
@@ -1461,6 +2448,15 @@ size = Vector2(128, 24)
 [sub_resource type="RectangleShape2D" id="grate234"]
 size = Vector2(128, 24)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_btilu"]
+size = Vector2(768, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3dvvq"]
+size = Vector2(137.6, 44)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n66ct"]
+size = Vector2(160, 24)
+
 [sub_resource type="RectangleShape2D" id="grate235"]
 size = Vector2(128, 24)
 
@@ -1470,762 +2466,441 @@ size = Vector2(128, 24)
 [sub_resource type="RectangleShape2D" id="grate237"]
 size = Vector2(128, 24)
 
-[sub_resource type="Resource" id="pipe238p0"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(-192, -128)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a23xu"]
+size = Vector2(174.08, 230.4)
 
-[sub_resource type="Resource" id="pipe238p1"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, -128)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uonbl"]
+size = Vector2(560, 96)
 
-[sub_resource type="Resource" id="pipe238p2"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, 0)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uono3"]
+size = Vector2(560, 96)
 
-[sub_resource type="Resource" id="pipe238"]
-resource_local_to_scene = true
-script = ExtResource("points")
-_points = {
-0: SubResource("pipe238p0"),
-1: SubResource("pipe238p1"),
-2: SubResource("pipe238p2")
-}
-_point_order = PackedInt32Array(0, 1, 2)
-_next_key = 3
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wvyxl"]
+size = Vector2(96, 448)
 
-[sub_resource type="Resource" id="pipe242p0"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(-192, -128)
+[sub_resource type="Gradient" id="Gradient_svbuq"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
-[sub_resource type="Resource" id="pipe242p1"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, -128)
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_brsmv"]
+gradient = SubResource("Gradient_svbuq")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
 
-[sub_resource type="Resource" id="pipe242p2"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, 0)
-
-[sub_resource type="Resource" id="pipe242"]
-resource_local_to_scene = true
-script = ExtResource("points")
-_points = {
-0: SubResource("pipe242p0"),
-1: SubResource("pipe242p1"),
-2: SubResource("pipe242p2")
-}
-_point_order = PackedInt32Array(0, 1, 2)
-_next_key = 3
-
-[sub_resource type="Resource" id="pipe246p0"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(-192, -128)
-
-[sub_resource type="Resource" id="pipe246p1"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, -128)
-
-[sub_resource type="Resource" id="pipe246p2"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, 0)
-
-[sub_resource type="Resource" id="pipe246"]
-resource_local_to_scene = true
-script = ExtResource("points")
-_points = {
-0: SubResource("pipe246p0"),
-1: SubResource("pipe246p1"),
-2: SubResource("pipe246p2")
-}
-_point_order = PackedInt32Array(0, 1, 2)
-_next_key = 3
-
-[sub_resource type="Resource" id="pipe250p0"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(-192, -128)
-
-[sub_resource type="Resource" id="pipe250p1"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, -128)
-
-[sub_resource type="Resource" id="pipe250p2"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, 0)
-
-[sub_resource type="Resource" id="pipe250"]
-resource_local_to_scene = true
-script = ExtResource("points")
-_points = {
-0: SubResource("pipe250p0"),
-1: SubResource("pipe250p1"),
-2: SubResource("pipe250p2")
-}
-_point_order = PackedInt32Array(0, 1, 2)
-_next_key = 3
-
-[sub_resource type="Resource" id="pipe254p0"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(-192, -128)
-
-[sub_resource type="Resource" id="pipe254p1"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, -128)
-
-[sub_resource type="Resource" id="pipe254p2"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, 0)
-
-[sub_resource type="Resource" id="pipe254"]
-resource_local_to_scene = true
-script = ExtResource("points")
-_points = {
-0: SubResource("pipe254p0"),
-1: SubResource("pipe254p1"),
-2: SubResource("pipe254p2")
-}
-_point_order = PackedInt32Array(0, 1, 2)
-_next_key = 3
-
-[sub_resource type="Resource" id="pipe258p0"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(-192, -128)
-
-[sub_resource type="Resource" id="pipe258p1"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, -128)
-
-[sub_resource type="Resource" id="pipe258p2"]
-resource_local_to_scene = true
-script = ExtResource("point")
-position = Vector2(0, 0)
-
-[sub_resource type="Resource" id="pipe258"]
-resource_local_to_scene = true
-script = ExtResource("points")
-_points = {
-0: SubResource("pipe258p0"),
-1: SubResource("pipe258p1"),
-2: SubResource("pipe258p2")
-}
-_point_order = PackedInt32Array(0, 1, 2)
-_next_key = 3
-
-[node name="stage_2-11" type="Node2D"]
+[node name="stage_2-11" type="Node2D" unique_id=635040617]
 script = ExtResource("world")
-"스테이지_이름" = "2-11 · 잠긴 폭포의 계단"
-"시작_위치" = Vector2(384, 1024)
-"카메라_리밋" = Rect2(128, 256, 17664, 8704)
-"카메라_줌" = 0.85
-"낙사_y" = 8928.0
 "안전구역들" = Array[Rect2]([Rect2(352, 1016, 544, 16), Rect2(2080, 1016, 224, 16), Rect2(3680, 2552, 544, 16), Rect2(5408, 2552, 224, 16), Rect2(7008, 4088, 544, 16), Rect2(8736, 4088, 224, 16), Rect2(10336, 5624, 544, 16), Rect2(12064, 5624, 224, 16), Rect2(13664, 7160, 544, 16), Rect2(15392, 7160, 224, 16)])
+"스테이지_이름" = "2-11 · 잠긴 폭포의 계단"
+"카메라_리밋" = Rect2(128, 256, 17664, 8704)
+"카메라_줌" = 1.1
+"시작_위치" = Vector2(384, 1024)
+"낙사_y" = 8928.0
 metadata/design = "좌측 최상단 → 우측 최하단. 물·밸브·압력발판·투명·붕괴. 실제 주행 미실행."
 
-[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+[node name="페인트코어" type="Node" parent="." unique_id=334496010 groups=["페인트코어"]]
 script = ExtResource("core")
-"최대_탄약" = 12
 
-[node name="지형" type="Node2D" parent="."]
+[node name="지형" type="Node2D" parent="." unique_id=1977523946]
 
-
-[node name="구역1_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+[node name="구역1_일체형_수로바닥" parent="지형" unique_id=1551578725 instance=ExtResource("black")]
 position = Vector2(1856, 1872)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain0")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_kr45t")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_57jsb"), SubResource("Resource_gbtd4")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "foundation"
 
-[node name="CollisionPolygon2D" parent="지형/구역1_일체형_수로바닥/StaticBody2D"]
-polygon = PackedVector2Array(-1600, -848, -1216, -848, -1216, -944, -960, -944, -960, -848, -832, -848, -832, -464, 192, -464, 192, -848, 704, -848, 896, -752, 896, -528, 1088, -432, 1088, -208, 1280, -112, 1280, 112, 1472, 208, 1472, 432, 1600, 432, 1600, 944, -1600, 944)
-
-[node name="구역1_천장" parent="지형" instance=ExtResource("black")]
+[node name="구역1_천장" parent="지형" unique_id=1583306725 instance=ExtResource("black")]
 position = Vector2(1408, 384)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain1")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_v25jh")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_v1so4"), SubResource("Resource_xi6xu")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ceiling"
 
-[node name="CollisionPolygon2D" parent="지형/구역1_천장/StaticBody2D"]
-polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
-
-[node name="구역1_징검다리1" parent="지형" instance=ExtResource("black")]
+[node name="구역1_징검다리1" parent="지형" unique_id=723129936 instance=ExtResource("black")]
 position = Vector2(1376, 1096)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain2")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_ohhac")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_hbey3"), SubResource("Resource_mlidm")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "platform"
 
-[node name="CollisionPolygon2D" parent="지형/구역1_징검다리1/StaticBody2D"]
-polygon = PackedVector2Array(-96, -72, 96, -72, 96, 72, -96, 72)
-
-[node name="구역1_징검다리2" parent="지형" instance=ExtResource("black")]
+[node name="구역1_징검다리2" parent="지형" unique_id=1222988721 instance=ExtResource("black")]
 position = Vector2(1792, 1096)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain3")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_3jjdh")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_npcge"), SubResource("Resource_g7li4")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "platform"
 
-[node name="CollisionPolygon2D" parent="지형/구역1_징검다리2/StaticBody2D"]
-polygon = PackedVector2Array(-128, -72, 128, -72, 128, 72, -128, 72)
-
-[node name="구역1_투명_상부지름길" parent="지형" instance=ExtResource("black")]
+[node name="구역1_투명_상부지름길" parent="지형" unique_id=1212604774 instance=ExtResource("black")]
 position = Vector2(1552, 904)
-"시작상태" = 0
-"칠하기_방식" = 0
-"칠하기_허용" = true
-"필요횟수_수동" = 1
 "무색일때_통과" = true
-"유령_반투명도" = 0.42
+"필요횟수_수동" = 1
 "전체_색칠_최대긴변" = 1024.0
-_points = SubResource("terrain4")
-_meshes = Array[ExtResource("mesh")]([])
+_points = SubResource("Resource_encnc")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_1ir07"), SubResource("Resource_800gx")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ghost"
 
-[node name="CollisionPolygon2D" parent="지형/구역1_투명_상부지름길/StaticBody2D"]
-polygon = PackedVector2Array(-432, -72, 432, -72, 432, 72, -432, 72)
-
-[node name="구역1_밸브수문" parent="지형" instance=ExtResource("black")]
+[node name="구역1_밸브수문" parent="지형" unique_id=863540322 instance=ExtResource("black")]
 position = Vector2(2432, 768)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain5")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_4lh86")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_2x2tl"), SubResource("Resource_fatff")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "gate"
 
-[node name="CollisionPolygon2D" parent="지형/구역1_밸브수문/StaticBody2D"]
-polygon = PackedVector2Array(-64, -256, 64, -256, 64, 256, -64, 256)
-
-[node name="구역2_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+[node name="구역2_일체형_수로바닥" parent="지형" unique_id=1706974281 instance=ExtResource("black")]
 position = Vector2(5184, 3456)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain6")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_p6p1d")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_h1i5n"), SubResource("Resource_fbs5n")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "foundation"
 
-[node name="CollisionPolygon2D" parent="지형/구역2_일체형_수로바닥/StaticBody2D"]
-polygon = PackedVector2Array(-1600, -896, -832, -896, -832, -512, 192, -512, 192, -896, 704, -896, 896, -800, 896, -576, 1088, -480, 1088, -256, 1280, -160, 1280, 64, 1472, 160, 1472, 384, 1600, 384, 1600, 896, -1600, 896)
-
-[node name="구역2_천장" parent="지형" instance=ExtResource("black")]
+[node name="구역2_천장" parent="지형" unique_id=1788414632 instance=ExtResource("black")]
 position = Vector2(4736, 1920)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain7")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_c72ov")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_ki2jf"), SubResource("Resource_sjr6c")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ceiling"
 
-[node name="CollisionPolygon2D" parent="지형/구역2_천장/StaticBody2D"]
-polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
-
-[node name="구역3_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+[node name="구역3_일체형_수로바닥" parent="지형" unique_id=1853482154 instance=ExtResource("black")]
 position = Vector2(8512, 4992)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain8")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_26cw8")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_ngv4w"), SubResource("Resource_cq186")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "foundation"
 
-[node name="CollisionPolygon2D" parent="지형/구역3_일체형_수로바닥/StaticBody2D"]
-polygon = PackedVector2Array(-1600, -896, -832, -896, -832, -512, 192, -512, 192, -896, 704, -896, 896, -800, 896, -576, 1088, -480, 1088, -256, 1280, -160, 1280, 64, 1472, 160, 1472, 384, 1600, 384, 1600, 896, -1600, 896)
-
-[node name="구역3_천장" parent="지형" instance=ExtResource("black")]
+[node name="구역3_천장" parent="지형" unique_id=730329179 instance=ExtResource("black")]
 position = Vector2(8064, 3456)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain9")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_lipx3")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_qtbth"), SubResource("Resource_ybewx")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ceiling"
 
-[node name="CollisionPolygon2D" parent="지형/구역3_천장/StaticBody2D"]
-polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
-
-[node name="구역3_투명발판1" parent="지형" instance=ExtResource("black")]
+[node name="구역3_투명발판1" parent="지형" unique_id=1879879365 instance=ExtResource("black")]
 position = Vector2(8064, 4168)
-"시작상태" = 0
-"칠하기_방식" = 0
-"칠하기_허용" = true
-"필요횟수_수동" = 1
 "무색일때_통과" = true
-"유령_반투명도" = 0.42
+"필요횟수_수동" = 1
 "전체_색칠_최대긴변" = 1024.0
-_points = SubResource("terrain10")
-_meshes = Array[ExtResource("mesh")]([])
+_points = SubResource("Resource_8esu8")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_eo6o1"), SubResource("Resource_0kep4")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ghost"
 
-[node name="CollisionPolygon2D" parent="지형/구역3_투명발판1/StaticBody2D"]
-polygon = PackedVector2Array(-128, -72, 128, -72, 128, 72, -128, 72)
-
-[node name="구역3_투명발판2" parent="지형" instance=ExtResource("black")]
+[node name="구역3_투명발판2" parent="지형" unique_id=1836883193 instance=ExtResource("black")]
 position = Vector2(8448, 4168)
-"시작상태" = 0
-"칠하기_방식" = 0
-"칠하기_허용" = true
-"필요횟수_수동" = 1
 "무색일때_통과" = true
-"유령_반투명도" = 0.42
+"필요횟수_수동" = 1
 "전체_색칠_최대긴변" = 1024.0
-_points = SubResource("terrain11")
-_meshes = Array[ExtResource("mesh")]([])
+_points = SubResource("Resource_sg5up")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_b1xm2"), SubResource("Resource_5u0s3")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ghost"
 
-[node name="CollisionPolygon2D" parent="지형/구역3_투명발판2/StaticBody2D"]
-polygon = PackedVector2Array(-128, -72, 128, -72, 128, 72, -128, 72)
-
-[node name="구역4_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+[node name="구역4_일체형_수로바닥" parent="지형" unique_id=263839844 instance=ExtResource("black")]
 position = Vector2(11840, 6528)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain12")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_yugc5")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_qf65l"), SubResource("Resource_46h0n")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "foundation"
 
-[node name="CollisionPolygon2D" parent="지형/구역4_일체형_수로바닥/StaticBody2D"]
-polygon = PackedVector2Array(-1600, -896, -832, -896, -832, -512, 192, -512, 192, -896, 704, -896, 896, -800, 896, -576, 1088, -480, 1088, -256, 1280, -160, 1280, 64, 1472, 160, 1472, 384, 1600, 384, 1600, 896, -1600, 896)
-
-[node name="구역4_천장" parent="지형" instance=ExtResource("black")]
+[node name="구역4_천장" parent="지형" unique_id=1034999661 instance=ExtResource("black")]
 position = Vector2(11392, 4992)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain13")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_8kpqa")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_0nwst"), SubResource("Resource_1b257")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ceiling"
 
-[node name="CollisionPolygon2D" parent="지형/구역4_천장/StaticBody2D"]
-polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
-
-[node name="구역4_밸브수문" parent="지형" instance=ExtResource("black")]
+[node name="구역4_밸브수문" parent="지형" unique_id=732930660 instance=ExtResource("black")]
 position = Vector2(12416, 5376)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain14")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_5wfw4")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_f82le"), SubResource("Resource_l08g5")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "gate"
 
-[node name="CollisionPolygon2D" parent="지형/구역4_밸브수문/StaticBody2D"]
-polygon = PackedVector2Array(-64, -256, 64, -256, 64, 256, -64, 256)
-
-[node name="구역5_일체형_수로바닥" parent="지형" instance=ExtResource("black")]
+[node name="구역5_일체형_수로바닥" parent="지형" unique_id=1298617381 instance=ExtResource("black")]
 position = Vector2(15680, 8064)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain15")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_4sxcx")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_maxro"), SubResource("Resource_c3ioe")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "foundation"
 
-[node name="CollisionPolygon2D" parent="지형/구역5_일체형_수로바닥/StaticBody2D"]
-polygon = PackedVector2Array(-2112, -896, -1344, -896, -1344, -512, -320, -512, -320, -896, 192, -896, 384, -800, 384, -576, 576, -480, 576, -256, 768, -160, 768, 64, 960, 160, 960, 384, 1088, 384, 2112, 384, 2112, 896, -2112, 896)
-
-[node name="구역5_천장" parent="지형" instance=ExtResource("black")]
+[node name="구역5_천장" parent="지형" unique_id=1906060309 instance=ExtResource("black")]
 position = Vector2(14720, 6528)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain16")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_0sckg")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_r55g0"), SubResource("Resource_t5paa")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "ceiling"
 
-[node name="CollisionPolygon2D" parent="지형/구역5_천장/StaticBody2D"]
-polygon = PackedVector2Array(-1152, -128, 1152, -128, 1152, 128, -1152, 128)
-
-[node name="구역5_붕괴발판1" parent="지형" instance=ExtResource("black")]
+[node name="구역5_붕괴발판1" parent="지형" unique_id=510101460 instance=ExtResource("black")]
 position = Vector2(14688, 7240)
 script = ExtResource("crumble")
 "붕괴_대기" = 0.9
 "복구_대기" = 3.0
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain17")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_cnpgh")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_0rdsg"), SubResource("Resource_4bqog")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "crumble"
 
-[node name="CollisionPolygon2D" parent="지형/구역5_붕괴발판1/StaticBody2D"]
-polygon = PackedVector2Array(-96, -72, 96, -72, 96, 72, -96, 72)
-
-[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판1"]
-points = PackedVector2Array(-57.599999999999994, -64, -19.200000000000003, -40, 19.200000000000003, -56, 57.599999999999994, -24)
+[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판1" unique_id=1812507088]
+points = PackedVector2Array(-57.6, -64, -19.2, -40, 19.2, -56, 57.6, -24)
 width = 3.0
 default_color = Color(0.7, 0.7, 0.7, 0.8)
 
-[node name="구역5_붕괴발판2" parent="지형" instance=ExtResource("black")]
+[node name="구역5_붕괴발판2" parent="지형" unique_id=1950007489 instance=ExtResource("black")]
 position = Vector2(15008, 7240)
 script = ExtResource("crumble")
 "붕괴_대기" = 0.9
 "복구_대기" = 3.0
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain18")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_oinfd")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_wmik4"), SubResource("Resource_gqwln")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "crumble"
 
-[node name="CollisionPolygon2D" parent="지형/구역5_붕괴발판2/StaticBody2D"]
-polygon = PackedVector2Array(-96, -72, 96, -72, 96, 72, -96, 72)
-
-[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판2"]
-points = PackedVector2Array(-57.599999999999994, -64, -19.200000000000003, -40, 19.200000000000003, -56, 57.599999999999994, -24)
+[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판2" unique_id=275942493]
+points = PackedVector2Array(-57.6, -64, -19.2, -40, 19.2, -56, 57.6, -24)
 width = 3.0
 default_color = Color(0.7, 0.7, 0.7, 0.8)
 
-[node name="구역5_붕괴발판3" parent="지형" instance=ExtResource("black")]
+[node name="구역5_붕괴발판3" parent="지형" unique_id=1684680444 instance=ExtResource("black")]
 position = Vector2(15264, 7240)
 script = ExtResource("crumble")
 "붕괴_대기" = 0.9
 "복구_대기" = 3.0
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain19")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_1yfam")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_u17dg"), SubResource("Resource_rphes")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "crumble"
 
-[node name="CollisionPolygon2D" parent="지형/구역5_붕괴발판3/StaticBody2D"]
-polygon = PackedVector2Array(-64, -72, 64, -72, 64, 72, -64, 72)
-
-[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판3"]
+[node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판3" unique_id=557420877]
 points = PackedVector2Array(-38.4, -64, -12.8, -40, 12.8, -56, 38.4, -24)
 width = 3.0
 default_color = Color(0.7, 0.7, 0.7, 0.8)
 
-[node name="구역5_밸브수문" parent="지형" instance=ExtResource("black")]
+[node name="구역5_밸브수문" parent="지형" unique_id=567305215 instance=ExtResource("black")]
 position = Vector2(15744, 6912)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain20")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_u78ns")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_a6s2h"), SubResource("Resource_h76cg")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "gate"
 
-[node name="CollisionPolygon2D" parent="지형/구역5_밸브수문/StaticBody2D"]
-polygon = PackedVector2Array(-64, -256, 64, -256, 64, 256, -64, 256)
-
-[node name="외곽_왼벽" parent="지형" instance=ExtResource("black")]
+[node name="외곽_왼벽" parent="지형" unique_id=705753917 instance=ExtResource("black")]
 position = Vector2(-896, 4608)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain21")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_1vi3b")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_x3tcr"), SubResource("Resource_5ucvy")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "exterior"
 
-[node name="CollisionPolygon2D" parent="지형/외곽_왼벽/StaticBody2D"]
-polygon = PackedVector2Array(-1024, -4352, 1024, -4352, 1024, 4352, -1024, 4352)
-
-[node name="외곽_오른벽" parent="지형" instance=ExtResource("black")]
+[node name="외곽_오른벽" parent="지형" unique_id=1115452153 instance=ExtResource("black")]
 position = Vector2(18816, 4608)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain22")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_3hfjs")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_f7xpy"), SubResource("Resource_ky37y")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "exterior"
 
-[node name="CollisionPolygon2D" parent="지형/외곽_오른벽/StaticBody2D"]
-polygon = PackedVector2Array(-1024, -4352, 1024, -4352, 1024, 4352, -1024, 4352)
-
-[node name="외곽_천장" parent="지형" instance=ExtResource("black")]
+[node name="외곽_천장" parent="지형" unique_id=873571406 instance=ExtResource("black")]
 position = Vector2(8960, -768)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain23")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_w83pd")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_qibj6"), SubResource("Resource_o5m7h")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "exterior"
 
-[node name="CollisionPolygon2D" parent="지형/외곽_천장/StaticBody2D"]
-polygon = PackedVector2Array(-10880, -1024, 10880, -1024, 10880, 1024, -10880, 1024)
-
-[node name="외곽_바닥" parent="지형" instance=ExtResource("black")]
+[node name="외곽_바닥" parent="지형" unique_id=100317817 instance=ExtResource("black")]
 position = Vector2(8960, 9984)
-"시작상태" = 1
-"칠하기_방식" = 0
-"칠하기_허용" = true
 "필요횟수_수동" = 1
-_points = SubResource("terrain24")
-_meshes = Array[ExtResource("mesh")]([])
+"시작상태" = 1
+_points = SubResource("Resource_3i0n4")
+_meshes = Array[ExtResource("mesh")]([SubResource("Resource_gfl82"), SubResource("Resource_t0l6u")])
 collision_size = 0.0
-collision_offset = 0.0
 metadata/role = "exterior"
 
-[node name="CollisionPolygon2D" parent="지형/외곽_바닥/StaticBody2D"]
-polygon = PackedVector2Array(-10880, -1024, 10880, -1024, 10880, 1024, -10880, 1024)
+[node name="장치" type="Node2D" parent="." unique_id=67374484]
 
-[node name="장치" type="Node2D" parent="."]
-
-
-[node name="구역1_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+[node name="구역1_구덩이_물받이" parent="장치" unique_id=1719333357 instance=ExtResource("pool")]
 position = Vector2(1536, 1408)
-"색" = 2
 "크기" = Vector2(1024, 192)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역1_복귀발판1" parent="장치" instance=ExtResource("grate")]
+[node name="구역1_복귀발판1" parent="장치" unique_id=1598696944 instance=ExtResource("grate")]
 position = Vector2(1120, 1132)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판1"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판1" unique_id=1382299564]
 shape = SubResource("grate220")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역1_복귀발판2" parent="장치" instance=ExtResource("grate")]
+[node name="구역1_복귀발판2" parent="장치" unique_id=61396851 instance=ExtResource("grate")]
 position = Vector2(1120, 1228)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판2"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판2" unique_id=1592023439]
 shape = SubResource("grate221")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역1_복귀발판3" parent="장치" instance=ExtResource("grate")]
+[node name="구역1_복귀발판3" parent="장치" unique_id=1363071041 instance=ExtResource("grate")]
 position = Vector2(1120, 1324)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판3"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역1_복귀발판3" unique_id=764651548]
 shape = SubResource("grate222")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역1_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+[node name="구역1_하강_완충수1" parent="장치" unique_id=1438302861 instance=ExtResource("pool")]
 position = Vector2(2656, 1120)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역1_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+[node name="구역1_하강_완충수2" parent="장치" unique_id=1079662450 instance=ExtResource("pool")]
 position = Vector2(2848, 1440)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역1_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+[node name="구역1_하강_완충수3" parent="장치" unique_id=1032112197 instance=ExtResource("pool")]
 position = Vector2(3040, 1760)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역1_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+[node name="구역1_하강_완충수4" parent="장치" unique_id=1246435424 instance=ExtResource("pool")]
 position = Vector2(3232, 2080)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역1_폭포1" parent="장치" instance=ExtResource("water")]
+[node name="구역1_폭포1" parent="장치" unique_id=1286668842 instance=ExtResource("water")]
 position = Vector2(1344, 512)
 "색" = 1
 "크기" = Vector2(256, 560)
-"켜짐" = true
-"낙하_받아줌" = false
 
-[node name="구역1_폭포2" parent="장치" instance=ExtResource("water")]
+[node name="구역1_폭포2" parent="장치" unique_id=1430206284 instance=ExtResource("water")]
 position = Vector2(1792, 512)
 "색" = 0
 "크기" = Vector2(256, 560)
-"켜짐" = true
-"낙하_받아줌" = false
 
-[node name="구역1_폭포묶음" type="Node2D" parent="장치"]
-position = Vector2(0, 0)
+[node name="구역1_폭포묶음" type="Node2D" parent="장치" unique_id=1767772464]
 script = ExtResource("valveGroup")
 "유체들" = Array[NodePath]([NodePath("../구역1_폭포1"), NodePath("../구역1_폭포2")])
 "수문" = NodePath("../../지형/구역1_밸브수문")
-"열림_이동량" = Vector2(0, -640)
 
-[node name="구역1_폭포차단_레버" parent="장치" instance=ExtResource("lever")]
+[node name="구역1_폭포차단_레버" parent="장치" unique_id=1561131222 instance=ExtResource("lever")]
 position = Vector2(672, 864)
-"종류" = 0
-"반응반경" = 96.0
+collision_layer = 0
 "대상_유체" = NodePath("../구역1_폭포묶음")
-"시작_켜짐" = true
+"반응반경" = 96.0
 
-[node name="구역2_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+[node name="구역2_구덩이_물받이" parent="장치" unique_id=195421991 instance=ExtResource("pool")]
 position = Vector2(4864, 2944)
-"색" = 0
 "크기" = Vector2(1024, 192)
-"낙하_받아줌" = true
-"페인트_지움" = false
+"색" = 0
 
-[node name="구역2_복귀발판1" parent="장치" instance=ExtResource("grate")]
+[node name="구역2_복귀발판1" parent="장치" unique_id=603363153 instance=ExtResource("grate")]
 position = Vector2(4448, 2668)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판1"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판1" unique_id=708000281]
 shape = SubResource("grate223")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역2_복귀발판2" parent="장치" instance=ExtResource("grate")]
+[node name="구역2_복귀발판2" parent="장치" unique_id=1019007793 instance=ExtResource("grate")]
 position = Vector2(4448, 2764)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판2"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판2" unique_id=1246229032]
 shape = SubResource("grate224")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역2_복귀발판3" parent="장치" instance=ExtResource("grate")]
+[node name="구역2_복귀발판3" parent="장치" unique_id=832672795 instance=ExtResource("grate")]
 position = Vector2(4448, 2860)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판3"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역2_복귀발판3" unique_id=1587227684]
 shape = SubResource("grate225")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역2_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+[node name="구역2_하강_완충수1" parent="장치" unique_id=1965628513 instance=ExtResource("pool")]
 position = Vector2(5984, 2656)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역2_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+[node name="구역2_하강_완충수2" parent="장치" unique_id=749752405 instance=ExtResource("pool")]
 position = Vector2(6176, 2976)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역2_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+[node name="구역2_하강_완충수3" parent="장치" unique_id=924461629 instance=ExtResource("pool")]
 position = Vector2(6368, 3296)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역2_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+[node name="구역2_하강_완충수4" parent="장치" unique_id=123132866 instance=ExtResource("pool")]
 position = Vector2(6560, 3616)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역2_진입_완충수" parent="장치" instance=ExtResource("pool")]
+[node name="구역2_진입_완충수" parent="장치" unique_id=407260594 instance=ExtResource("pool")]
 position = Vector2(3744, 2560)
-"색" = 2
 "크기" = Vector2(320, 96)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역2_버튼이동다리" parent="장치" instance=ExtResource("moving")]
+[node name="구역2_버튼이동다리" parent="장치" unique_id=429182838 instance=ExtResource("moving")]
 position = Vector2(4864, 1944)
 "크기" = Vector2(768, 48)
 "이동거리" = 0.0
 "필요횟수" = 1
+metadata/pressure_button_origin = Vector2(4864, 1944)
 
-[node name="구역2_압력발판" type="AnimatableBody2D" parent="장치"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역2_버튼이동다리" unique_id=577200963]
+shape = SubResource("RectangleShape2D_jmcvk")
+
+[node name="구역2_압력발판" type="AnimatableBody2D" parent="장치" unique_id=37819963]
 position = Vector2(4160, 2584)
 script = ExtResource("button")
 "폭" = 160.0
@@ -2235,209 +2910,201 @@ script = ExtResource("button")
 "대상_이동량들" = Array[Vector2]([Vector2(0, 640)])
 "이동속도" = 320.0
 
-[node name="구역2_발판변색_분사기" parent="장치" instance=ExtResource("sprayer")]
+[node name="누름감지" type="Area2D" parent="장치/구역2_압력발판" unique_id=2000003821]
+collision_layer = 0
+
+[node name="모양" type="CollisionShape2D" parent="장치/구역2_압력발판/누름감지" unique_id=790904701]
+visible = false
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_7sc3x")
+
+[node name="밟는면" type="StaticBody2D" parent="장치/구역2_압력발판" unique_id=285082535]
+collision_mask = 0
+
+[node name="모양" type="CollisionShape2D" parent="장치/구역2_압력발판/밟는면" unique_id=771398904]
+visible = false
+position = Vector2(0, -12)
+shape = SubResource("RectangleShape2D_v0xqm")
+
+[node name="구역2_발판변색_분사기" parent="장치" unique_id=118303860 instance=ExtResource("sprayer")]
 position = Vector2(5120, 2256)
-"각도" = 90.0
 "총구거리" = 32.0
 "탄속" = 560.0
-"탄낙차" = 0.0
 "발사간격" = 4.0
+"탄낙차" = 0.0
+"발사색" = 1
 "색_번갈아" = true
 "색_전환주기" = 8.0
-"발사색" = 1
 
-[node name="구역3_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+[node name="구역3_구덩이_물받이" parent="장치" unique_id=764113817 instance=ExtResource("pool")]
 position = Vector2(8192, 4480)
-"색" = 0
 "크기" = Vector2(1024, 192)
-"낙하_받아줌" = true
-"페인트_지움" = false
+"색" = 0
 
-[node name="구역3_복귀발판1" parent="장치" instance=ExtResource("grate")]
+[node name="구역3_복귀발판1" parent="장치" unique_id=55347820 instance=ExtResource("grate")]
 position = Vector2(7776, 4204)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판1"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판1" unique_id=1177369169]
 shape = SubResource("grate226")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역3_복귀발판2" parent="장치" instance=ExtResource("grate")]
+[node name="구역3_복귀발판2" parent="장치" unique_id=1949393364 instance=ExtResource("grate")]
 position = Vector2(7776, 4300)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판2"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판2" unique_id=1208133754]
 shape = SubResource("grate227")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역3_복귀발판3" parent="장치" instance=ExtResource("grate")]
+[node name="구역3_복귀발판3" parent="장치" unique_id=1983393852 instance=ExtResource("grate")]
 position = Vector2(7776, 4396)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판3"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_복귀발판3" unique_id=1980983427]
 shape = SubResource("grate228")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역3_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+[node name="구역3_하강_완충수1" parent="장치" unique_id=1803276423 instance=ExtResource("pool")]
 position = Vector2(9312, 4192)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역3_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+[node name="구역3_하강_완충수2" parent="장치" unique_id=2059975606 instance=ExtResource("pool")]
 position = Vector2(9504, 4512)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역3_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+[node name="구역3_하강_완충수3" parent="장치" unique_id=2132751930 instance=ExtResource("pool")]
 position = Vector2(9696, 4832)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역3_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+[node name="구역3_하강_완충수4" parent="장치" unique_id=220609168 instance=ExtResource("pool")]
 position = Vector2(9888, 5152)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역3_진입_완충수" parent="장치" instance=ExtResource("pool")]
+[node name="구역3_진입_완충수" parent="장치" unique_id=1517176022 instance=ExtResource("pool")]
 position = Vector2(7072, 4096)
-"색" = 2
 "크기" = Vector2(320, 96)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역3_물길우회_출구발판1" parent="장치" instance=ExtResource("grate")]
+[node name="구역3_물길우회_출구발판1" parent="장치" unique_id=239343384 instance=ExtResource("grate")]
 position = Vector2(8640, 4204)
+collision_mask = 0
 "크기" = Vector2(96, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판1"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판1" unique_id=1135171355]
 shape = SubResource("grate229")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역3_물길우회_출구발판2" parent="장치" instance=ExtResource("grate")]
+[node name="구역3_물길우회_출구발판2" parent="장치" unique_id=1416837734 instance=ExtResource("grate")]
 position = Vector2(8640, 4300)
+collision_mask = 0
 "크기" = Vector2(96, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판2"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판2" unique_id=949144100]
 shape = SubResource("grate230")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역3_물길우회_출구발판3" parent="장치" instance=ExtResource("grate")]
+[node name="구역3_물길우회_출구발판3" parent="장치" unique_id=1339660231 instance=ExtResource("grate")]
 position = Vector2(8640, 4396)
+collision_mask = 0
 "크기" = Vector2(96, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판3"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판3" unique_id=1596246069]
 shape = SubResource("grate231")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역3_발판변색_분사기" parent="장치" instance=ExtResource("sprayer")]
+[node name="구역3_발판변색_분사기" parent="장치" unique_id=1991735385 instance=ExtResource("sprayer")]
 position = Vector2(8448, 3792)
-"각도" = 90.0
 "총구거리" = 32.0
 "탄속" = 560.0
-"탄낙차" = 0.0
 "발사간격" = 4.0
+"탄낙차" = 0.0
+"발사색" = 1
 "색_번갈아" = true
 "색_전환주기" = 8.0
-"발사색" = 1
 
-[node name="구역4_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+[node name="구역4_구덩이_물받이" parent="장치" unique_id=1020723151 instance=ExtResource("pool")]
 position = Vector2(11520, 6016)
-"색" = 2
 "크기" = Vector2(1024, 192)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역4_복귀발판1" parent="장치" instance=ExtResource("grate")]
+[node name="구역4_복귀발판1" parent="장치" unique_id=1867314988 instance=ExtResource("grate")]
 position = Vector2(11104, 5740)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판1"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판1" unique_id=1372123733]
 shape = SubResource("grate232")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역4_복귀발판2" parent="장치" instance=ExtResource("grate")]
+[node name="구역4_복귀발판2" parent="장치" unique_id=1000094205 instance=ExtResource("grate")]
 position = Vector2(11104, 5836)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판2"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판2" unique_id=806406333]
 shape = SubResource("grate233")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역4_복귀발판3" parent="장치" instance=ExtResource("grate")]
+[node name="구역4_복귀발판3" parent="장치" unique_id=363927654 instance=ExtResource("grate")]
 position = Vector2(11104, 5932)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판3"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역4_복귀발판3" unique_id=724593190]
 shape = SubResource("grate234")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역4_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+[node name="구역4_하강_완충수1" parent="장치" unique_id=2080342685 instance=ExtResource("pool")]
 position = Vector2(12640, 5728)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역4_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+[node name="구역4_하강_완충수2" parent="장치" unique_id=1849125347 instance=ExtResource("pool")]
 position = Vector2(12832, 6048)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역4_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+[node name="구역4_하강_완충수3" parent="장치" unique_id=12489391 instance=ExtResource("pool")]
 position = Vector2(13024, 6368)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역4_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+[node name="구역4_하강_완충수4" parent="장치" unique_id=126200280 instance=ExtResource("pool")]
 position = Vector2(13216, 6688)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역4_진입_완충수" parent="장치" instance=ExtResource("pool")]
+[node name="구역4_진입_완충수" parent="장치" unique_id=1617282993 instance=ExtResource("pool")]
 position = Vector2(10400, 5632)
-"색" = 2
 "크기" = Vector2(320, 96)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역4_버튼이동다리" parent="장치" instance=ExtResource("moving")]
+[node name="구역4_버튼이동다리" parent="장치" unique_id=1768119202 instance=ExtResource("moving")]
 position = Vector2(11520, 5016)
 "크기" = Vector2(768, 48)
 "이동거리" = 0.0
 "필요횟수" = 1
+metadata/pressure_button_origin = Vector2(11520, 5016)
 
-[node name="구역4_압력발판" type="AnimatableBody2D" parent="장치"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역4_버튼이동다리" unique_id=1648995471]
+shape = SubResource("RectangleShape2D_btilu")
+
+[node name="구역4_압력발판" type="AnimatableBody2D" parent="장치" unique_id=1126004649]
 position = Vector2(10816, 5656)
 script = ExtResource("button")
 "폭" = 160.0
@@ -2447,261 +3114,244 @@ script = ExtResource("button")
 "대상_이동량들" = Array[Vector2]([Vector2(0, 640)])
 "이동속도" = 320.0
 
-[node name="구역4_폭포1" parent="장치" instance=ExtResource("water")]
+[node name="누름감지" type="Area2D" parent="장치/구역4_압력발판" unique_id=432963417]
+collision_layer = 0
+
+[node name="모양" type="CollisionShape2D" parent="장치/구역4_압력발판/누름감지" unique_id=958271539]
+visible = false
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_3dvvq")
+
+[node name="밟는면" type="StaticBody2D" parent="장치/구역4_압력발판" unique_id=624410273]
+collision_mask = 0
+
+[node name="모양" type="CollisionShape2D" parent="장치/구역4_압력발판/밟는면" unique_id=52264837]
+visible = false
+position = Vector2(0, -12)
+shape = SubResource("RectangleShape2D_n66ct")
+
+[node name="구역4_폭포1" parent="장치" unique_id=460069061 instance=ExtResource("water")]
 position = Vector2(11328, 5120)
 "색" = 1
 "크기" = Vector2(256, 560)
-"켜짐" = true
-"낙하_받아줌" = false
 
-[node name="구역4_폭포2" parent="장치" instance=ExtResource("water")]
+[node name="구역4_폭포2" parent="장치" unique_id=764305583 instance=ExtResource("water")]
 position = Vector2(11776, 5120)
 "색" = 0
 "크기" = Vector2(256, 560)
-"켜짐" = true
-"낙하_받아줌" = false
 
-[node name="구역4_폭포묶음" type="Node2D" parent="장치"]
-position = Vector2(0, 0)
+[node name="구역4_폭포묶음" type="Node2D" parent="장치" unique_id=103843768]
 script = ExtResource("valveGroup")
 "유체들" = Array[NodePath]([NodePath("../구역4_폭포1"), NodePath("../구역4_폭포2")])
 "수문" = NodePath("../../지형/구역4_밸브수문")
-"열림_이동량" = Vector2(0, -640)
 
-[node name="구역4_폭포차단_레버" parent="장치" instance=ExtResource("lever")]
+[node name="구역4_폭포차단_레버" parent="장치" unique_id=593070923 instance=ExtResource("lever")]
 position = Vector2(10656, 5568)
-"종류" = 0
-"반응반경" = 96.0
+collision_layer = 0
 "대상_유체" = NodePath("../구역4_폭포묶음")
-"시작_켜짐" = true
+"반응반경" = 96.0
 
-[node name="구역5_구덩이_물받이" parent="장치" instance=ExtResource("pool")]
+[node name="구역5_구덩이_물받이" parent="장치" unique_id=60619353 instance=ExtResource("pool")]
 position = Vector2(14848, 7552)
-"색" = 0
 "크기" = Vector2(1024, 192)
-"낙하_받아줌" = true
-"페인트_지움" = false
+"색" = 0
 
-[node name="구역5_복귀발판1" parent="장치" instance=ExtResource("grate")]
+[node name="구역5_복귀발판1" parent="장치" unique_id=1862690073 instance=ExtResource("grate")]
 position = Vector2(14432, 7276)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판1"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판1" unique_id=892431782]
 shape = SubResource("grate235")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역5_복귀발판2" parent="장치" instance=ExtResource("grate")]
+[node name="구역5_복귀발판2" parent="장치" unique_id=15143420 instance=ExtResource("grate")]
 position = Vector2(14432, 7372)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판2"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판2" unique_id=39892732]
 shape = SubResource("grate236")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역5_복귀발판3" parent="장치" instance=ExtResource("grate")]
+[node name="구역5_복귀발판3" parent="장치" unique_id=797997297 instance=ExtResource("grate")]
 position = Vector2(14432, 7468)
+collision_mask = 0
 "크기" = Vector2(128, 24)
 "필요횟수" = 1
 
-[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판3"]
+[node name="충돌" type="CollisionShape2D" parent="장치/구역5_복귀발판3" unique_id=1961659850]
 shape = SubResource("grate237")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="구역5_하강_완충수1" parent="장치" instance=ExtResource("pool")]
+[node name="구역5_하강_완충수1" parent="장치" unique_id=320394071 instance=ExtResource("pool")]
 position = Vector2(15968, 7264)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역5_하강_완충수2" parent="장치" instance=ExtResource("pool")]
+[node name="구역5_하강_완충수2" parent="장치" unique_id=566924878 instance=ExtResource("pool")]
 position = Vector2(16160, 7584)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역5_하강_완충수3" parent="장치" instance=ExtResource("pool")]
+[node name="구역5_하강_완충수3" parent="장치" unique_id=1667384038 instance=ExtResource("pool")]
 position = Vector2(16352, 7904)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역5_하강_완충수4" parent="장치" instance=ExtResource("pool")]
+[node name="구역5_하강_완충수4" parent="장치" unique_id=1716715276 instance=ExtResource("pool")]
 position = Vector2(16544, 8224)
-"색" = 2
 "크기" = Vector2(192, 160)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역5_진입_완충수" parent="장치" instance=ExtResource("pool")]
+[node name="구역5_진입_완충수" parent="장치" unique_id=59347041 instance=ExtResource("pool")]
 position = Vector2(13728, 7168)
-"색" = 2
 "크기" = Vector2(320, 96)
-"낙하_받아줌" = true
-"페인트_지움" = false
 
-[node name="구역5_폭포1" parent="장치" instance=ExtResource("water")]
+[node name="구역5_폭포1" parent="장치" unique_id=543410713 instance=ExtResource("water")]
 position = Vector2(14656, 6656)
 "색" = 1
 "크기" = Vector2(256, 560)
-"켜짐" = true
-"낙하_받아줌" = false
 
-[node name="구역5_폭포2" parent="장치" instance=ExtResource("water")]
+[node name="구역5_폭포2" parent="장치" unique_id=271651452 instance=ExtResource("water")]
 position = Vector2(15104, 6656)
 "색" = 0
 "크기" = Vector2(256, 560)
-"켜짐" = true
-"낙하_받아줌" = false
 
-[node name="구역5_폭포묶음" type="Node2D" parent="장치"]
-position = Vector2(0, 0)
+[node name="구역5_폭포묶음" type="Node2D" parent="장치" unique_id=576943443]
 script = ExtResource("valveGroup")
 "유체들" = Array[NodePath]([NodePath("../구역5_폭포1"), NodePath("../구역5_폭포2")])
 "수문" = NodePath("../../지형/구역5_밸브수문")
-"열림_이동량" = Vector2(0, -640)
 
-[node name="구역5_폭포차단_레버" parent="장치" instance=ExtResource("lever")]
+[node name="구역5_폭포차단_레버" parent="장치" unique_id=1486488543 instance=ExtResource("lever")]
 position = Vector2(13984, 7104)
-"종류" = 0
-"반응반경" = 96.0
+collision_layer = 0
 "대상_유체" = NodePath("../구역5_폭포묶음")
-"시작_켜짐" = true
+"반응반경" = 96.0
 
-[node name="구역5_발판변색_분사기" parent="장치" instance=ExtResource("sprayer")]
+[node name="구역5_발판변색_분사기" parent="장치" unique_id=864174168 instance=ExtResource("sprayer")]
 position = Vector2(15008, 6864)
-"각도" = 90.0
 "총구거리" = 32.0
 "탄속" = 560.0
-"탄낙차" = 0.0
 "발사간격" = 4.0
+"탄낙차" = 0.0
+"발사색" = 1
 "색_번갈아" = true
 "색_전환주기" = 8.0
-"발사색" = 1
 
-[node name="구역1_폭포1_급수관" parent="장치" instance=ExtResource("pipe")]
+[node name="구역1_폭포1_급수관" parent="장치" unique_id=1635883316 instance=ExtResource("pipe")]
+z_index = 3
 position = Vector2(1344, 512)
 
-[node name="경로" parent="장치/구역1_폭포1_급수관"]
-_points = SubResource("pipe238")
-
-[node name="시작_물_포트" parent="장치/구역1_폭포1_급수관"]
-position = Vector2(-192, -128)
-
-[node name="끝_물_포트" parent="장치/구역1_폭포1_급수관"]
-position = Vector2(0, 0)
-
-[node name="구역1_폭포2_급수관" parent="장치" instance=ExtResource("pipe")]
+[node name="구역1_폭포2_급수관" parent="장치" unique_id=1656636913 instance=ExtResource("pipe")]
+z_index = 3
 position = Vector2(1792, 512)
 
-[node name="경로" parent="장치/구역1_폭포2_급수관"]
-_points = SubResource("pipe242")
-
-[node name="시작_물_포트" parent="장치/구역1_폭포2_급수관"]
-position = Vector2(-192, -128)
-
-[node name="끝_물_포트" parent="장치/구역1_폭포2_급수관"]
-position = Vector2(0, 0)
-
-[node name="구역4_폭포1_급수관" parent="장치" instance=ExtResource("pipe")]
+[node name="구역4_폭포1_급수관" parent="장치" unique_id=945990415 instance=ExtResource("pipe")]
+z_index = 3
 position = Vector2(11328, 5120)
 
-[node name="경로" parent="장치/구역4_폭포1_급수관"]
-_points = SubResource("pipe246")
-
-[node name="시작_물_포트" parent="장치/구역4_폭포1_급수관"]
-position = Vector2(-192, -128)
-
-[node name="끝_물_포트" parent="장치/구역4_폭포1_급수관"]
-position = Vector2(0, 0)
-
-[node name="구역4_폭포2_급수관" parent="장치" instance=ExtResource("pipe")]
+[node name="구역4_폭포2_급수관" parent="장치" unique_id=546211552 instance=ExtResource("pipe")]
+z_index = 3
 position = Vector2(11776, 5120)
 
-[node name="경로" parent="장치/구역4_폭포2_급수관"]
-_points = SubResource("pipe250")
-
-[node name="시작_물_포트" parent="장치/구역4_폭포2_급수관"]
-position = Vector2(-192, -128)
-
-[node name="끝_물_포트" parent="장치/구역4_폭포2_급수관"]
-position = Vector2(0, 0)
-
-[node name="구역5_폭포1_급수관" parent="장치" instance=ExtResource("pipe")]
+[node name="구역5_폭포1_급수관" parent="장치" unique_id=745730583 instance=ExtResource("pipe")]
+z_index = 3
 position = Vector2(14656, 6656)
 
-[node name="경로" parent="장치/구역5_폭포1_급수관"]
-_points = SubResource("pipe254")
-
-[node name="시작_물_포트" parent="장치/구역5_폭포1_급수관"]
-position = Vector2(-192, -128)
-
-[node name="끝_물_포트" parent="장치/구역5_폭포1_급수관"]
-position = Vector2(0, 0)
-
-[node name="구역5_폭포2_급수관" parent="장치" instance=ExtResource("pipe")]
+[node name="구역5_폭포2_급수관" parent="장치" unique_id=2146273954 instance=ExtResource("pipe")]
+z_index = 3
 position = Vector2(15104, 6656)
 
-[node name="경로" parent="장치/구역5_폭포2_급수관"]
-_points = SubResource("pipe258")
+[node name="체크포인트" type="Node2D" parent="." unique_id=1851452730]
 
-[node name="시작_물_포트" parent="장치/구역5_폭포2_급수관"]
-position = Vector2(-192, -128)
-
-[node name="끝_물_포트" parent="장치/구역5_폭포2_급수관"]
-position = Vector2(0, 0)
-
-[node name="체크포인트" type="Node2D" parent="."]
-
-
-[node name="구역1_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역1_진입" parent="체크포인트" unique_id=1728445715 instance=ExtResource("checkpoint")]
 position = Vector2(512, 1024)
+collision_layer = 0
 
-[node name="구역1_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역1_통과" parent="체크포인트" unique_id=901612793 instance=ExtResource("checkpoint")]
 position = Vector2(2192, 1024)
+collision_layer = 0
 
-[node name="구역2_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역2_진입" parent="체크포인트" unique_id=312914933 instance=ExtResource("checkpoint")]
 position = Vector2(3840, 2560)
+collision_layer = 0
 
-[node name="구역2_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역2_통과" parent="체크포인트" unique_id=2061917208 instance=ExtResource("checkpoint")]
 position = Vector2(5520, 2560)
+collision_layer = 0
 
-[node name="구역3_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역3_진입" parent="체크포인트" unique_id=1162497006 instance=ExtResource("checkpoint")]
 position = Vector2(7168, 4096)
+collision_layer = 0
 
-[node name="구역3_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역3_통과" parent="체크포인트" unique_id=1544268043 instance=ExtResource("checkpoint")]
 position = Vector2(8848, 4096)
+collision_layer = 0
 
-[node name="구역4_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역4_진입" parent="체크포인트" unique_id=1955563181 instance=ExtResource("checkpoint")]
 position = Vector2(10496, 5632)
+collision_layer = 0
 
-[node name="구역4_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역4_통과" parent="체크포인트" unique_id=942142450 instance=ExtResource("checkpoint")]
 position = Vector2(12176, 5632)
+collision_layer = 0
 
-[node name="구역5_진입" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역5_진입" parent="체크포인트" unique_id=722959370 instance=ExtResource("checkpoint")]
 position = Vector2(13824, 7168)
+collision_layer = 0
 
-[node name="구역5_통과" parent="체크포인트" instance=ExtResource("checkpoint")]
+[node name="구역5_통과" parent="체크포인트" unique_id=437717221 instance=ExtResource("checkpoint")]
 position = Vector2(15504, 7168)
+collision_layer = 0
 
-[node name="출구통로" parent="." instance=ExtResource("exit")]
+[node name="출구통로" parent="." unique_id=400825222 instance=ExtResource("exit")]
 position = Vector2(16896, 8448)
 "높이" = 256.0
 "깊이" = 512.0
 "두께" = 96.0
 "다음_씬" = "res://scenes/lobby/lobby.tscn"
 
-[node name="끝도달_검사점" type="Marker2D" parent="."]
+[node name="판정" type="CollisionShape2D" parent="출구통로" unique_id=2022958891]
+position = Vector2(337.92, -128)
+shape = SubResource("RectangleShape2D_a23xu")
+
+[node name="바닥" type="StaticBody2D" parent="출구통로" unique_id=704051977]
+position = Vector2(268, 48)
+collision_mask = 0
+
+[node name="모양" type="CollisionShape2D" parent="출구통로/바닥" unique_id=1681189400]
+visible = false
+shape = SubResource("RectangleShape2D_uonbl")
+
+[node name="천장" type="StaticBody2D" parent="출구통로" unique_id=980634904]
+position = Vector2(268, -304)
+collision_mask = 0
+
+[node name="모양" type="CollisionShape2D" parent="출구통로/천장" unique_id=1246562247]
+visible = false
+shape = SubResource("RectangleShape2D_uono3")
+
+[node name="뒷벽" type="StaticBody2D" parent="출구통로" unique_id=538387103]
+position = Vector2(560, -128)
+collision_mask = 0
+
+[node name="모양" type="CollisionShape2D" parent="출구통로/뒷벽" unique_id=1344714350]
+visible = false
+shape = SubResource("RectangleShape2D_wvyxl")
+
+[node name="속빛광원" type="PointLight2D" parent="출구통로" unique_id=1025759789]
+position = Vector2(399.36, -128)
+color = Color(0.6895, 0.694, 0.70299995, 1)
+energy = 0.85
+texture = SubResource("GradientTexture2D_brsmv")
+texture_scale = 3.4
+height = 128.0
+
+[node name="끝도달_검사점" type="Marker2D" parent="." unique_id=1994670770]
 position = Vector2(17216, 8448)
 
-[node name="Player" parent="." instance=ExtResource("player")]
-position = Vector2(384, 1024)
-"점프_높이_칸" = 10.0
+[node name="Player" parent="." unique_id=2001096027 instance=ExtResource("player")]
+position = Vector2(14200, 7040)
 "점프_거리_칸" = 20.0

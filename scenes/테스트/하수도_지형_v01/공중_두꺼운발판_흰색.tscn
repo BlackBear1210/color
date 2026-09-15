@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_벽돌지형.gd" id="shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v01/masonry_white.tres" id="material"]
+
+[sub_resource type="Resource" id="p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(320, 0)
+
+[sub_resource type="Resource" id="p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(320, 120)
+
+[sub_resource type="Resource" id="p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 120)
+
+[sub_resource type="Resource" id="p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="array"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("p0"),
+1: SubResource("p1"),
+2: SubResource("p2"),
+3: SubResource("p3"),
+4: SubResource("p4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = { Vector2i(0, 4): 15 }
+_next_key = 5
+
+[node name="공중_두꺼운발판" type="Node2D"]
+editor_description = "크기는 SS2D 점을 이동해서 변경하세요. 노드와 부모 Scale은 (1,1)을 유지합니다. 테두리는 고정 밀도로 반복되며, 두께 24px 미만이나 매우 예리한 꼭짓점은 피하세요."
+script = ExtResource("shape")
+"시작상태" = 2
+"위치별_판정" = true
+_points = SubResource("array")
+shape_material = ExtResource("material")
+texture_repeat = 2
+collision_update_mode = 2
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 320, 0, 320, 120, 0, 120)

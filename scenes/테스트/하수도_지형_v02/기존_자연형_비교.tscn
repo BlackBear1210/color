@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_다층배경_2_1.tscn" id="bg"]
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v02/자연형_공중플랫폼_검정.tscn" id="old_black"]
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v02/자연형_공중플랫폼_흰색.tscn" id="old_white"]
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v02/자연형_땅플랫폼_검정.tscn" id="new_black"]
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v02/자연형_땅플랫폼_흰색.tscn" id="new_white"]
+
+[node name="기존_자연형_비교" type="Node2D"]
+editor_description = "위: 공중 / 아래: 땅 지형. 외관 비교 전용이며 플레이어·물감·사망 검증 씬이 아닙니다."
+
+[node name="배경" parent="." instance=ExtResource("bg")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+
+[node name="기존검정" parent="." instance=ExtResource("old_black")]
+position = Vector2(440, 340)
+
+[node name="기존흰색" parent="." instance=ExtResource("old_white")]
+position = Vector2(1040, 340)
+
+[node name="자연검정" parent="." instance=ExtResource("new_black")]
+position = Vector2(440, 620)
+
+[node name="자연흰색" parent="." instance=ExtResource("new_white")]
+position = Vector2(1040, 620)
+
+[node name="기존설명" type="Label" parent="."]
+offset_left = 440.0
+offset_top = 260.0
+text = "공중 — 돌출된 옆면 / 벽돌 단위로 끊긴 밑면"
+theme_override_font_sizes/font_size = 24
+
+[node name="자연설명" type="Label" parent="."]
+offset_left = 440.0
+offset_top = 540.0
+text = "땅 — 절제된 모서리 / 아래로 이어지는 벽체"
+theme_override_font_sizes/font_size = 24
+
+[node name="주의" type="Label" parent="."]
+offset_left = 440.0
+offset_top = 940.0
+text = "윗면 폭 340 · 같은 벽돌 크기 · 위: 공중 / 아래: 땅"
+theme_override_font_sizes/font_size = 20

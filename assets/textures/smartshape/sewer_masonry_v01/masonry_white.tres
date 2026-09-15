@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=3 uid="uid://j82ka3daxssd"]
+
+[ext_resource type="Script" uid="uid://d0xjijisx1woh" path="res://addons/rmsmartshape/materials/edge_material.gd" id="edge"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/sewer_masonry_v01/white/fill.tres" id="fill"]
+[ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="meta"]
+[ext_resource type="Script" uid="uid://d218yx0d1ilsn" path="res://addons/rmsmartshape/normal_range.gd" id="range"]
+[ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="shape"]
+[ext_resource type="Texture2D" uid="uid://gqc7n8jabalp" path="res://assets/textures/smartshape/sewer_masonry_v01/white/top.png" id="top"]
+
+[sub_resource type="Resource" id="edge0"]
+script = ExtResource("edge")
+textures = Array[Texture2D]([ExtResource("top")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.16
+uniform_width = true
+
+[sub_resource type="Resource" id="range0"]
+script = ExtResource("range")
+
+[sub_resource type="Resource" id="meta0"]
+script = ExtResource("meta")
+edge_material = SubResource("edge0")
+normal_range = SubResource("range0")
+offset = -1.0
+
+[resource]
+script = ExtResource("shape")
+_edge_meta_materials = Array[ExtResource("meta")]([SubResource("meta0")])
+fill_textures = Array[Texture2D]([ExtResource("fill")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28
+fill_texture_absolute_position = true

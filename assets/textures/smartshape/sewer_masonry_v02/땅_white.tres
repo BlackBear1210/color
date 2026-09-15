@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" format=4 uid="uid://dy6cogcn482tq"]
+
+[ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="1_8n1ku"]
+[ext_resource type="Texture2D" uid="uid://cikjgn2r36cd2" path="res://assets/textures/smartshape/sewer_masonry_v02/black/fill.png" id="alt"]
+[ext_resource type="Texture2D" uid="uid://cfn85npuna682" path="res://assets/textures/smartshape/sewer_ledge_v03/black/fill.png" id="cap"]
+[ext_resource type="Texture2D" uid="uid://chmcpo3v1px2p" path="res://assets/textures/smartshape/sewer_masonry_v02/white/fill.png" id="fill"]
+[ext_resource type="Shader" uid="uid://bmi2yr8fa5o3v" path="res://shaders/sewer_natural_platform.gdshader" id="shader"]
+[ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="shape"]
+
+[sub_resource type="ShaderMaterial" id="preview"]
+shader = ExtResource("shader")
+shader_parameter/surface_bounds = Vector4(0, 0, 340, 288)
+shader_parameter/ground_platform = true
+shader_parameter/ground_cap_tex = ExtResource("cap")
+shader_parameter/ground_edge_count = 6
+shader_parameter/ground_edges = PackedVector4Array(4, 0, 336, 0, 336, 0, 340, 4, 340, 4, 340, 288, 340, 288, 0, 288, 0, 288, 0, 5, 0, 5, 4, 0)
+shader_parameter/alt_tex = ExtResource("alt")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = false
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+shader_parameter/sewer_light = Vector2(-100000, -100000)
+shader_parameter/sewer_radius = 190.0
+shader_parameter/sewer_strength = 0.1
+shader_parameter/sewer_trim = false
+shader_parameter/sewer_edge_count = 0
+shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[resource]
+script = ExtResource("shape")
+fill_textures = Array[Texture2D]([ExtResource("fill")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_mesh_material = SubResource("preview")

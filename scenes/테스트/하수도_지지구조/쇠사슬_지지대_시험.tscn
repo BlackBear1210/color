@@ -1,0 +1,571 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/월드.gd" id="1_uv2yb"]
+[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="2_c3ngc"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID.tscn" id="3_qiwif"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="4_0obcg"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="5_wryvn"]
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_두꺼운발판.tscn" id="6_w8muo"]
+[ext_resource type="PackedScene" path="res://scenes/장식/하수도_지지구조/삼각지지대.tscn" id="7_v2flv"]
+[ext_resource type="PackedScene" path="res://scenes/테스트/하수도_지형_v01/공중_두꺼운발판_흰색.tscn" id="8_pb3vw"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID_WHITE.tscn" id="9_j2evn"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="10_ppqdd"]
+[ext_resource type="PackedScene" path="res://scenes/장식/하수도_지지구조/체인고정구.tscn" id="11_xkj6w"]
+[ext_resource type="PackedScene" path="res://scenes/장식/하수도_지지구조/쇠사슬.tscn" id="12_apl3p"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="13_55wgl"]
+
+[sub_resource type="Resource" id="Resource_u3s8l"]
+script = ExtResource("4_0obcg")
+position = Vector2(-2048, -352)
+
+[sub_resource type="Resource" id="Resource_lbvik"]
+script = ExtResource("4_0obcg")
+position = Vector2(2048, -352)
+
+[sub_resource type="Resource" id="Resource_byg7j"]
+script = ExtResource("4_0obcg")
+position = Vector2(2048, 352)
+
+[sub_resource type="Resource" id="Resource_v0hes"]
+script = ExtResource("4_0obcg")
+position = Vector2(-2048, 352)
+
+[sub_resource type="Resource" id="Resource_djxgu"]
+script = ExtResource("4_0obcg")
+position = Vector2(-2048, -352)
+
+[sub_resource type="Resource" id="Resource_72tfm"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_u3s8l"),
+1: SubResource("Resource_lbvik"),
+2: SubResource("Resource_byg7j"),
+3: SubResource("Resource_v0hes"),
+4: SubResource("Resource_djxgu")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_o57y8"]
+script = ExtResource("4_0obcg")
+position = Vector2(-2048, -80)
+
+[sub_resource type="Resource" id="Resource_j45pc"]
+script = ExtResource("4_0obcg")
+position = Vector2(2048, -80)
+
+[sub_resource type="Resource" id="Resource_uvumj"]
+script = ExtResource("4_0obcg")
+position = Vector2(2048, 80)
+
+[sub_resource type="Resource" id="Resource_dbjt7"]
+script = ExtResource("4_0obcg")
+position = Vector2(-2048, 80)
+
+[sub_resource type="Resource" id="Resource_ykbjk"]
+script = ExtResource("4_0obcg")
+position = Vector2(-2048, -80)
+
+[sub_resource type="Resource" id="Resource_a2kf1"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_o57y8"),
+1: SubResource("Resource_j45pc"),
+2: SubResource("Resource_uvumj"),
+3: SubResource("Resource_dbjt7"),
+4: SubResource("Resource_ykbjk")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_x317b"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_jv3as"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, -720)
+
+[sub_resource type="Resource" id="Resource_ig2kl"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, 720)
+
+[sub_resource type="Resource" id="Resource_s63ej"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, 720)
+
+[sub_resource type="Resource" id="Resource_c6pa3"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_ykqea"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_x317b"),
+1: SubResource("Resource_jv3as"),
+2: SubResource("Resource_ig2kl"),
+3: SubResource("Resource_s63ej"),
+4: SubResource("Resource_c6pa3")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_u0078"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_6h0kh"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, -720)
+
+[sub_resource type="Resource" id="Resource_68i80"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, 720)
+
+[sub_resource type="Resource" id="Resource_v8t6b"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, 720)
+
+[sub_resource type="Resource" id="Resource_jmx34"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_ijph4"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_u0078"),
+1: SubResource("Resource_6h0kh"),
+2: SubResource("Resource_68i80"),
+3: SubResource("Resource_v8t6b"),
+4: SubResource("Resource_jmx34")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_hn6o4"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_tqm8i"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, -720)
+
+[sub_resource type="Resource" id="Resource_okw61"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, 720)
+
+[sub_resource type="Resource" id="Resource_snogn"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, 720)
+
+[sub_resource type="Resource" id="Resource_wtdlb"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_vgvu6"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_hn6o4"),
+1: SubResource("Resource_tqm8i"),
+2: SubResource("Resource_okw61"),
+3: SubResource("Resource_snogn"),
+4: SubResource("Resource_wtdlb")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_c8abh"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+
+[sub_resource type="Resource" id="Resource_a0ilf"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+position = Vector2(320, 0)
+
+[sub_resource type="Resource" id="Resource_skkdc"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+position = Vector2(320, 120)
+
+[sub_resource type="Resource" id="Resource_5lnjf"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+position = Vector2(0, 120)
+
+[sub_resource type="Resource" id="Resource_xy5xb"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+
+[sub_resource type="Resource" id="Resource_4gst4"]
+resource_local_to_scene = true
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_c8abh"),
+1: SubResource("Resource_a0ilf"),
+2: SubResource("Resource_skkdc"),
+3: SubResource("Resource_5lnjf"),
+4: SubResource("Resource_xy5xb")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_h32s7"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+
+[sub_resource type="Resource" id="Resource_pt2mf"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+position = Vector2(320, 0)
+
+[sub_resource type="Resource" id="Resource_w5rra"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+position = Vector2(320, 120)
+
+[sub_resource type="Resource" id="Resource_mtua8"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+position = Vector2(0, 120)
+
+[sub_resource type="Resource" id="Resource_n0xmj"]
+resource_local_to_scene = true
+script = ExtResource("4_0obcg")
+
+[sub_resource type="Resource" id="Resource_534aj"]
+resource_local_to_scene = true
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_h32s7"),
+1: SubResource("Resource_pt2mf"),
+2: SubResource("Resource_w5rra"),
+3: SubResource("Resource_mtua8"),
+4: SubResource("Resource_n0xmj")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_5x7kv"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_7us5a"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, -720)
+
+[sub_resource type="Resource" id="Resource_4uyhl"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, 720)
+
+[sub_resource type="Resource" id="Resource_1ug4i"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, 720)
+
+[sub_resource type="Resource" id="Resource_u1to6"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_jslgi"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_5x7kv"),
+1: SubResource("Resource_7us5a"),
+2: SubResource("Resource_4uyhl"),
+3: SubResource("Resource_1ug4i"),
+4: SubResource("Resource_u1to6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_hmuj6"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_rvelc"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, -720)
+
+[sub_resource type="Resource" id="Resource_lcj1a"]
+script = ExtResource("4_0obcg")
+position = Vector2(80, 720)
+
+[sub_resource type="Resource" id="Resource_6cvxu"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, 720)
+
+[sub_resource type="Resource" id="Resource_dcf5c"]
+script = ExtResource("4_0obcg")
+position = Vector2(-80, -720)
+
+[sub_resource type="Resource" id="Resource_xqspo"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_hmuj6"),
+1: SubResource("Resource_rvelc"),
+2: SubResource("Resource_lcj1a"),
+3: SubResource("Resource_6cvxu"),
+4: SubResource("Resource_dcf5c")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="Resource_xupt5"]
+script = ExtResource("4_0obcg")
+position = Vector2(-320, -60)
+
+[sub_resource type="Resource" id="Resource_v2q15"]
+script = ExtResource("4_0obcg")
+position = Vector2(320, -60)
+
+[sub_resource type="Resource" id="Resource_vqfnc"]
+script = ExtResource("4_0obcg")
+position = Vector2(320, 60)
+
+[sub_resource type="Resource" id="Resource_28use"]
+script = ExtResource("4_0obcg")
+position = Vector2(-320, 60)
+
+[sub_resource type="Resource" id="Resource_ck2t5"]
+script = ExtResource("4_0obcg")
+position = Vector2(-320, -60)
+
+[sub_resource type="Resource" id="Resource_leyxt"]
+script = ExtResource("5_wryvn")
+_points = {
+0: SubResource("Resource_xupt5"),
+1: SubResource("Resource_v2q15"),
+2: SubResource("Resource_vqfnc"),
+3: SubResource("Resource_28use"),
+4: SubResource("Resource_ck2t5")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[node name="쇠사슬_지지대_시험" type="Node2D" unique_id=571328965]
+script = ExtResource("1_uv2yb")
+"스테이지_이름" = "시험 · 쇠사슬 · 삼각 지지대"
+"카메라_리밋" = Rect2(0, 0, 4096, 2304)
+"카메라_줌" = 1.0
+"시작_위치" = Vector2(300, 1600)
+"낙사_y" = 2704.0
+"치명_낙하거리" = 1500.0
+
+[node name="페인트코어" type="Node" parent="." unique_id=1369837413 groups=["페인트코어"]]
+script = ExtResource("2_c3ngc")
+
+[node name="지형" type="Node2D" parent="." unique_id=2057598886]
+
+[node name="바닥" parent="지형" unique_id=426990818 instance=ExtResource("3_qiwif")]
+position = Vector2(2048, 1952)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("Resource_72tfm")
+collision_size = 0.0
+metadata/role = "플랫폼"
+
+[node name="천장" parent="지형" unique_id=111908739 instance=ExtResource("3_qiwif")]
+position = Vector2(2048, 80)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("Resource_a2kf1")
+collision_size = 0.0
+metadata/role = "채움"
+
+[node name="왼벽" parent="지형" unique_id=813543475 instance=ExtResource("3_qiwif")]
+position = Vector2(80, 880)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("Resource_ykqea")
+collision_size = 0.0
+metadata/role = "플랫폼"
+
+[node name="오른벽" parent="지형" unique_id=591669404 instance=ExtResource("3_qiwif")]
+position = Vector2(4016, 880)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("Resource_ijph4")
+collision_size = 0.0
+metadata/role = "플랫폼"
+
+[node name="기둥1" parent="지형" unique_id=1049160982 instance=ExtResource("3_qiwif")]
+position = Vector2(320, 880)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("Resource_vgvu6")
+collision_size = 0.0
+metadata/role = "플랫폼"
+
+[node name="발판1_검정" parent="지형" unique_id=242761460 instance=ExtResource("6_w8muo")]
+position = Vector2(400, 1200)
+_points = SubResource("Resource_4gst4")
+
+[node name="지지대1_왼쪽" parent="지형/발판1_검정" unique_id=2019231890 instance=ExtResource("7_v2flv")]
+position = Vector2(0, 120)
+
+[node name="발판2_흰" parent="지형" unique_id=984614089 instance=ExtResource("8_pb3vw")]
+position = Vector2(1000, 1200)
+_points = SubResource("Resource_534aj")
+
+[node name="지지대2_오른쪽" parent="지형/발판2_흰" unique_id=744851659 instance=ExtResource("7_v2flv")]
+position = Vector2(320, 120)
+"방향" = 1
+
+[node name="기둥2_흰" parent="지형" unique_id=1992754860 instance=ExtResource("9_j2evn")]
+position = Vector2(1400, 880)
+"위치별_판정" = true
+_points = SubResource("Resource_jslgi")
+collision_size = 0.0
+metadata/role = "플랫폼"
+
+[node name="기둥3" parent="지형" unique_id=274697068 instance=ExtResource("3_qiwif")]
+position = Vector2(1620, 880)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("Resource_xqspo")
+collision_size = 0.0
+metadata/role = "플랫폼"
+
+[node name="발판3_넓은" parent="지형" unique_id=1489454414 instance=ExtResource("3_qiwif")]
+position = Vector2(2020, 1260)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("Resource_leyxt")
+collision_size = 0.0
+metadata/role = "플랫폼"
+
+[node name="지지대3a" parent="지형/발판3_넓은" unique_id=897206633 instance=ExtResource("7_v2flv")]
+position = Vector2(-320, 60)
+
+[node name="지지대3b" parent="지형/발판3_넓은" unique_id=908508993 instance=ExtResource("7_v2flv")]
+position = Vector2(0, 60)
+
+[node name="장치" type="Node2D" parent="." unique_id=2052282072]
+
+[node name="승강기5" parent="장치" unique_id=1668287707 instance=ExtResource("10_ppqdd")]
+position = Vector2(3300, 1100)
+"크기" = Vector2(320, 28)
+"이동거리" = 400.0
+"이동방향" = 1
+"왕복시간" = 6.0
+
+[node name="연결구_L" parent="장치/승강기5" unique_id=1674311728 instance=ExtResource("11_xkj6w")]
+position = Vector2(-140, -14)
+"방향" = 1
+
+[node name="연결구_R" parent="장치/승강기5" unique_id=1019725153 instance=ExtResource("11_xkj6w")]
+position = Vector2(140, -14)
+"방향" = 1
+
+[node name="승강기5_비교" parent="장치" unique_id=67201652 instance=ExtResource("10_ppqdd")]
+position = Vector2(3800, 1100)
+"크기" = Vector2(200, 28)
+"이동거리" = 400.0
+"이동방향" = 1
+"왕복시간" = 6.0
+
+[node name="위험물" type="Node2D" parent="." unique_id=2065812532]
+
+[node name="체크포인트" type="Node2D" parent="." unique_id=1415970174]
+
+[node name="장식" type="Node2D" parent="." unique_id=1299739365]
+
+[node name="고정구4_짧은" parent="장식" unique_id=2077764647 instance=ExtResource("11_xkj6w")]
+position = Vector2(2560, 160)
+
+[node name="고정구4_긴" parent="장식" unique_id=2079855572 instance=ExtResource("11_xkj6w")]
+position = Vector2(2760, 160)
+
+[node name="체인4_짧은" parent="장식" unique_id=1994010929 instance=ExtResource("12_apl3p")]
+position = Vector2(2560, 180)
+"모드" = 0
+"고정_끝" = Vector2(0, 200)
+
+[node name="체인4_긴" parent="장식" unique_id=1599209751 instance=ExtResource("12_apl3p")]
+position = Vector2(2760, 180)
+"모드" = 0
+"고정_끝" = Vector2(0, 700)
+
+[node name="고정구4_짧은_끝" parent="장식" unique_id=387042446 instance=ExtResource("11_xkj6w")]
+position = Vector2(2560, 400)
+"방향" = 1
+
+[node name="고정구4_긴_끝" parent="장식" unique_id=1794916371 instance=ExtResource("11_xkj6w")]
+position = Vector2(2760, 900)
+"방향" = 1
+
+[node name="천장고정구5_L" parent="장식" unique_id=214615778 instance=ExtResource("11_xkj6w")]
+position = Vector2(3160, 160)
+
+[node name="천장고정구5_R" parent="장식" unique_id=781741546 instance=ExtResource("11_xkj6w")]
+position = Vector2(3440, 160)
+
+[node name="체인5_L" parent="장식" unique_id=303059537 instance=ExtResource("12_apl3p")]
+position = Vector2(3160, 160)
+"시작점_경로" = NodePath("../천장고정구5_L/연결점")
+"끝점_경로" = NodePath("../../장치/승강기5/연결구_L/연결점")
+
+[node name="체인5_R" parent="장식" unique_id=229652856 instance=ExtResource("12_apl3p")]
+position = Vector2(3440, 160)
+"시작점_경로" = NodePath("../천장고정구5_R/연결점")
+"끝점_경로" = NodePath("../../장치/승강기5/연결구_R/연결점")
+
+[node name="이동된_묶음6" type="Node2D" parent="장식" unique_id=70866411]
+position = Vector2(2000, 400)
+
+[node name="천장고정구6" parent="장식/이동된_묶음6" unique_id=1192189361 instance=ExtResource("11_xkj6w")]
+
+[node name="발판고정구6" parent="장식/이동된_묶음6" unique_id=222243200 instance=ExtResource("11_xkj6w")]
+position = Vector2(0, 320)
+"방향" = 1
+
+[node name="체인6" parent="장식/이동된_묶음6" unique_id=1114556121 instance=ExtResource("12_apl3p")]
+"시작점_경로" = NodePath("../천장고정구6/연결점")
+"끝점_경로" = NodePath("../발판고정구6/연결점")
+
+[node name="오류7_끊긴경로" parent="장식" unique_id=609656987 instance=ExtResource("12_apl3p")]
+position = Vector2(3900, 700)
+"시작점_경로" = NodePath("../없는노드/연결점")
+"끝점_경로" = NodePath("../없는노드2/연결점")
+
+[node name="오류7_길이0" parent="장식" unique_id=678102534 instance=ExtResource("12_apl3p")]
+position = Vector2(3960, 700)
+"모드" = 0
+"고정_끝" = Vector2(0, 0)
+
+[node name="끝도달_검사점" type="Marker2D" parent="." unique_id=2075083966]
+position = Vector2(3800, 1600)
+
+[node name="Player" parent="." unique_id=1147093704 instance=ExtResource("13_55wgl")]
+position = Vector2(300, 1600)
+"점프_거리_칸" = 20.0
