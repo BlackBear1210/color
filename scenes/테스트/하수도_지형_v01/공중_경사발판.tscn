@@ -1,9 +1,12 @@
-[gd_scene format=3]
+[gd_scene format=4 uid="uid://ci6gd500swv5m"]
 
-[ext_resource type="Script" path="res://scripts/스마트월드/하수도_벽돌지형.gd" id="shape"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
-[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
-[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v01/masonry_black.tres" id="material"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="4_1djr4"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/sewer_masonry_v01/black/fill.tres" id="5_3xmyg"]
+[ext_resource type="Texture2D" uid="uid://copp83bgm527r" path="res://assets/textures/smartshape/sewer_masonry_v01/black/top.png" id="6_tw1nb"]
+[ext_resource type="Resource" uid="uid://bb7lft1ebda3n" path="res://assets/textures/smartshape/sewer_masonry_v01/masonry_black.tres" id="material"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
+[ext_resource type="Script" uid="uid://d0xj7fk4ylot7" path="res://scripts/스마트월드/하수도_벽돌지형.gd" id="shape"]
 
 [sub_resource type="Resource" id="p0"]
 resource_local_to_scene = true
@@ -41,21 +44,67 @@ _points = {
 4: SubResource("p4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = { Vector2i(0, 4): 15 }
+_constraints = {
+Vector2i(0, 4): 15
+}
 _next_key = 5
 
-[node name="공중_경사발판" type="Node2D"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_8lqyo"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 300, 150, 1e-05),
+"attribute_data": PackedByteArray("/////4i6Wj8AAAAAiLpaPwAAAAD/////iLpaP5AlTD6Iulo/kCVMPv////8AAAAAiLraPgAAAACIuto+/////wAAAACAT2k+AAAAAIBPaT4="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACWQwAAAAAAAAAAAACWQwAAjEIAAAAAAAAAAAAAFkMAAAAAAAAAAAAAoEIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_76vy6"]
+script = ExtResource("4_1djr4")
+texture = ExtResource("5_3xmyg")
+mesh = SubResource("ArrayMesh_8lqyo")
+z_index = -1
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_siwad"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 300, 150, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9HeNRAAACAP0d41EAAAIA//////0d41EAAAAAAR3jUQAAAAAD/////yZX/QAAAgD/Jlf9AAACAP//////Jlf9AAAAAAMmV/0AAAAAA/////wgHakEAAIA/CAdqQQAAgD//////CAdqQQAAAAAIB2pBAAAAAP/////JlX9BAACAP8mVf0EAAIA//////8mVf0EAAAAAyZV/QQAAAAA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAAACAAMAAwACAAQAAwAEAAUABQAEAAYABQAGAAcABwAGAAgABwAIAAkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AAAAAAAAoEIAAAAAFa4HQa0HrUIAAAAAkMKRQ0iaMEEAAAAAAACWQwAAAAAAAAAAkMKRQ6HwfUIAAAAAAACWQwAAjEIAAAAAIK4HQVz2CkMAAAAAAAAAAAAAFkMAAAAAFa4HQa0HrUIAAAAAAAAAAAAAoEIAAAAA/3//fwzleE3/f/9/DOV4Tf9//39iyDEk/3//f2LIMST/f/9/YkjOG/9//39iSM4b/3//f5w3zlv/f/9/nDfOW/9//3//f/5//3//f/9//n8=")
+}]
+
+[sub_resource type="Resource" id="Resource_lg3r4"]
+script = ExtResource("4_1djr4")
+texture = ExtResource("6_tw1nb")
+mesh = SubResource("ArrayMesh_siwad")
+
+[node name="공중_경사발판" type="Node2D" unique_id=1434064896]
 editor_description = "크기는 SS2D 점을 이동해서 변경하세요. 노드와 부모 Scale은 (1,1)을 유지합니다. 테두리는 고정 밀도로 반복되며, 두께 24px 미만이나 매우 예리한 꼭짓점은 피하세요."
+texture_repeat = 2
 script = ExtResource("shape")
 "시작상태" = 1
 "위치별_판정" = true
 _points = SubResource("array")
+_meshes = Array[ExtResource("4_1djr4")]([SubResource("Resource_76vy6"), SubResource("Resource_lg3r4")])
 shape_material = ExtResource("material")
-texture_repeat = 2
 collision_update_mode = 2
 collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="@ColorRect@19141" type="ColorRect" parent="." unique_id=858844278]
+modulate = Color(1, 1, 1, 0)
+offset_right = 300.0
+offset_bottom = 150.0
+metadata/__ss2d_click_rect__ = true
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=944322829]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=905102741]
 polygon = PackedVector2Array(0, 80, 300, 0, 300, 70, 0, 150)

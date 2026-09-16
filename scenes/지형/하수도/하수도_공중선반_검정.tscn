@@ -1,0 +1,140 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_자연발판.gd" id="shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="array"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v02/공중_black.tres" id="material"]
+
+
+[sub_resource type="Resource" id="p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 10)
+
+[sub_resource type="Resource" id="p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(10, 0)
+
+[sub_resource type="Resource" id="p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(330, 0)
+
+[sub_resource type="Resource" id="p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(340, 10)
+
+[sub_resource type="Resource" id="p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(340.0, 12)
+
+[sub_resource type="Resource" id="p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(311.6666666666667, 59.294117647058826)
+
+[sub_resource type="Resource" id="p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(283.3333333333333, 42.35294117647059)
+
+[sub_resource type="Resource" id="p7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(255.0, 46.588235294117645)
+
+[sub_resource type="Resource" id="p8"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(226.66666666666666, 52.0)
+
+[sub_resource type="Resource" id="p9"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(198.33333333333334, 49.17647058823529)
+
+[sub_resource type="Resource" id="p10"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(170.0, 53.17647058823529)
+
+[sub_resource type="Resource" id="p11"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(141.66666666666666, 49.411764705882355)
+
+[sub_resource type="Resource" id="p12"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(113.33333333333333, 43.76470588235294)
+
+[sub_resource type="Resource" id="p13"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(85.0, 59.76470588235294)
+
+[sub_resource type="Resource" id="p14"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(56.666666666666664, 58.8235294117647)
+
+[sub_resource type="Resource" id="p15"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(28.333333333333332, 46.11764705882353)
+
+[sub_resource type="Resource" id="p16"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0.0, 12)
+
+[sub_resource type="Resource" id="p17"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 10)
+
+[sub_resource type="Resource" id="points"]
+resource_local_to_scene = true
+script = ExtResource("array")
+_points = {
+0: SubResource("p0"),
+1: SubResource("p1"),
+2: SubResource("p2"),
+3: SubResource("p3"),
+4: SubResource("p4"),
+5: SubResource("p5"),
+6: SubResource("p6"),
+7: SubResource("p7"),
+8: SubResource("p8"),
+9: SubResource("p9"),
+10: SubResource("p10"),
+11: SubResource("p11"),
+12: SubResource("p12"),
+13: SubResource("p13"),
+14: SubResource("p14"),
+15: SubResource("p15"),
+16: SubResource("p16"),
+17: SubResource("p17")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+_constraints = {Vector2i(0,17):15}
+_next_key = 18
+[node name="하수도_공중선반_검정" type="Node2D"]
+editor_description = "공중 전용 외곽. SS2D 점으로 편집하고 Scale은 1을 유지하세요. 외곽과 충돌은 같은 점입니다. 땅 하단은 아래 지형 또는 화면 밖으로 연결하세요."
+script = ExtResource("shape")
+texture_repeat = 2
+texture_filter = 2
+"땅지형" = false
+"석조선반" = true
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("points")
+shape_material = ExtResource("material")
+collision_update_mode = 2
+collision_size = 0.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(0, 10, 10, 0, 330, 0, 340, 10, 340.0, 12, 311.6666666666667, 59.294117647058826, 283.3333333333333, 42.35294117647059, 255.0, 46.588235294117645, 226.66666666666666, 52.0, 198.33333333333334, 49.17647058823529, 170.0, 53.17647058823529, 141.66666666666666, 49.411764705882355, 113.33333333333333, 43.76470588235294, 85.0, 59.76470588235294, 56.666666666666664, 58.8235294117647, 28.333333333333332, 46.11764705882353, 0.0, 12)

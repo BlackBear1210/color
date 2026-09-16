@@ -60,38 +60,83 @@ func _셰이더_만들기(source: Texture2D, quiet: bool = false, edge: bool = f
 		result.set_shader_parameter("sewer_trim", edge)
 	return result
 
+# 근접 반사는 색칠 갱신과 분리한다. 먼 지형은 좌표 배열/레이를 만들지 않는다.
+var _반사_대기: float = 0.0
+var _반사_경계필요: bool = true
+var _반사_경계: Rect2
+var _반사_활성: bool = false
+
+func _ready() -> void:
+	super._ready()
+	if not points_modified.is_connected(_반사_경계요청):
+		points_modified.connect(_반사_경계요청)
+	if not on_dirty_update.is_connected(_반사_경계요청):
+		on_dirty_update.connect(_반사_경계요청)
+
+func _반사_경계요청() -> void:
+	_반사_경계필요 = true
+
+func _반사_끄기() -> void:
+	if not _반사_활성:
+		return
+	for reflection_material in _셰이더들:
+		reflection_material.set_shader_parameter("sewer_edge_count", 0)
+	_반사_활성 = false
+
 func _process(delta: float) -> void:
+	# 부모의 물감 번짐/회수는 원래 속도로 유지한다.
 	super._process(delta)
 	if Engine.is_editor_hint():
 		return
+	_반사_대기 -= delta
+	if _반사_대기 > 0.0:
+		return
+	_반사_대기 = 1.0 / 30.0
 	var player := get_tree().get_first_node_in_group("player") as Node2D
-	if player == null:
+	if player == null or 근접반사_세기 <= 0.0:
+		_반사_끄기()
 		return
 	var polygon := get_collision_polygon_node()
-	if polygon == null:
+	if polygon == null or polygon.polygon.is_empty():
+		_반사_끄기()
 		return
+	if _반사_경계필요:
+		_반사_경계 = Rect2(to_local(polygon.to_global(polygon.polygon[0])), Vector2.ZERO)
+		for point in polygon.polygon:
+			_반사_경계 = _반사_경계.expand(to_local(polygon.to_global(point)))
+		_반사_경계필요 = false
 	var light := player.global_position + Vector2(0, -48)
+	var local_light := to_local(light)
+	var closest := local_light.clamp(_반사_경계.position, _반사_경계.end)
+	if light.distance_to(to_global(closest)) > 근접반사_반경 + 8.0:
+		_반사_끄기()
+		return
 	var segments: Array[Vector4] = []
 	var visibility := PackedFloat32Array()
 	var points := polygon.polygon
-	for i in mini(points.size(), 32):
+	for i in points.size():
 		var a := polygon.to_global(points[i])
-		var b := polygon.to_global(points[(i+1) % points.size()])
-		segments.append(Vector4(a.x,a.y,b.x,b.y))
-		var target := Geometry2D.get_closest_point_to_segment(light,a,b)
-		var normal := Vector2((b-a).y,-(b-a).x).normalized()
-		var clear := 0.0
-		if light.distance_to(target) < 근접반사_반경 and normal.dot(light-target) > 0:
-			# 다른 벽 뒤쪽까지 선이 비치지 않도록 실제 지형으로 가려짐을 확인한다.
-			var query := PhysicsRayQueryParameters2D.create(light,target+normal*2.0,1)
-			if player is CollisionObject2D:
-				query.exclude = [player.get_rid()]
-			clear = 1.0 if get_world_2d().direct_space_state.intersect_ray(query).is_empty() else 0.0
+		var b := polygon.to_global(points[(i + 1) % points.size()])
+		if a.distance_squared_to(b) < 0.0001:
+			continue
+		var target := Geometry2D.get_closest_point_to_segment(light, a, b)
+		var normal := Vector2((b-a).y, -(b-a).x).normalized()
+		# 앞의 32변을 무조건 쓰지 않고 빛이 실제로 닿을 수 있는 변만 보낸다.
+		if light.distance_to(target) >= 근접반사_반경 or normal.dot(light-target) <= 0.0:
+			continue
+		var query := PhysicsRayQueryParameters2D.create(light, target+normal*2.0, 1)
+		if player is CollisionObject2D:
+			query.exclude = [player.get_rid()]
+		var clear := 1.0 if get_world_2d().direct_space_state.intersect_ray(query).is_empty() else 0.0
+		segments.append(Vector4(a.x, a.y, b.x, b.y))
 		visibility.append(clear)
-	for material in _셰이더들:
-		material.set_shader_parameter("sewer_light",light)
-		material.set_shader_parameter("sewer_radius",근접반사_반경)
-		material.set_shader_parameter("sewer_strength",근접반사_세기)
-		material.set_shader_parameter("sewer_edge_count",segments.size())
-		material.set_shader_parameter("sewer_edges",segments)
-		material.set_shader_parameter("sewer_visible",visibility)
+		if segments.size() >= 32:
+			break
+	for reflection_material in _셰이더들:
+		reflection_material.set_shader_parameter("sewer_light", light)
+		reflection_material.set_shader_parameter("sewer_radius", 근접반사_반경)
+		reflection_material.set_shader_parameter("sewer_strength", 근접반사_세기)
+		reflection_material.set_shader_parameter("sewer_edge_count", segments.size())
+		reflection_material.set_shader_parameter("sewer_edges", segments)
+		reflection_material.set_shader_parameter("sewer_visible", visibility)
+	_반사_활성 = true

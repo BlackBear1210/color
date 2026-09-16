@@ -2,6 +2,8 @@ shader_type canvas_item;
 // Prototype snapshot of sewer paint shader; keep paint uniforms synchronized.
 uniform vec4 surface_bounds = vec4(0.0, 0.0, 340.0, 48.0);
 uniform bool ground_platform = false;
+// Visual depth around the unchanged collision/foot line, in local pixels.
+uniform float ledge_top_half_depth : hint_range(1.0, 6.0) = 4.0;
 
 
 
@@ -122,6 +124,9 @@ void vertex() {
  // Fragment COLOR already includes the texture alpha at the original mesh UV.
  // Preserve only vertex/modulate alpha before sampling our custom ledge UV.
  ledge_modulate_alpha = COLOR.a;
+ // Expand only the rendered upper strip; SS2D collision points stay intact.
+ float upper_weight = 1.0 - smoothstep(0.0, 12.0, VERTEX.y - surface_bounds.y);
+ VERTEX.y -= ledge_top_half_depth * upper_weight;
  sewer_world = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
 	local_pos = VERTEX;
 }
@@ -148,14 +153,26 @@ float vnoise(vec2 p) {
 vec2 ledge_uv(vec2 p) {
  float width = surface_bounds.z-surface_bounds.x;
  float x = clamp(p.x-surface_bounds.x, 0.0, width);
- // Show only the front lip of the top face so feet stay on a readable 2D line.
+ // Keep stone density and end caps independent of platform length.
  float scale = 60.0/255.0;
  float cap = min(240.0*scale, width*0.3);
  float source_x;
  if (x < cap) { source_x = 18.0 + x/cap*240.0; }
  else if (x > width-cap) { source_x = 1514.0 + (x-width+cap)/cap*240.0; }
  else { source_x = 258.0 + mod((x-cap)/scale, 1256.0); }
- return vec2(source_x/1774.0, (330.0+(p.y-surface_bounds.y)/scale)/887.0);
+ // Source top plane spans rows 290..350. Row 320 lies on the foot line.
+ float y = p.y - surface_bounds.y;
+ float half_depth = max(ledge_top_half_depth, 1.0);
+ float source_y;
+ if (y <= half_depth) {
+  source_y = 320.0 + y * 30.0 / half_depth;
+ } else {
+  // Rejoin the original sampling below the lip so the underside stays put.
+  float front_y = 350.0 + (y - half_depth) / scale;
+  float original_y = 330.0 + y / scale;
+  source_y = mix(front_y, original_y, smoothstep(half_depth, 24.0, y));
+ }
+ return vec2(source_x/1774.0, source_y/887.0);
 }
 
 void fragment() {
@@ -187,7 +204,9 @@ void fragment() {
 	
 	for (int i = 0; i < MAX_SEEDS; i++) {
 		if (i >= seed_count) { break; }
-		vec2 dv = local_pos - seeds[i];
+		// The decorative rear half inherits paint from the collision surface.
+		vec2 paint_pos = vec2(local_pos.x, max(local_pos.y, surface_bounds.y));
+		vec2 dv = paint_pos - seeds[i];
 		
 		float base_r = seed_r[i] * r_scale;
 		float r = base_r * (1.0 + nlow * blob_wobble);
