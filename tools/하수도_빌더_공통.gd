@@ -432,6 +432,7 @@ const _선반_요철 := [59.3, 42.4, 46.6, 52.0, 49.2, 53.2, 49.4, 43.8, 59.8, 5
 var _선반_수 := 0
 
 func 공중선반(부모: Node, 이름: String, x0: float, 윗면: float, x1: float, 색: int, 벽: String = "") -> Node2D:
+	# 벽: "L"/"R"/"LR" — 벽에 붙는 쪽(지금은 윗면이 평평해서 모양은 같고, 굴뚝 사다리처럼 양벽에 끼우면 "LR")
 	var 템플릿 := T_선반_흰 if 색 == 흰색 else T_선반_검
 	var 씬 := load(템플릿) as PackedScene
 	if 씬 == null:
@@ -727,7 +728,9 @@ func 검산(프레임: Rect2, 빈공간들: Array) -> bool:
 		for iy in range(iy0, iy1 + 1):
 			for ix in range(ix0, ix1 + 1):
 				var c := 프레임.position + Vector2((ix + 0.5) * 격자, (iy + 0.5) * 격자)
-				if Geometry2D.is_point_in_polygon(c, 점들):
+				# ★[2026-09-17] Geometry2D.is_point_in_polygon 이 (1288,1288) 같은 자리에서 사각형 안인데 false 를 준다
+				#   (2-4 F_T1위 에서 실제로 났다 · 레이가 꼭짓점을 스치는 경우로 보임). 살짝 비낀 점도 같이 본다.
+				if Geometry2D.is_point_in_polygon(c, 점들) or Geometry2D.is_point_in_polygon(c + Vector2(0.37, 0.29), 점들):
 					var k := iy * 칸x + ix
 					덮음[k] += 1
 					_칸색[k] = int(t[2])

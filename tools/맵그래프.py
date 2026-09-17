@@ -3,8 +3,8 @@
 [2026-09-17 Claude] graphify 는 .md/.py/.mjs 만 읽어서 씬 안의 게임플레이 관계(무슨 물이 어느 바닥을 덮고 누굴 죽이나,
 호퍼가 어느 물을 켜나, 정답/헛걸음이 어디를 밟나)를 모른다. 이 도구가 그 관계를 씬에서 직접 뽑는다.
 
-노드: 지형(검/흰/유령/선반) · 유체 · 웅덩이 · 호퍼 · 통과플랫폼(격자) · 레버 · 가시 · 회전톱 · 체크포인트 · 출구/입구 · 경로
-선: 호퍼→물(켠다) · 공급 물→호퍼 · 물→덮인 지형(플레이어 색별 생존/사망) · 레버→물 · 유령→칠할 색
+노드: 지형(검/흰/유령/선반) · 유체 · 웅덩이 · 호퍼 · 통과플랫폼(격자) · 물저장고 · 레버 · 가시 · 회전톱 · 체크포인트 · 출구/입구 · 경로
+선: 호퍼→물(켠다) · 공급 물→호퍼 · 저장고→물(칠하면 켠다) · 물→덮인 지형(플레이어 색별 생존/사망) · 레버→물 · 유령→칠할 색
     · 경로→밟는 지형/칠하는 대상/조작(단계 번호) · 출구→다음 스테이지
 좌표는 실제 월드 좌표라 HTML 에서는 **맵 모양 그대로** 놓인다(스테이지마다 한 판씩).
 
@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCENES = ['stage_2-1', 'stage_2-2', 'stage_2-3']
+SCENES = ['stage_2-1', 'stage_2-2', 'stage_2-3', 'stage_2-4']
 OUT_DIR = ROOT / 'graphify-out'
 ROUTE_FILE = ROOT / 'tools/하수도_주행검사.gd'
 
@@ -132,6 +132,12 @@ def stage_graph(key):
             size = vec(re.search(r'\(([^)]+)\)', p['크기'])[1])
             item = {'id': n['name'], 'kind': '격자', 'x': pos[0], 'y': pos[1] - size[1] / 2, 'w': size[0], 'h': size[1],
                     'detail': f"통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · {size[0]:.0f}×{size[1]:.0f} · 필요횟수 {p.get('필요횟수', '1')}"}
+        elif '물저장고.tscn' in inst:
+            # [2026-09-17] 2-4 「색이 흐른다」 — 칠하면 `공급_유체` 를 그 색으로 켠다(무색이면 끔 · E 로 되돌림). 밟을 수 있고 안 칠하면 검정.
+            size = vec(re.search(r'\(([^)]+)\)', p.get('크기', 'Vector2(192, 96)'))[1])
+            item = {'id': n['name'], 'kind': '저장고', 'x': pos[0], 'y': pos[1] - size[1] / 2, 'w': size[0], 'h': size[1],
+                    'supply': p.get('공급_유체', '').replace('NodePath("../', '').rstrip('")'),
+                    'detail': f"물저장고(칠할 수 있음 · 밟을 수 있음 · 안 칠하면 검정) · 필요횟수 {p.get('필요횟수', '1')} · 칠한 색으로 공급 물을 켠다"}
         elif '제어레버.tscn' in inst:
             item = {'id': n['name'], 'kind': '레버', 'x': pos[0], 'y': pos[1],
                     'targets': [v.replace('NodePath("../', '').rstrip('")') for k, v in p.items() if k in ('대상_유체', '갈래_A', '갈래_B')],
@@ -190,10 +196,12 @@ def stage_graph(key):
         if n['kind'] == '호퍼':
             if n.get('out') and n['out'] in by_name:
                 edge(n['id'], n['out'], '켠다(색을 물려줌)')
-            # 공급: 아랫끝이 입구 감지(밟는면 −84~+6)에 닿는 물
+            # 공급: 아랫끝이 입구 감지(밟는면 −84~+6)에 닿는 물. 꺼진 물(저장고가 켤 물)은 "칠하면 공급" 으로 따로 잇는다.
             for f in G['nodes']:
-                if f['kind'] == '유체' and f['on'] and abs(f['x'] - n['x']) < n['w'] * 0.6 and n['y'] - 84 <= f['y'] + f['h'] <= n['y'] + 30:
-                    edge(f['id'], n['id'], '공급')
+                if f['kind'] == '유체' and abs(f['x'] - n['x']) < n['w'] * 0.6 and n['y'] - 84 <= f['y'] + f['h'] <= n['y'] + 30:
+                    edge(f['id'], n['id'], '공급' if f['on'] else '공급(저장고를 칠하면)')
+        if n['kind'] == '저장고' and n.get('supply') and n['supply'] in by_name:
+            edge(n['id'], n['supply'], '칠하면 켠다(내 색)')
         if n['kind'] == '레버':
             for t in n['targets']:
                 if t in by_name:
@@ -316,7 +324,7 @@ canvas{flex:1;cursor:grab}#hint{color:var(--dim);font-size:11px}
 <h2>보기</h2><div id="filters"></div>
 <h2>범례</h2><div id="legend">
 <span><i class="sw" style="background:#111"></i>검정 지형</span><span><i class="sw" style="background:#eee"></i>흰 지형</span><span><i class="sw" style="background:#5a4a8a"></i>유령(칠해야)</span>
-<span><i class="sw" style="background:#3b82f6"></i>물</span><span><i class="sw" style="background:#ffb347"></i>호퍼</span><span><i class="sw" style="background:#4ade80"></i>격자</span>
+<span><i class="sw" style="background:#3b82f6"></i>물</span><span><i class="sw" style="background:#ffb347"></i>호퍼</span><span><i class="sw" style="background:#4ade80"></i>격자</span><span><i class="sw" style="background:#fb923c"></i>저장고</span>
 <span><i class="sw" style="background:#ef4444"></i>가시·톱</span><span><i class="sw" style="background:#facc15"></i>체크포인트</span><span><i class="sw" style="background:#c084fc"></i>경로</span><span><i class="sw" style="background:#f472b6"></i>레버</span><span><i class="sw" style="background:#38bdf8"></i>통로</span></div>
 <h2>선</h2><div id="legend2"><span style="color:#ffb347">━ 호퍼→물(켠다) · 공급</span><br><span style="color:#ef4444">━ 물이 덮음(사망 가능)</span> <span style="color:#9ca3af">━ 회색 물(안전)</span><br><span style="color:#f472b6">┄ 레버</span> <span style="color:#c084fc">┄ 경로가 밟음/칠함</span> <span style="color:#38bdf8">━ 다음 스테이지</span></div>
 <h2>정보</h2><div id="info">노드를 클릭하세요.</div>
@@ -325,7 +333,7 @@ canvas{flex:1;cursor:grab}#hint{color:var(--dim);font-size:11px}
 <canvas id="c"></canvas>
 <script>
 const DATA = __DATA__;
-const kinds = ['지형','유체','웅덩이','호퍼','격자','레버','가시','회전톱','체크포인트','통로','플레이어','경로'];
+const kinds = ['지형','유체','웅덩이','호퍼','격자','저장고','레버','가시','회전톱','체크포인트','통로','플레이어','경로'];
 const show = Object.fromEntries(kinds.map(k=>[k,true])); show['경로']=true;
 const rel = {hazard:true, route:true, flow:true};
 const fd = document.getElementById('filters');
@@ -340,11 +348,11 @@ const edges=[]; DATA.stages.forEach(s=>s.edges.forEach(e=>{const a=byId[s.id+'/'
 const cv=document.getElementById('c'),ctx=cv.getContext('2d'); let scale=0.11, tx=120, ty=40, drag=null, sel=null;
 function resize(){cv.width=cv.clientWidth;cv.height=cv.clientHeight; if(!resize.done){resize.done=true; scale=Math.min((cv.width-40)/13000,(cv.height-40)/oy); tx=100*scale+20; ty=300*scale+20;} draw();} window.addEventListener('resize',resize);
 const KC={'검정':'#111','흰색':'#eee','회색':'#888','유령':'#5a4a8a','무색':'#5a4a8a'};
-function nodeColor(n){if(n.kind==='지형')return KC[n.color]||'#333'; if(n.kind==='유체'||n.kind==='웅덩이')return {'검정':'#1e3a8a','흰색':'#93c5fd','회색':'#64748b'}[n.color]||'#3b82f6'; return {'호퍼':'#ffb347','격자':'#4ade80','레버':'#f472b6','가시':'#ef4444','회전톱':'#ef4444','체크포인트':'#facc15','통로':'#38bdf8','플레이어':'#fff','경로':'#c084fc'}[n.kind]||'#999';}
+function nodeColor(n){if(n.kind==='지형')return KC[n.color]||'#333'; if(n.kind==='유체'||n.kind==='웅덩이')return {'검정':'#1e3a8a','흰색':'#93c5fd','회색':'#64748b'}[n.color]||'#3b82f6'; return {'호퍼':'#ffb347','격자':'#4ade80','저장고':'#fb923c','레버':'#f472b6','가시':'#ef4444','회전톱':'#ef4444','체크포인트':'#facc15','통로':'#38bdf8','플레이어':'#fff','경로':'#c084fc'}[n.kind]||'#999';}
 function rect(n){ // 화면 사각형 (월드 px)
   if(n.kind==='지형')return [n.bbox[0],n.bbox[1]+stageY[n.stage],n.bbox[2]-n.bbox[0],n.bbox[3]-n.bbox[1]];
   if(n.kind==='유체'||n.kind==='웅덩이')return [n.x-n.w/2,n.Y,n.w,n.h];
-  if(n.kind==='호퍼'||n.kind==='격자')return [n.x-n.w/2,n.Y,n.w,n.h];
+  if(n.kind==='호퍼'||n.kind==='격자'||n.kind==='저장고')return [n.x-n.w/2,n.Y,n.w,n.h];
   if(n.kind==='가시')return [n.x-n.w/2,n.Y-10,n.w,20];
   const r=n.kind==='경로'?260:90; return [n.X-r/2,n.Y-r/2,r,r];
 }
