@@ -145,6 +145,13 @@
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
 
+★[2026-09-17] **graphify-godot 포크**(`C:\Users\아버지\graphify-godot` · `pip install -e`)로 바꿨다 — 업스트림은 `.gd`/`.tscn`/`.tres` 를 안 읽어 게임 코드가 그래프에 없었다. 이제 함수 호출(calls) · 상속(inherits) · preload/ext_resource(imports_from) · 씬 인스턴스(instances) · 시그널(emits) 이 들어 있다(코드 3,900 노드 · 전체 7,400).
+- 갱신: `graphify update .` (`~/.local/bin/graphify.exe` 를 포크 것으로 바꿔 두었다) 또는 `python -m graphify update .`. Git Bash 에서는 `PYTHONUTF8=1` 을 앞에 붙여야 한글이 안 깨진다.
+- 보기: 전체 `graph.html` 은 너무 커서 브라우저가 멈춘다 → `python tools/그래프_부분뷰.py` (scripts+scenes = `graph_game.html` 1,500 노드) · `--tools` (`graph_code.html`) · `--focus 월드.gd --hops 2` (`graph_focus.html`). 서버: `.claude/launch.json` 의 `graph` (http://localhost:8765).
+- `.graphifyignore` 가 `docs/백업_*` 사본을 뺀다(같은 이름의 진짜 파일과 섞인다).
+- 포크에 로컬 패치 2 줄: id 에 한글 보존(`extract.py`·`build.py` 의 `[^\w]`) · `MAX_NODES_FOR_VIZ 12000`. 포크를 다시 받으면 이 둘을 다시 넣어야 한다.
+- 맵 **게임플레이** 관계(물이 누굴 죽이나 · 경로)는 여전히 `tools/맵그래프.py` 가 따로 그린다 — 코드 그래프와 다른 층위.
+
 Rules:
 - For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
