@@ -45,7 +45,11 @@ def main():
             G.add_edge(e['source'], e['target'], **{k: v for k, v in e.items() if k not in ('source', 'target')})
     name = 'graph_code' if a.tools else 'graph_game'
     if a.focus:
-        seeds = [nid for nid, n in keep.items() if n.get('label') == a.focus or n.get('label', '').startswith(a.focus)]
+        # 같은 이름이 여러 폴더에 있으면(scenes/world_2 vs world_2_클로드) 경로 조각으로 고른다: --focus "world_2_클로드/stage_2-1.tscn"
+        if '/' in a.focus:
+            seeds = [nid for nid, n in keep.items() if a.focus.lower() in (n.get('source_file') or '').lower() and n.get('source_location') in (None, '', 'L1')]
+        else:
+            seeds = [nid for nid, n in keep.items() if n.get('label') == a.focus or n.get('label', '').startswith(a.focus)]
         if not seeds:
             raise SystemExit(f'"{a.focus}" 라벨을 가진 코드 노드가 없다')
         near = set(seeds)
