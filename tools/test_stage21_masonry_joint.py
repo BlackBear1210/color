@@ -9,11 +9,15 @@ def area(poly):
 def main():
     text=SCENE.read_text(encoding='utf-8');nodes=common.parse(text)
     validate(nodes)
-    assert abs(sum(area(nodes[n][2])-area(ORIGINAL[n]) for n in NAMES))<.001
-    for name in NAMES:
+    # 샤프트 아래 채움과 새로 공유한 경계도 합계에 포함해야 면적 보존을 검증할 수 있다.
+    originals=dict(ORIGINAL)
+    if 'metadata/color_inlays_v1 = true' in text:
+        originals['A_샤프트_왼벽_밑채움']=[(3520,1536),(3840,1536),(3840,2560),(3520,2560),(3520,1536)]
+    assert abs(sum(area(nodes[n][2])-area(originals[n]) for n in originals))<.001
+    for name in originals:
         block,pos,poly=nodes[name]
         assert '_meshes =' not in block
-        assert '"위치별_판정" = true' in block
+        assert '"위치별_판정" = true' in block or name=='A_샤프트_왼벽_밑채움'
         assert poly[0]==poly[-1] and area(poly)>0
         # 비인접 선분 교차가 있으면 오목 다각형 메시 생성이 실패할 수 있다.
         edges=list(zip(poly,poly[1:]))
@@ -28,11 +32,14 @@ def main():
         saved=common.vec(re.search(pat,text)[1])
         expected=tuple(v for p in poly[:-1] for v in (p[0]-pos[0],p[1]-pos[1]))
         assert len(saved)==len(expected) and all(abs(a-b)<.0001 for a,b in zip(saved,expected))
-        path=common.ROOT/f'assets/textures/smartshape/sewer_masonry_v02/맞물림_2-1_{name}.tres'
+        material_id=re.search(r'shape_material = ExtResource\("([^"]+)"\)',block)[1]
+        resource_path=re.search(r'\[ext_resource[^\]]*path="res://([^"]+)"[^\]]*id="'+re.escape(material_id)+r'"',text)[1]
+        path=common.ROOT/resource_path
         material=path.read_text(encoding='utf-8')
         assert 'fill_texture_offset = Vector2(3136, 640.1)' in material
         assert 'fill_texture_absolute_position = true' in material
-        assert int(re.search(r'ground_edge_count = (\d+)',material)[1])==len(poly)-1
+        # 캐시 모드는 본체 0개, 마감별 1개이므로 옛 윤곽 길이를 요구하지 않는다.
+        assert int(re.search(r'ground_edge_count = (\d+)',material)[1]) in (0,len(poly)-1)
         assert int(re.search(r'ground_cover_count = (\d+)',material)[1])<=256
         for p in re.findall(r'path="res://([^"]+)"',material):assert (common.ROOT/p).is_file()
     for p in re.findall(r'path="res://([^"]+)"',text):assert (common.ROOT/p).is_file()

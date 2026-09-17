@@ -1,4 +1,6 @@
 shader_type canvas_item;
+uniform int inlay_count = 0;
+uniform vec4 inlay_rects[16];
 // Prototype snapshot of sewer paint shader; keep paint uniforms synchronized.
 uniform vec4 surface_bounds = vec4(0.0, 0.0, 340.0, 48.0);
 uniform bool ground_platform = false;
@@ -402,6 +404,14 @@ void fragment() {
 	vec3 gray = mix(ink_black, ink_white, 0.5);
 
 	vec3 col = base_is_white ? ink_white : ink_black;
+	// Interior brick inlays alter only the unpainted surface, before paint seeds.
+	for (int i = 0; i < inlay_count; i++) {
+		vec4 area = inlay_rects[i];
+		if (all(greaterThanEqual(local_pos, area.xy)) && all(lessThan(local_pos, area.zw))) {
+			col = base_is_white ? ink_black : ink_white;
+			break;
+		}
+	}
 	float wet_edge = 0.0;
 	
 	

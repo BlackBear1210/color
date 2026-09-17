@@ -1,0 +1,105 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v02/01_quiet_wall.png" id="1_wall"]
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v02/02_drains.png" id="2_drains"]
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v02/03_arches.png" id="3_arches"]
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v02/04_mist.png" id="4_mist"]
+[ext_resource type="Shader" path="res://shaders/sewer_layer_repeat_v02.gdshader" id="5_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wall"]
+shader = ExtResource("5_shader")
+shader_parameter/opaque_wall = true
+shader_parameter/edge_width = 0.06
+shader_parameter/haze_color = Color(0.30, 0.30, 0.30, 1)
+shader_parameter/atmosphere = 0.55
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_drains"]
+shader = ExtResource("5_shader")
+shader_parameter/opaque_wall = false
+shader_parameter/edge_width = 0.045
+shader_parameter/haze_color = Color(0.30, 0.30, 0.30, 1)
+shader_parameter/atmosphere = 0.25
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_arches"]
+shader = ExtResource("5_shader")
+shader_parameter/opaque_wall = false
+shader_parameter/edge_width = 0.06
+shader_parameter/haze_color = Color(0.30, 0.30, 0.30, 1)
+shader_parameter/atmosphere = 0.12
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mist"]
+shader = ExtResource("5_shader")
+shader_parameter/opaque_wall = false
+shader_parameter/edge_width = 0.08
+shader_parameter/haze_color = Color(0.45, 0.45, 0.45, 1)
+shader_parameter/atmosphere = 0.45
+
+[node name="하수도_다층배경_v02" type="Node2D"]
+editor_description = "stage_2-2 전용 배치 사본(하수도_다층배경_2_1.tscn 과 같은 층·재질·시차). 4608×4352 세로 맵이라 배수구·아치를 위/아래 두 높이에 나눠 두었다: 배수구_1 은 L3 복도(위), 배수구_2 는 홀·탑 밑동(아래), 아치_1 은 왼쪽 위(탑), 아치_2 는 오른쪽 아래(홀). 먼 벽과 안개만 반복하고 건축물은 비반복. 장식 위치는 패럴럭스 좌표 = 카메라 왼위 × Scroll Scale + 화면 안 위치. 이미지·셰이더는 공용 v02 와 공유한다."
+texture_filter = 2
+
+[node name="먼벽" type="Parallax2D" parent="."]
+z_index = -100
+scroll_scale = Vector2(0.12, 0.10)
+repeat_size = Vector2(3072, 2048)
+repeat_times = 3
+
+[node name="그림" type="Sprite2D" parent="먼벽"]
+material = SubResource("ShaderMaterial_wall")
+scale = Vector2(2, 2)
+texture = ExtResource("1_wall")
+centered = false
+
+[node name="배수시설" type="Parallax2D" parent="."]
+z_index = -90
+scroll_scale = Vector2(0.32, 0.28)
+
+[node name="배수구_1" type="Sprite2D" parent="배수시설"]
+modulate = Color(1, 1, 1, 0.55)
+material = SubResource("ShaderMaterial_drains")
+position = Vector2(700, -560)
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("2_drains")
+centered = false
+
+[node name="배수구_2" type="Sprite2D" parent="배수시설"]
+modulate = Color(1, 1, 1, 0.55)
+material = SubResource("ShaderMaterial_drains")
+position = Vector2(150, 1500)
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("2_drains")
+centered = false
+
+[node name="가까운아치" type="Parallax2D" parent="."]
+z_index = -80
+scroll_scale = Vector2(0.60, 0.55)
+
+[node name="아치_1" type="Sprite2D" parent="가까운아치"]
+modulate = Color(1, 1, 1, 0.72)
+material = SubResource("ShaderMaterial_arches")
+position = Vector2(-400, -300)
+scale = Vector2(2.0, 2.0)
+texture = ExtResource("3_arches")
+centered = false
+
+[node name="아치_2" type="Sprite2D" parent="가까운아치"]
+modulate = Color(1, 1, 1, 0.72)
+material = SubResource("ShaderMaterial_arches")
+position = Vector2(1900, 2200)
+scale = Vector2(1.8, 1.8)
+texture = ExtResource("3_arches")
+centered = false
+
+[node name="안개" type="Parallax2D" parent="."]
+z_index = -70
+scroll_scale = Vector2(0.78, 0.70)
+scroll_offset = Vector2(0, 640)
+repeat_size = Vector2(3072, 2048)
+repeat_times = 3
+
+[node name="그림" type="Sprite2D" parent="안개"]
+modulate = Color(1, 1, 1, 0.32)
+material = SubResource("ShaderMaterial_mist")
+scale = Vector2(2, 2)
+texture = ExtResource("4_mist")
+centered = false

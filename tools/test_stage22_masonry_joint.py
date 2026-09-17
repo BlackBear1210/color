@@ -30,11 +30,16 @@ def main():
                     if a[1]==b[1] and c[0]==d[0]:
                         assert not (min(a[0],b[0])<c[0]<max(a[0],b[0]) and min(c[1],d[1])<a[1]<max(c[1],d[1]))
     for name,(block,pos,poly) in nodes.items():
+        # [2026-09-17 Claude] 에디터가 다시 저장한 씬은 프리팹 기본값과 같은 값(위치별_판정=true)과
+        # 편집 불가 인스턴스 내부의 콜리전 덮어쓰기를 지운다(HEAD 8351ead 가 그렇다). 콜리전은
+        # collision_update_mode=2 라 실행 때 점에서 다시 굽히므로, 덮어쓰기가 **있으면** 점과 같아야 하고 없으면 통과.
         pat=rf'\[node name="CollisionPolygon2D" parent="지형/{re.escape(name)}/StaticBody2D"[^\]]*\]\npolygon = PackedVector2Array\(([^)]+)\)'
-        saved=vec(re.search(pat,text)[1])
-        expected=tuple(v for p in poly[:-1] for v in (p[0]-pos[0],p[1]-pos[1]))
-        assert len(saved)==len(expected) and all(abs(a-b)<.0001 for a,b in zip(saved,expected)),name
-        assert '"위치별_판정" = true' in block,name
+        found=re.search(pat,text)
+        if found:
+            saved=vec(found[1])
+            expected=tuple(v for p in poly[:-1] for v in (p[0]-pos[0],p[1]-pos[1]))
+            assert len(saved)==len(expected) and all(abs(a-b)<.0001 for a,b in zip(saved,expected)),name
+        assert '"위치별_판정" = false' not in block,name
         assert '칠하기_방식' not in block and '칠하기_허용' not in block,name
         # 미리보기 마감 한도는 실제 인접 다각형 수로 확인한다.
         bounds=lambda p:(min(q[0] for q in p),min(q[1] for q in p),max(q[0] for q in p),max(q[1] for q in p))
@@ -45,11 +50,17 @@ def main():
             if not (orr<x-8 or ox>r+8 or ob<y-8 or oy>b+8):cover+=len(op)
         assert len(poly)<=64 and cover<=256,(name,len(poly),cover)
     for path in re.findall(r'path="res://([^"]+)"',text):assert (ROOT/path).is_file(),path
-    for color in ['black','white']:
-        material=(ROOT/f'assets/textures/smartshape/sewer_masonry_v02/맞물림_{color}.tres').read_text(encoding='utf-8')
-        assert 'fill_texture_absolute_position = true' in material
-        assert 'fill_texture_offset = Vector2(0, 1792.1)' in material
-        assert 'fill_texture_scale = 0.18' in material
+    # 맞물린 네 지형의 **실제** 재질(외부 .tres 든, 에디터가 씬 안에 풀어 넣은 sub_resource 든)이 같은 월드 UV 기준인지 본다.
+    for name in ['좌상_덩어리','탑_왼벽','좌하_채움','탑_바닥']:
+        ref=re.search(r'shape_material = (Ext|Sub)Resource\("([^"]+)"\)',nodes[name][0])
+        if ref[1]=='Ext':
+            path=re.search(r'\[ext_resource[^\]]*path="res://([^"]+)"[^\]]*id="'+re.escape(ref[2])+'"',text)[1]
+            material=(ROOT/path).read_text(encoding='utf-8')
+        else:
+            material=re.search(r'\[sub_resource type="Resource" id="'+re.escape(ref[2])+r'"\]\n(?:.*\n)*?\n',text)[0]
+        assert 'fill_texture_absolute_position = true' in material,name
+        assert 'fill_texture_offset = Vector2(0, 1792.1)' in material,name
+        assert 'fill_texture_scale = 0.18' in material,name
         for path in re.findall(r'path="res://([^"]+)"',material):assert (ROOT/path).is_file(),path
     ids=re.findall(r'\[sub_resource [^\]]*id="([^"]+)"',text)
     assert len(ids)==len(set(ids))

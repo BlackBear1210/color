@@ -23,6 +23,12 @@
 [ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="14_uvrwf"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="15_670hx"]
 [ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="16_eomck"]
+[ext_resource type="Script" uid="uid://boaptrkeuds8j" path="res://scripts/스마트월드/하수도_내부벽돌.gd" id="color_inlay_script"]
+[ext_resource type="PackedScene" path="res://scenes/장식/하수도_지지구조/삼각지지대.tscn" id="ledge_bracket"]
+[ext_resource type="Shader" uid="uid://j7gny2bxxkwu" path="res://shaders/sewer_ledge_v03.gdshader" id="ledge_shader"]
+[ext_resource type="Texture2D" uid="uid://b5tm2fxf37cvp" path="res://assets/textures/smartshape/sewer_ledge_v03/white/fill.png" id="ledge_white"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중선반_흰색.tscn" id="sewer_air_white"]
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_다층배경_2_2.tscn" id="sewer_background"]
 
 [sub_resource type="Resource" id="Resource_n1f0m"]
 script = ExtResource("4_7je74")
@@ -61,8 +67,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_670hx"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-512, -2176, 512, 2176)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-512, -2176, 512, -2176), Vector4(512, -2176, 512, 2176), Vector4(512, 2176, -512, 2176), Vector4(-512, 2176, -512, -2176), Vector4(-512, -2176, -512, -2176)])
@@ -105,7 +114,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_eomck"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_uvrwf"]
 _surfaces = [{
 "aabb": AABB(-512, -2176, 0, 1024, 4352, 1e-05),
 "attribute_data": PackedByteArray("/////wAAAABxkBvBAAAAAHGQG8H/////AAAAAKs2XkEAAAAAqzZeQf////97CW3AqzZeQXsJbcCrNl5B/////3sJbcBxkBvBewltwHGQG8E="),
@@ -118,10 +127,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAARAAACMUAAAAAAAAARAAACEUAAAAAAAAAxAAACEUAAAAAAAAAxAAACMUAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_mp636"]
+[sub_resource type="Resource" id="Resource_670hx"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_eomck")
+mesh = SubResource("ArrayMesh_uvrwf")
 material = SubResource("ShaderMaterial_670hx")
 z_index = -1
 
@@ -171,8 +180,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_imuqb"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-512, -2176, 512, 2176)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-512, -2176, 512, -2176), Vector4(512, -2176, 512, 2176), Vector4(512, 2176, -512, 2176), Vector4(-512, 2176, -512, -2176), Vector4(-512, -2176, -512, -2176)])
@@ -215,7 +227,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_uo4lu"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_eomck"]
 _surfaces = [{
 "aabb": AABB(-512, -2176, 0, 1024, 4352, 1e-05),
 "attribute_data": PackedByteArray("/////4X2okFxkBvBhfaiQXGQG8H/////hfaiQas2XkGF9qJBqzZeQf////9VVYVBqzZeQVVVhUGrNl5B/////1VVhUFxkBvBVVWFQXGQG8E="),
@@ -228,10 +240,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAARAAACMUAAAAAAAAARAAACEUAAAAAAAAAxAAACEUAAAAAAAAAxAAACMUAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_ais3f"]
+[sub_resource type="Resource" id="Resource_mp636"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_uo4lu")
+mesh = SubResource("ArrayMesh_eomck")
 material = SubResource("ShaderMaterial_imuqb")
 z_index = -1
 
@@ -281,8 +293,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_x6e74"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-3328, -512, 3328, 512)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-3328, -512, 3328, -512), Vector4(3328, -512, 3328, 512), Vector4(3328, 512, -3328, 512), Vector4(-3328, 512, -3328, -512), Vector4(-3328, -512, -3328, -512)])
@@ -325,7 +340,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_6vb03"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_kxumd"]
 _surfaces = [{
 "aabb": AABB(-3328, -512, 0, 6656, 1024, 1e-05),
 "attribute_data": PackedByteArray("/////4X2okH/c3TBhfaiQf9zdMH/////hfaiQXGQG8GF9qJBcZAbwf////94CW3AcZAbwXgJbcBxkBvB/////3gJbcD/c3TBeAltwP9zdME="),
@@ -338,10 +353,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABQRQAAAMQAAAAAAABQRQAAAEQAAAAAAABQxQAAAEQAAAAAAABQxQAAAMQAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_1e635"]
+[sub_resource type="Resource" id="Resource_imuqb"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_6vb03")
+mesh = SubResource("ArrayMesh_kxumd")
 material = SubResource("ShaderMaterial_x6e74")
 z_index = -1
 
@@ -391,8 +406,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4pqs4"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-3328, -512, 3328, 512)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-3328, -512, 3328, -512), Vector4(3328, -512, 3328, 512), Vector4(3328, 512, -3328, 512), Vector4(-3328, 512, -3328, -512), Vector4(-3328, -512, -3328, -512)])
@@ -435,7 +453,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_xlosn"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_uo4lu"]
 _surfaces = [{
 "aabb": AABB(-3328, -512, 0, 6656, 1024, 1e-05),
 "attribute_data": PackedByteArray("/////4X2okGpNl5BhfaiQak2XkH/////hfaiQRyNm0GF9qJBHI2bQf////94CW3AHI2bQXgJbcAcjZtB/////3gJbcCpNl5BeAltwKk2XkE="),
@@ -448,10 +466,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABQRQAAAMQAAAAAAABQRQAAAEQAAAAAAABQxQAAAEQAAAAAAABQxQAAAMQAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_taco1"]
+[sub_resource type="Resource" id="Resource_ais3f"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_xlosn")
+mesh = SubResource("ArrayMesh_uo4lu")
 material = SubResource("ShaderMaterial_4pqs4")
 z_index = -1
 
@@ -501,8 +519,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_osxje"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-2304, -608, 2304, 608)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-2304, -608, 2304, -608), Vector4(2304, -608, 2304, 608), Vector4(2304, 608, -2304, 608), Vector4(-2304, 608, -2304, -608), Vector4(-2304, -608, -2304, -608)])
@@ -545,7 +566,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_7n7rl"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_66ff2"]
 _surfaces = [{
 "aabb": AABB(-2304, -608, 0, 4608, 1216, 1e-05),
 "attribute_data": PackedByteArray("/////1ZVhUFxkBvBVlWFQXGQG8H/////VlWFQeMISMBWVYVB4whIwP////8AAIA14whIwAAAgDXjCEjA/////wAAgDVxkBvBAACANXGQG8E="),
@@ -558,10 +579,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAQRQAAGMQAAAAAAAAQRQAAGEQAAAAAAAAQxQAAGEQAAAAAAAAQxQAAGMQAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_y7n6d"]
+[sub_resource type="Resource" id="Resource_x6e74"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_7n7rl")
+mesh = SubResource("ArrayMesh_66ff2")
 material = SubResource("ShaderMaterial_osxje")
 z_index = -1
 
@@ -789,7 +810,7 @@ resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-928, -384)
 
-[sub_resource type="Resource" id="Resource_u73m2"]
+[sub_resource type="Resource" id="Resource_6vb03"]
 resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
@@ -845,8 +866,11 @@ _next_key = 43
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kblk1"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-928, -384, 928, 384)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 43
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-928, -384, 928, -384), Vector4(928, -384, 928, 384), Vector4(928, 384, 480, 384), Vector4(480, 384, 480, 256), Vector4(480, 256, -227.26, 256), Vector4(-227.26, 256, -227.26, 276.7), Vector4(-227.26, 276.7, -209.98, 276.7), Vector4(-209.98, 276.7, -209.98, 298.12), Vector4(-209.98, 298.12, -315.82, 298.12), Vector4(-315.82, 298.12, -315.82, 276.7), Vector4(-315.82, 276.7, -332.92, 276.7), Vector4(-332.92, 276.7, -332.92, 256), Vector4(-332.92, 256, -313.84, 256), Vector4(-313.84, 256, -313.84, 234.76), Vector4(-313.84, 234.76, -416.08, 234.76), Vector4(-416.08, 234.76, -416.08, 256), Vector4(-416.08, 256, -433, 256), Vector4(-433, 256, -433, 276.7), Vector4(-433, 276.7, -540.1, 276.7), Vector4(-540.1, 276.7, -540.1, 256), Vector4(-540.1, 256, -522.1, 256), Vector4(-522.1, 256, -522.1, 234.76), Vector4(-522.1, 234.76, -537.22, 234.76), Vector4(-537.22, 234.76, -537.22, 213.34), Vector4(-537.22, 213.34, -643.78, 213.34), Vector4(-643.78, 213.34, -643.78, 234.76), Vector4(-643.78, 234.76, -651.52, 234.76), Vector4(-651.52, 234.76, -651.52, 256), Vector4(-651.52, 256, -644.68, 256), Vector4(-644.68, 256, -644.68, 276.7), Vector4(-644.68, 276.7, -651.52, 276.7), Vector4(-651.52, 276.7, -651.52, 298.12), Vector4(-651.52, 298.12, -762.94, 298.12), Vector4(-762.94, 298.12, -762.94, 276.7), Vector4(-762.94, 276.7, -746.38, 276.7), Vector4(-746.38, 276.7, -746.38, 256), Vector4(-746.38, 256, -764.2, 256), Vector4(-764.2, 256, -764.2, 234.76), Vector4(-764.2, 234.76, -831.34, 234.76), Vector4(-831.34, 234.76, -831.34, 256), Vector4(-831.34, 256, -928, 256), Vector4(-928, 256, -928, -384), Vector4(-928, -384, -928, -384)])
@@ -889,7 +913,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_syp2p"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_1e635"]
 _surfaces = [{
 "aabb": AABB(-928, -384, 0, 1856, 768, 1e-05),
 "attribute_data": PackedByteArray("/////5fQ1kDhCEjAl9DWQOEISMD/////l9DWQJJDhT+X0NZAkkOFP/////+E9qJAkkOFP4T2okCSQ4U//////1U1IkAUAOs+VTUiQBQA6z7/////VTUmQBQA6z5VNSZAFADrPv////9VNSZACEATP1U1JkAIQBM//////1S1DUAIQBM/VLUNQAhAEz//////VLUNQBQA6z5UtQ1AFADrPv//////vwlAFADrPv+/CUAUAOs+//////+/CUAQgLE+/78JQBCAsT7////////sPyAAbT7//+w/IABtPv///////+w/EICxPv//7D8QgLE+/////6kq5T8QgLE+qSrlPxCAsT7/////qSrlPxQA6z6pKuU/FADrPv////9VlbM/FADrPlWVsz8UAOs+/////1WVsz8QgLE+VZWzPxCAsT7/////quq7PxCAsT6q6rs/EICxPv////+q6rs/IABtPqrquz8gAG0+/////6rqtD8gAG0+quq0PyAAbT7/////quq0P0AA7D2q6rQ/QADsPf////9UlYM/QADsPVSVgz9AAOw9/////1SVgz8gAG0+VJWDPyAAbT7//////P9/PyAAbT78/38/IABtPv/////8/38/EICxPvz/fz8QgLE+/////6oqgz8QgLE+qiqDPxCAsT7/////qiqDPxQA6z6qKoM/FADrPv/////8/38/FADrPvz/fz8UAOs+//////z/fz8IQBM//P9/PwhAEz//////VNUYPwhAEz9U1Rg/CEATP/////9U1Rg/FADrPlTVGD8UAOs+/////6gqKD8UAOs+qCooPxQA6z7/////qCooPxCAsT6oKig/EICxPv////+oqhc/EICxPqiqFz8QgLE+/////6iqFz8gAG0+qKoXPyAAbT7/////+P+yPiAAbT74/7I+IABtPv/////4/7I+EICxPvj/sj4QgLE+/////wAAAAAQgLE+AAAAABCAsT7/////hPaiQBCAsT6E9qJAEICxPv////+qKg5AEICxPqoqDkAQgLE+/////1U1IkAQgLE+VTUiQBCAsT7/////qioOQCAAbT6qKg5AIABtPv////8AAAAA4QhIwAAAAADhCEjA"),
@@ -902,10 +926,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABoRAAAwMMAAAAAAABoRAAAwEMAAAAAAADwQwAAwEMAAAAAj0Jjw5pZikMAAAAA4fpRw5pZikMAAAAA4fpRw1wPlUMAAAAA9uidw1wPlUMAAAAA9uidw5pZikMAAAAAw3Wmw5pZikMAAAAAw3WmwwAAgEMAAAAAPQrQw4/CakMAAAAAPQrQwwAAgEMAAAAAAIDYwwAAgEMAAAAAAIDYw5pZikMAAAAAZgYHxJpZikMAAAAAZgYHxAAAgEMAAAAAZoYCxAAAgEMAAAAAZoYCxI/CakMAAAAAFE4GxI/CakMAAAAAFE4GxApXVUMAAAAA7PEgxApXVUMAAAAA7PEgxI/CakMAAAAASOEixI/CakMAAAAASOEixAAAgEMAAAAAhSshxAAAgEMAAAAAhSshxJpZikMAAAAASOEixJpZikMAAAAASOEixFwPlUMAAAAAKbw+xFwPlUMAAAAAKbw+xJpZikMAAAAAUpg6xJpZikMAAAAAUpg6xAAAgEMAAAAAzQw/xAAAgEMAAAAAzQw/xI/CakMAAAAAw9VPxI/CakMAAAAAw9VPxAAAgEMAAAAAAABoxAAAgEMAAAAAAADwQwAAgEMAAAAAheucwwAAgEMAAAAAj0JjwwAAgEMAAAAAheucw4/CakMAAAAAAABoxAAAwMMAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+///////7//7//////////v/////////+//////////7///////v//v/////////+//////////7//////////v//////+//+//////////7//////////v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7///////v//v/////////+/")
 }]
 
-[sub_resource type="Resource" id="Resource_rjuyp"]
+[sub_resource type="Resource" id="Resource_4pqs4"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_syp2p")
+mesh = SubResource("ArrayMesh_1e635")
 material = SubResource("ShaderMaterial_kblk1")
 z_index = -1
 
@@ -1143,7 +1167,7 @@ resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-384, -384)
 
-[sub_resource type="Resource" id="Resource_atvmj"]
+[sub_resource type="Resource" id="Resource_xlosn"]
 resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
@@ -1201,8 +1225,11 @@ _next_key = 45
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n3rlv"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-384, -384, 445.44, 384)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 45
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-384, -384, 384, -384), Vector4(384, -384, 384, -290.04), Vector4(384, -290.04, 404.4, -290.04), Vector4(404.4, -290.04, 404.4, -268.8), Vector4(404.4, -268.8, 445.44, -268.8), Vector4(445.44, -268.8, 445.44, -226.68), Vector4(445.44, -226.68, 424.2, -226.68), Vector4(424.2, -226.68, 424.2, -205.8), Vector4(424.2, -205.8, 370.02, -205.8), Vector4(370.02, -205.8, 370.02, -184.92), Vector4(370.02, -184.92, 317.46, -184.92), Vector4(317.46, -184.92, 317.46, -164.04), Vector4(317.46, -164.04, 332.58, -164.04), Vector4(332.58, -164.04, 332.58, -148.38), Vector4(332.58, -148.38, 332.76, -148.38), Vector4(332.76, -148.38, 332.76, -127.14), Vector4(332.76, -127.14, 394.68, -127.14), Vector4(394.68, -127.14, 394.68, -105.72), Vector4(394.68, -105.72, 445.44, -105.72), Vector4(445.44, -105.72, 445.44, -63.78), Vector4(445.44, -63.78, 370.2, -63.78), Vector4(370.2, -63.78, 370.2, -42.36), Vector4(370.2, -42.36, 351.66, -42.36), Vector4(351.66, -42.36, 351.66, -21.48), Vector4(351.66, -21.48, 299.82, -21.48), Vector4(299.82, -21.48, 299.82, -0.6), Vector4(299.82, -0.6, 386.04, -0.6), Vector4(386.04, -0.6, 386.04, 20.28), Vector4(386.04, 20.28, 404.22, 20.28), Vector4(404.22, 20.28, 404.22, 35.94), Vector4(404.22, 35.94, 445.44, 35.94), Vector4(445.44, 35.94, 445.44, 57.18), Vector4(445.44, 57.18, 351.84, 57.18), Vector4(351.84, 57.18, 351.84, 78.6), Vector4(351.84, 78.6, 369.48, 78.6), Vector4(369.48, 78.6, 369.48, 99.84), Vector4(369.48, 99.84, 445.44, 99.84), Vector4(445.44, 99.84, 445.44, 120.54), Vector4(445.44, 120.54, 404.76, 120.54), Vector4(404.76, 120.54, 404.76, 141.96), Vector4(404.76, 141.96, 384, 141.96), Vector4(384, 141.96, 384, 384), Vector4(384, 384, -384, 384), Vector4(-384, 384, -384, -384), Vector4(-384, -384, -384, -384)])
@@ -1245,7 +1272,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_njnml"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_taco1"]
 _surfaces = [{
 "aabb": AABB(-384, -384, 0, 829.44, 768, 1e-05),
 "attribute_data": PackedByteArray("/////xzHMUAAtCNBHMcxQAC0I0H/////AIA2QAC0I0EAgDZAALQjQf////8AgDZAAIwlQQCANkAAjCVB/////wAAQEAAjCVBAABAQACMJUH/////AABAQAA0KUEAAEBAADQpQf////9VFTtAADQpQVUVO0AANClB/////1UVO0AABCtBVRU7QAAEK0H/////qoouQAAEK0Gqii5AAAQrQf////+qii5AANQsQaqKLkAA1CxB/////wBgIkAA1CxBAGAiQADULEH/////AGAiQACkLkEAYCJAAKQuQf////8A4CVAAKQuQQDgJUAApC5B/////wDgJUAAADBBAOAlQAAAMEH/////quolQAAAMEGq6iVAAAAwQf////+q6iVAANgxQarqJUAA2DFB/////wBANEAA2DFBAEA0QADYMUH/////AEA0QAC0M0EAQDRAALQzQf////8AAEBAALQzQQAAQEAAtDNB/////wAAQEAAWDdBAABAQABYN0H/////VZUuQABYN0FVlS5AAFg3Qf////9VlS5AADQ5QVWVLkAANDlB/////6pKKkAANDlBqkoqQAA0OUH/////qkoqQAAEO0GqSipAAAQ7Qf////+qSh5AAAQ7QapKHkAABDtB/////6pKHkAA1DxBqkoeQADUPEH/////AEAyQADUPEEAQDJAANQ8Qf////8AQDJAAKQ+QQBAMkAApD5B/////1V1NkAApD5BVXU2QACkPkH/////VXU2QAAAQEFVdTZAAABAQf////8AAEBAAABAQQAAQEAAAEBB/////wAAQEAA2EFBAABAQADYQUH/////VVUqQAC0Q0FVVSpAALRDQf////+qai5AALRDQapqLkAAtENB/////6pqLkAAjEVBqmouQACMRUH/////AABAQACMRUEAAEBAAIxFQf////8AAEBAAFhHQQAAQEAAWEdB/////1WVNkAAWEdBVZU2QABYR0H/////VZU2QAA0SUFVlTZAADRJQf////8cxzFAADRJQRzHMUAANElB/////xzHMUCqNl5BHMcxQKo2XkH/////AAAAAKo2XkEAAAAAqjZeQf////9VVSpAANhBQVVVKkAA2EFB/////xzHMUAAjBtBHMcxQACMG0H/////AAAAAACMG0EAAAAAAIwbQQ=="),
@@ -1258,10 +1285,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AADAQx8FkcMAAAAAMzPKQx8FkcMAAAAAMzPKQ2ZmhsMAAAAAUrjeQ2ZmhsMAAAAAUrjeQxSuYsMAAAAAmhnUQxSuYsMAAAAAmhnUQ83MTcMAAAAAjwK5Q83MTcMAAAAAjwK5Q4XrOMMAAAAA4bqeQ4XrOMMAAAAA4bqeQz0KJMMAAAAAPUqmQz0KJMMAAAAAPUqmQ0hhFMMAAAAASGGmQ0hhFMMAAAAASGGmQ65H/sIAAAAAClfFQ65H/sIAAAAAClfFQ6Rw08IAAAAAUrjeQ6Rw08IAAAAAUrjeQ7gef8IAAAAAmhm5Q7gef8IAAAAAmhm5Q6RwKcIAAAAAe9SvQ6RwKcIAAAAAe9SvQwrXq8EAAAAA9uiVQwrXq8EAAAAA9uiVQ5qZGb8AAAAAHwXBQ5qZGb8AAAAAHwXBQ3E9okEAAAAAKRzKQ3E9okEAAAAAKRzKQ4/CD0IAAAAAUrjeQ4/CD0IAAAAAUrjeQ1K4ZEIAAAAAheuvQzMznUIAAAAAcb24QzMznUIAAAAAcb24QxSux0IAAAAAUrjeQxSux0IAAAAAUrjeQ3sU8UIAAAAASGHKQ3sU8UIAAAAASGHKQ8P1DUMAAAAAAADAQ8P1DUMAAAAAAADAQwAAwEMAAAAAAADAwwAAwEMAAAAAheuvQ1K4ZEIAAAAAAADAQwAAwMMAAAAAAADAwwAAwMMAAAAA//////7//7//////////v//////+//+//////////7//////////v//////+//+//////////7//////////v/////////+///////7//7///////v//v/////////+///////7//7//////////v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v//////+//+///////7//7//////////v/////////+//////////7//////////v/////////+//////////7///////v//v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+///////7//7//////////vw==")
 }]
 
-[sub_resource type="Resource" id="Resource_7y68x"]
+[sub_resource type="Resource" id="Resource_y7n6d"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_njnml")
+mesh = SubResource("ArrayMesh_taco1")
 material = SubResource("ShaderMaterial_n3rlv")
 z_index = -1
 
@@ -1311,8 +1338,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ud1ak"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-64, -224, 64, 224)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-64, -224, 64, -224), Vector4(64, -224, 64, 224), Vector4(64, 224, -64, 224), Vector4(-64, 224, -64, -224), Vector4(-64, -224, -64, -224)])
@@ -1355,7 +1385,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_utqhk"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_gqxup"]
 _surfaces = [{
 "aabb": AABB(-64, -224, 0, 128, 448, 1e-05),
 "attribute_data": PackedByteArray("/////0xoz0AcUzdBTGjPQBxTN0H/////TGjPQKo2XkFMaM9AqjZeQf////+0l8BAqjZeQbSXwECqNl5B/////7SXwEAcUzdBtJfAQBxTN0E="),
@@ -1368,10 +1398,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AACAQgAAYMMAAAAAAACAQgAAYEMAAAAAAACAwgAAYEMAAAAAAACAwgAAYMMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_f7tjf"]
+[sub_resource type="Resource" id="Resource_u73m2"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_utqhk")
+mesh = SubResource("ArrayMesh_gqxup")
 material = SubResource("ShaderMaterial_ud1ak")
 z_index = -1
 
@@ -1441,8 +1471,11 @@ _next_key = 9
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ams4s"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-384, -1568, 384, 1568)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 9
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-384, -1568, 384, -1568), Vector4(384, -1568, 384, 1568), Vector4(384, 1568, -384, 1568), Vector4(-384, 1568, -384, -1024), Vector4(-384, -1024, 160, -1024), Vector4(160, -1024, 160, -1424), Vector4(160, -1424, -384, -1424), Vector4(-384, -1424, -384, -1568), Vector4(-384, -1568, -384, -1568)])
@@ -1485,23 +1518,23 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_ralqr"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_kblk1"]
 _surfaces = [{
 "aabb": AABB(-384, -1568, 0, 768, 3136, 1e-05),
-"attribute_data": PackedByteArray("/////1VVhUHgCEjAVVWFQeAISMD/////VVWFQao2XkFVVYVBqjZeQf/////kOF5BqjZeQeQ4XkGqNl5B/////+Q4XkFAVTK+5DheQUBVMr7/////JrR9QUBVMr4mtH1BQFUyvv////8mtH1B4ggWwCa0fUHiCBbA/////+Q4XkHiCBbA5DheQeIIFsD/////5DheQeAISMDkOF5B4AhIwA=="),
+"attribute_data": PackedByteArray("/////+Q4XkHiCBbA5DheQeIIFsD/////5DheQeAISMDkOF5B4AhIwP////9VVYVB4AhIwFVVhUHgCEjA/////1VVhUGqNl5BVVWFQao2XkH/////5DheQao2XkHkOF5BqjZeQf/////kOF5BQFUyvuQ4XkFAVTK+/////ya0fUFAVTK+JrR9QUBVMr7/////JrR9QeIIFsAmtH1B4ggWwA=="),
 "format": 34359742527,
-"index_count": 21,
-"index_data": PackedByteArray("AAABAAIAAgADAAQAAAACAAQAAAAEAAUAAAAFAAYABgAHAAcABwAAAAYA"),
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABwAAAAIAAgAEAAYABgAHAAIA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 8,
-"vertex_data": PackedByteArray("AADAQwAAxMQAAAAAAADAQwAAxEQAAAAAAADAwwAAxEQAAAAAAADAwwAAgMQAAAAAAAAgQwAAgMQAAAAAAAAgQwAAssQAAAAAAADAwwAAssQAAAAAAADAwwAAxMQAAAAA//////7//7//////////v/////////+//////////7///////v//v//////+//+//////////7//////////vw==")
+"vertex_data": PackedByteArray("AADAwwAAssQAAAAAAADAwwAAxMQAAAAAAADAQwAAxMQAAAAAAADAQwAAxEQAAAAAAADAwwAAxEQAAAAAAADAwwAAgMQAAAAAAAAgQwAAgMQAAAAAAAAgQwAAssQAAAAA/////////7//////////v//////+//+//////////7//////////v/////////+///////7//7///////v//vw==")
 }]
 
-[sub_resource type="Resource" id="Resource_wf42v"]
+[sub_resource type="Resource" id="Resource_syp2p"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_ralqr")
+mesh = SubResource("ArrayMesh_kblk1")
 material = SubResource("ShaderMaterial_ams4s")
 z_index = -1
 
@@ -1719,7 +1752,7 @@ resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-384, -864)
 
-[sub_resource type="Resource" id="Resource_h5ksu"]
+[sub_resource type="Resource" id="Resource_rjuyp"]
 resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
@@ -1773,8 +1806,11 @@ _next_key = 41
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0xwtf"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 6
+shader_parameter/inlay_rects = PackedVector4Array(168.96, 36.36, 298.38, 57.6, 148.62, 57.6, 350.58, 78.3, 192.72, 78.3, 334.02, 99.72, 147.72, 99.72, 281.1, 120.6, 194.7, 120.6, 334.2, 141.48, 168.96, 141.48, 317.46, 162.36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-384, -906.66, 384, 863.99994)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 41
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-384, -864, -287.34, -864), Vector4(-287.34, -864, -287.34, -885.24), Vector4(-287.34, -885.24, -220.2, -885.24), Vector4(-220.2, -885.24, -220.2, -864), Vector4(-220.2, -864, -202.38, -864), Vector4(-202.38, -864, -202.38, -843.3), Vector4(-202.38, -843.3, -218.94, -843.3), Vector4(-218.94, -843.3, -218.94, -821.88), Vector4(-218.94, -821.88, -107.52, -821.88), Vector4(-107.52, -821.88, -107.52, -843.3), Vector4(-107.52, -843.3, -100.68, -843.3), Vector4(-100.68, -843.3, -100.68, -864), Vector4(-100.68, -864, -107.52, -864), Vector4(-107.52, -864, -107.52, -885.24), Vector4(-107.52, -885.24, -99.78, -885.24), Vector4(-99.78, -885.24, -99.78, -906.66), Vector4(-99.78, -906.66, 6.78, -906.66), Vector4(6.78, -906.66, 6.78, -885.24), Vector4(6.78, -885.24, 21.9, -885.24), Vector4(21.9, -885.24, 21.9, -864), Vector4(21.9, -864, 3.9, -864), Vector4(3.9, -864, 3.9, -843.3), Vector4(3.9, -843.3, 111, -843.3), Vector4(111, -843.3, 111, -864), Vector4(111, -864, 127.92, -864), Vector4(127.92, -864, 127.92, -885.24), Vector4(127.92, -885.24, 230.16, -885.24), Vector4(230.16, -885.24, 230.16, -864), Vector4(230.16, -864, 211.08, -864), Vector4(211.08, -864, 211.08, -843.3), Vector4(211.08, -843.3, 228.18, -843.3), Vector4(228.18, -843.3, 228.18, -821.88), Vector4(228.18, -821.88, 334.02, -821.88), Vector4(334.02, -821.88, 334.02, -843.3), Vector4(334.02, -843.3, 316.74, -843.3), Vector4(316.74, -843.3, 316.74, -864), Vector4(316.74, -864, 384, -864), Vector4(384, -864, 384, 864), Vector4(384, 864, -384, 864), Vector4(-384, 864, -384, -864), Vector4(-384, -864, -384, -864)])
@@ -1817,23 +1853,23 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_nn3r5"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_urnai"]
 _surfaces = [{
 "aabb": AABB(-384, -906.66, 0, 768, 1770.6599, 1e-05),
-"attribute_data": PackedByteArray("/////wAAsz4AgLE+AACzPgCAsT7/////AACzPgAAbT4AALM+AABtPv////+qqhc/AABtPqqqFz8AAG0+/////6qqFz8AgLE+qqoXPwCAsT7/////qiooPwCAsT6qKig/AICxPv////+qKig/EADrPqoqKD8QAOs+/////wAAgD8AQBM/AACAPwBAEz//////AACAPxAA6z4AAIA/EADrPv////+qKoM/EADrPqoqgz8QAOs+/////6oqgz8AgLE+qiqDPwCAsT7/////AACAPwCAsT4AAIA/AICxPv////8AAIA/AABtPgAAgD8AAG0+/////1WVgz8AAG0+VZWDPwAAbT7/////VZWDP0AA7D1VlYM/QADsPf////+q6rQ/QADsParqtD9AAOw9/////6rqtD8AAG0+quq0PwAAbT7/////quq7PwAAbT6q6rs/AABtPv////+q6rs/AICxPqrquz8AgLE+/////6oq5T8QAOs+qirlPxAA6z7/////qirlPwCAsT6qKuU/AICxPv////8AAO0/AICxPgAA7T8AgLE+/////wAA7T8AAG0+AADtPwAAbT7/////qioOQAAAbT6qKg5AAABtPv////+qKg5AAICxPqoqDkAAgLE+/////wDACUAAgLE+AMAJQACAsT7/////AMAJQBAA6z4AwAlAEADrPv////9VtQ1AEADrPlW1DUAQAOs+/////1W1DUAAQBM/VbUNQABAEz//////VTUmQBAA6z5VNSZAEADrPv////9VNSJAEADrPlU1IkAQAOs+/////1U1IkAAgLE+VTUiQACAsT7/////HMcxQACAsT4cxzFAAICxPv////8cxzFAAIwbQRzHMUAAjBtB/////wAAAAAAjBtBAAAAAACMG0H/////VdUYPxAA6z5V1Rg/EADrPv////9VlbM/AICxPlWVsz8AgLE+/////1U1JkAAQBM/VTUmQABAEz//////VdUYPwBAEz9V1Rg/AEATP/////9VlbM/EADrPlWVsz8QAOs+/////wAAAAAAgLE+AAAAAACAsT4="),
+"attribute_data": PackedByteArray("/////wAAAAAAjBtBAAAAAACMG0H/////AAAAAACAsT4AAAAAAICxPv////8AALM+AICxPgAAsz4AgLE+/////wAAsz4AAG0+AACzPgAAbT7/////qqoXPwAAbT6qqhc/AABtPv////+qqhc/AICxPqqqFz8AgLE+/////6oqKD8AgLE+qiooPwCAsT7/////qiooPxAA6z6qKig/EADrPv////8AAIA/AEATPwAAgD8AQBM//////wAAgD8QAOs+AACAPxAA6z7/////qiqDPxAA6z6qKoM/EADrPv////+qKoM/AICxPqoqgz8AgLE+/////wAAgD8AgLE+AACAPwCAsT7/////AACAPwAAbT4AAIA/AABtPv////9VlYM/AABtPlWVgz8AAG0+/////1WVgz9AAOw9VZWDP0AA7D3/////quq0P0AA7D2q6rQ/QADsPf////+q6rQ/AABtPqrqtD8AAG0+/////6rquz8AAG0+quq7PwAAbT7/////quq7PwCAsT6q6rs/AICxPv////+qKuU/EADrPqoq5T8QAOs+/////6oq5T8AgLE+qirlPwCAsT7/////AADtPwCAsT4AAO0/AICxPv////8AAO0/AABtPgAA7T8AAG0+/////6oqDkAAAG0+qioOQAAAbT7/////qioOQACAsT6qKg5AAICxPv////8AwAlAAICxPgDACUAAgLE+/////wDACUAQAOs+AMAJQBAA6z7/////VbUNQBAA6z5VtQ1AEADrPv////9VtQ1AAEATP1W1DUAAQBM//////1U1JkAQAOs+VTUmQBAA6z7/////VTUiQBAA6z5VNSJAEADrPv////9VNSJAAICxPlU1IkAAgLE+/////xzHMUAAgLE+HMcxQACAsT7/////HMcxQACMG0EcxzFAAIwbQf////9V1Rg/EADrPlXVGD8QAOs+/////1WVsz8AgLE+VZWzPwCAsT7/////VdUYPwBAEz9V1Rg/AEATP/////9VNSZAAEATP1U1JkAAQBM//////1WVsz8QAOs+VZWzPxAA6z4="),
 "format": 34359742527,
-"index_count": 117,
-"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsADAANAA4ADwAQABEAEgATABQAFAAVABYAFgAXABgAGQAaABsAHAAdAB4AHwAgACEAAAACAAMAAwAFACIACQALAAwADAAOAA8ADwARACMAEgAUABYAHAAeAB8AAAADACIACAAJAAwADAAPACMAEgAWABgAJAAcAB8AAAAiACUACAAMACMAEgAYABkAJAAfACEABgAIACMAEgAZABsAGwAkACEABgAjACYAJgASABsABgAmABsABgAbACEAJQAGACEAAAAlACEAIQAnACcAJwAAACEA"),
+"index_count": 114,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABQAGAAcACAAJAAoACwAMAA0ADgAPABAAEQASABMAFAAVABYAFgAXABgAGAAZABoAGwAcAB0AHgAfACAAIQAiAAAAAAACAAQABQAHACMACwANAA4ADgAQABEAEQATACQAFAAWABgAHgAgACEAAAAEAAUABQAjACUACgALAA4ADgARACQAFAAYABoAJgAeACEAAAAFACUACgAOACQAFAAaABsAJgAhAAAAAAAlAAgACAAKACQAFAAbAB0AHQAmAAAAAAAIACQAJwAUAB0AAAAkACcAJwAdAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 40,
-"vertex_data": PackedByteArray("hauPwwAAWMQAAAAAhauPw1xPXcQAAAAAMzNcw1xPXcQAAAAAMzNcwwAAWMQAAAAASGFKwwAAWMQAAAAASGFKwzPTUsQAAAAAPQrXwlJ4TcQAAAAAPQrXwjPTUsQAAAAAKVzJwjPTUsQAAAAAKVzJwgAAWMQAAAAAPQrXwgAAWMQAAAAAPQrXwlxPXcQAAAAAXI/HwlxPXcQAAAAAXI/Hwj2qYsQAAAAAw/XYQD2qYsQAAAAAw/XYQFxPXcQAAAAAMzOvQVxPXcQAAAAAMzOvQQAAWMQAAAAAAADeQjPTUsQAAAAAAADeQgAAWMQAAAAACtf/QgAAWMQAAAAACtf/QlxPXcQAAAAA9ihmQ1xPXcQAAAAA9ihmQwAAWMQAAAAAexRTQwAAWMQAAAAAexRTQzPTUsQAAAAAFC5kQzPTUsQAAAAAFC5kQ1J4TcQAAAAAjwKnQzPTUsQAAAAAuF6eQzPTUsQAAAAAuF6eQwAAWMQAAAAAAADAQwAAWMQAAAAAAADAQwAAWEQAAAAAAADAwwAAWEQAAAAApPBawzPTUsQAAAAAmpl5QAAAWMQAAAAAjwKnQ1J4TcQAAAAApPBaw1J4TcQAAAAAmpl5QDPTUsQAAAAAAADAwwAAWMQAAAAA//////7//7//////////v/////////+//////////7//////////v/////////+///////7//7//////////v//////+//+///////3//r//////////v/////////+///////7//7//////////v/////////+//////////7//////////v/////////+///////7//7//////////v//////+//+//////////7///////v//v/////////+///////7//7//////////v/////////+//////////7///////v//v/////////+//////////7///////v//v/////////+//////////7///////v//v//////+//+///////7//7///////v//v//////+//+//////////78=")
+"vertex_data": PackedByteArray("AADAwwAAWEQAAAAAAADAwwAAWMQAAAAAhauPwwAAWMQAAAAAhauPw1xPXcQAAAAAMzNcw1xPXcQAAAAAMzNcwwAAWMQAAAAASGFKwwAAWMQAAAAASGFKwzPTUsQAAAAAPQrXwlJ4TcQAAAAAPQrXwjPTUsQAAAAAKVzJwjPTUsQAAAAAKVzJwgAAWMQAAAAAPQrXwgAAWMQAAAAAPQrXwlxPXcQAAAAAXI/HwlxPXcQAAAAAXI/Hwj2qYsQAAAAAw/XYQD2qYsQAAAAAw/XYQFxPXcQAAAAAMzOvQVxPXcQAAAAAMzOvQQAAWMQAAAAAAADeQjPTUsQAAAAAAADeQgAAWMQAAAAACtf/QgAAWMQAAAAACtf/QlxPXcQAAAAA9ihmQ1xPXcQAAAAA9ihmQwAAWMQAAAAAexRTQwAAWMQAAAAAexRTQzPTUsQAAAAAFC5kQzPTUsQAAAAAFC5kQ1J4TcQAAAAAjwKnQzPTUsQAAAAAuF6eQzPTUsQAAAAAuF6eQwAAWMQAAAAAAADAQwAAWMQAAAAAAADAQwAAWEQAAAAApPBawzPTUsQAAAAAmpl5QAAAWMQAAAAApPBaw1J4TcQAAAAAjwKnQ1J4TcQAAAAAmpl5QDPTUsQAAAAA/////////7//////////v/////////+//////////7//////////v//////+//+//////////7//////////v//////+//+//////////7///////v//v//////9//6//////////7//////////v//////+//+//////////7//////////v/////////+//////////7//////////v//////+//+//////////7///////v//v/////////+///////7//7//////////v//////+//+//////////7//////////v//////+//+///////7//7//////////v/////////+///////7//7//////////v//////8//6///////7//7///////v//v//////+//+///////7//78=")
 }]
 
-[sub_resource type="Resource" id="Resource_6883w"]
+[sub_resource type="Resource" id="Resource_atvmj"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_nn3r5")
+mesh = SubResource("ArrayMesh_urnai")
 material = SubResource("ShaderMaterial_0xwtf")
 z_index = -1
 
@@ -2081,7 +2117,7 @@ resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-448, -448)
 
-[sub_resource type="Resource" id="Resource_myodp"]
+[sub_resource type="Resource" id="Resource_n3rlv"]
 resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
@@ -2141,8 +2177,11 @@ _next_key = 47
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yfg1h"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-532.18, -448, 448.00006, 448)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 47
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-448, -448, -176, -448), Vector4(-176, -448, -176, -320), Vector4(-176, -320, 448, -320), Vector4(448, -320, 448, 448), Vector4(448, 448, -448, 448), Vector4(-448, 448, -448, 205.96), Vector4(-448, 205.96, -427.24, 205.96), Vector4(-427.24, 205.96, -427.24, 184.54), Vector4(-427.24, 184.54, -386.56, 184.54), Vector4(-386.56, 184.54, -386.56, 163.84), Vector4(-386.56, 163.84, -462.52, 163.84), Vector4(-462.52, 163.84, -462.52, 142.6), Vector4(-462.52, 142.6, -480.16, 142.6), Vector4(-480.16, 142.6, -480.16, 121.18), Vector4(-480.16, 121.18, -386.56, 121.18), Vector4(-386.56, 121.18, -386.56, 99.94), Vector4(-386.56, 99.94, -427.78, 99.94), Vector4(-427.78, 99.94, -427.78, 84.28), Vector4(-427.78, 84.28, -445.96, 84.28), Vector4(-445.96, 84.28, -445.96, 63.4), Vector4(-445.96, 63.4, -532.18, 63.4), Vector4(-532.18, 63.4, -532.18, 42.52), Vector4(-532.18, 42.52, -480.34, 42.52), Vector4(-480.34, 42.52, -480.34, 21.64), Vector4(-480.34, 21.64, -461.8, 21.64), Vector4(-461.8, 21.64, -461.8, 0.22), Vector4(-461.8, 0.22, -386.56, 0.22), Vector4(-386.56, 0.22, -386.56, -41.72), Vector4(-386.56, -41.72, -437.32, -41.72), Vector4(-437.32, -41.72, -437.32, -63.14), Vector4(-437.32, -63.14, -499.24, -63.14), Vector4(-499.24, -63.14, -499.24, -84.38), Vector4(-499.24, -84.38, -499.42, -84.38), Vector4(-499.42, -84.38, -499.42, -100.04), Vector4(-499.42, -100.04, -514.54, -100.04), Vector4(-514.54, -100.04, -514.54, -120.92), Vector4(-514.54, -120.92, -461.98, -120.92), Vector4(-461.98, -120.92, -461.98, -141.8), Vector4(-461.98, -141.8, -407.8, -141.8), Vector4(-407.8, -141.8, -407.8, -162.68), Vector4(-407.8, -162.68, -386.56, -162.68), Vector4(-386.56, -162.68, -386.56, -204.8), Vector4(-386.56, -204.8, -427.6, -204.8), Vector4(-427.6, -204.8, -427.6, -226.04), Vector4(-427.6, -226.04, -448, -226.04), Vector4(-448, -226.04, -448, -448), Vector4(-448, -448, -448, -448)])
@@ -2185,7 +2224,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_m2i2m"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_njnml"]
 _surfaces = [{
 "aabb": AABB(-532.18, -448, 0, 980.18, 896, 1e-05),
 "attribute_data": PackedByteArray("/////6G9cEABjBtBob1wQAGMG0H/////tJfAQAGMG0G0l8BAAYwbQf////+0l8BAqzZeQbSXwECrNl5B/////xzHMUCrNl5BHMcxQKs2XkH/////HMcxQAA0SUEcxzFAADRJQf////9VlTZAADRJQVWVNkAANElB/////1WVNkAAWEdBVZU2QABYR0H/////AABAQABYR0EAAEBAAFhHQf////8AAEBAAIxFQQAAQEAAjEVB/////6pqLkAAjEVBqmouQACMRUH/////qmouQAG0Q0Gqai5AAbRDQf////9VVSpAAbRDQVVVKkABtENB/////1VVKkAA2EFBVVUqQADYQUH/////AABAQAEAQEEAAEBAAQBAQf////9VdTZAAQBAQVV1NkABAEBB/////1V1NkABpD5BVXU2QAGkPkH/////AEAyQAGkPkEAQDJAAaQ+Qf////8AQDJAAdQ8QQBAMkAB1DxB/////6pKHkAB1DxBqkoeQAHUPEH/////qkoeQAEEO0GqSh5AAQQ7Qf////+qSipAAQQ7QapKKkABBDtB/////6pKKkABNDlBqkoqQAE0OUH/////VpUuQAE0OUFWlS5AATQ5Qf////9WlS5AAVg3QVaVLkABWDdB/////wAAQEABWDdBAABAQAFYN0H/////AABAQAG0M0EAAEBAAbQzQf////8AQDRAAbQzQQBANEABtDNB/////wBANEAB2DFBAEA0QAHYMUH/////quolQAHYMUGq6iVAAdgxQf////+q6iVAAQAwQarqJUABADBB/////wDgJUABADBBAOAlQAEAMEH/////AOAlQAGkLkEA4CVAAaQuQf////8AYCJAAaQuQQBgIkABpC5B/////wBgIkAB1CxBAGAiQAHULEH/////qoouQAHULEGqii5AAdQsQf////+qii5AAQQrQaqKLkABBCtB/////1YVO0ABBCtBVhU7QAEEK0H/////VhU7QAE0KUFWFTtAATQpQf////8AAEBAATQpQQAAQEABNClB/////wAAQEABjCVBAABAQAGMJUH/////AIA2QAGMJUEAgDZAAYwlQf////8AgDZAAbQjQQCANkABtCNB/////wAAQEAA2EFBAABAQADYQUH/////ob1wQI9vEEGhvXBAj28QQf////8cxzFAAbQjQRzHMUABtCNB/////xzHMUCPbxBBHMcxQI9vEEE="),
@@ -2198,10 +2237,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAwwwAAoMMAAAAAAADgQwAAoMMAAAAAAADgQwAA4EMAAAAAAADgwwAA4EMAAAAAAADgw8P1TUMAAAAAuJ7Vw8P1TUMAAAAAuJ7Vwz2KOEMAAAAArkfBwz2KOEMAAAAArkfBwwrXI0MAAAAAj0LnwwrXI0MAAAAAj0Lnw5qZDkMAAAAAexTww5qZDkMAAAAAexTwwylc8kIAAAAArkfBw0jhx0IAAAAA1+PVw0jhx0IAAAAA1+PVw1yPqEIAAAAA4frew1yPqEIAAAAA4frew5qZfUIAAAAAhQsFxJqZfUIAAAAAhQsFxHsUKkIAAAAAhSvww3sUKkIAAAAAhSvww7gerUEAAAAAZubmw7gerUEAAAAAZubmw65HYT4AAAAArkfBw65HYT4AAAAArkfBw0jhJsIAAAAA9qjaw0jhJsIAAAAA9qjaw1yPfMIAAAAAuJ75w1yPfMIAAAAAuJ75w4/CqMIAAAAAw7X5w4/CqMIAAAAAw7X5w3sUyMIAAAAAj6IAxHsUyMIAAAAAj6IAxArX8cIAAAAAcf3mwwrX8cIAAAAAcf3mw83MDcMAAAAAZubLw83MDcMAAAAAZubLwxSuIsMAAAAArkfBwxSuIsMAAAAArkfBw83MTMMAAAAAzczVw83MTMMAAAAAzczVwz0KYsMAAAAArkfBwylc8kIAAAAAAAAwwwAA4MMAAAAAAADgwz0KYsMAAAAAAADgwwAA4MMAAAAA//////7//7//////////v/////////+//////////7//////////v//////+//+//////////7///////v//v/////////+//////////7///////v//v/////////+///////7//7///////v//v/////////+///////7//7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+///////7//7//////////v/////////+//////////7//////////v/////////+//////////7///////v//v/////////+//////////7//////////v//////+//+///////7//7//////////v//////+//+//////////7///////v//v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_n2vtc"]
+[sub_resource type="Resource" id="Resource_7y68x"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_m2i2m")
+mesh = SubResource("ArrayMesh_njnml")
 material = SubResource("ShaderMaterial_yfg1h")
 z_index = -1
 
@@ -2214,54 +2253,310 @@ fill_texture_absolute_position = true
 fill_texture_offset = Vector2(0, 1792.1)
 fill_mesh_material = SubResource("ShaderMaterial_yfg1h")
 
+[sub_resource type="Resource" id="ledge_l2_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="ledge_l2_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-126, -48)
+
+[sub_resource type="Resource" id="ledge_l2_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(126, -48)
+
+[sub_resource type="Resource" id="ledge_l2_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -38)
+
+[sub_resource type="Resource" id="ledge_l2_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l2_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, 11.3)
+
+[sub_resource type="Resource" id="ledge_l2_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, -5.6)
+
+[sub_resource type="Resource" id="ledge_l2_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, -1.4)
+
+[sub_resource type="Resource" id="ledge_l2_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, 4)
+
+[sub_resource type="Resource" id="ledge_l2_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, 1.2)
+
+[sub_resource type="Resource" id="ledge_l2_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 5.2)
+
+[sub_resource type="Resource" id="ledge_l2_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, 1.4)
+
+[sub_resource type="Resource" id="ledge_l2_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, -4.2)
+
+[sub_resource type="Resource" id="ledge_l2_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, 11.8)
+
+[sub_resource type="Resource" id="ledge_l2_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, 10.8)
+
+[sub_resource type="Resource" id="ledge_l2_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, -1.9)
+
+[sub_resource type="Resource" id="ledge_l2_p16"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l2_p17"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="Resource_ud1ak"]
+resource_local_to_scene = true
+script = ExtResource("5_57mdw")
+_points = {
+0: SubResource("ledge_l2_p0"),
+1: SubResource("ledge_l2_p1"),
+2: SubResource("ledge_l2_p2"),
+3: SubResource("ledge_l2_p3"),
+4: SubResource("ledge_l2_p4"),
+5: SubResource("ledge_l2_p5"),
+6: SubResource("ledge_l2_p6"),
+7: SubResource("ledge_l2_p7"),
+8: SubResource("ledge_l2_p8"),
+9: SubResource("ledge_l2_p9"),
+10: SubResource("ledge_l2_p10"),
+11: SubResource("ledge_l2_p11"),
+12: SubResource("ledge_l2_p12"),
+13: SubResource("ledge_l2_p13"),
+14: SubResource("ledge_l2_p14"),
+15: SubResource("ledge_l2_p15"),
+16: SubResource("ledge_l2_p16"),
+17: SubResource("ledge_l2_p17")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+_constraints = {
+Vector2i(0, 17): 15
+}
+_next_key = 18
+
+[sub_resource type="ShaderMaterial" id="ledge_l2_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = false
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+shader_parameter/sewer_light = Vector2(-100000, -100000)
+shader_parameter/sewer_radius = 190.0
+shader_parameter/sewer_strength = 0.1
+shader_parameter/sewer_trim = false
+shader_parameter/sewer_edge_count = 0
+shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_utqhk"]
+_surfaces = [{
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyr5W7Zm+gAfKvlbtmb7/////gAfKPlbtmb6AB8o+Vu2Zvv////85ENo+x7dzvjkQ2j7Ht3O+/////zkQ2j4A5Ga+ORDaPgDkZr7/////LLi1PrHykD0suLU+sfKQPf////85EFo+UKoPvDkQWj5Qqg+8/////x9gET5yPM08H2ARPnI8zTz/////NGCRPYlI9js0YJE9iUj2O/////8AAAAASmcFPQAAAABKZwU9/////zRgkb1Qqg88NGCRvVCqDzz/////H2ARvnd/17wfYBG+d3/XvP////85EFq+lFyXPTkQWr6UXJc9/////ypgkb7NiIo9KmCRvs2Iij3/////LLi1vmz5QrwsuLW+bPlCvP////85ENq+AORmvjkQ2r4A5Ga+/////ypgkT5Qqg+9KmCRPlCqD73/////ORDavse3c745ENq+x7dzvg=="),
+"format": 34359742527,
+"index_count": 48,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABQAGAAcABwAIAAkACgALAAwADAANAA4AAgAEAA8ADwAFAAcABwAJAAoACgAMAA4AAAACAA8ADwAHAAoAAAAPAAoAAAAKAA4ADgAQABAAEAAAAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 17,
+"vertex_data": PackedByteArray("AAD8wgAAQMIAAAAAAAD8QgAAQMIAAAAAAAAIQwAAGMIAAAAAAAAIQwAAEMIAAAAApqriQs3MNEEAAAAAAACIQjMzs78AAAAATVU1QgAAgEAAAAAAZ1W1QZqZmT8AAAAAAAAAAGZmpkAAAAAAZ1W1wTMzsz8AAAAATVU1wmZmhsAAAAAAAACIws3MPEEAAAAAWlW1ws3MLEEAAAAApqriwjMz878AAAAAAAAIwwAAEMIAAAAAWlW1QjMzs8AAAAAAAAAIwwAAGMIAAAAA//////7//7//////////v/////////+///////7//7///////v//v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v//////+//+//////////7///////v//vw==")
+}]
+
 [sub_resource type="Resource" id="Resource_5g3lf"]
+script = ExtResource("6_vbjfv")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_utqhk")
+material = SubResource("ledge_l2_preview")
+z_index = -1
+
+[sub_resource type="Resource" id="ledge_l2_mat"]
+script = ExtResource("12_uvrwf")
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_mesh_material = SubResource("ledge_l2_preview")
+
+[sub_resource type="Resource" id="ledge_l3_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -48)
+
+[sub_resource type="Resource" id="ledge_l3_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(126, -48)
+
+[sub_resource type="Resource" id="ledge_l3_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -38)
+
+[sub_resource type="Resource" id="ledge_l3_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l3_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, -5.6)
+
+[sub_resource type="Resource" id="ledge_l3_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, -1.4)
+
+[sub_resource type="Resource" id="ledge_l3_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, 4)
+
+[sub_resource type="Resource" id="ledge_l3_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, 1.2)
+
+[sub_resource type="Resource" id="ledge_l3_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, 5.2)
+
+[sub_resource type="Resource" id="ledge_l3_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 1.4)
+
+[sub_resource type="Resource" id="ledge_l3_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, -4.2)
+
+[sub_resource type="Resource" id="ledge_l3_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, 11.8)
+
+[sub_resource type="Resource" id="ledge_l3_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, 10.8)
+
+[sub_resource type="Resource" id="ledge_l3_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, -1.9)
+
+[sub_resource type="Resource" id="ledge_l3_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, 11.3)
+
+[sub_resource type="Resource" id="ledge_l3_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l3_p16"]
+resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-136, -48)
 
 [sub_resource type="Resource" id="Resource_qyjg1"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_fdcte"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_5vsim"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_818c2"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_67s1f"]
+resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
-0: SubResource("Resource_5g3lf"),
-1: SubResource("Resource_qyjg1"),
-2: SubResource("Resource_fdcte"),
-3: SubResource("Resource_5vsim"),
-4: SubResource("Resource_818c2")
+0: SubResource("ledge_l3_p0"),
+1: SubResource("ledge_l3_p1"),
+2: SubResource("ledge_l3_p2"),
+3: SubResource("ledge_l3_p3"),
+4: SubResource("ledge_l3_p4"),
+5: SubResource("ledge_l3_p5"),
+6: SubResource("ledge_l3_p6"),
+7: SubResource("ledge_l3_p7"),
+8: SubResource("ledge_l3_p8"),
+9: SubResource("ledge_l3_p9"),
+10: SubResource("ledge_l3_p10"),
+11: SubResource("ledge_l3_p11"),
+12: SubResource("ledge_l3_p12"),
+13: SubResource("ledge_l3_p13"),
+14: SubResource("ledge_l3_p14"),
+15: SubResource("ledge_l3_p15"),
+16: SubResource("ledge_l3_p16")
 }
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
 _constraints = {
-Vector2i(0, 4): 15
+Vector2i(0, 16): 15
 }
-_next_key = 5
+_next_key = 17
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_rp70b"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 0
-shader_parameter/ground_cover_edges = Array[Vector4]([])
-shader_parameter/alt_tex = ExtResource("10_pd147")
+[sub_resource type="ShaderMaterial" id="ledge_l3_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
 shader_parameter/base_is_white = true
 shader_parameter/alt_invert = false
 shader_parameter/seed_count = 0
@@ -2295,83 +2590,331 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_ipoep"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_fdcte"]
 _surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////4X2okAcUwVBhfaiQBxTBUH/////hfaiQHKoDUGF9qJAcqgNQf////9De4NAcqgNQUN7g0ByqA1B/////0N7g0AcUwVBQ3uDQBxTBUE="),
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyj5W7Zm+gAfKPlbtmb7/////ORDaPse3c745ENo+x7dzvv////85ENo+AORmvjkQ2j4A5Ga+/////yy4tT5Qqg+9LLi1PlCqD73/////KmCRPlCqD7wqYJE+UKoPvP////85EFo+cjzNPDkQWj5yPM08/////x9gET6JSPY7H2ARPolI9jv/////NGCRPUpnBT00YJE9SmcFPf////8AAAAAUKoPPAAAAABQqg88/////zRgkb13f9e8NGCRvXd/17z/////H2ARvpRclz0fYBG+lFyXPf////85EFq+zYiKPTkQWr7NiIo9/////ypgkb5s+UK8KmCRvmz5Qrz/////LLi1vrHykD0suLW+sfKQPf////85ENq+AORmvjkQ2r4A5Ga+/////zkQ2r5W7Zm+ORDavlbtmb4="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 45,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACQAKAAsADAANAA4AAAACAAQABAAGAAgACQALAAwAAAAEAAgACQAMAA4AAAAIAAkAAAAJAA4ADgAPAA8ADwAAAA4A"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD8QgAAQMIAAAAAAAAIQwAAGMIAAAAAAAAIQwAAEMIAAAAApqriQjMzs8AAAAAAWlW1QjMzs78AAAAAAACIQgAAgEAAAAAATVU1QpqZmT8AAAAAZ1W1QWZmpkAAAAAAAAAAADMzsz8AAAAAZ1W1wWZmhsAAAAAATVU1ws3MPEEAAAAAAACIws3MLEEAAAAAWlW1wjMz878AAAAApqriws3MNEEAAAAAAAAIwwAAEMIAAAAAAAAIwwAAQMIAAAAA//////7//7///////v//v//////+//+//////////7///////v//v/////////+//////////7//////////v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_r7nhf"]
+[sub_resource type="Resource" id="Resource_5vsim"]
 script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_ipoep")
-material = SubResource("ShaderMaterial_rp70b")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_fdcte")
+material = SubResource("ledge_l3_preview")
 z_index = -1
 
-[sub_resource type="Resource" id="Resource_kse4b"]
+[sub_resource type="Resource" id="ledge_l3_mat"]
 script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
 fill_texture_z_index = -1
 fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_rp70b")
+fill_mesh_material = SubResource("ledge_l3_preview")
+
+[sub_resource type="Resource" id="ledge_l4_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="ledge_l4_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-126, -48)
+
+[sub_resource type="Resource" id="ledge_l4_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -48)
+
+[sub_resource type="Resource" id="ledge_l4_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l4_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, -1.4)
+
+[sub_resource type="Resource" id="ledge_l4_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, 4)
+
+[sub_resource type="Resource" id="ledge_l4_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, 1.2)
+
+[sub_resource type="Resource" id="ledge_l4_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, 5.2)
+
+[sub_resource type="Resource" id="ledge_l4_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, 1.4)
+
+[sub_resource type="Resource" id="ledge_l4_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, -4.2)
+
+[sub_resource type="Resource" id="ledge_l4_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, 11.8)
+
+[sub_resource type="Resource" id="ledge_l4_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, 10.8)
+
+[sub_resource type="Resource" id="ledge_l4_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, -1.9)
+
+[sub_resource type="Resource" id="ledge_l4_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, 11.3)
+
+[sub_resource type="Resource" id="ledge_l4_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, -5.6)
+
+[sub_resource type="Resource" id="ledge_l4_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l4_p16"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="Resource_818c2"]
+resource_local_to_scene = true
+script = ExtResource("5_57mdw")
+_points = {
+0: SubResource("ledge_l4_p0"),
+1: SubResource("ledge_l4_p1"),
+2: SubResource("ledge_l4_p2"),
+3: SubResource("ledge_l4_p3"),
+4: SubResource("ledge_l4_p4"),
+5: SubResource("ledge_l4_p5"),
+6: SubResource("ledge_l4_p6"),
+7: SubResource("ledge_l4_p7"),
+8: SubResource("ledge_l4_p8"),
+9: SubResource("ledge_l4_p9"),
+10: SubResource("ledge_l4_p10"),
+11: SubResource("ledge_l4_p11"),
+12: SubResource("ledge_l4_p12"),
+13: SubResource("ledge_l4_p13"),
+14: SubResource("ledge_l4_p14"),
+15: SubResource("ledge_l4_p15"),
+16: SubResource("ledge_l4_p16")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+_constraints = {
+Vector2i(0, 16): 15
+}
+_next_key = 17
+
+[sub_resource type="ShaderMaterial" id="ledge_l4_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = false
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+shader_parameter/sewer_light = Vector2(-100000, -100000)
+shader_parameter/sewer_radius = 190.0
+shader_parameter/sewer_strength = 0.1
+shader_parameter/sewer_trim = false
+shader_parameter/sewer_edge_count = 0
+shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_67s1f"]
+_surfaces = [{
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyr5W7Zm+gAfKvlbtmb7/////ORDaPlbtmb45ENo+Vu2Zvv////85ENo+AORmvjkQ2j4A5Ga+/////yy4tT5Qqg+8LLi1PlCqD7z/////KmCRPnI8zTwqYJE+cjzNPP////85EFo+iUj2OzkQWj6JSPY7/////x9gET5KZwU9H2ARPkpnBT3/////NGCRPVCqDzw0YJE9UKoPPP////8AAAAAd3/XvAAAAAB3f9e8/////zRgkb2UXJc9NGCRvZRclz3/////H2ARvs2Iij0fYBG+zYiKPf////85EFq+bPlCvDkQWr5s+UK8/////ypgkb6x8pA9KmCRvrHykD3/////LLi1vlCqD70suLW+UKoPvf////85ENq+AORmvjkQ2r4A5Ga+/////zkQ2r7Ht3O+ORDavse3c74="),
+"format": 34359742527,
+"index_count": 45,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABQAGAAcACAAJAAoACwAMAA0AAAACAAQABQAHAAgACAAKAAsACwANAA4AAAAEAAUACAALAA4AAAAFAAgAAAAIAA4ADgAPAA8ADwAAAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD8wgAAQMIAAAAAAAAIQwAAQMIAAAAAAAAIQwAAEMIAAAAApqriQjMzs78AAAAAWlW1QgAAgEAAAAAAAACIQpqZmT8AAAAATVU1QmZmpkAAAAAAZ1W1QTMzsz8AAAAAAAAAAGZmhsAAAAAAZ1W1wc3MPEEAAAAATVU1ws3MLEEAAAAAAACIwjMz878AAAAAWlW1ws3MNEEAAAAApqriwjMzs8AAAAAAAAAIwwAAEMIAAAAAAAAIwwAAGMIAAAAA/////////7//////////v/////////+///////7//7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v//////+//+///////7//78=")
+}]
 
 [sub_resource type="Resource" id="Resource_xjevp"]
+script = ExtResource("6_vbjfv")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_67s1f")
+material = SubResource("ledge_l4_preview")
+z_index = -1
+
+[sub_resource type="Resource" id="ledge_l4_mat"]
+script = ExtResource("12_uvrwf")
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_mesh_material = SubResource("ledge_l4_preview")
+
+[sub_resource type="Resource" id="ledge_l5_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -48)
+
+[sub_resource type="Resource" id="ledge_l5_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(126, -48)
+
+[sub_resource type="Resource" id="ledge_l5_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -38)
+
+[sub_resource type="Resource" id="ledge_l5_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l5_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, 4)
+
+[sub_resource type="Resource" id="ledge_l5_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, 1.2)
+
+[sub_resource type="Resource" id="ledge_l5_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, 5.2)
+
+[sub_resource type="Resource" id="ledge_l5_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, 1.4)
+
+[sub_resource type="Resource" id="ledge_l5_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, -4.2)
+
+[sub_resource type="Resource" id="ledge_l5_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 11.8)
+
+[sub_resource type="Resource" id="ledge_l5_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, 10.8)
+
+[sub_resource type="Resource" id="ledge_l5_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, -1.9)
+
+[sub_resource type="Resource" id="ledge_l5_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, 11.3)
+
+[sub_resource type="Resource" id="ledge_l5_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, -5.6)
+
+[sub_resource type="Resource" id="ledge_l5_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, -1.4)
+
+[sub_resource type="Resource" id="ledge_l5_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l5_p16"]
+resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-136, -48)
 
 [sub_resource type="Resource" id="Resource_enc7b"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_5ixxj"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_ya7oy"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_tppih"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_yaa7s"]
+resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
-0: SubResource("Resource_xjevp"),
-1: SubResource("Resource_enc7b"),
-2: SubResource("Resource_5ixxj"),
-3: SubResource("Resource_ya7oy"),
-4: SubResource("Resource_tppih")
+0: SubResource("ledge_l5_p0"),
+1: SubResource("ledge_l5_p1"),
+2: SubResource("ledge_l5_p2"),
+3: SubResource("ledge_l5_p3"),
+4: SubResource("ledge_l5_p4"),
+5: SubResource("ledge_l5_p5"),
+6: SubResource("ledge_l5_p6"),
+7: SubResource("ledge_l5_p7"),
+8: SubResource("ledge_l5_p8"),
+9: SubResource("ledge_l5_p9"),
+10: SubResource("ledge_l5_p10"),
+11: SubResource("ledge_l5_p11"),
+12: SubResource("ledge_l5_p12"),
+13: SubResource("ledge_l5_p13"),
+14: SubResource("ledge_l5_p14"),
+15: SubResource("ledge_l5_p15"),
+16: SubResource("ledge_l5_p16")
 }
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
 _constraints = {
-Vector2i(0, 4): 15
+Vector2i(0, 16): 15
 }
-_next_key = 5
+_next_key = 17
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_82ume"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 40
-shader_parameter/ground_cover_edges = Array[Vector4]([Vector4(-904, -1392, -807.33997, -1392), Vector4(-807.33997, -1392, -807.33997, -1413.24), Vector4(-807.33997, -1413.24, -740.2, -1413.24), Vector4(-740.2, -1413.24, -740.2, -1392), Vector4(-740.2, -1392, -722.38, -1392), Vector4(-722.38, -1392, -722.38, -1371.3), Vector4(-722.38, -1371.3, -738.94, -1371.3), Vector4(-738.94, -1371.3, -738.94, -1349.88), Vector4(-738.94, -1349.88, -627.52, -1349.88), Vector4(-627.52, -1349.88, -627.52, -1371.3), Vector4(-627.52, -1371.3, -620.68, -1371.3), Vector4(-620.68, -1371.3, -620.68, -1392), Vector4(-620.68, -1392, -627.52, -1392), Vector4(-627.52, -1392, -627.52, -1413.24), Vector4(-627.52, -1413.24, -619.78, -1413.24), Vector4(-619.78, -1413.24, -619.78, -1434.6599), Vector4(-619.78, -1434.6599, -513.22, -1434.6599), Vector4(-513.22, -1434.6599, -513.22, -1413.24), Vector4(-513.22, -1413.24, -498.1, -1413.24), Vector4(-498.1, -1413.24, -498.1, -1392), Vector4(-498.1, -1392, -516.1, -1392), Vector4(-516.1, -1392, -516.1, -1371.3), Vector4(-516.1, -1371.3, -409, -1371.3), Vector4(-409, -1371.3, -409, -1392), Vector4(-409, -1392, -392.08002, -1392), Vector4(-392.08002, -1392, -392.08002, -1413.24), Vector4(-392.08002, -1413.24, -289.83997, -1413.24), Vector4(-289.83997, -1413.24, -289.83997, -1392), Vector4(-289.83997, -1392, -308.91998, -1392), Vector4(-308.91998, -1392, -308.91998, -1371.3), Vector4(-308.91998, -1371.3, -291.82, -1371.3), Vector4(-291.82, -1371.3, -291.82, -1349.88), Vector4(-291.82, -1349.88, -185.97998, -1349.88), Vector4(-185.97998, -1349.88, -185.97998, -1371.3), Vector4(-185.97998, -1371.3, -203.26001, -1371.3), Vector4(-203.26001, -1371.3, -203.26001, -1392), Vector4(-203.26001, -1392, -136, -1392), Vector4(-136, -1392, -136, 336), Vector4(-136, 336, -904, 336), Vector4(-904, 336, -904, -1392)])
-shader_parameter/alt_tex = ExtResource("10_pd147")
+[sub_resource type="ShaderMaterial" id="ledge_l5_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
 shader_parameter/base_is_white = true
 shader_parameter/alt_invert = false
 shader_parameter/seed_count = 0
@@ -2405,83 +2948,337 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_838bq"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_5ixxj"]
 _surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////6G9cEBVbfRAob1wQFVt9ED/////ob1wQACMAkGhvXBAAIwCQf////8dxzFAAIwCQR3HMUAAjAJB/////x3HMUBVbfRAHccxQFVt9EA="),
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyj5W7Zm+gAfKPlbtmb7/////ORDaPse3c745ENo+x7dzvv////85ENo+AORmvjkQ2j4A5Ga+/////yy4tT5yPM08LLi1PnI8zTz/////KmCRPolI9jsqYJE+iUj2O/////85EFo+SmcFPTkQWj5KZwU9/////x9gET5Qqg88H2ARPlCqDzz/////NGCRPXd/17w0YJE9d3/XvP////8AAAAAlFyXPQAAAACUXJc9/////zRgkb3NiIo9NGCRvc2Iij3/////H2ARvmz5QrwfYBG+bPlCvP////85EFq+sfKQPTkQWr6x8pA9/////ypgkb5Qqg+9KmCRvlCqD73/////LLi1vlCqD7wsuLW+UKoPvP////85ENq+AORmvjkQ2r4A5Ga+/////zkQ2r5W7Zm+ORDavlbtmb4="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 45,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABwAIAAkACgALAAwADAANAA4AAAACAAQABAAGAAcABwAJAAoACgAMAA4AAAAEAAcABwAKAA4AAAAHAA4ADgAPAA8ADwAAAA4A"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD8QgAAQMIAAAAAAAAIQwAAGMIAAAAAAAAIQwAAEMIAAAAApqriQgAAgEAAAAAAWlW1QpqZmT8AAAAAAACIQmZmpkAAAAAATVU1QjMzsz8AAAAAZ1W1QWZmhsAAAAAAAAAAAM3MPEEAAAAAZ1W1wc3MLEEAAAAATVU1wjMz878AAAAAAACIws3MNEEAAAAAWlW1wjMzs8AAAAAApqriwjMzs78AAAAAAAAIwwAAEMIAAAAAAAAIwwAAQMIAAAAA//////7//7///////v//v//////+//+///////7//7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_tgaa6"]
+[sub_resource type="Resource" id="Resource_ya7oy"]
 script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_838bq")
-material = SubResource("ShaderMaterial_82ume")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_5ixxj")
+material = SubResource("ledge_l5_preview")
 z_index = -1
 
-[sub_resource type="Resource" id="Resource_7ug07"]
+[sub_resource type="Resource" id="ledge_l5_mat"]
 script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
 fill_texture_z_index = -1
 fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_82ume")
+fill_mesh_material = SubResource("ledge_l5_preview")
+
+[sub_resource type="Resource" id="ledge_l6_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="ledge_l6_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-126, -48)
+
+[sub_resource type="Resource" id="ledge_l6_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(126, -48)
+
+[sub_resource type="Resource" id="ledge_l6_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -38)
+
+[sub_resource type="Resource" id="ledge_l6_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l6_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, 1.2)
+
+[sub_resource type="Resource" id="ledge_l6_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, 5.2)
+
+[sub_resource type="Resource" id="ledge_l6_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, 1.4)
+
+[sub_resource type="Resource" id="ledge_l6_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, -4.2)
+
+[sub_resource type="Resource" id="ledge_l6_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, 11.8)
+
+[sub_resource type="Resource" id="ledge_l6_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 10.8)
+
+[sub_resource type="Resource" id="ledge_l6_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, -1.9)
+
+[sub_resource type="Resource" id="ledge_l6_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, 11.3)
+
+[sub_resource type="Resource" id="ledge_l6_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, -5.6)
+
+[sub_resource type="Resource" id="ledge_l6_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, -1.4)
+
+[sub_resource type="Resource" id="ledge_l6_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, 4)
+
+[sub_resource type="Resource" id="ledge_l6_p16"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l6_p17"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="Resource_tppih"]
+resource_local_to_scene = true
+script = ExtResource("5_57mdw")
+_points = {
+0: SubResource("ledge_l6_p0"),
+1: SubResource("ledge_l6_p1"),
+2: SubResource("ledge_l6_p2"),
+3: SubResource("ledge_l6_p3"),
+4: SubResource("ledge_l6_p4"),
+5: SubResource("ledge_l6_p5"),
+6: SubResource("ledge_l6_p6"),
+7: SubResource("ledge_l6_p7"),
+8: SubResource("ledge_l6_p8"),
+9: SubResource("ledge_l6_p9"),
+10: SubResource("ledge_l6_p10"),
+11: SubResource("ledge_l6_p11"),
+12: SubResource("ledge_l6_p12"),
+13: SubResource("ledge_l6_p13"),
+14: SubResource("ledge_l6_p14"),
+15: SubResource("ledge_l6_p15"),
+16: SubResource("ledge_l6_p16"),
+17: SubResource("ledge_l6_p17")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+_constraints = {
+Vector2i(0, 17): 15
+}
+_next_key = 18
+
+[sub_resource type="ShaderMaterial" id="ledge_l6_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = false
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+shader_parameter/sewer_light = Vector2(-100000, -100000)
+shader_parameter/sewer_radius = 190.0
+shader_parameter/sewer_strength = 0.1
+shader_parameter/sewer_trim = false
+shader_parameter/sewer_edge_count = 0
+shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_yaa7s"]
+_surfaces = [{
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyr5W7Zm+gAfKvlbtmb7/////gAfKPlbtmb6AB8o+Vu2Zvv////85ENo+x7dzvjkQ2j7Ht3O+/////zkQ2j4A5Ga+ORDaPgDkZr7/////LLi1PolI9jssuLU+iUj2O/////8qYJE+SmcFPSpgkT5KZwU9/////zkQWj5Qqg88ORBaPlCqDzz/////H2ARPnd/17wfYBE+d3/XvP////80YJE9lFyXPTRgkT2UXJc9/////wAAAADNiIo9AAAAAM2Iij3/////NGCRvWz5Qrw0YJG9bPlCvP////8fYBG+sfKQPR9gEb6x8pA9/////zkQWr5Qqg+9ORBavlCqD73/////KmCRvlCqD7wqYJG+UKoPvP////8suLW+cjzNPCy4tb5yPM08/////zkQ2r4A5Ga+ORDavgDkZr7/////ORDavse3c745ENq+x7dzvg=="),
+"format": 34359742527,
+"index_count": 48,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABwAIAAkACgALAAwADQAOAA8AAAACAAQABAAGAAcABwAJAAoADAANAA8AAAAEAAcABwAKAAwAAAAHAAwAAAAMAA8ADwAQABAAEAAAAA8A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 17,
+"vertex_data": PackedByteArray("AAD8wgAAQMIAAAAAAAD8QgAAQMIAAAAAAAAIQwAAGMIAAAAAAAAIQwAAEMIAAAAApqriQpqZmT8AAAAAWlW1QmZmpkAAAAAAAACIQjMzsz8AAAAATVU1QmZmhsAAAAAAZ1W1Qc3MPEEAAAAAAAAAAM3MLEEAAAAAZ1W1wTMz878AAAAATVU1ws3MNEEAAAAAAACIwjMzs8AAAAAAWlW1wjMzs78AAAAApqriwgAAgEAAAAAAAAAIwwAAEMIAAAAAAAAIwwAAGMIAAAAA//////7//7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+///////7//7///////v//vw==")
+}]
 
 [sub_resource type="Resource" id="Resource_hcq4o"]
+script = ExtResource("6_vbjfv")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_yaa7s")
+material = SubResource("ledge_l6_preview")
+z_index = -1
+
+[sub_resource type="Resource" id="ledge_l6_mat"]
+script = ExtResource("12_uvrwf")
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_mesh_material = SubResource("ledge_l6_preview")
+
+[sub_resource type="Resource" id="ledge_l7_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -48)
+
+[sub_resource type="Resource" id="ledge_l7_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(126, -48)
+
+[sub_resource type="Resource" id="ledge_l7_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -38)
+
+[sub_resource type="Resource" id="ledge_l7_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l7_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, 5.2)
+
+[sub_resource type="Resource" id="ledge_l7_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, 1.4)
+
+[sub_resource type="Resource" id="ledge_l7_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, -4.2)
+
+[sub_resource type="Resource" id="ledge_l7_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, 11.8)
+
+[sub_resource type="Resource" id="ledge_l7_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, 10.8)
+
+[sub_resource type="Resource" id="ledge_l7_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, -1.9)
+
+[sub_resource type="Resource" id="ledge_l7_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, 11.3)
+
+[sub_resource type="Resource" id="ledge_l7_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, -5.6)
+
+[sub_resource type="Resource" id="ledge_l7_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, -1.4)
+
+[sub_resource type="Resource" id="ledge_l7_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, 4)
+
+[sub_resource type="Resource" id="ledge_l7_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, 1.2)
+
+[sub_resource type="Resource" id="ledge_l7_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l7_p16"]
+resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-136, -48)
 
 [sub_resource type="Resource" id="Resource_6somu"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_apsp5"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_sxo7k"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_dfcmp"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_152lj"]
+resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
-0: SubResource("Resource_hcq4o"),
-1: SubResource("Resource_6somu"),
-2: SubResource("Resource_apsp5"),
-3: SubResource("Resource_sxo7k"),
-4: SubResource("Resource_dfcmp")
+0: SubResource("ledge_l7_p0"),
+1: SubResource("ledge_l7_p1"),
+2: SubResource("ledge_l7_p2"),
+3: SubResource("ledge_l7_p3"),
+4: SubResource("ledge_l7_p4"),
+5: SubResource("ledge_l7_p5"),
+6: SubResource("ledge_l7_p6"),
+7: SubResource("ledge_l7_p7"),
+8: SubResource("ledge_l7_p8"),
+9: SubResource("ledge_l7_p9"),
+10: SubResource("ledge_l7_p10"),
+11: SubResource("ledge_l7_p11"),
+12: SubResource("ledge_l7_p12"),
+13: SubResource("ledge_l7_p13"),
+14: SubResource("ledge_l7_p14"),
+15: SubResource("ledge_l7_p15"),
+16: SubResource("ledge_l7_p16")
 }
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
 _constraints = {
-Vector2i(0, 4): 15
+Vector2i(0, 16): 15
 }
-_next_key = 5
+_next_key = 17
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_iocvx"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 4
-shader_parameter/ground_cover_edges = Array[Vector4]([Vector4(136, -176, 584, -176), Vector4(584, -176, 584, 16), Vector4(584, 16, 136, 16), Vector4(136, 16, 136, -176)])
-shader_parameter/alt_tex = ExtResource("10_pd147")
+[sub_resource type="ShaderMaterial" id="ledge_l7_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
 shader_parameter/base_is_white = true
 shader_parameter/alt_invert = false
 shader_parameter/seed_count = 0
@@ -2515,83 +3312,510 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_3k4yn"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_apsp5"]
 _surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////4X2okBxNN5AhfaiQHE03kD/////hfaiQBvf7kCF9qJAG9/uQP////9De4NAG9/uQEN7g0Ab3+5A/////0N7g0BxNN5AQ3uDQHE03kA="),
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyj5W7Zm+gAfKPlbtmb7/////ORDaPse3c745ENo+x7dzvv////85ENo+AORmvjkQ2j4A5Ga+/////yy4tT5KZwU9LLi1PkpnBT3/////KmCRPlCqDzwqYJE+UKoPPP////85EFo+d3/XvDkQWj53f9e8/////x9gET6UXJc9H2ARPpRclz3/////NGCRPc2Iij00YJE9zYiKPf////8AAAAAbPlCvAAAAABs+UK8/////zRgkb2x8pA9NGCRvbHykD3/////H2ARvlCqD70fYBG+UKoPvf////85EFq+UKoPvDkQWr5Qqg+8/////ypgkb5yPM08KmCRvnI8zTz/////LLi1volI9jssuLW+iUj2O/////85ENq+AORmvjkQ2r4A5Ga+/////zkQ2r5W7Zm+ORDavlbtmb4="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 45,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABQAGAAcACAAJAAoACwAMAA0AAAACAAQABQAHAAgACgALAA0AAAAEAAUABQAIAAoACgANAA4AAAAFAAoAAAAKAA4ADgAPAA8ADwAAAA4A"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD8QgAAQMIAAAAAAAAIQwAAGMIAAAAAAAAIQwAAEMIAAAAApqriQmZmpkAAAAAAWlW1QjMzsz8AAAAAAACIQmZmhsAAAAAATVU1Qs3MPEEAAAAAZ1W1Qc3MLEEAAAAAAAAAADMz878AAAAAZ1W1wc3MNEEAAAAATVU1wjMzs8AAAAAAAACIwjMzs78AAAAAWlW1wgAAgEAAAAAApqriwpqZmT8AAAAAAAAIwwAAEMIAAAAAAAAIwwAAQMIAAAAA//////7//7///////v//v//////+//+//////////7///////v//v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_cvtpa"]
+[sub_resource type="Resource" id="Resource_sxo7k"]
 script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_3k4yn")
-material = SubResource("ShaderMaterial_iocvx")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_apsp5")
+material = SubResource("ledge_l7_preview")
 z_index = -1
 
-[sub_resource type="Resource" id="Resource_okgh8"]
+[sub_resource type="Resource" id="ledge_l7_mat"]
 script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
 fill_texture_z_index = -1
 fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_iocvx")
+fill_mesh_material = SubResource("ledge_l7_preview")
+
+[sub_resource type="Resource" id="ledge_l8_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="ledge_l8_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-126, -48)
+
+[sub_resource type="Resource" id="ledge_l8_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -48)
+
+[sub_resource type="Resource" id="ledge_l8_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l8_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, 1.4)
+
+[sub_resource type="Resource" id="ledge_l8_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, -4.2)
+
+[sub_resource type="Resource" id="ledge_l8_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, 11.8)
+
+[sub_resource type="Resource" id="ledge_l8_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, 10.8)
+
+[sub_resource type="Resource" id="ledge_l8_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, -1.9)
+
+[sub_resource type="Resource" id="ledge_l8_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 11.3)
+
+[sub_resource type="Resource" id="ledge_l8_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, -5.6)
+
+[sub_resource type="Resource" id="ledge_l8_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, -1.4)
+
+[sub_resource type="Resource" id="ledge_l8_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, 4)
+
+[sub_resource type="Resource" id="ledge_l8_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, 1.2)
+
+[sub_resource type="Resource" id="ledge_l8_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, 5.2)
+
+[sub_resource type="Resource" id="ledge_l8_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l8_p16"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="Resource_dfcmp"]
+resource_local_to_scene = true
+script = ExtResource("5_57mdw")
+_points = {
+0: SubResource("ledge_l8_p0"),
+1: SubResource("ledge_l8_p1"),
+2: SubResource("ledge_l8_p2"),
+3: SubResource("ledge_l8_p3"),
+4: SubResource("ledge_l8_p4"),
+5: SubResource("ledge_l8_p5"),
+6: SubResource("ledge_l8_p6"),
+7: SubResource("ledge_l8_p7"),
+8: SubResource("ledge_l8_p8"),
+9: SubResource("ledge_l8_p9"),
+10: SubResource("ledge_l8_p10"),
+11: SubResource("ledge_l8_p11"),
+12: SubResource("ledge_l8_p12"),
+13: SubResource("ledge_l8_p13"),
+14: SubResource("ledge_l8_p14"),
+15: SubResource("ledge_l8_p15"),
+16: SubResource("ledge_l8_p16")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+_constraints = {
+Vector2i(0, 16): 15
+}
+_next_key = 17
+
+[sub_resource type="ShaderMaterial" id="ledge_l8_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = false
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+shader_parameter/sewer_light = Vector2(-100000, -100000)
+shader_parameter/sewer_radius = 190.0
+shader_parameter/sewer_strength = 0.1
+shader_parameter/sewer_trim = false
+shader_parameter/sewer_edge_count = 0
+shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_152lj"]
+_surfaces = [{
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyr5W7Zm+gAfKvlbtmb7/////ORDaPlbtmb45ENo+Vu2Zvv////85ENo+AORmvjkQ2j4A5Ga+/////yy4tT5Qqg88LLi1PlCqDzz/////KmCRPnd/17wqYJE+d3/XvP////85EFo+lFyXPTkQWj6UXJc9/////x9gET7NiIo9H2ARPs2Iij3/////NGCRPWz5Qrw0YJE9bPlCvP////8AAAAAsfKQPQAAAACx8pA9/////zRgkb1Qqg+9NGCRvVCqD73/////H2ARvlCqD7wfYBG+UKoPvP////85EFq+cjzNPDkQWr5yPM08/////ypgkb6JSPY7KmCRvolI9jv/////LLi1vkpnBT0suLW+SmcFPf////85ENq+AORmvjkQ2r4A5Ga+/////zkQ2r7Ht3O+ORDavse3c74="),
+"format": 34359742527,
+"index_count": 45,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABwAIAAkACgALAAwADAANAA4AAAACAAQABAAGAAcACQAKAAwAAAAEAAcACQAMAA4AAAAHAAkAAAAJAA4ADgAPAA8ADwAAAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD8wgAAQMIAAAAAAAAIQwAAQMIAAAAAAAAIQwAAEMIAAAAApqriQjMzsz8AAAAAWlW1QmZmhsAAAAAAAACIQs3MPEEAAAAATVU1Qs3MLEEAAAAAZ1W1QTMz878AAAAAAAAAAM3MNEEAAAAAZ1W1wTMzs8AAAAAATVU1wjMzs78AAAAAAACIwgAAgEAAAAAAWlW1wpqZmT8AAAAApqriwmZmpkAAAAAAAAAIwwAAEMIAAAAAAAAIwwAAGMIAAAAA//////7//7//////////v/////////+///////7//7//////////v/////////+//////////7//////////v/////////+///////7//7//////////v/////////+//////////7//////////v//////+//+///////7//78=")
+}]
 
 [sub_resource type="Resource" id="Resource_aakwv"]
+script = ExtResource("6_vbjfv")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_152lj")
+material = SubResource("ledge_l8_preview")
+z_index = -1
+
+[sub_resource type="Resource" id="ledge_l8_mat"]
+script = ExtResource("12_uvrwf")
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_mesh_material = SubResource("ledge_l8_preview")
+
+[sub_resource type="Resource" id="ledge_l9_p0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -48)
+
+[sub_resource type="Resource" id="ledge_l9_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(126, -48)
+
+[sub_resource type="Resource" id="ledge_l9_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -38)
+
+[sub_resource type="Resource" id="ledge_l9_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l9_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, -4.2)
+
+[sub_resource type="Resource" id="ledge_l9_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, 11.8)
+
+[sub_resource type="Resource" id="ledge_l9_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, 10.8)
+
+[sub_resource type="Resource" id="ledge_l9_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, -1.9)
+
+[sub_resource type="Resource" id="ledge_l9_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, 11.3)
+
+[sub_resource type="Resource" id="ledge_l9_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, -5.6)
+
+[sub_resource type="Resource" id="ledge_l9_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, -1.4)
+
+[sub_resource type="Resource" id="ledge_l9_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, 4)
+
+[sub_resource type="Resource" id="ledge_l9_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, 1.2)
+
+[sub_resource type="Resource" id="ledge_l9_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, 5.2)
+
+[sub_resource type="Resource" id="ledge_l9_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, 1.4)
+
+[sub_resource type="Resource" id="ledge_l9_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l9_p16"]
+resource_local_to_scene = true
 script = ExtResource("4_7je74")
 position = Vector2(-136, -48)
 
 [sub_resource type="Resource" id="Resource_pvfvb"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
+resource_local_to_scene = true
+script = ExtResource("5_57mdw")
+_points = {
+0: SubResource("ledge_l9_p0"),
+1: SubResource("ledge_l9_p1"),
+2: SubResource("ledge_l9_p2"),
+3: SubResource("ledge_l9_p3"),
+4: SubResource("ledge_l9_p4"),
+5: SubResource("ledge_l9_p5"),
+6: SubResource("ledge_l9_p6"),
+7: SubResource("ledge_l9_p7"),
+8: SubResource("ledge_l9_p8"),
+9: SubResource("ledge_l9_p9"),
+10: SubResource("ledge_l9_p10"),
+11: SubResource("ledge_l9_p11"),
+12: SubResource("ledge_l9_p12"),
+13: SubResource("ledge_l9_p13"),
+14: SubResource("ledge_l9_p14"),
+15: SubResource("ledge_l9_p15"),
+16: SubResource("ledge_l9_p16")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+_constraints = {
+Vector2i(0, 16): 15
+}
+_next_key = 17
 
-[sub_resource type="Resource" id="Resource_of4ft"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
+[sub_resource type="ShaderMaterial" id="ledge_l9_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = false
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+shader_parameter/sewer_light = Vector2(-100000, -100000)
+shader_parameter/sewer_radius = 190.0
+shader_parameter/sewer_strength = 0.1
+shader_parameter/sewer_trim = false
+shader_parameter/sewer_edge_count = 0
+shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_of4ft"]
+_surfaces = [{
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyj5W7Zm+gAfKPlbtmb7/////ORDaPse3c745ENo+x7dzvv////85ENo+AORmvjkQ2j4A5Ga+/////yy4tT53f9e8LLi1Pnd/17z/////KmCRPpRclz0qYJE+lFyXPf////85EFo+zYiKPTkQWj7NiIo9/////x9gET5s+UK8H2ARPmz5Qrz/////NGCRPbHykD00YJE9sfKQPf////8AAAAAUKoPvQAAAABQqg+9/////zRgkb1Qqg+8NGCRvVCqD7z/////H2ARvnI8zTwfYBG+cjzNPP////85EFq+iUj2OzkQWr6JSPY7/////ypgkb5KZwU9KmCRvkpnBT3/////LLi1vlCqDzwsuLW+UKoPPP////85ENq+AORmvjkQ2r4A5Ga+/////zkQ2r5W7Zm+ORDavlbtmb4="),
+"format": 34359742527,
+"index_count": 45,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABgAHAAgACQAKAAsACwAMAA0AAAACAAQACAAJAAsACwANAA4AAAAEAAYACAALAA4AAAAGAAgAAAAIAA4ADgAPAA8ADwAAAA4A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD8QgAAQMIAAAAAAAAIQwAAGMIAAAAAAAAIQwAAEMIAAAAApqriQmZmhsAAAAAAWlW1Qs3MPEEAAAAAAACIQs3MLEEAAAAATVU1QjMz878AAAAAZ1W1Qc3MNEEAAAAAAAAAADMzs8AAAAAAZ1W1wTMzs78AAAAATVU1wgAAgEAAAAAAAACIwpqZmT8AAAAAWlW1wmZmpkAAAAAApqriwjMzsz8AAAAAAAAIwwAAEMIAAAAAAAAIwwAAQMIAAAAA/////////7///////v//v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////78=")
+}]
 
 [sub_resource type="Resource" id="Resource_wot3a"]
+script = ExtResource("6_vbjfv")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_of4ft")
+material = SubResource("ledge_l9_preview")
+z_index = -1
+
+[sub_resource type="Resource" id="ledge_l9_mat"]
+script = ExtResource("12_uvrwf")
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_mesh_material = SubResource("ledge_l9_preview")
+
+[sub_resource type="Resource" id="ledge_l10_p0"]
+resource_local_to_scene = true
 script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
+position = Vector2(-136, -38)
+
+[sub_resource type="Resource" id="ledge_l10_p1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-126, -48)
+
+[sub_resource type="Resource" id="ledge_l10_p2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -48)
+
+[sub_resource type="Resource" id="ledge_l10_p3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(136, -36)
+
+[sub_resource type="Resource" id="ledge_l10_p4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(113.3333, 11.8)
+
+[sub_resource type="Resource" id="ledge_l10_p5"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(90.6667, 10.8)
+
+[sub_resource type="Resource" id="ledge_l10_p6"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(68, -1.9)
+
+[sub_resource type="Resource" id="ledge_l10_p7"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(45.3333, 11.3)
+
+[sub_resource type="Resource" id="ledge_l10_p8"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(22.6667, -5.6)
+
+[sub_resource type="Resource" id="ledge_l10_p9"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, -1.4)
+
+[sub_resource type="Resource" id="ledge_l10_p10"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-22.6667, 4)
+
+[sub_resource type="Resource" id="ledge_l10_p11"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-45.3333, 1.2)
+
+[sub_resource type="Resource" id="ledge_l10_p12"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-68, 5.2)
+
+[sub_resource type="Resource" id="ledge_l10_p13"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-90.6667, 1.4)
+
+[sub_resource type="Resource" id="ledge_l10_p14"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-113.3333, -4.2)
+
+[sub_resource type="Resource" id="ledge_l10_p15"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -36)
+
+[sub_resource type="Resource" id="ledge_l10_p16"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(-136, -38)
 
 [sub_resource type="Resource" id="Resource_smrhh"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_umrij"]
+resource_local_to_scene = true
 script = ExtResource("5_57mdw")
 _points = {
-0: SubResource("Resource_aakwv"),
-1: SubResource("Resource_pvfvb"),
-2: SubResource("Resource_of4ft"),
-3: SubResource("Resource_wot3a"),
-4: SubResource("Resource_smrhh")
+0: SubResource("ledge_l10_p0"),
+1: SubResource("ledge_l10_p1"),
+2: SubResource("ledge_l10_p2"),
+3: SubResource("ledge_l10_p3"),
+4: SubResource("ledge_l10_p4"),
+5: SubResource("ledge_l10_p5"),
+6: SubResource("ledge_l10_p6"),
+7: SubResource("ledge_l10_p7"),
+8: SubResource("ledge_l10_p8"),
+9: SubResource("ledge_l10_p9"),
+10: SubResource("ledge_l10_p10"),
+11: SubResource("ledge_l10_p11"),
+12: SubResource("ledge_l10_p12"),
+13: SubResource("ledge_l10_p13"),
+14: SubResource("ledge_l10_p14"),
+15: SubResource("ledge_l10_p15"),
+16: SubResource("ledge_l10_p16")
 }
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
 _constraints = {
-Vector2i(0, 4): 15
+Vector2i(0, 16): 15
 }
-_next_key = 5
+_next_key = 17
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_6jhef"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 40
-shader_parameter/ground_cover_edges = Array[Vector4]([Vector4(-904, -1136, -807.33997, -1136), Vector4(-807.33997, -1136, -807.33997, -1157.24), Vector4(-807.33997, -1157.24, -740.2, -1157.24), Vector4(-740.2, -1157.24, -740.2, -1136), Vector4(-740.2, -1136, -722.38, -1136), Vector4(-722.38, -1136, -722.38, -1115.3), Vector4(-722.38, -1115.3, -738.94, -1115.3), Vector4(-738.94, -1115.3, -738.94, -1093.88), Vector4(-738.94, -1093.88, -627.52, -1093.88), Vector4(-627.52, -1093.88, -627.52, -1115.3), Vector4(-627.52, -1115.3, -620.68, -1115.3), Vector4(-620.68, -1115.3, -620.68, -1136), Vector4(-620.68, -1136, -627.52, -1136), Vector4(-627.52, -1136, -627.52, -1157.24), Vector4(-627.52, -1157.24, -619.78, -1157.24), Vector4(-619.78, -1157.24, -619.78, -1178.6599), Vector4(-619.78, -1178.6599, -513.22, -1178.6599), Vector4(-513.22, -1178.6599, -513.22, -1157.24), Vector4(-513.22, -1157.24, -498.1, -1157.24), Vector4(-498.1, -1157.24, -498.1, -1136), Vector4(-498.1, -1136, -516.1, -1136), Vector4(-516.1, -1136, -516.1, -1115.3), Vector4(-516.1, -1115.3, -409, -1115.3), Vector4(-409, -1115.3, -409, -1136), Vector4(-409, -1136, -392.08002, -1136), Vector4(-392.08002, -1136, -392.08002, -1157.24), Vector4(-392.08002, -1157.24, -289.83997, -1157.24), Vector4(-289.83997, -1157.24, -289.83997, -1136), Vector4(-289.83997, -1136, -308.91998, -1136), Vector4(-308.91998, -1136, -308.91998, -1115.3), Vector4(-308.91998, -1115.3, -291.82, -1115.3), Vector4(-291.82, -1115.3, -291.82, -1093.88), Vector4(-291.82, -1093.88, -185.97998, -1093.88), Vector4(-185.97998, -1093.88, -185.97998, -1115.3), Vector4(-185.97998, -1115.3, -203.26001, -1115.3), Vector4(-203.26001, -1115.3, -203.26001, -1136), Vector4(-203.26001, -1136, -136, -1136), Vector4(-136, -1136, -136, 592), Vector4(-136, 592, -904, 592), Vector4(-904, 592, -904, -1136)])
-shader_parameter/alt_tex = ExtResource("10_pd147")
+[sub_resource type="ShaderMaterial" id="ledge_l10_preview"]
+shader = ExtResource("ledge_shader")
+shader_parameter/surface_bounds = Vector4(-136, -48, 136, 11.8)
+shader_parameter/ground_platform = false
+shader_parameter/ledge_top_half_depth = 4.0
+shader_parameter/alt_tex = ExtResource("9_rjc5r")
 shader_parameter/base_is_white = true
 shader_parameter/alt_invert = false
 shader_parameter/seed_count = 0
@@ -2625,584 +3849,32 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_oog5v"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_umrij"]
 _surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////6G9cECN+8dAob1wQI37x0D/////ob1wQDem2EChvXBAN6bYQP////8dxzFAN6bYQB3HMUA3pthA/////x3HMUCN+8dAHccxQI37x0A="),
+"aabb": AABB(-136, -48, 0, 272, 59.8, 1e-05),
+"attribute_data": PackedByteArray("/////4AHyr5W7Zm+gAfKvlbtmb7/////ORDaPlbtmb45ENo+Vu2Zvv////85ENo+AORmvjkQ2j4A5Ga+/////yy4tT6UXJc9LLi1PpRclz3/////KmCRPs2Iij0qYJE+zYiKPf////85EFo+bPlCvDkQWj5s+UK8/////x9gET6x8pA9H2ARPrHykD3/////NGCRPVCqD700YJE9UKoPvf////8AAAAAUKoPvAAAAABQqg+8/////zRgkb1yPM08NGCRvXI8zTz/////H2ARvolI9jsfYBG+iUj2O/////85EFq+SmcFPTkQWr5KZwU9/////ypgkb5Qqg88KmCRvlCqDzz/////LLi1vnd/17wsuLW+d3/XvP////85ENq+AORmvjkQ2r4A5Ga+/////zkQ2r7Ht3O+ORDavse3c74="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 45,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABQAGAAcACAAJAAoACgALAAwADAANAA4AAgAEAAUABwAIAAoACgAMAA4AAAACAAUABwAKAA4AAAAFAAcAAAAHAA4ADgAPAA8ADwAAAA4A"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAD8wgAAQMIAAAAAAAAIQwAAQMIAAAAAAAAIQwAAEMIAAAAApqriQs3MPEEAAAAAWlW1Qs3MLEEAAAAAAACIQjMz878AAAAATVU1Qs3MNEEAAAAAZ1W1QTMzs8AAAAAAAAAAADMzs78AAAAAZ1W1wQAAgEAAAAAATVU1wpqZmT8AAAAAAACIwmZmpkAAAAAAWlW1wjMzsz8AAAAApqriwmZmhsAAAAAAAAAIwwAAEMIAAAAAAAAIwwAAGMIAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7///////v//v/////////+//////////7//////////v/////////+//////////7//////////v//////+//+///////7//78=")
 }]
-
-[sub_resource type="Resource" id="Resource_1df3j"]
-script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_oog5v")
-material = SubResource("ShaderMaterial_6jhef")
-z_index = -1
-
-[sub_resource type="Resource" id="Resource_grbqi"]
-script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
-fill_texture_z_index = -1
-fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_6jhef")
 
 [sub_resource type="Resource" id="Resource_q5sq2"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_srfo4"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_e55yd"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_wqaxs"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_yi84q"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_pjfv1"]
-script = ExtResource("5_57mdw")
-_points = {
-0: SubResource("Resource_q5sq2"),
-1: SubResource("Resource_srfo4"),
-2: SubResource("Resource_e55yd"),
-3: SubResource("Resource_wqaxs"),
-4: SubResource("Resource_yi84q")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_2akey"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 0
-shader_parameter/ground_cover_edges = Array[Vector4]([])
-shader_parameter/alt_tex = ExtResource("10_pd147")
-shader_parameter/base_is_white = true
-shader_parameter/alt_invert = false
-shader_parameter/seed_count = 0
-shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/r_scale = 1.0
-shader_parameter/drip_width = 0.26
-shader_parameter/edge_soft = 2.0
-shader_parameter/noise_amount = 5.0
-shader_parameter/noise_scale = 0.07
-shader_parameter/blob_wobble = 0.14
-shader_parameter/organic_mode = false
-shader_parameter/organic_shape = 0.11
-shader_parameter/organic_aspect = 0.14
-shader_parameter/wet = 0.0
-shader_parameter/ghost_amount = 0.0
-shader_parameter/ghost_mosaic = 12.0
-shader_parameter/ghost_smear = 7.0
-shader_parameter/ghost_alpha = 0.55
-shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
-shader_parameter/ghost_tint_amount = 0.3
-shader_parameter/sewer_light = Vector2(-100000, -100000)
-shader_parameter/sewer_radius = 190.0
-shader_parameter/sewer_strength = 0.1
-shader_parameter/sewer_trim = false
-shader_parameter/sewer_edge_count = 0
-shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_5gjhq"]
-_surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////4X2okCrwrFAhfaiQKvCsUD/////hfaiQFVtwkCF9qJAVW3CQP////9De4NAVW3CQEN7g0BVbcJA/////0N7g0CrwrFAQ3uDQKvCsUA="),
-"format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
-}]
-
-[sub_resource type="Resource" id="Resource_1uiko"]
 script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_5gjhq")
-material = SubResource("ShaderMaterial_2akey")
+texture = ExtResource("ledge_white")
+mesh = SubResource("ArrayMesh_umrij")
+material = SubResource("ledge_l10_preview")
 z_index = -1
 
-[sub_resource type="Resource" id="Resource_ahywk"]
+[sub_resource type="Resource" id="ledge_l10_mat"]
 script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
+fill_textures = Array[Texture2D]([ExtResource("ledge_white")])
 fill_texture_z_index = -1
 fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_2akey")
-
-[sub_resource type="Resource" id="Resource_4b6pc"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_rjma7"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_dce8a"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_t17pg"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_7r67p"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_7u528"]
-script = ExtResource("5_57mdw")
-_points = {
-0: SubResource("Resource_4b6pc"),
-1: SubResource("Resource_rjma7"),
-2: SubResource("Resource_dce8a"),
-3: SubResource("Resource_t17pg"),
-4: SubResource("Resource_7r67p")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_36t56"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 40
-shader_parameter/ground_cover_edges = Array[Vector4]([Vector4(-904, -880, -807.33997, -880), Vector4(-807.33997, -880, -807.33997, -901.24), Vector4(-807.33997, -901.24, -740.2, -901.24), Vector4(-740.2, -901.24, -740.2, -880), Vector4(-740.2, -880, -722.38, -880), Vector4(-722.38, -880, -722.38, -859.30005), Vector4(-722.38, -859.30005, -738.94, -859.30005), Vector4(-738.94, -859.30005, -738.94, -837.88), Vector4(-738.94, -837.88, -627.52, -837.88), Vector4(-627.52, -837.88, -627.52, -859.30005), Vector4(-627.52, -859.30005, -620.68, -859.30005), Vector4(-620.68, -859.30005, -620.68, -880), Vector4(-620.68, -880, -627.52, -880), Vector4(-627.52, -880, -627.52, -901.24), Vector4(-627.52, -901.24, -619.78, -901.24), Vector4(-619.78, -901.24, -619.78, -922.6599), Vector4(-619.78, -922.6599, -513.22, -922.6599), Vector4(-513.22, -922.6599, -513.22, -901.24), Vector4(-513.22, -901.24, -498.1, -901.24), Vector4(-498.1, -901.24, -498.1, -880), Vector4(-498.1, -880, -516.1, -880), Vector4(-516.1, -880, -516.1, -859.30005), Vector4(-516.1, -859.30005, -409, -859.30005), Vector4(-409, -859.30005, -409, -880), Vector4(-409, -880, -392.08002, -880), Vector4(-392.08002, -880, -392.08002, -901.24), Vector4(-392.08002, -901.24, -289.83997, -901.24), Vector4(-289.83997, -901.24, -289.83997, -880), Vector4(-289.83997, -880, -308.91998, -880), Vector4(-308.91998, -880, -308.91998, -859.30005), Vector4(-308.91998, -859.30005, -291.82, -859.30005), Vector4(-291.82, -859.30005, -291.82, -837.88), Vector4(-291.82, -837.88, -185.97998, -837.88), Vector4(-185.97998, -837.88, -185.97998, -859.30005), Vector4(-185.97998, -859.30005, -203.26001, -859.30005), Vector4(-203.26001, -859.30005, -203.26001, -880), Vector4(-203.26001, -880, -136, -880), Vector4(-136, -880, -136, 848), Vector4(-136, 848, -904, 848), Vector4(-904, 848, -904, -880)])
-shader_parameter/alt_tex = ExtResource("10_pd147")
-shader_parameter/base_is_white = true
-shader_parameter/alt_invert = false
-shader_parameter/seed_count = 0
-shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/r_scale = 1.0
-shader_parameter/drip_width = 0.26
-shader_parameter/edge_soft = 2.0
-shader_parameter/noise_amount = 5.0
-shader_parameter/noise_scale = 0.07
-shader_parameter/blob_wobble = 0.14
-shader_parameter/organic_mode = false
-shader_parameter/organic_shape = 0.11
-shader_parameter/organic_aspect = 0.14
-shader_parameter/wet = 0.0
-shader_parameter/ghost_amount = 0.0
-shader_parameter/ghost_mosaic = 12.0
-shader_parameter/ghost_smear = 7.0
-shader_parameter/ghost_alpha = 0.55
-shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
-shader_parameter/ghost_tint_amount = 0.3
-shader_parameter/sewer_light = Vector2(-100000, -100000)
-shader_parameter/sewer_radius = 190.0
-shader_parameter/sewer_strength = 0.1
-shader_parameter/sewer_trim = false
-shader_parameter/sewer_edge_count = 0
-shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_b5efn"]
-_surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////6G9cEDHiZtAob1wQMeJm0D/////ob1wQHE0rEChvXBAcTSsQP////8dxzFAcTSsQB3HMUBxNKxA/////x3HMUDHiZtAHccxQMeJm0A="),
-"format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
-}]
-
-[sub_resource type="Resource" id="Resource_jwdew"]
-script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_b5efn")
-material = SubResource("ShaderMaterial_36t56")
-z_index = -1
-
-[sub_resource type="Resource" id="Resource_568gg"]
-script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
-fill_texture_z_index = -1
-fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_36t56")
-
-[sub_resource type="Resource" id="Resource_jjooy"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_l6g3y"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_w15ug"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_gkpmv"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_pbsjl"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_y22rf"]
-script = ExtResource("5_57mdw")
-_points = {
-0: SubResource("Resource_jjooy"),
-1: SubResource("Resource_l6g3y"),
-2: SubResource("Resource_w15ug"),
-3: SubResource("Resource_gkpmv"),
-4: SubResource("Resource_pbsjl")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_j4c1o"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 4
-shader_parameter/ground_cover_edges = Array[Vector4]([Vector4(136, -304, 584, -304), Vector4(584, -304, 584, 16), Vector4(584, 16, 136, 16), Vector4(136, 16, 136, -304)])
-shader_parameter/alt_tex = ExtResource("10_pd147")
-shader_parameter/base_is_white = true
-shader_parameter/alt_invert = false
-shader_parameter/seed_count = 0
-shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/r_scale = 1.0
-shader_parameter/drip_width = 0.26
-shader_parameter/edge_soft = 2.0
-shader_parameter/noise_amount = 5.0
-shader_parameter/noise_scale = 0.07
-shader_parameter/blob_wobble = 0.14
-shader_parameter/organic_mode = false
-shader_parameter/organic_shape = 0.11
-shader_parameter/organic_aspect = 0.14
-shader_parameter/wet = 0.0
-shader_parameter/ghost_amount = 0.0
-shader_parameter/ghost_mosaic = 12.0
-shader_parameter/ghost_smear = 7.0
-shader_parameter/ghost_alpha = 0.55
-shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
-shader_parameter/ghost_tint_amount = 0.3
-shader_parameter/sewer_light = Vector2(-100000, -100000)
-shader_parameter/sewer_radius = 190.0
-shader_parameter/sewer_strength = 0.1
-shader_parameter/sewer_trim = false
-shader_parameter/sewer_edge_count = 0
-shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_dbob4"]
-_surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////4X2okDlUIVAhfaiQOVQhUD/////hfaiQI/7lUCF9qJAj/uVQP////9De4NAj/uVQEN7g0CP+5VA/////0N7g0DlUIVAQ3uDQOVQhUA="),
-"format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
-}]
-
-[sub_resource type="Resource" id="Resource_pdnbj"]
-script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_dbob4")
-material = SubResource("ShaderMaterial_j4c1o")
-z_index = -1
-
-[sub_resource type="Resource" id="Resource_37iio"]
-script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
-fill_texture_z_index = -1
-fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_j4c1o")
-
-[sub_resource type="Resource" id="Resource_5wlry"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_xrys7"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_cq7fq"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_ad4kf"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_6fykq"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_r5vtr"]
-script = ExtResource("5_57mdw")
-_points = {
-0: SubResource("Resource_5wlry"),
-1: SubResource("Resource_xrys7"),
-2: SubResource("Resource_cq7fq"),
-3: SubResource("Resource_ad4kf"),
-4: SubResource("Resource_6fykq")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1jr5d"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 40
-shader_parameter/ground_cover_edges = Array[Vector4]([Vector4(-904, -624, -807.33997, -624), Vector4(-807.33997, -624, -807.33997, -645.24), Vector4(-807.33997, -645.24, -740.2, -645.24), Vector4(-740.2, -645.24, -740.2, -624), Vector4(-740.2, -624, -722.38, -624), Vector4(-722.38, -624, -722.38, -603.30005), Vector4(-722.38, -603.30005, -738.94, -603.30005), Vector4(-738.94, -603.30005, -738.94, -581.88), Vector4(-738.94, -581.88, -627.52, -581.88), Vector4(-627.52, -581.88, -627.52, -603.30005), Vector4(-627.52, -603.30005, -620.68, -603.30005), Vector4(-620.68, -603.30005, -620.68, -624), Vector4(-620.68, -624, -627.52, -624), Vector4(-627.52, -624, -627.52, -645.24), Vector4(-627.52, -645.24, -619.78, -645.24), Vector4(-619.78, -645.24, -619.78, -666.6599), Vector4(-619.78, -666.6599, -513.22, -666.6599), Vector4(-513.22, -666.6599, -513.22, -645.24), Vector4(-513.22, -645.24, -498.1, -645.24), Vector4(-498.1, -645.24, -498.1, -624), Vector4(-498.1, -624, -516.1, -624), Vector4(-516.1, -624, -516.1, -603.30005), Vector4(-516.1, -603.30005, -409, -603.30005), Vector4(-409, -603.30005, -409, -624), Vector4(-409, -624, -392.08002, -624), Vector4(-392.08002, -624, -392.08002, -645.24), Vector4(-392.08002, -645.24, -289.83997, -645.24), Vector4(-289.83997, -645.24, -289.83997, -624), Vector4(-289.83997, -624, -308.91998, -624), Vector4(-308.91998, -624, -308.91998, -603.30005), Vector4(-308.91998, -603.30005, -291.82, -603.30005), Vector4(-291.82, -603.30005, -291.82, -581.88), Vector4(-291.82, -581.88, -185.97998, -581.88), Vector4(-185.97998, -581.88, -185.97998, -603.30005), Vector4(-185.97998, -603.30005, -203.26001, -603.30005), Vector4(-203.26001, -603.30005, -203.26001, -624), Vector4(-203.26001, -624, -136, -624), Vector4(-136, -624, -136, 1104), Vector4(-136, 1104, -904, 1104), Vector4(-904, 1104, -904, -624)])
-shader_parameter/alt_tex = ExtResource("10_pd147")
-shader_parameter/base_is_white = true
-shader_parameter/alt_invert = false
-shader_parameter/seed_count = 0
-shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/r_scale = 1.0
-shader_parameter/drip_width = 0.26
-shader_parameter/edge_soft = 2.0
-shader_parameter/noise_amount = 5.0
-shader_parameter/noise_scale = 0.07
-shader_parameter/blob_wobble = 0.14
-shader_parameter/organic_mode = false
-shader_parameter/organic_shape = 0.11
-shader_parameter/organic_aspect = 0.14
-shader_parameter/wet = 0.0
-shader_parameter/ghost_amount = 0.0
-shader_parameter/ghost_mosaic = 12.0
-shader_parameter/ghost_smear = 7.0
-shader_parameter/ghost_alpha = 0.55
-shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
-shader_parameter/ghost_tint_amount = 0.3
-shader_parameter/sewer_light = Vector2(-100000, -100000)
-shader_parameter/sewer_radius = 190.0
-shader_parameter/sewer_strength = 0.1
-shader_parameter/sewer_trim = false
-shader_parameter/sewer_edge_count = 0
-shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_veld8"]
-_surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////6G9cEABMF5Aob1wQAEwXkD/////ob1wQFeFf0ChvXBAV4V/QP////8dxzFAV4V/QB3HMUBXhX9A/////x3HMUABMF5AHccxQAEwXkA="),
-"format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
-}]
-
-[sub_resource type="Resource" id="Resource_exgat"]
-script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_veld8")
-material = SubResource("ShaderMaterial_1jr5d")
-z_index = -1
-
-[sub_resource type="Resource" id="Resource_y2rpm"]
-script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
-fill_texture_z_index = -1
-fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_1jr5d")
-
-[sub_resource type="Resource" id="Resource_tds16"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_2j6y5"]
-script = ExtResource("4_7je74")
-position = Vector2(136, -48)
-
-[sub_resource type="Resource" id="Resource_vujkf"]
-script = ExtResource("4_7je74")
-position = Vector2(136, 48)
-
-[sub_resource type="Resource" id="Resource_e15n4"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, 48)
-
-[sub_resource type="Resource" id="Resource_wka4r"]
-script = ExtResource("4_7je74")
-position = Vector2(-136, -48)
-
-[sub_resource type="Resource" id="Resource_gqxkh"]
-script = ExtResource("5_57mdw")
-_points = {
-0: SubResource("Resource_tds16"),
-1: SubResource("Resource_2j6y5"),
-2: SubResource("Resource_vujkf"),
-3: SubResource("Resource_e15n4"),
-4: SubResource("Resource_wka4r")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_7e3p4"]
-shader = ExtResource("7_hve3h")
-shader_parameter/surface_bounds = Vector4(-136, -48, 136, 48)
-shader_parameter/ground_platform = true
-shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
-shader_parameter/ground_edge_count = 5
-shader_parameter/ground_edges = Array[Vector4]([Vector4(-136, -48, 136, -48), Vector4(136, -48, 136, 48), Vector4(136, 48, -136, 48), Vector4(-136, 48, -136, -48), Vector4(-136, -48, -136, -48)])
-shader_parameter/ground_top_half_depth = 4.0
-shader_parameter/ground_top_enabled = true
-shader_parameter/ground_side_enabled = true
-shader_parameter/ground_cover_count = 4
-shader_parameter/ground_cover_edges = Array[Vector4]([Vector4(136, -48, 584, -48), Vector4(584, -48, 584, 272), Vector4(584, 272, 136, 272), Vector4(136, 272, 136, -48)])
-shader_parameter/alt_tex = ExtResource("10_pd147")
-shader_parameter/base_is_white = true
-shader_parameter/alt_invert = false
-shader_parameter/seed_count = 0
-shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/r_scale = 1.0
-shader_parameter/drip_width = 0.26
-shader_parameter/edge_soft = 2.0
-shader_parameter/noise_amount = 5.0
-shader_parameter/noise_scale = 0.07
-shader_parameter/blob_wobble = 0.14
-shader_parameter/organic_mode = false
-shader_parameter/organic_shape = 0.11
-shader_parameter/organic_aspect = 0.14
-shader_parameter/wet = 0.0
-shader_parameter/ghost_amount = 0.0
-shader_parameter/ghost_mosaic = 12.0
-shader_parameter/ghost_smear = 7.0
-shader_parameter/ghost_alpha = 0.55
-shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
-shader_parameter/ghost_tint_amount = 0.3
-shader_parameter/sewer_light = Vector2(-100000, -100000)
-shader_parameter/sewer_radius = 190.0
-shader_parameter/sewer_strength = 0.1
-shader_parameter/sewer_trim = false
-shader_parameter/sewer_edge_count = 0
-shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_7entw"]
-_surfaces = [{
-"aabb": AABB(-136, -48, 0, 272, 96, 1e-05),
-"attribute_data": PackedByteArray("/////4X2okA5vjFAhfaiQDm+MUD/////hfaiQI8TU0CF9qJAjxNTQP////9De4NAjxNTQEN7g0CPE1NA/////0N7g0A5vjFAQ3uDQDm+MUA="),
-"format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAIQwAAQMIAAAAAAAAIQwAAQEIAAAAAAAAIwwAAQEIAAAAAAAAIwwAAQMIAAAAA/////////7//////////v/////////+//////////78=")
-}]
-
-[sub_resource type="Resource" id="Resource_66xbl"]
-script = ExtResource("6_vbjfv")
-texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_7entw")
-material = SubResource("ShaderMaterial_7e3p4")
-z_index = -1
-
-[sub_resource type="Resource" id="Resource_ykdsf"]
-script = ExtResource("12_uvrwf")
-fill_textures = Array[Texture2D]([ExtResource("8_owqpr")])
-fill_texture_z_index = -1
-fill_texture_scale = 0.18
-fill_texture_absolute_position = true
-fill_texture_offset = Vector2(0, 1792.1)
-fill_mesh_material = SubResource("ShaderMaterial_7e3p4")
+fill_mesh_material = SubResource("ledge_l10_preview")
 
 [sub_resource type="Resource" id="Resource_2sacc"]
 script = ExtResource("4_7je74")
@@ -3241,8 +3913,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2gcg5"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 4
+shader_parameter/inlay_rects = PackedVector4Array(-120, -118.94, 126.96, -97.7, -166.44, -97.7, 141.18, -76.28, -120.18, -76.28, 123.54, -55.04, -138.18, -55.04, 104.82, -34.34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-224, -160, 224, 160)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-224, -160, 224, -160), Vector4(224, -160, 224, 160), Vector4(224, 160, -224, 160), Vector4(-224, 160, -224, -160), Vector4(-224, -160, -224, -160)])
@@ -3285,7 +3960,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_xe2ln"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_srfo4"]
 _surfaces = [{
 "aabb": AABB(-224, -160, 0, 448, 320, 1e-05),
 "attribute_data": PackedByteArray("/////5jQ1kA7vjFAmNDWQDu+MUD/////mNDWQFZtkECY0NZAVm2QQP////+E9qJAVm2QQIT2okBWbZBA/////4T2okA7vjFAhPaiQDu+MUA="),
@@ -3298,10 +3973,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABgQwAAIMMAAAAAAABgQwAAIEMAAAAAAABgwwAAIEMAAAAAAABgwwAAIMMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_su23y"]
+[sub_resource type="Resource" id="Resource_e55yd"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_xe2ln")
+mesh = SubResource("ArrayMesh_srfo4")
 material = SubResource("ShaderMaterial_2gcg5")
 z_index = -1
 
@@ -3351,8 +4026,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0dbmj"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-224, -96, 224, 96)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-224, -96, 224, -96), Vector4(224, -96, 224, 96), Vector4(224, 96, -224, 96), Vector4(-224, 96, -224, -96), Vector4(-224, -96, -224, -96)])
@@ -3395,7 +4073,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_v1e6g"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_wqaxs"]
 _surfaces = [{
 "aabb": AABB(-224, -96, 0, 448, 192, 1e-05),
 "attribute_data": PackedByteArray("/////5jQ1kCP+8dAmNDWQI/7x0D/////mNDWQOVQ6UCY0NZA5VDpQP////+E9qJA5VDpQIT2okDlUOlA/////4T2okCP+8dAhPaiQI/7x0A="),
@@ -3408,10 +4086,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABgQwAAwMIAAAAAAABgQwAAwEIAAAAAAABgwwAAwEIAAAAAAABgwwAAwMIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_q2xc0"]
+[sub_resource type="Resource" id="Resource_yi84q"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("8_owqpr")
-mesh = SubResource("ArrayMesh_v1e6g")
+mesh = SubResource("ArrayMesh_wqaxs")
 material = SubResource("ShaderMaterial_0dbmj")
 z_index = -1
 
@@ -3481,8 +4159,11 @@ _next_key = 9
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lqdmk"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 6
+shader_parameter/inlay_rects = PackedVector4Array(225.28, -284.36, 425.08, -268.7, 156.34, -268.7, 468.28, -247.46, 225.28, -247.46, 451, -226.04, 184.24, -226.04, 389.08, -204.8, 232.12, -204.8, 443.8, -184.1, 225.28, -184.1, 426.52, -162.68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-1024, -448, 1024, 448)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 9
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-1024, -320, 512, -320), Vector4(512, -320, 512, -448), Vector4(512, -448, 704, -448), Vector4(704, -448, 704, -320), Vector4(704, -320, 1024, -320), Vector4(1024, -320, 1024, 448), Vector4(1024, 448, -1024, 448), Vector4(-1024, 448, -1024, -320), Vector4(-1024, -320, -1024, -320)])
@@ -3525,7 +4206,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_7tkox"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_pjfv1"]
 _surfaces = [{
 "aabb": AABB(-1024, -448, 0, 2048, 896, 1e-05),
 "attribute_data": PackedByteArray("/////7OXQEEBjBtBs5dAQQGMG0H/////s5dAQY9vEEGzl0BBj28QQf////8ltEtBj28QQSW0S0GPbxBB/////yW0S0EBjBtBJbRLQQGMG0H/////4zheQQGMG0HjOF5BAYwbQf/////jOF5BqzZeQeM4XkGrNl5B/////0poz0CrNl5BSmjPQKs2XkH/////SmjPQAGMG0FKaM9AAYwbQQ=="),
@@ -3538,10 +4219,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAARAAAoMMAAAAAAAAARAAA4MMAAAAAAAAwRAAA4MMAAAAAAAAwRAAAoMMAAAAAAACARAAAoMMAAAAAAACARAAA4EMAAAAAAACAxAAA4EMAAAAAAACAxAAAoMMAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////vw==")
 }]
 
-[sub_resource type="Resource" id="Resource_om5tj"]
+[sub_resource type="Resource" id="Resource_4b6pc"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_7tkox")
+mesh = SubResource("ArrayMesh_pjfv1")
 material = SubResource("ShaderMaterial_lqdmk")
 z_index = -1
 
@@ -3621,8 +4302,11 @@ _next_key = 11
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5ycts"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 5
+shader_parameter/inlay_rects = PackedVector4Array(-582.08, -158.94, -504.14, -137.7, -597.38, -137.7, -485.96, -116.28, -582.26, -116.28, -476.24, -95.04, -600.26, -95.04, -493.16, -74.34, -581.36, -74.34, -475.88, -52.92, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-640, -840, 640, 840)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 11
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-640, -840, -320, -840), Vector4(-320, -840, -320, -712), Vector4(-320, -712, 160, -712), Vector4(160, -712, 160, -840), Vector4(160, -840, 640, -840), Vector4(640, -840, 640, 248), Vector4(640, 248, -448, 248), Vector4(-448, 248, -448, 840), Vector4(-448, 840, -640, 840), Vector4(-640, 840, -640, -840), Vector4(-640, -840, -640, -840)])
@@ -3665,7 +4349,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_r7bxk"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_rjma7"]
 _surfaces = [{
 "aabb": AABB(-640, -840, 0, 1280, 1680, 1e-05),
 "attribute_data": PackedByteArray("/////8dxQkEAMA66x3FCQQAwDrr/////x3FCQajqMb/HcUJBqOoxv//////jOF5BqOoxv+M4XkGo6jG//////+M4XkE5pqZA4zheQTmmpkD/////XkIfQTmmpkBeQh9BOaamQP////9eQh9BqrYGQV5CH0GqtgZB/////+0lFEGqtgZB7SUUQaq2BkH/////qqomQQAwDrqqqiZBADAOuv////+qqiZBqOoxv6qqJkGo6jG//////+0lFEGo6jG/7SUUQajqMb8="),
@@ -3678,10 +4362,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAAgQwAAMsQAAAAAAAAgQwAAUsQAAAAAAAAgRAAAUsQAAAAAAAAgRAAAeEMAAAAAAADgwwAAeEMAAAAAAADgwwAAUkQAAAAAAAAgxAAAUkQAAAAAAACgwwAAMsQAAAAAAACgwwAAUsQAAAAAAAAgxAAAUsQAAAAA/////////7//////////v/////////+//////////7///////v//v/////////+//////////7//////////v//////+//+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_iavbb"]
+[sub_resource type="Resource" id="Resource_dce8a"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_r7bxk")
+mesh = SubResource("ArrayMesh_rjma7")
 material = SubResource("ShaderMaterial_5ycts")
 z_index = -1
 
@@ -3731,8 +4415,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pa7nw"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-256, -72, 256, 72)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-256, -72, 256, -72), Vector4(256, -72, 256, 72), Vector4(256, 72, -256, 72), Vector4(-256, 72, -256, -72), Vector4(-256, -72, -256, -72)])
@@ -3775,7 +4462,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_n7v8m"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_t17pg"]
 _surfaces = [{
 "aabb": AABB(-256, -72, 0, 512, 144, 1e-05),
 "attribute_data": PackedByteArray("/////4/jPEFyNN5Aj+M8QXI03kD/////j+M8QXI090CP4zxBcjT3QP////9fQh9BcjT3QF9CH0FyNPdA/////19CH0FyNN5AX0IfQXI03kA="),
@@ -3788,10 +4475,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AACAQwAAkMIAAAAAAACAQwAAkEIAAAAAAACAwwAAkEIAAAAAAACAwwAAkMIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_5ab0b"]
+[sub_resource type="Resource" id="Resource_7r67p"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_n7v8m")
+mesh = SubResource("ArrayMesh_t17pg")
 material = SubResource("ShaderMaterial_pa7nw")
 z_index = -1
 
@@ -3841,8 +4528,11 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xjec5"]
 shader = ExtResource("7_hve3h")
+shader_parameter/inlay_count = 0
+shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(-48, -48, 48, 48)
 shader_parameter/ground_platform = true
+shader_parameter/cached_draw_mode = 1
 shader_parameter/ground_cap_tex = ExtResource("9_rjc5r")
 shader_parameter/ground_edge_count = 5
 shader_parameter/ground_edges = Array[Vector4]([Vector4(-48, -48, 48, -48), Vector4(48, -48, 48, 48), Vector4(48, 48, -48, 48), Vector4(-48, 48, -48, -48), Vector4(-48, -48, -48, -48)])
@@ -3885,7 +4575,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4bj88"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_7u528"]
 _surfaces = [{
 "aabb": AABB(-48, -48, 0, 96, 96, 1e-05),
 "attribute_data": PackedByteArray("/////xzHMUGq6jG/HMcxQarqMb//////HMcxQVZVMr4cxzFBVlUyvv/////kOCxBVlUyvuQ4LEFWVTK+/////+Q4LEGq6jG/5DgsQarqMb8="),
@@ -3898,10 +4588,10 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABAQgAAQMIAAAAAAABAQgAAQEIAAAAAAABAwgAAQEIAAAAAAABAwgAAQMIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_obwhp"]
+[sub_resource type="Resource" id="Resource_jjooy"]
 script = ExtResource("6_vbjfv")
 texture = ExtResource("10_pd147")
-mesh = SubResource("ArrayMesh_4bj88")
+mesh = SubResource("ArrayMesh_7u528")
 material = SubResource("ShaderMaterial_xjec5")
 z_index = -1
 
@@ -4004,180 +4694,365 @@ script = ExtResource("1_mw2bu")
 [node name="페인트코어" type="Node" parent="." unique_id=796397853 groups=["페인트코어"]]
 script = ExtResource("2_x0ds8")
 
+[node name="하수도배경" parent="." unique_id=465615234 instance=ExtResource("sewer_background")]
+
 [node name="지형" type="Node2D" parent="." unique_id=1967184044]
 
 [node name="외곽_왼벽" parent="지형" unique_id=426990818 instance=ExtResource("3_ytbp8")]
 position = Vector2(-512, 2176)
 _points = SubResource("Resource_ws7s4")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_mp636")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_670hx")])
 shape_material = SubResource("Resource_kxumd")
 metadata/role = "외곽"
 
 [node name="외곽_오른벽" parent="지형" unique_id=318838851 instance=ExtResource("3_ytbp8")]
 position = Vector2(5120, 2176)
 _points = SubResource("Resource_ptl67")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_ais3f")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_mp636")])
 shape_material = SubResource("Resource_66ff2")
 metadata/role = "외곽"
 
 [node name="외곽_천장" parent="지형" unique_id=1539946832 instance=ExtResource("3_ytbp8")]
 position = Vector2(2304, -512)
 _points = SubResource("Resource_4l5kv")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_1e635")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_imuqb")])
 shape_material = SubResource("Resource_xy4tg")
 metadata/role = "외곽"
 
 [node name="외곽_바닥" parent="지형" unique_id=203893245 instance=ExtResource("3_ytbp8")]
 position = Vector2(2304, 4864)
 _points = SubResource("Resource_lb2xr")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_taco1")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_ais3f")])
 shape_material = SubResource("Resource_dex0s")
 metadata/role = "외곽"
 
 [node name="천장띠" parent="지형" unique_id=2030913121 instance=ExtResource("3_ytbp8")]
 position = Vector2(2304, 608)
 _points = SubResource("Resource_s012j")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_y7n6d")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_x6e74")])
 shape_material = SubResource("Resource_gqxup")
 metadata/role = "채움"
 
 [node name="좌상_덩어리" parent="지형" unique_id=258025119 instance=ExtResource("3_ytbp8")]
 position = Vector2(928, 1600)
-_points = SubResource("Resource_u73m2")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_rjuyp")])
+_points = SubResource("Resource_6vb03")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_4pqs4")])
 shape_material = SubResource("Resource_urnai")
 metadata/role = "채움"
 
 [node name="좌하_채움" parent="지형" unique_id=1818889024 instance=ExtResource("3_ytbp8")]
 position = Vector2(384, 3968)
-_points = SubResource("Resource_atvmj")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_7y68x")])
+_points = SubResource("Resource_xlosn")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_y7n6d")])
 shape_material = SubResource("Resource_p8scp")
 metadata/role = "채움"
 
 [node name="슬롯_바닥" parent="지형" unique_id=1797334676 instance=ExtResource("3_ytbp8")]
 position = Vector2(1728, 4128)
 _points = SubResource("Resource_2rdyw")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_f7tjf")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_u73m2")])
 shape_material = SubResource("Resource_bi2u3")
 metadata/role = "채움"
 
 [node name="우측_프레임" parent="지형" unique_id=1064556603 instance=ExtResource("3_ytbp8")]
 position = Vector2(4224, 2784)
 _points = SubResource("Resource_mae0f")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_wf42v")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_syp2p")])
 shape_material = SubResource("Resource_nunx1")
 metadata/role = "채움"
 
 [node name="탑_왼벽" parent="지형" unique_id=660555551 instance=ExtResource("6_6fbqg")]
 position = Vector2(384, 2720)
-_points = SubResource("Resource_h5ksu")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_6883w")])
+script = ExtResource("color_inlay_script")
+"내부_바탕흰색" = true
+"내부_벽돌영역" = Array[Rect2]([Rect2(168.96, 36.36, 129.42, 21.24), Rect2(148.62, 57.6, 201.96, 20.7), Rect2(192.72, 78.3, 141.3, 21.42), Rect2(147.72, 99.72, 133.38, 20.88), Rect2(194.7, 120.6, 139.5, 20.88), Rect2(168.96, 141.48, 148.5, 20.88)])
+"시작상태" = 0
+_points = SubResource("Resource_rjuyp")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_atvmj")])
 shape_material = SubResource("Resource_3bul0")
 metadata/role = "플랫폼"
+metadata/color_inlays_v1 = true
+metadata/sewer_look_v1 = true
 
 [node name="탑_바닥" parent="지형" unique_id=1043162033 instance=ExtResource("6_6fbqg")]
 position = Vector2(1216, 3904)
-_points = SubResource("Resource_myodp")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_n2vtc")])
+_points = SubResource("Resource_n3rlv")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_7y68x")])
 shape_material = SubResource("Resource_8rgok")
 metadata/role = "플랫폼"
 
-[node name="탑_l2" parent="지형" unique_id=400693687 instance=ExtResource("6_6fbqg")]
+[node name="탑_l2" parent="지형" unique_id=400693687 instance=ExtResource("sewer_air_white")]
 position = Vector2(1272, 3376)
-_points = SubResource("Resource_67s1f")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_r7nhf")])
-shape_material = SubResource("Resource_kse4b")
+_points = SubResource("Resource_ud1ak")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_5g3lf")])
+shape_material = SubResource("ledge_l2_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l3" parent="지형" unique_id=1266009917 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22050" parent="지형/탑_l2" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l2/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -38, -126, -48, 126, -48, 136, -38, 136, -36, 113.3333, 11.3, 90.6667, -5.6, 68, -1.4, 45.3333, 4, 22.6667, 1.2, 0, 5.2, -22.6667, 1.4, -45.3333, -4.2, -68, 11.8, -90.6667, 10.8, -113.3333, -1.9, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="탑_l3" parent="지형" unique_id=1266009917 instance=ExtResource("sewer_air_white")]
 position = Vector2(904, 3248)
-_points = SubResource("Resource_yaa7s")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_tgaa6")])
-shape_material = SubResource("Resource_7ug07")
+_points = SubResource("Resource_qyjg1")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_5vsim")])
+shape_material = SubResource("ledge_l3_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l4" parent="지형" unique_id=1439888801 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22051" parent="지형/탑_l3" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l3/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -48, 126, -48, 136, -38, 136, -36, 113.3333, -5.6, 90.6667, -1.4, 68, 4, 45.3333, 1.2, 22.6667, 5.2, 0, 1.4, -22.6667, -4.2, -45.3333, 11.8, -68, 10.8, -90.6667, -1.9, -113.3333, 11.3, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="벽고정_지지대" parent="지형/탑_l3" unique_id=366396039 instance=ExtResource("ledge_bracket")]
+position = Vector2(-112, 8.3)
+
+[node name="탑_l4" parent="지형" unique_id=1439888801 instance=ExtResource("sewer_air_white")]
 position = Vector2(1272, 3120)
-_points = SubResource("Resource_152lj")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_cvtpa")])
-shape_material = SubResource("Resource_okgh8")
+_points = SubResource("Resource_818c2")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_xjevp")])
+shape_material = SubResource("ledge_l4_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l5" parent="지형" unique_id=2052476676 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22052" parent="지형/탑_l4" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l4/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -38, -126, -48, 136, -48, 136, -36, 113.3333, -1.4, 90.6667, 4, 68, 1.2, 45.3333, 5.2, 22.6667, 1.4, 0, -4.2, -22.6667, 11.8, -45.3333, 10.8, -68, -1.9, -90.6667, 11.3, -113.3333, -5.6, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="벽고정_지지대" parent="지형/탑_l4" unique_id=67801021 instance=ExtResource("ledge_bracket")]
+position = Vector2(112, -4.4)
+"방향" = 1
+
+[node name="탑_l5" parent="지형" unique_id=2052476676 instance=ExtResource("sewer_air_white")]
 position = Vector2(904, 2992)
-_points = SubResource("Resource_umrij")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_1df3j")])
-shape_material = SubResource("Resource_grbqi")
+_points = SubResource("Resource_enc7b")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_ya7oy")])
+shape_material = SubResource("ledge_l5_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l6" parent="지형" unique_id=1621070117 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22053" parent="지형/탑_l5" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l5/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -48, 126, -48, 136, -38, 136, -36, 113.3333, 4, 90.6667, 1.2, 68, 5.2, 45.3333, 1.4, 22.6667, -4.2, 0, 11.8, -22.6667, 10.8, -45.3333, -1.9, -68, 11.3, -90.6667, -5.6, -113.3333, -1.4, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="벽고정_지지대" parent="지형/탑_l5" unique_id=1668277863 instance=ExtResource("ledge_bracket")]
+position = Vector2(-112, -4.4)
+
+[node name="탑_l6" parent="지형" unique_id=1621070117 instance=ExtResource("sewer_air_white")]
 position = Vector2(1272, 2864)
-_points = SubResource("Resource_pjfv1")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_1uiko")])
-shape_material = SubResource("Resource_ahywk")
+_points = SubResource("Resource_tppih")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_hcq4o")])
+shape_material = SubResource("ledge_l6_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l7" parent="지형" unique_id=1746707944 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22054" parent="지형/탑_l6" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l6/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -38, -126, -48, 126, -48, 136, -38, 136, -36, 113.3333, 1.2, 90.6667, 5.2, 68, 1.4, 45.3333, -4.2, 22.6667, 11.8, 0, 10.8, -22.6667, -1.9, -45.3333, 11.3, -68, -5.6, -90.6667, -1.4, -113.3333, 4, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="탑_l7" parent="지형" unique_id=1746707944 instance=ExtResource("sewer_air_white")]
 position = Vector2(904, 2736)
-_points = SubResource("Resource_7u528")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_jwdew")])
-shape_material = SubResource("Resource_568gg")
+_points = SubResource("Resource_6somu")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_sxo7k")])
+shape_material = SubResource("ledge_l7_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l8" parent="지형" unique_id=1829735942 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22055" parent="지형/탑_l7" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l7/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -48, 126, -48, 136, -38, 136, -36, 113.3333, 5.2, 90.6667, 1.4, 68, -4.2, 45.3333, 11.8, 22.6667, 10.8, 0, -1.9, -22.6667, 11.3, -45.3333, -5.6, -68, -1.4, -90.6667, 4, -113.3333, 1.2, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="벽고정_지지대" parent="지형/탑_l7" unique_id=1627615669 instance=ExtResource("ledge_bracket")]
+position = Vector2(-112, -1.8)
+
+[node name="탑_l8" parent="지형" unique_id=1829735942 instance=ExtResource("sewer_air_white")]
 position = Vector2(1272, 2608)
-_points = SubResource("Resource_y22rf")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_pdnbj")])
-shape_material = SubResource("Resource_37iio")
+_points = SubResource("Resource_dfcmp")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_aakwv")])
+shape_material = SubResource("ledge_l8_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l9" parent="지형" unique_id=3548909 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22056" parent="지형/탑_l8" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l8/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -38, -126, -48, 136, -48, 136, -36, 113.3333, 1.4, 90.6667, -4.2, 68, 11.8, 45.3333, 10.8, 22.6667, -1.9, 0, 11.3, -22.6667, -5.6, -45.3333, -1.4, -68, 4, -90.6667, 1.2, -113.3333, 5.2, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="벽고정_지지대" parent="지형/탑_l8" unique_id=1938203389 instance=ExtResource("ledge_bracket")]
+position = Vector2(112, -1.6)
+"방향" = 1
+
+[node name="탑_l9" parent="지형" unique_id=3548909 instance=ExtResource("sewer_air_white")]
 position = Vector2(904, 2480)
-_points = SubResource("Resource_r5vtr")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_exgat")])
-shape_material = SubResource("Resource_y2rpm")
+_points = SubResource("Resource_pvfvb")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_wot3a")])
+shape_material = SubResource("ledge_l9_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
 
-[node name="탑_l10" parent="지형" unique_id=242406445 instance=ExtResource("6_6fbqg")]
+[node name="@ColorRect@22057" parent="지형/탑_l9" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l9/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -48, 126, -48, 136, -38, 136, -36, 113.3333, -4.2, 90.6667, 11.8, 68, 10.8, 45.3333, -1.9, 22.6667, 11.3, 0, -5.6, -22.6667, -1.4, -45.3333, 4, -68, 1.2, -90.6667, 5.2, -113.3333, 1.4, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="벽고정_지지대" parent="지형/탑_l9" unique_id=299454638 instance=ExtResource("ledge_bracket")]
+position = Vector2(-112, -1.6)
+
+[node name="탑_l10" parent="지형" unique_id=242406445 instance=ExtResource("sewer_air_white")]
 position = Vector2(1272, 2352)
-_points = SubResource("Resource_gqxkh")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_66xbl")])
-shape_material = SubResource("Resource_ykdsf")
+_points = SubResource("Resource_smrhh")
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_q5sq2")])
+shape_material = SubResource("ledge_l10_mat")
+metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
+metadata/sewer_look_v1 = true
+
+[node name="@ColorRect@22058" parent="지형/탑_l10" index="0"]
+modulate = Color(1, 1, 1, 0)
+offset_left = -136.0
+offset_top = -48.0
+offset_right = 136.0
+offset_bottom = 11.799999
+metadata/__ss2d_click_rect__ = true
+
+[node name="CollisionPolygon2D" parent="지형/탑_l10/StaticBody2D" index="0"]
+polygon = PackedVector2Array(-136, -38, -126, -48, 136, -48, 136, -36, 113.3333, 11.8, 90.6667, 10.8, 68, -1.9, 45.3333, 11.3, 22.6667, -5.6, 0, -1.4, -22.6667, 4, -45.3333, 1.2, -68, 5.2, -90.6667, 1.4, -113.3333, -4.2, -136, -36)
+one_way_collision = true
+one_way_collision_margin = 4.0
+
+[node name="벽고정_지지대" parent="지형/탑_l10" unique_id=1666403036 instance=ExtResource("ledge_bracket")]
+position = Vector2(112, 8.8)
+"방향" = 1
 
 [node name="L2_흰바닥" parent="지형" unique_id=407349575 instance=ExtResource("6_6fbqg")]
 position = Vector2(1632, 2464)
+script = ExtResource("color_inlay_script")
+"내부_바탕흰색" = true
+"내부_벽돌영역" = Array[Rect2]([Rect2(-120, -118.94, 246.96, 21.24), Rect2(-166.44, -97.7, 307.62, 21.42), Rect2(-120.18, -76.28, 243.72, 21.24), Rect2(-138.18, -55.04, 243, 20.7)])
+"시작상태" = 0
 _points = SubResource("Resource_20v1h")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_su23y")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_e55yd")])
 shape_material = SubResource("Resource_qsjlm")
 metadata/role = "플랫폼"
+metadata/color_inlays_v1 = true
+metadata/sewer_look_v1 = true
 
 [node name="L1_흰바닥" parent="지형" unique_id=1277735472 instance=ExtResource("6_6fbqg")]
 position = Vector2(1632, 3040)
 _points = SubResource("Resource_x8cxd")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_q2xc0")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_yi84q")])
 shape_material = SubResource("Resource_onxrt")
 metadata/role = "플랫폼"
 
 [node name="홀_바닥" parent="지형" unique_id=840315416 instance=ExtResource("3_ytbp8")]
 position = Vector2(2816, 3904)
+script = ExtResource("color_inlay_script")
+"내부_바탕흰색" = false
+"내부_벽돌영역" = Array[Rect2]([Rect2(225.28, -284.36, 199.8, 15.66), Rect2(156.34, -268.7, 311.94, 21.24), Rect2(225.28, -247.46, 225.72, 21.42), Rect2(184.24, -226.04, 204.84, 21.24), Rect2(232.12, -204.8, 211.68, 20.7), Rect2(225.28, -184.1, 201.24, 21.42)])
+"시작상태" = 0
 _points = SubResource("Resource_d2cjb")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_om5tj")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_4b6pc")])
 shape_material = SubResource("Resource_gb0nt")
 metadata/role = "플랫폼"
+metadata/color_inlays_v1 = true
+metadata/sewer_look_v1 = true
 
 [node name="우측_덩어리" parent="지형" unique_id=1072677844 instance=ExtResource("3_ytbp8")]
 position = Vector2(3200, 2504)
+script = ExtResource("color_inlay_script")
+"내부_바탕흰색" = false
+"내부_벽돌영역" = Array[Rect2]([Rect2(-582.08, -158.94, 77.94, 21.24), Rect2(-597.38, -137.7, 111.42, 21.42), Rect2(-582.26, -116.28, 106.02, 21.24), Rect2(-600.26, -95.04, 107.1, 20.7), Rect2(-581.36, -74.34, 105.48, 21.42)])
+"시작상태" = 0
 _points = SubResource("Resource_6qq40")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_iavbb")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_dce8a")])
 shape_material = SubResource("Resource_u4ikq")
 metadata/role = "플랫폼"
+metadata/color_inlays_v1 = true
+metadata/sewer_look_v1 = true
 
 [node name="F1_발코니" parent="지형" unique_id=787185374 instance=ExtResource("3_ytbp8")]
 position = Vector2(3008, 3144)
 _points = SubResource("Resource_4dfg6")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_5ab0b")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_7r67p")])
 shape_material = SubResource("Resource_b7qiv")
 metadata/role = "플랫폼"
 
@@ -4187,7 +5062,7 @@ position = Vector2(3024, 1712)
 "필요횟수_수동" = 1
 "시작상태" = 0
 _points = SubResource("Resource_sv13d")
-_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_obwhp")])
+_meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_jjooy")])
 shape_material = SubResource("Resource_0f3ct")
 metadata/role = "플랫폼"
 
@@ -4401,7 +5276,7 @@ z_index = 3
 [node name="S01_흰물" parent="장치" unique_id=1622344719 instance=ExtResource("10_owqpr")]
 position = Vector2(2296, 3104)
 "색" = 1
-"크기" = Vector2(64, 480)
+"크기" = Vector2(448, 480)
 
 [node name="관_S12" parent="장치" unique_id=1622194055 instance=ExtResource("9_hve3h")]
 z_index = 3
@@ -4516,5 +5391,15 @@ height = 128.0
 position = Vector2(3856, 1664)
 
 [node name="Player" parent="." unique_id=1147093704 instance=ExtResource("16_eomck")]
-position = Vector2(1536, 3488)
+position = Vector2(3232, 3488)
 "점프_거리_칸" = 20.0
+
+[editable path="지형/탑_l2"]
+[editable path="지형/탑_l3"]
+[editable path="지형/탑_l4"]
+[editable path="지형/탑_l5"]
+[editable path="지형/탑_l6"]
+[editable path="지형/탑_l7"]
+[editable path="지형/탑_l8"]
+[editable path="지형/탑_l9"]
+[editable path="지형/탑_l10"]

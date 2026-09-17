@@ -1,0 +1,63 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_내부벽돌.gd" id="shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="4_7je74"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="5_57mdw"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v02/내부무늬_white.tres" id="m0"]
+[sub_resource type="Resource" id="joint_0_0"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="joint_0_1"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(340, 0)
+
+[sub_resource type="Resource" id="joint_0_2"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(340, 288)
+
+[sub_resource type="Resource" id="joint_0_3"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 288)
+
+[sub_resource type="Resource" id="joint_0_4"]
+resource_local_to_scene = true
+script = ExtResource("4_7je74")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="joint_0_array"]
+resource_local_to_scene = true
+script = ExtResource("5_57mdw")
+_points = {
+0: SubResource("joint_0_0"),
+1: SubResource("joint_0_1"),
+2: SubResource("joint_0_2"),
+3: SubResource("joint_0_3"),
+4: SubResource("joint_0_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[node name="흰색속검정벽돌" type="Node2D"]
+
+[node name="벽_0" type="Node2D" parent="."]
+script = ExtResource("shape")
+texture_repeat = 2
+texture_filter = 2
+"땅지형" = true
+"시작상태" = 0
+"위치별_판정" = true
+_points = SubResource("joint_0_array")
+shape_material = ExtResource("m0")
+collision_update_mode = 2
+collision_size = 0.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+"내부_바탕흰색" = true
+"내부_벽돌영역" = Array[Rect2]([Rect2(61.2, 42.66, 102.6, 21.24), Rect2(42.12, 63.9, 139.5, 20.7), Rect2(59.22, 84.6, 142.02, 21.42), Rect2(43.2, 106.02, 139.5, 20.88), Rect2(60.84, 126.9, 104.4, 20.88)])
+[node name="StaticBody2D" type="StaticBody2D" parent="벽_0"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="벽_0/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 340, 0, 340, 288, 0, 288)

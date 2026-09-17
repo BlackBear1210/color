@@ -34,9 +34,15 @@
 extends RefCounted
 
 const 키트 := "res://scenes/집/스마트 매쉬 assets/"
-const T_벽_검 := 키트 + "WALL_벽체/TEMPLATE_WALL_SOLID.tscn"
-const T_벽_흰 := 키트 + "WALL_벽체/TEMPLATE_WALL_SOLID_WHITE.tscn"
+## ★[2026-09-17] 옛 집 WALL Template → **하수도 전용 프리팹**(프롬프트 §E · 필독_오퍼스 인계 §3).
+##   기본 지형 = masonry_v02 벽돌 본체 + 윗면 마감 + 옆면 마감(하수도_자연발판.gd 가 이웃을 보고 가린다).
+##   공중 선반 = ledge_v03 얇은 석조 선반(`공중선반()`). 둘을 서로 대체하지 않는다.
+const T_벽_검 := "res://scenes/지형/하수도/하수도_기본지형_검정.tscn"
+const T_벽_흰 := "res://scenes/지형/하수도/하수도_기본지형_흰색.tscn"
+const T_선반_검 := "res://scenes/지형/하수도/하수도_공중선반_검정.tscn"
+const T_선반_흰 := "res://scenes/지형/하수도/하수도_공중선반_흰색.tscn"
 const T_관 := 키트 + "PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn"
+const S_회전톱 := "res://scenes/장애물/회전톱.tscn"
 
 const S_유체 := "res://scenes/집/스마트월드_장애물/유체.tscn"
 const S_웅덩이 := "res://scenes/집/스마트월드_장애물/웅덩이.tscn"
@@ -77,6 +83,11 @@ var 오류: int = 0
 var _칸색: PackedInt32Array = PackedInt32Array()
 ## 인스턴스 안에 있지만 값을 씬에 남겨야 하는 노드(일방통행 콜리전). 저장 때 owner 를 준다.
 var _덮어쓸_노드들: Array = []
+## ★[2026-09-17] 지형 재질을 스테이지 전용으로 바꿔 끼울 때(절대 UV 로 줄눈을 맞춘 .tres). 비우면 프리팹 기본.
+var 재질_검: Resource = null
+var 재질_흰: Resource = null
+var 재질_선반_검: Resource = null
+var 재질_선반_흰: Resource = null
 var _칸x: int = 0
 var _칸y: int = 0
 
@@ -234,6 +245,10 @@ func 지형(부모: Node, 이름: String, 점들: PackedVector2Array, 색: int, 
 	점배열.close_shape()
 	n.set_point_array(점배열)
 
+	var 재질: Resource = 재질_흰 if 색 == 흰색 else 재질_검
+	if 재질 != null:
+		n.set("shape_material", 재질)
+
 	var 폴리 := n.get_node_or_null("StaticBody2D/CollisionPolygon2D") as CollisionPolygon2D
 	if 폴리 != null:
 		폴리.polygon = 로컬
@@ -250,14 +265,224 @@ func 지형(부모: Node, 이름: String, 점들: PackedVector2Array, 색: int, 
 	return n
 
 
+# ============================================================================
+# ★[2026-09-17] 내부 반대색 벽돌 무늬(1번 · 필독_오퍼스 인계 §4 · 하수도_흑백벽돌_모듈_사용법 §1)
+# ----------------------------------------------------------------------------
+# 검정 지형 안에 흰 벽돌 덩어리(또는 그 반대)를 **그림으로만** 합성한다(별도 충돌·사망 없음).
+# 줄눈 표(ROWS/JOINTS · masonry_v02 fill.png 실측 · tools/apply_stage22_masonry_joint.py 와 같은 값)에 맞춰
+# 줄마다 사각형을 만들고, 모든 외곽에서 24px 이상 안쪽인지 검사한다. 재질은 `재질_검/흰`(절대 UV) 을 노드마다
+# 복제해 미리보기 셰이더에도 같은 inlay_rects 를 넣는다(에디터·런타임 둘 다 갱신 규칙).
+# ============================================================================
+const 무늬_스크립트 := "res://scripts/스마트월드/하수도_내부벽돌.gd"
+const 줄눈_배율 := 0.18
+const 줄눈_ROWS := [0, 118, 237, 355, 470, 589, 705, 821, 937, 1024]
+const 줄눈_JOINTS := [
+	[0, 158, 364, 556, 720, 910, 1153, 1350, 1536],
+	[0, 43, 248, 462, 635, 820, 1016, 1254, 1440, 1536],
+	[0, 138, 340, 537, 719, 910, 1114, 1308, 1536],
+	[0, 38, 234, 433, 619, 821, 1009, 1214, 1423, 1536],
+	[0, 132, 329, 538, 724, 917, 1118, 1310, 1536],
+	[0, 35, 240, 436, 623, 818, 1015, 1205, 1418, 1536],
+	[0, 143, 338, 538, 727, 918, 1117, 1308, 1536],
+	[0, 24, 232, 430, 618, 825, 1013, 1206, 1408, 1536],
+	[0, 130, 326, 534, 716, 909, 1110, 1307, 1536],
+]
+const 무늬_흔듦_왼 := [32.0, 0.0, 48.0, 16.0, 64.0]
+const 무늬_흔듦_오른 := [36.0, 0.0, 18.0, 54.0, 0.0]
+## 재질의 fill_texture_offset.y (절대 UV 기준). 재질_검 을 넣을 때 같이 맞춘다.
+var 줄눈_원점y := 1792.1
+
+
+## lo~hi 사이의 줄 경계 y(월드)
+func _줄들(lo: float, hi: float) -> PackedFloat64Array:
+	var out := PackedFloat64Array()
+	for t in range(-2, 25):
+		for r in 줄눈_ROWS:
+			var y: float = 줄눈_원점y + (t * 1024 + r) * 줄눈_배율
+			if y > lo and y < hi:
+				out.append(y)
+	out.sort()
+	return out
+
+
+## x 에 가장 가까운 줄눈 x (그 높이 줄의 실제 이음새)
+func _가까운_줄눈(x: float, y: float) -> float:
+	var sy := (y - 줄눈_원점y) / 줄눈_배율
+	var 타일 := int(floor(sy / 1024.0))
+	var 로컬 := sy - 타일 * 1024.0
+	var 행 := 0
+	for i in 9:
+		if 줄눈_ROWS[i] <= 로컬 and 로컬 < 줄눈_ROWS[i + 1]:
+			행 = i
+	var 가로타일 := int(floor(x / (1536.0 * 줄눈_배율)))
+	var 최고 := x
+	var 최소 := 1e20
+	for t in range(가로타일 - 1, 가로타일 + 2):
+		for j in 줄눈_JOINTS[행]:
+			var jx: float = (t * 1536 + j) * 줄눈_배율
+			if absf(jx - x) < 최소:
+				최소 = absf(jx - x)
+				최고 = jx
+	return 최고
+
+
+static func _점_변_거리(p: Vector2, a: Vector2, b: Vector2) -> float:
+	return p.distance_to(Geometry2D.get_closest_point_to_segment(p, a, b))
+
+
+## 이미 만든 지형 노드 n 에 무늬를 넣는다. 왼/오른 x 와 줄 범위(월드) · 흔듦 배율(좁은 벽은 줄인다).
+## ⚠ 이 함수는 지형() 바로 뒤에 불러야 한다 — 스크립트를 바꾸면 export 값이 초기화되므로 여기서 다시 넣는다.
+func 내부무늬(n: Node2D, 왼: float, 오른: float, lo: float, hi: float, 흔듦: float = 1.0) -> void:
+	var 점들: PackedVector2Array = PackedVector2Array()
+	for t in 지형표:
+		if t[0] == n.name:
+			점들 = t[1]
+	if 점들.is_empty():
+		push_error("빌더: 무늬 대상 %s 이 지형표에 없다" % n.name)
+		오류 += 1
+		return
+	var 흰바탕: bool = false
+	for t in 지형표:
+		if t[0] == n.name:
+			흰바탕 = int(t[2]) == 흰색
+	var 줄 := _줄들(lo, hi)
+	var 사각들: Array[Rect2] = []
+	for i in 줄.size() - 1:
+		var a := 줄[i]
+		var b := 줄[i + 1]
+		var mid := (a + b) * 0.5
+		var x0 := _가까운_줄눈(왼 + 무늬_흔듦_왼[i % 5] * 흔듦, mid)
+		var x1 := _가까운_줄눈(오른 - 무늬_흔듦_오른[i % 5] * 흔듦, mid)
+		var r := Rect2(x0, a, x1 - x0, b - a)
+		# 검사: 40 이상 폭 · 모든 꼭짓점·중심이 외곽 안이고 모든 변에서 24px 이상
+		if r.size.x < 40.0:
+			push_error("빌더: %s 무늬 %d 줄 폭 %.0f < 40" % [n.name, i, r.size.x]); 오류 += 1
+		for p in [r.position, r.position + Vector2(r.size.x, 0), r.end, r.position + Vector2(0, r.size.y), r.get_center()]:
+			if not Geometry2D.is_point_in_polygon(p, 점들):
+				push_error("빌더: %s 무늬 점 %s 이 외곽 밖" % [n.name, str(p)]); 오류 += 1
+			for k in 점들.size():
+				if _점_변_거리(p, 점들[k], 점들[(k + 1) % 점들.size()]) < 24.0:
+					push_error("빌더: %s 무늬 점 %s 이 외곽에서 24px 안" % [n.name, str(p)]); 오류 += 1
+					break
+		사각들.append(r)
+	if 사각들.size() > 16:
+		push_error("빌더: %s 무늬 %d 줄 > 16" % [n.name, 사각들.size()]); 오류 += 1
+		return
+	# ★스크립트 교체 → SS2D 것까지 **모든 export 가 초기화**된다(처음엔 collision_polygon_node_path 가 비어
+	#   콜리전이 사라져 A_바닥_흰을 밟은 몸이 바닥을 뚫고 떨어졌다). 프리팹·지형() 이 넣었던 값을 전부 다시 넣는다.
+	var 유령: bool = bool(n.get("무색일때_통과"))
+	var 점배열: Resource = n.get_point_array()
+	var 콜리전경로: NodePath = n.get("collision_polygon_node_path")
+	n.set_script(load(무늬_스크립트))
+	n.set("collision_polygon_node_path", 콜리전경로)
+	n.set("collision_update_mode", 2)
+	n.set("texture_repeat", 2)
+	n.set("texture_filter", 2)
+	n.set_point_array(점배열)
+	n.set("칠하기_허용", true)
+	n.set("무색일때_통과", 유령)
+	n.set("위치별_판정", true)
+	n.set("collision_offset", 0.0)
+	n.set("collision_size", 0.0)
+	n.set("땅지형", true)
+	n.set("옆면마감", true)
+	n.set("시작상태", 무색)          # 0 = 초기 페인트 시드 없음. 바탕 접촉색은 전용 스크립트가 돌려준다.
+	n.set("내부_바탕흰색", 흰바탕)
+	var 로컬: Array[Rect2] = []
+	var packed := PackedVector4Array()
+	for r in 사각들:
+		var lr := Rect2(r.position - n.position, r.size)
+		로컬.append(lr)
+		packed.append(Vector4(lr.position.x, lr.position.y, lr.end.x, lr.end.y))
+	n.set("내부_벽돌영역", 로컬)
+	# 에디터 미리보기 재질에도 같은 배열 — 노드 전용 복제(공유 재질을 건드리지 않는다).
+	var 원본: Resource = 재질_흰 if 흰바탕 else 재질_검
+	if 원본 != null:
+		var 재질: Resource = 원본.duplicate()
+		var 미리보기: ShaderMaterial = (원본.get("fill_mesh_material") as ShaderMaterial).duplicate()
+		packed.resize(16)
+		미리보기.set_shader_parameter("inlay_count", 사각들.size())
+		미리보기.set_shader_parameter("inlay_rects", packed)
+		재질.set("fill_mesh_material", 미리보기)
+		n.set("shape_material", 재질)
+	n.set_meta("color_inlays_v1", true)
+
+
 ## 칠해야 밟히는 유령 발판. 흰 구간이면 흰색 Template(에디터에서 구분되게).
 func 유령(부모: Node, 이름: String, 점들: PackedVector2Array, 구간색: int, 필요횟수_수동: int = 0) -> Node2D:
 	return 지형(부모, 이름, 점들, 구간색, "플랫폼", true, 필요횟수_수동)
 
 
-## 공중 발판(일방통행). 색 구간의 Template 으로 찍는다.
+## 공중 발판(일방통행). ★[2026-09-17] 사각형을 주면 **얇은 석조 선반**(공중선반 프리팹)으로 찍는다.
 func 공중발판(부모: Node, 이름: String, 점들: PackedVector2Array, 색: int) -> Node2D:
-	return 지형(부모, 이름, 점들, 색, "플랫폼", false, 0, true)
+	var 최소 := 점들[0]
+	var 최대 := 점들[0]
+	for p in 점들:
+		최소 = 최소.min(p)
+		최대 = 최대.max(p)
+	return 공중선반(부모, 이름, 최소.x, 최소.y, 최대.x, 색)
+
+
+## ★[2026-09-17] 얇은 석조 선반(ledge_v03 · 인계 §2 "두꺼운 벽을 잘라 띄운 느낌이 아닌 얇은 선반").
+##   착지면 = (x0~x1, 윗면). 두께는 42~60 으로 밑면이 깨진 돌처럼 들쭉날쭉하다(프리팹 요철을 위상만 돌려 씀).
+##   일방통행(두 칸 위 선반 밑면에 머리가 안 박히게). 벽에 붙는 쪽(`벽` = "L"/"R")은 모따기 없이 직각 —
+##   벽 앞에 10px 홈이 파여 보이기 때문. 검산·색비율에는 (x0,윗면)~(x1,윗면+96) 사각형으로 올린다(변 ≥ 90 규칙용 명목 두께)
+##   (요철 점은 16 격자·변 90 규칙의 대상이 아니다 — 통행 외곽이 아니라 장식 실루엣).
+const _선반_요철 := [59.3, 42.4, 46.6, 52.0, 49.2, 53.2, 49.4, 43.8, 59.8, 58.8, 46.1]
+var _선반_수 := 0
+
+func 공중선반(부모: Node, 이름: String, x0: float, 윗면: float, x1: float, 색: int, 벽: String = "") -> Node2D:
+	var 템플릿 := T_선반_흰 if 색 == 흰색 else T_선반_검
+	var 씬 := load(템플릿) as PackedScene
+	if 씬 == null:
+		push_error("빌더: 공중선반 프리팹을 못 읽었다 — %s" % 템플릿)
+		오류 += 1
+		return null
+	var n: Node2D = 씬.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE)
+	n.name = 이름
+	var 반폭 := (x1 - x0) * 0.5
+	var 중심 := Vector2((x0 + x1) * 0.5, 윗면 + 48.0)
+	n.position = 중심
+	n.set("칠하기_허용", true)
+	n.set("무색일때_통과", false)
+	n.set("시작상태", 색)
+	n.set("위치별_판정", true)
+	n.set("collision_offset", 0.0)
+	n.set("collision_size", 0.0)
+	var 재질: Resource = 재질_선반_흰 if 색 == 흰색 else 재질_선반_검
+	if 재질 != null:
+		n.set("shape_material", 재질)
+
+	# 윗면은 양끝까지 **평평**하게(프리팹의 10px 모따기를 안 쓴다) — 레벨검사가 표면 y 를 8px 간격으로 찍는데
+	# 모따기 자리에서 10px 낮게 읽혀 "128 위 발판" 이 138 로 잡혀 도달 불가로 나왔다. 사다리꼴 끝마감은 셰이더가 그린다.
+	var 위 := -48.0
+	var 로컬 := PackedVector2Array()
+	로컬.append(Vector2(-반폭, 위))
+	로컬.append(Vector2(반폭, 위))
+	로컬.append(Vector2(반폭, 위 + 12.0))
+	var 칸 := 반폭 * 2.0 / 12.0
+	for i in 11:
+		var 깊이: float = _선반_요철[(i + _선반_수) % _선반_요철.size()]
+		로컬.append(Vector2(snappedf(반폭 - 칸 * (i + 1), 0.01), 위 + 깊이))
+	로컬.append(Vector2(-반폭, 위 + 12.0))
+	_선반_수 += 1
+
+	var 점배열 := SS2D_Point_Array.new()
+	점배열.add_points(로컬)
+	점배열.close_shape()
+	n.set_point_array(점배열)
+
+	var 폴리 := n.get_node_or_null("StaticBody2D/CollisionPolygon2D") as CollisionPolygon2D
+	if 폴리 != null:
+		폴리.polygon = 로컬
+		폴리.one_way_collision = true
+		폴리.one_way_collision_margin = 4.0
+		_덮어쓸_노드들.append(폴리)
+	n.set_meta("terrain_style", "공중")
+	n.set_meta("role", "플랫폼")
+	부모.add_child(n)
+	지형표.append([이름, 사각(x0, 윗면, x1, 윗면 + 96.0), 색, "플랫폼", false])
+	return n
 
 
 func _모양노드(인스턴스: Node2D) -> Node2D:
@@ -360,13 +585,17 @@ func 레버(부모: Node, 이름: String, 위치: Vector2, 종류: int, 대상: 
 ## 호퍼(밟을 수 있는 집수 발판 · 색 규칙 밖). 원점 = 아랫변 가운데.
 ## 밟는 면(`윗면` 콜리전 12px)의 **윗변** = 원점 − 높이. 그래서 원점 = 밟는면 + 높이.
 ##   (처음엔 −높이+6 으로 잡아 실제 밟는 면이 6px 높았고, 그 6px 때문에 128 위 격자 밑면에 머리가 닿아 죽었다)
-func 호퍼(부모: Node, 이름: String, x: float, 밟는면: float, 폭: float, 높이: float = 56.0) -> Node2D:
+## ★[2026-09-17] `출구유체` 를 주면 호퍼가 그 물을 켜고 색을 물려준다(관을 따라서 = 2-3). `출구폭` = 출구 물줄기 폭(-1 = 유체 값).
+func 호퍼(부모: Node, 이름: String, x: float, 밟는면: float, 폭: float, 높이: float = 56.0,
+		출구유체: Node = null, 출구폭: float = -1.0) -> Node2D:
 	var h := (load(S_호퍼) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node2D
 	h.name = 이름
 	h.position = Vector2(x, 밟는면 + 높이)
 	h.set("폭", 폭)
 	h.set("높이", 높이)
 	h.set("자동_출구_연결", false)
+	if 출구폭 >= 0.0:
+		h.set("출구_물줄기_폭", 출구폭)
 	# 밟는 면(`윗면`)을 일방통행으로 미리 만들어 둔다 — 호퍼.gd `_다시_만들기()` 가 재사용한다.
 	# 허브 호퍼는 갱도 격자 바로 위에 걸치므로, 밑에서 뛰어오르는 몸이 통과해야 한다.
 	var c := CollisionShape2D.new()
@@ -380,7 +609,24 @@ func 호퍼(부모: Node, 이름: String, x: float, 밟는면: float, 폭: float
 	h.add_child(c)
 	_덮어쓸_노드들.append(c)
 	부모.add_child(h)
+	# 부모에 넣은 뒤에야 상대 경로를 셀 수 있다.
+	if 출구유체 != null:
+		h.set("출구_유체", h.get_path_to(출구유체))
 	return h
+
+
+## ★[2026-09-17] 회전톱(타이밍 장애물). 원점 = 톱 중심(왕복 시작점). 프롬프트 B-3: 반지름 8~96 · 왕복 ≥ 2.0s ·
+##   검정 구간이나 F2 빙 도는 길에만(톱 = 타이밍, 색칠 = 판단 — 한 자리에서 둘을 같이 요구하지 않는다).
+func 회전톱(부모: Node, 이름: String, 위치: Vector2, 반지름: float, 이동거리: float, 왕복시간: float, 세로: bool = false) -> Node2D:
+	var t := (load(S_회전톱) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node2D
+	t.name = 이름
+	t.position = 위치
+	t.set("반지름", 반지름)
+	t.set("이동거리", 이동거리)
+	t.set("이동방향", 1 if 세로 else 0)
+	t.set("왕복시간", maxf(왕복시간, 2.0))
+	부모.add_child(t)
+	return t
 
 
 ## 통과 플랫폼(하수구 격자). 원점 = 가운데. 물이 통과하고 페인트가 안 지워진다.
@@ -571,13 +817,27 @@ static func _면적(점들: PackedVector2Array) -> float:
 func 저장(루트: Node, 경로: String) -> bool:
 	_주인(루트, 루트)
 	for n in _덮어쓸_노드들:
-		n.owner = 루트
+		# ★[2026-09-17] 프리팹이 원래 갖고 있던 노드(공중선반의 CollisionPolygon2D)는 owner 를 뺏지 않고
+		#   그 인스턴스를 **편집 가능(editable children)** 으로 표시한다 → `[editable path=]` 로 저장되어
+		#   에디터가 다시 저장해도 일방통행 덮어쓰기가 남는다. (2-2 HEAD 에서 owner 만 준 덮어쓰기가 통째로
+		#   사라져 탑 발판 일방통행이 없어졌던 사고 · 작업기록 2026-09-17 §3-1)
+		#   우리가 새로 만든 노드(통과플랫폼 `충돌` · 호퍼 `윗면`)는 owner 가 비어 있으니 _주인 이 이미 루트를 줬다.
+		if n.owner != null and n.owner != 루트 and 루트.is_ancestor_of(n.owner):
+			루트.set_editable_instance(n.owner, true)
+		elif n.owner == null:
+			n.owner = 루트
 	var 팩 := PackedScene.new()
 	var e := 팩.pack(루트)
 	if e != OK:
 		push_error("pack 실패: %s" % error_string(e))
 		return false
-	e = ResourceSaver.save(팩, 경로)
+	# ★[2026-09-17] 에디터가 같은 프로젝트를 열어 두고 있으면 방금 바뀐 씬을 다시 읽느라 파일을 잠깐 잠근다 →
+	#   "Cannot save file" 이 간헐적으로 났다(2-3 굽기에서 세 번 중 두 번). 잠깐 쉬고 다시 시도한다.
+	for 시도 in 6:
+		e = ResourceSaver.save(팩, 경로)
+		if e == OK:
+			break
+		OS.delay_msec(500)
 	print("   %-24s %s" % [경로.get_file(), error_string(e)])
 	return e == OK
 
