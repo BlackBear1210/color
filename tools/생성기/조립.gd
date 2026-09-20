@@ -17,6 +17,7 @@ extends RefCounted
 ## ============================================================================
 
 const 규격 := preload("res://tools/생성기/규격.gd")
+const 형태_S := preload("res://tools/생성기/형태.gd")
 
 const 월드_S := preload("res://scripts/스마트월드/월드.gd")
 const 코어_S := preload("res://scripts/스마트월드/페인트_코어.gd")
@@ -175,7 +176,36 @@ func 저장(루트: Node, 경로: String) -> bool:
 		if e == OK:
 			break
 		OS.delay_msec(400)
-	return e == OK
+	if e != OK:
+		return false
+	return _저장본_검사(경로)
+
+
+## ★굽고 나서 **디스크에서 다시 읽어** 지형 형태를 검사한다 (2026-09-20 사고 대응).
+##   왜: 집 1-1 적용본이 나중에 SS2D 점이 무너져 22/27 개가 삼각형이 됐는데, `레벨검사` 는 통과시켰다.
+##   메모리 상의 값이 아니라 **파일에 실제로 적힌 값**을 봐야 "저장 과정에서 무너지는 것" 을 잡는다.
+##   ⚠ 이 검사는 **이 저장 시점**의 무결성만 보증한다. 그 뒤 에디터에서 무너지는 것은
+##     `tools/검사_지형형태.gd` 를 에디터 저장 직후에 돌려서 잡는다.
+func _저장본_검사(경로: String) -> bool:
+	# CACHE_MODE_IGNORE — 방금 저장한 파일을 캐시가 아닌 디스크에서 읽는다
+	var 팩 := ResourceLoader.load(경로, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
+	if 팩 == null:
+		push_error("조립: 저장한 씬을 다시 못 읽었다 — %s" % 경로)
+		return false
+	var 다시 := 팩.instantiate()
+	var r := 형태_S.검사(다시)
+	다시.free()
+	if not (r["문제"] as Array).is_empty():
+		for m in (r["문제"] as Array).slice(0, 5):
+			push_error("조립: 저장본 형태 이상 — %s" % m)
+		return false
+	# 이 생성기는 직사각형만 만든다. 삼각형이 하나라도 나오면 무너진 것이다.
+	# (형태 어휘가 생기면 이 줄을 "의도한 형태와 같은가" 비교로 바꾼다)
+	if not (r["삼각형"] as Array).is_empty():
+		push_error("조립: 저장본에 삼각형 %d 개 — %s" % [(r["삼각형"] as Array).size(),
+			", ".join((r["삼각형"] as Array).slice(0, 5))])
+		return false
+	return true
 
 
 ## 새로 만든 노드에만 owner 를 준다.
