@@ -94,9 +94,14 @@ func _physics_process(delta: float) -> void:
 
 	# ── 1) 통과형 오브젝트(덤불·물·연기) 먼저 확인 ──
 	for 영역 in get_overlapping_areas():
-		if 영역.has_method("총알_막나") and 영역.총알_막나(색):
-			_소멸(null, 이전)          # 반대색 물이 막았다 → 페인트는 사라짐(회수 안 됨)
-			return
+		if 영역.has_method("총알_막나"):
+			if 영역.총알_막나(색):
+				_소멸(null, 이전)      # 켜진 반대색 물만 총알을 막는다.
+				return
+			# ★[2026-09-21] 꺼진 물·같은 색 물·회색 물은 통과한다. 예전에는 여기서 아래 `명중` 가지로 떨어져
+			#   유체의 명중()("blocked")이 총알을 삼켰다 — 실측하니 **회색 물까지** 총알을 막고 있었다
+			#   (`tools/test_유체_끄면_총알통과.gd`: 고치기 전 8 중 5 실패). `총알_막나` 가 있는 것은 그 답만 따른다.
+			continue
 		if 영역.has_method("명중"):
 			_소멸(영역, 이전, true)
 			return

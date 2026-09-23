@@ -351,7 +351,7 @@ func _사망_판정() -> bool:
 	# 2') 대비책 — 부위 API 를 못 쓸 때만 예전 방식(몸 전체 한 색)으로 돌아간다.
 	for n in get_tree().get_nodes_in_group("유체"):
 		var f := n as 유체
-		if f == null or not f.켜짐 or not f.반대색인가(대표색):
+		if f == null or not f.켜짐 or not f.monitoring or not f.반대색인가(대표색):
 			continue
 		if f.get_overlapping_bodies().has(_플레이어):
 			return true

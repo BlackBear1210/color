@@ -18,6 +18,10 @@ class_name 제어레버
 
 enum 종류_ { 원형, 직선 }
 
+## 호퍼 도안과 같은 주철 손잡이. 원형 밸브의 외관에만 사용한다.
+const 주철_손잡이 = preload("res://assets/textures/obstacles/valve/cast_iron_v1/handwheel.png")
+const 주철_레버부품 = preload("res://assets/textures/obstacles/switch/cast_iron_v1/parts.png")
+
 @export var 종류: 종류_ = 종류_.원형:
 	set(v): 종류 = v; queue_redraw()
 
@@ -55,6 +59,10 @@ func _ready() -> void:
 	# 씬 인스펙터 값으로 먼저 맞춘 뒤 유체에 반영해야, 시작 프레임에 닫힌 밸브가 열리지 않는다.
 	켜짐 = 시작_켜짐
 	_A쪽 = 시작_갈래_A
+	# 처음부터 실제 갈래와 손잡이 방향을 맞춰 가운데에 멈춘 잘못된 상태 표시를 없앤다.
+	if 종류 == 종류_.직선:
+		_목표각도 = 0.6 if _A쪽 else -0.6
+		_각도 = _목표각도
 	_반영()
 	set_process(true)
 	queue_redraw()
@@ -132,26 +140,27 @@ func _draw() -> void:
 	if 아트슬롯.그림_있나(self):
 		return
 
-	var 금속 := Color(0.30, 0.31, 0.34)
-	var 밝은 := Color(0.62, 0.63, 0.66)
-	var 표시 := Color(0.85, 0.85, 0.82) if 켜짐 else Color(0.35, 0.35, 0.35)
-
 	# 상호작용 범위 — 플레이어가 "여기서 누르면 된다"를 알 수 있게 은은하게
 	draw_arc(Vector2.ZERO, 반응반경, 0.0, TAU, 40, Color(1, 1, 1, 0.07), 1.5)
 
-	# 받침대
-	draw_rect(Rect2(Vector2(-14, 0), Vector2(28, 26)), 금속)
-
 	if 종류 == 종류_.원형:
-		# 밸브 핸들 — 살 4개짜리 바퀴
-		draw_arc(Vector2.ZERO, 22.0, 0.0, TAU, 32, 밝은, 5.0)
-		for i in 4:
-			var a := _각도 + TAU * float(i) / 4.0
-			draw_line(Vector2.ZERO, Vector2(cos(a), sin(a)) * 20.0, 밝은, 4.0)
-		draw_circle(Vector2.ZERO, 6.0, 표시)
+		# 배관/축은 고정하고 바퀴만 돌려 호퍼 도안의 밸브 구조를 유지한다.
+		draw_rect(Rect2(-9, -32, 18, 64), Color(0.13,0.13,0.13))
+		draw_line(Vector2(-7,-32), Vector2(-7,32), Color(0.34,0.34,0.34), 2.0)
+		for y in [-30.0, 24.0]:
+			draw_rect(Rect2(-12, y, 24, 5), Color(0.27, 0.27, 0.27))
+			draw_line(Vector2(-11,y), Vector2(11,y), Color(0.45,0.45,0.45), 1.0)
+		draw_set_transform(Vector2.ZERO, _각도)
+		draw_texture_rect(주철_손잡이, Rect2(-27,-27,54,54), false)
+		draw_set_transform(Vector2.ZERO)
+		# 손잡이 네 살의 회전만으로는 켜짐을 구분하기 어려워 기존 중심 상태표시를 보존한다.
+		var 상태켜짐 := 시작_켜짐 if Engine.is_editor_hint() else 켜짐
+		draw_circle(Vector2.ZERO, 2.5, Color(0.85,0.85,0.82) if 상태켜짐 else Color(0.16,0.16,0.16))
 	else:
-		# 직선 레버 — 손잡이가 좌/우로 넘어간다
-		var 끝 := Vector2(sin(_각도), -cos(_각도)) * 34.0
-		draw_line(Vector2.ZERO, 끝, 밝은, 6.0)
-		draw_circle(끝, 8.0, 표시)
-		draw_circle(Vector2.ZERO, 7.0, 금속)
+		# 승인된 주철 받침/손잡이를 별도 영역으로 그려 축만 돌리고 받침은 지형에 고정한다.
+		# 기존 받침의 바닥 y=26을 보존해 이미 배치한 레버가 지형 위에 뜨지 않게 한다.
+		draw_texture_rect_region(주철_레버부품, Rect2(-29.5, -14.0, 58.2, 40.0), Rect2(90, 871, 448, 306))
+		var 표시각도 := (0.6 if 시작_갈래_A else -0.6) if Engine.is_editor_hint() else _각도
+		draw_set_transform(Vector2.ZERO, 표시각도)
+		draw_texture_rect_region(주철_레버부품, Rect2(-7.0, -47.7, 14.0, 54.8), Rect2(877, 684, 125, 489))
+		draw_set_transform(Vector2.ZERO)

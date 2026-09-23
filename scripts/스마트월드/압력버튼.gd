@@ -13,6 +13,9 @@ extends AnimatableBody2D
 ## ============================================================================
 class_name 압력버튼
 
+# 호퍼와 같은 주철 부품을 분리해서 상판만 눌리고 고정 프레임은 움직이지 않게 한다.
+const 주철_부품 = preload("res://assets/textures/obstacles/switch/cast_iron_v1/parts.png")
+
 @export_group("버튼 모양")
 @export_range(48.0, 320.0) var 폭: float = 96.0:
 	set(v):
@@ -69,7 +72,11 @@ func _physics_process(delta: float) -> void:
 	if 새_활성 != _활성:
 		_활성 = 새_활성
 		queue_redraw()
+	# 활성 전환 한 번만 다시 그리면 눌림/복귀 중간 프레임이 멎으므로 이동 중에도 갱신한다.
+	var 이전_표현 := _눌림_표현
 	_눌림_표현 = move_toward(_눌림_표현, 1.0 if 지금_눌림 else 0.0, delta * 8.0)
+	if 이전_표현 != _눌림_표현:
+		queue_redraw()
 	_대상_이동(delta)
 
 
@@ -191,11 +198,10 @@ func _편집기_주인_지정(노드: Node) -> void:
 
 
 func _draw() -> void:
-	var 눌림 := _눌림_표현 * 5.0
-	var 사각 := Rect2(Vector2(-폭 * 0.5, -높이 - 눌림), Vector2(폭, 높이))
-	# 회색은 지형이 아니라 상호작용 장치 표면이다. 벽·발판과 명확히 구분되게 테두리를 밝힌다.
-	draw_rect(사각, Color(0.28, 0.28, 0.30, 1.0), true)
-	draw_rect(사각, Color(0.88, 0.88, 0.91, 1.0), false, 2.0)
-	var 틈_y := 사각.position.y + 사각.size.y * 0.55
-	draw_line(Vector2(사각.position.x + 10.0, 틈_y), Vector2(사각.end.x - 10.0, 틈_y),
-		Color(0.08, 0.08, 0.09, 1.0), 2.0)
+	# 충돌/감지는 보존하고 최대 3px의 시각적 스트로크만 아래로 눌러 기존 점프 거리를 유지한다.
+	var 눌림 := _눌림_표현 * minf(3.0, 높이 * 0.125)
+	draw_texture_rect_region(주철_부품, Rect2(-폭 * 0.5, -높이 * 0.55, 폭, 높이 * 0.55), Rect2(28, 425, 570, 72))
+	draw_texture_rect_region(주철_부품, Rect2(-폭 * 0.455, -높이 + 눌림, 폭 * 0.91, 높이 * 0.55), Rect2(679, 395, 520, 89))
+	# 표시창은 실제 출력 활성 상태, 상판은 실제 무게를 표시해 유지형 버튼도 구분한다.
+	if _활성:
+		draw_rect(Rect2(-폭 * 0.12, -높이 * 0.31, 폭 * 0.24, maxf(1.5, 높이 * 0.09)), Color(0.87, 0.87, 0.85))

@@ -7,6 +7,17 @@ const 상면_그림 = preload("res://assets/textures/smartshape/sewer_ledge_v03/
 const 마감_생성기 = preload("res://scripts/스마트월드/하수도_마감메시.gd")
 signal 마감_배치변경
 
+# 웅덩이에 잠긴 부분의 입체 마감만 가린다. 본체/페인트/충돌은 그대로 유지한다.
+var _침수_가림: Dictionary = {}
+
+func 침수마감_설정(source_id: int, world_polygon: PackedVector2Array) -> void:
+	if world_polygon.is_empty():
+		if _침수_가림.erase(source_id):
+			_마감_요청()
+	elif _침수_가림.get(source_id) != world_polygon:
+		_침수_가림[source_id] = world_polygon
+		_마감_요청()
+
 @export var 석조선반: bool = false
 @export var 땅지형: bool = false
 @export var 윗면표시: bool = true:
@@ -102,7 +113,13 @@ func _접합_갱신() -> void:
 			other_bounds = other_bounds.expand(point)
 		if bounds.grow(24.0).intersects(other_bounds, true):
 			others.append(polygon)
-	var signature := hash([points, others, global_transform, 윗면표시, 옆면마감, shape_material.get_instance_id(),
+	var submerged: Array[PackedVector2Array] = []
+	for world_polygon: PackedVector2Array in _침수_가림.values():
+		var local_polygon := PackedVector2Array()
+		for point in world_polygon:
+			local_polygon.append(to_local(point))
+		submerged.append(local_polygon)
+	var signature := hash([points, others, submerged, global_transform, 윗면표시, 옆면마감, shape_material.get_instance_id(),
 		shape_material.fill_texture_scale, shape_material.fill_texture_offset,
 		shape_material.fill_texture_absolute_position, shape_material.fill_texture_angle_offset,
 		shape_material.fill_texture_absolute_rotation, shape_material.fill_textures])
@@ -113,7 +130,7 @@ func _접합_갱신() -> void:
 		_셰이더들.erase(part.material)
 		remove_child(part)
 		part.queue_free()
-	_마감_노드 = 마감_생성기.생성(self, points, others, 윗면표시, 옆면마감)
+	_마감_노드 = 마감_생성기.생성(self, points, others, 윗면표시, 옆면마감, submerged)
 	for part in _마감_노드:
 		# 생성물은 저장하지 않는다. owner를 변경하지 않아 씬 재로드 중복을 막는다.
 		add_child(part)
