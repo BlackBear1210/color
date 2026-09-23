@@ -46,7 +46,7 @@ static func 세우기(동굴: Dictionary, 설정: RefCounted, rng: RandomNumberG
 	var 번호 := 0
 
 	for 층i in 층들.size():
-		var 바닥y: int = 층들[층i]
+		var 층선y: int = 층들[층i]
 		var 개수: int = int(설정.관문_개수)
 		var 구간 := int(float(W - 24) / float(개수))
 		for k in 개수:
@@ -57,10 +57,19 @@ static func 세우기(동굴: Dictionary, 설정: RefCounted, rng: RandomNumberG
 			#   16 번 시도 중 2 개만 세워졌다(실측). 관문이 없으면 그냥 걸어 다니는 동굴이다.
 			#   구간 안에서 30 번까지 자리를 옮겨 가며 찾는다.
 			var x := -1
+			var 바닥y := 층선y
 			for _시도 in 30:
 				var 후보: int = 12 + 구간 * k + rng.randi_range(0, maxi(구간 - 16, 1))
-				if _바닥_평평(동굴, 후보 - 3, 바닥y, 폭 + 6):
+				# ★[2026-09-23] 층의 바닥 높이가 **x 마다 다를 수 있다.**
+				#   `동굴층.gd` 는 평평한 띠라 층선 하나로 끝났지만, `계단층.gd`(복도계단)는
+				#   층 자체가 내려가는 계단이다. 그 x 의 진짜 바닥을 `바닥줄` 에서 읽는다.
+				#   (덤: 관문은 평평한 자리만 고르므로 자연히 **계단 위가 아닌 복도**에 선다)
+				var y후보 := _층_바닥(동굴, 층i, 후보, 층선y)
+				if y후보 < 0:
+					continue                 # 이 x 에는 이 층이 없다(계단 맵의 층은 폭이 다르다)
+				if _바닥_평평(동굴, 후보 - 3, y후보, 폭 + 6):
 					x = 후보
+					바닥y = y후보
 					break
 			if x < 0:
 				continue
@@ -89,6 +98,22 @@ static func _종류_고르기(층i: int, k: int, rng: RandomNumberGenerator, 설
 		return ["J", "C", "J", "G"][k % 4]
 	# 위층은 이미 규칙을 배운 사람이 온다 → 색·사격 비중을 올린다
 	return ["C", "G", "C", "J"][k % 4]
+
+
+## ★[2026-09-23 신규] 층 `층i` 의 x 칸에서의 **실제 바닥 y**.
+## · `동굴["바닥줄"]` 이 없으면 평평한 맵이다 → 층선(기본y) 그대로.
+## · 있으면 층마다 길이 W 인 배열이 와 있고, 그 x 의 바닥 y 가 적혀 있다.
+##   −1 = 이 x 에는 이 층이 없다(계단 맵은 층마다 가로 폭이 다르다).
+static func _층_바닥(동굴: Dictionary, 층i: int, x: int, 기본y: int) -> int:
+	if not 동굴.has("바닥줄"):
+		return 기본y
+	var 줄들: Array = 동굴["바닥줄"]
+	if 층i >= 줄들.size():
+		return 기본y
+	var 줄: PackedInt32Array = 줄들[층i]
+	if x < 0 or x >= 줄.size():
+		return -1
+	return 줄[x]
 
 
 ## 그 자리 바닥이 n 칸 내내 평평하고 머리 위가 3 칸 이상 비었나.

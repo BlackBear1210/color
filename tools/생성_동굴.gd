@@ -20,6 +20,8 @@ extends SceneTree
 const 설정_S := preload("res://tools/생성기/설정.gd")
 const 동굴_S := preload("res://tools/생성기/동굴.gd")
 const 동굴층_S := preload("res://tools/생성기/동굴층.gd")
+## ★[2026-09-23] 「복도와 계단」용 파기. 같은 뒷단(관문·윤곽·배치·조립)을 쓴다.
+const 계단층_S := preload("res://tools/생성기/계단층.gd")
 const 미리보기_S := preload("res://tools/생성기/미리보기.gd")
 const 윤곽_S := preload("res://tools/생성기/윤곽.gd")
 const 배치_S := preload("res://tools/생성기/배치.gd")
@@ -32,6 +34,12 @@ var _미리보기만 := false
 var _출력 := ""
 var _적용 := false
 var _대상 := "res://scenes/집/스테이지_1_2층방.tscn"
+## ★[2026-09-23] 설정마다 `--적용` 이 고칠 씬. `--대상=` 을 직접 주면 그쪽이 이긴다.
+const _기본_대상 := {
+	"집": "res://scenes/집/스테이지_1_2층방.tscn",
+	"복도계단": "res://scenes/집/스테이지_2_복도계단.tscn",
+}
+var _대상_지정됨 := false
 
 
 func _init() -> void:
@@ -49,6 +57,7 @@ func _go() -> void:
 			_출력 = a.substr("--출력=".length())
 		elif a.begins_with("--대상="):
 			_대상 = a.substr("--대상=".length())
+			_대상_지정됨 = true
 		elif a == "--미리보기":
 			_미리보기만 = true
 		elif a == "--적용":
@@ -56,11 +65,21 @@ func _go() -> void:
 	if _씨앗들.is_empty():
 		_씨앗들 = [1]
 
-	var 설정 = 설정_S.집_동굴() if _설정이름 == "집" else null
+	# ★[2026-09-23] 설정 이름이 **어떤 알고리즘으로 팔지**까지 고른다.
+	#   집       → `동굴층.gd` (평평한 띠가 여러 겹인 동굴)
+	#   복도계단 → `계단층.gd` (뱀처럼 꺾이며 내려가는 한 줄기 계단)
+	var 설정: RefCounted = null
+	match _설정이름:
+		"집": 설정 = 설정_S.집_동굴()
+		"복도계단": 설정 = 설정_S.집_복도계단()
 	if 설정 == null:
-		print("✗ 모르는 설정: %s" % _설정이름)
+		print("✗ 모르는 설정: %s  (쓸 수 있는 것: 집 · 복도계단)" % _설정이름)
 		quit(1)
 		return
+	# ★`--대상` 을 안 준 채 `--적용` 하면 **설정에 맞는 씬**을 고친다.
+	#   기본값이 2층 방이라, 이게 없으면 복도계단을 만들었는데 2층 방을 덮어쓴다.
+	if not _대상_지정됨:
+		_대상 = _기본_대상.get(_설정이름, _대상)
 
 	for 씨앗 in _씨앗들:
 		_한판(설정, 씨앗)
@@ -72,7 +91,10 @@ func _한판(설정: RefCounted, 씨앗: int) -> void:
 	rng.seed = 씨앗
 	var t0 := Time.get_ticks_msec()
 	# ★[2026-09-21] 층 기반 파기로 교체. 이유는 `동굴층.gd` 머리 주석 참고(통행을 보장한다).
-	var 동굴 := 동굴층_S.파기(설정, rng)
+	# ★[2026-09-23] 「복도계단」은 같은 자리에서 `계단층.gd` 로 갈아 끼운다.
+	#   판 결과의 **모양(Dictionary 키)이 같아서** 뒤 단계는 하나도 안 고쳐도 된다.
+	var 동굴 := 계단층_S.파기(설정, rng) if _설정이름 == "복도계단" \
+		else 동굴층_S.파기(설정, rng)
 	if 동굴.is_empty():
 		print("✗ 씨앗 %d — 방을 못 놓았다(설정을 보라)" % 씨앗)
 		return
@@ -128,7 +150,15 @@ func _한판(설정: RefCounted, 씨앗: int) -> void:
 			% [이름, pts.size(), 최대, 긴변])
 
 	# 배치 — 동굴 안에 발판·사다리·기믹
-	var 배치 := 배치_S.채우기(동굴, 설정, rng)
+	# ★[2026-09-23] **이미 놓인 발판 목록을 넘긴다.** 관문 슬래브와 징검다리는 이 단계보다
+	#   먼저 놓이는데, 안 넘기면 그 위에 방 발판이 겹쳐 앉는다(진단_플랫폼겹침 FAIL 실측).
+	var 기존발판: Array = []
+	for p in 관문["플랫폼"]:
+		기존발판.append(p["사각"])
+	if 동굴.has("배치물"):
+		for p in (동굴["배치물"] as Dictionary)["플랫폼"]:
+			기존발판.append(p["사각"])
+	var 배치 := 배치_S.채우기(동굴, 설정, rng, 기존발판)
 	var 유령수 := 0
 	for p in 배치["플랫폼"]:
 		if String(p["종류"]) == "유령":
@@ -139,6 +169,11 @@ func _한판(설정: RefCounted, 씨앗: int) -> void:
 	# 관문 배치물을 배치 결과에 합친다(발판·위험물·체크포인트·사격)
 	for k in ["플랫폼", "위험물", "체크포인트", "사격"]:
 		배치[k].append_array(관문[k])
+	# ★[2026-09-23] 파기 단계가 직접 만든 것도 합친다(복도계단의 징검다리 구덩이).
+	#   격자를 파면서 같이 만들어야 하는 것이라 `배치.gd` 가 아니라 파기가 들고 온다.
+	if 동굴.has("배치물"):
+		for k in ["플랫폼", "위험물", "체크포인트"]:
+			배치[k].append_array((동굴["배치물"] as Dictionary)[k])
 
 	# ★통행 보정 — 파낸 공간이 실제로 **걸어 다닐 수 있는지** 격자에서 확인하고 디딤을 놓는다.
 	#   이게 없으면 2 칸 단차 때문에 바닥이 조각나 `레벨검사` 가 "도달 0" 을 낸다(실측).
@@ -158,11 +193,22 @@ func _한판(설정: RefCounted, 씨앗: int) -> void:
 	if OS.get_cmdline_user_args().has("--진단"):
 		for L in 배치_S.진단_그리기(동굴, 배치, 동굴["시작칸"]):
 			print(L)
+	# ★[2026-09-23] `--진단칸=x,y` — 미리보기 PNG 에서 이상해 보이는 자리를 **칸 좌표로** 들여다본다.
+	#   PNG 픽셀 ÷ 배율(10) = 칸 좌표다. `--진단`(시작 주변)만으로는 맵 한가운데를 못 본다.
+	for a: String in OS.get_cmdline_user_args():
+		if not a.begins_with("--진단칸="):
+			continue
+		var xy := a.substr("--진단칸=".length()).split(",")
+		if xy.size() < 2:
+			continue
+		print("── 칸 (%s, %s) 주변 ──" % [xy[0], xy[1]])
+		for L in 배치_S.진단_그리기(동굴, 배치, Vector2i(int(xy[0]), int(xy[1])), 60, 28):
+			print(L)
 	if OS.get_cmdline_user_args().has("--진단계단") and not 동굴["통로들"].is_empty():
 		print("── 계단 주변 ──")
 		for L in 배치_S.진단_그리기(동굴, 배치, 동굴["통로들"][0]["꺾임"], 56, 26):
 			print(L)
-	var png := "res://scenes/집/생성/미리보기_동굴_s%d.png" % 씨앗
+	var png := "res://scenes/집/생성/미리보기_%s_s%d.png" % [_설정이름, 씨앗]
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://scenes/집/생성/"))
 	if 미리보기_S.저장(동굴, ProjectSettings.globalize_path(png), 배치, 10):
 		print("  미리보기 : %s" % png)
@@ -175,10 +221,13 @@ func _한판(설정: RefCounted, 씨앗: int) -> void:
 	배치["씨앗"] = 씨앗
 	var 조립 = 조립2_S.new()
 	var t2 := Time.get_ticks_msec()
-	var 루트 := 조립.굽기(동굴, 윤, 배치, 설정, "스테이지_1_2층방")
+	# 씬 루트 이름은 **적용 대상 파일 이름과 같게** 둔다 — 다른 작업자가 씬 트리에서
+	# "이게 어느 스테이지지" 를 파일명으로 찾기 때문이다.
+	var 씬이름 := _대상.get_file().get_basename()
+	var 루트 := 조립.굽기(동굴, 윤, 배치, 설정, 씬이름)
 	var 경로 := _출력
 	if 경로 == "":
-		경로 = _대상 if _적용 else ("res://scenes/집/생성/스테이지_1_2층방_동굴_s%d.tscn" % 씨앗)
+		경로 = _대상 if _적용 else ("res://scenes/집/생성/%s_s%d.tscn" % [씬이름, 씨앗])
 	# ★덮어쓰기 전에 백업 — 되돌릴 수 없는 작업이다(CLAUDE.md §8 · 남의 작업이 사라진 적 있다)
 	if _적용 and FileAccess.file_exists(_대상):
 		var 절대 := ProjectSettings.globalize_path(_대상)

@@ -98,11 +98,16 @@ func 굽기(동굴: Dictionary, 윤: Dictionary, 배치: Dictionary, 설정: Ref
 		var t: Node2D = 씬.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node2D
 		t.name = "%s_%d" % [h["종류"], (통["위험물"] as Node2D).get_child_count() + 1]
 		t.position = h["위치"]
+		# ★[2026-09-23] `칸수` 가 오면 노드 하나가 여러 칸을 덮는다.
+		#   hazard 그룹은 매 물리 프레임 전부 순회하므로 **노드 수가 곧 비용**이다.
+		#   이유와 실측은 `계단층.gd _징검다리_구덩이()` 의 ③ 주석 참고.
+		if h.has("칸수"):
+			t.set("칸수", int(h["칸수"]))
 		(통["위험물"] as Node2D).add_child(t)
 
 	var cp := load(S_체크포인트) as PackedScene
 	if cp != null:
-		for c in 배치["체크포인트"]:
+		for c in _체크포인트_솎기(배치["체크포인트"]):
 			var t2: Node2D = cp.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node2D
 			t2.name = "체크포인트_%d" % ((통["체크포인트"] as Node2D).get_child_count() + 1)
 			t2.position = c
@@ -128,6 +133,45 @@ func 굽기(동굴: Dictionary, 윤: Dictionary, 배치: Dictionary, 설정: Ref
 	루트.set_meta("gen_config", String(설정.이름))
 	루트.set_meta("gen_algo", "v2_cave")
 	return 루트
+
+
+# ============================================================================
+# ★[2026-09-23 신규] 체크포인트 솎기 — **광원 한계 때문**이지 디자인 취향이 아니다
+# ----------------------------------------------------------------------------
+# 체크포인트 하나가 PointLight2D 하나다. 그런데 v2 씬은 바닥·천장·벽이 전부
+# `벽_껍데기` **노드 하나**라, 맵 어디에 있든 모든 체크포인트 빛이
+# **같은 캔버스 아이템 하나**에 겹친다.
+# Godot 4 의 2D 라이트는 캔버스 아이템당 15~16 개가 엔진 하드 한계다.
+# 넘으면 껍데기가 통째로 빛을 안 받거나 광원이 깜빡인다.
+#   실측(복도계단 s5): 관문 10 + 구덩이 6 + 방 3 = 19 개 → `진단_절차생성_예산` 이
+#   "한 지형에 광원이 20 개 겹친다 ✖" 로 잡았다.
+# → 서로 1,600 px 안에 있는 것을 합치고, 그래도 넘으면 고르게 솎아 10 개로 맞춘다.
+#   (플레이어 보조광 1 개를 더해도 11 개 — 규격.한계_겹친광원 12 안이다)
+# ⚠ 관문 바로 앞 체크포인트가 사라지면 난이도가 확 오른다. 솎을 때 **앞에서부터**
+#   남기는 이유가 그것이다 — 앞쪽(쉬운 구간)이 아니라 몰려 있는 쪽이 솎인다.
+# ============================================================================
+const 최대_체크포인트: int = 10
+const 최소_체크포인트_간격: float = 1600.0
+
+static func _체크포인트_솎기(원본: Array) -> Array:
+	# ① 가까이 몰린 것 합치기 — 관문 바로 뒤에 구덩이가 오면 둘이 몇백 px 안에 겹친다
+	var 남김: Array = []
+	for c: Vector2 in 원본:
+		var 가깝다 := false
+		for k: Vector2 in 남김:
+			if c.distance_to(k) < 최소_체크포인트_간격:
+				가깝다 = true
+				break
+		if not 가깝다:
+			남김.append(c)
+	if 남김.size() <= 최대_체크포인트:
+		return 남김
+	# ② 그래도 넘으면 **고르게** 솎는다. 앞에서 잘라 버리면 맵 뒷부분이 통째로 무체크포인트가 된다.
+	var 결과: Array = []
+	var 간격 := float(남김.size()) / float(최대_체크포인트)
+	for i in 최대_체크포인트:
+		결과.append(남김[mini(int(float(i) * 간격), 남김.size() - 1)])
+	return 결과
 
 
 func _칸_중심(동굴: Dictionary, 칸: Vector2i) -> Vector2:
