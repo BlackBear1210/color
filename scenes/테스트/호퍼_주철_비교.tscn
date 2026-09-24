@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/호퍼_주철_직하.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/호퍼_주철_좌하.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/호퍼_주철_우하.tscn" id="3"]
+
+[node name="호퍼_주철_비교" type="Node2D"]
+
+[node name="직하" parent="." instance=ExtResource("1")]
+position = Vector2(240, 320)
+자동_출구_연결 = false
+
+[node name="Label0" type="Label" parent="."]
+offset_left = 200.0
+offset_top = 72.0
+text = "직하형"
+
+[node name="좌하" parent="." instance=ExtResource("2")]
+position = Vector2(600, 320)
+자동_출구_연결 = false
+
+[node name="Label1" type="Label" parent="."]
+offset_left = 560.0
+offset_top = 72.0
+text = "좌하형"
+
+[node name="우하" parent="." instance=ExtResource("3")]
+position = Vector2(960, 320)
+자동_출구_연결 = false
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 920.0
+offset_top = 72.0
+text = "우하형"

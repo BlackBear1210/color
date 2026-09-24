@@ -7,6 +7,44 @@ const 상면_그림 = preload("res://assets/textures/smartshape/sewer_ledge_v03/
 const 마감_생성기 = preload("res://scripts/스마트월드/하수도_마감메시.gd")
 signal 마감_배치변경
 
+# 웅덩이에 잠긴 부분의 입체 마감만 가린다. 본체/페인트/충돌은 그대로 유지한다.
+var _침수_가림: Dictionary = {}
+
+# 발판 양옆 돌은 원본의 사선 줄눈 대신 금속 윤곽으로 끝나도록 별도 접합 UV를 쓴다.
+var _매립_접합: Dictionary = {}
+
+func 매립접합_설정(source_id: int, world_rect: Rect2) -> void:
+	if not world_rect.has_area():
+		if not _매립_접합.erase(source_id):
+			return
+	elif _매립_접합.get(source_id) == world_rect:
+		return
+	else:
+		_매립_접합[source_id] = world_rect
+	_매립_유니폼_갱신()
+
+func _매립_유니폼_갱신() -> void:
+	var 접합: Array[Vector4] = []
+	for rect: Rect2 in _매립_접합.values():
+		var 시작 := to_local(rect.position)
+		var 끝 := to_local(rect.end)
+		접합.append(Vector4(시작.x, 끝.x, 시작.y, (끝.x - 시작.x) / 3.0))
+		if 접합.size() == 8:
+			break
+	var 개수 := 접합.size()
+	접합.resize(8)
+	for part in _마감_노드:
+		part.material.set_shader_parameter("socket_joint_count", 개수)
+		part.material.set_shader_parameter("socket_joints", 접합)
+
+func 침수마감_설정(source_id: int, world_polygon: PackedVector2Array) -> void:
+	if world_polygon.is_empty():
+		if _침수_가림.erase(source_id):
+			_마감_요청()
+	elif _침수_가림.get(source_id) != world_polygon:
+		_침수_가림[source_id] = world_polygon
+		_마감_요청()
+
 @export var 석조선반: bool = false
 @export var 땅지형: bool = false
 @export var 윗면표시: bool = true:
@@ -102,7 +140,13 @@ func _접합_갱신() -> void:
 			other_bounds = other_bounds.expand(point)
 		if bounds.grow(24.0).intersects(other_bounds, true):
 			others.append(polygon)
-	var signature := hash([points, others, global_transform, 윗면표시, 옆면마감, shape_material.get_instance_id(),
+	var submerged: Array[PackedVector2Array] = []
+	for world_polygon: PackedVector2Array in _침수_가림.values():
+		var local_polygon := PackedVector2Array()
+		for point in world_polygon:
+			local_polygon.append(to_local(point))
+		submerged.append(local_polygon)
+	var signature := hash([points, others, submerged, global_transform, 윗면표시, 옆면마감, shape_material.get_instance_id(),
 		shape_material.fill_texture_scale, shape_material.fill_texture_offset,
 		shape_material.fill_texture_absolute_position, shape_material.fill_texture_angle_offset,
 		shape_material.fill_texture_absolute_rotation, shape_material.fill_textures])
@@ -113,12 +157,14 @@ func _접합_갱신() -> void:
 		_셰이더들.erase(part.material)
 		remove_child(part)
 		part.queue_free()
-	_마감_노드 = 마감_생성기.생성(self, points, others, 윗면표시, 옆면마감)
+	_마감_노드 = 마감_생성기.생성(self, points, others, 윗면표시, 옆면마감, submerged)
 	for part in _마감_노드:
 		# 생성물은 저장하지 않는다. owner를 변경하지 않아 씬 재로드 중복을 막는다.
 		add_child(part)
 		if not Engine.is_editor_hint():
 			_셰이더들.append(part.material)
+	# 지형 편집으로 마감 메시가 재생성되어도 접합용 돌의 UV 설정을 복구한다.
+	_매립_유니폼_갱신()
 	if not Engine.is_editor_hint():
 		_유니폼_갱신()
 	마감_생성횟수 += 1

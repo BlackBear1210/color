@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dw7g6rpenprq7" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_black.png" id="7_gi4lh"]
 [ext_resource type="Texture2D" uid="uid://cnrulj44img8x" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_edge_black.png" id="8_166j4"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID.tscn" id="black"]
-[ext_resource type="Script" uid="uid://gp4t7lfxp2fn" path="res://scripts/스마트월드/압력버튼.gd" id="button"]
+[ext_resource type="Script" path="res://scripts/스마트월드/압력버튼_매립.gd" id="button"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="checkpoint"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="core"]
 [ext_resource type="Script" uid="uid://c4s20dfl4kmb1" path="res://scripts/스마트월드/SS2D_붕괴발판.gd" id="crumble"]
@@ -21,6 +21,9 @@
 [ext_resource type="Script" uid="uid://ns6skh0ewqy7" path="res://scripts/스마트월드/폭포_수문묶음.gd" id="valveGroup"]
 [ext_resource type="PackedScene" uid="uid://xopxff8t4a3b" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="water"]
 [ext_resource type="Script" uid="uid://h8ly6hcq72io" path="res://scripts/스마트월드/하강수로_월드.gd" id="world"]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/웅덩이_흰물v2.gd" id="latest_pool_art"]
+[ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
 
 [sub_resource type="Resource" id="terrain0p0"]
 resource_local_to_scene = true
@@ -1546,12 +1549,12 @@ position = Vector2(-1344, -512)
 [sub_resource type="Resource" id="terrain15p3"]
 resource_local_to_scene = true
 script = ExtResource("point")
-position = Vector2(-320, -512)
+position = Vector2(-64, -512)
 
 [sub_resource type="Resource" id="terrain15p4"]
 resource_local_to_scene = true
 script = ExtResource("point")
-position = Vector2(-320, -896)
+position = Vector2(-64, -896)
 
 [sub_resource type="Resource" id="terrain15p5"]
 resource_local_to_scene = true
@@ -1927,27 +1930,27 @@ mesh = SubResource("ArrayMesh_8ayh4")
 [sub_resource type="Resource" id="terrain19p0"]
 resource_local_to_scene = true
 script = ExtResource("point")
-position = Vector2(-64, -72)
+position = Vector2(-96, -72)
 
 [sub_resource type="Resource" id="terrain19p1"]
 resource_local_to_scene = true
 script = ExtResource("point")
-position = Vector2(64, -72)
+position = Vector2(96, -72)
 
 [sub_resource type="Resource" id="terrain19p2"]
 resource_local_to_scene = true
 script = ExtResource("point")
-position = Vector2(64, 72)
+position = Vector2(96, 72)
 
 [sub_resource type="Resource" id="terrain19p3"]
 resource_local_to_scene = true
 script = ExtResource("point")
-position = Vector2(-64, 72)
+position = Vector2(-96, 72)
 
 [sub_resource type="Resource" id="terrain19p4"]
 resource_local_to_scene = true
 script = ExtResource("point")
-position = Vector2(-64, -72)
+position = Vector2(-96, -72)
 
 [sub_resource type="Resource" id="Resource_1yfam"]
 resource_local_to_scene = true
@@ -2491,13 +2494,14 @@ fill_to = Vector2(0.5, 0)
 
 [node name="stage_2-11" type="Node2D" unique_id=635040617]
 script = ExtResource("world")
-"안전구역들" = Array[Rect2]([Rect2(352, 1016, 544, 16), Rect2(2080, 1016, 224, 16), Rect2(3680, 2552, 544, 16), Rect2(5408, 2552, 224, 16), Rect2(7008, 4088, 544, 16), Rect2(8736, 4088, 224, 16), Rect2(10336, 5624, 544, 16), Rect2(12064, 5624, 224, 16), Rect2(13664, 7160, 544, 16), Rect2(15392, 7160, 224, 16)])
+"안전구역들" = Array[Rect2]([Rect2(352, 1016, 544, 16), Rect2(2080, 1016, 224, 16), Rect2(3680, 2552, 544, 16), Rect2(5408, 2552, 224, 16), Rect2(7008, 4088, 544, 16), Rect2(8736, 4088, 224, 16), Rect2(10336, 5624, 544, 16), Rect2(12064, 5624, 224, 16), Rect2(13664, 7160, 544, 16), Rect2(15632, 7160, 32, 16)])
 "스테이지_이름" = "2-11 · 잠긴 폭포의 계단"
 "카메라_리밋" = Rect2(128, 256, 17664, 8704)
-"카메라_줌" = 1.1
+"카메라_줌" = 1.0
 "시작_위치" = Vector2(384, 1024)
 "낙사_y" = 8928.0
-metadata/design = "좌측 최상단 → 우측 최하단. 물·밸브·압력발판·투명·붕괴. 실제 주행 미실행."
+metadata/design = "수정 전 Claude 71단계 무사망·0발 실측. 수정 후 투명/붕괴 필수화 및 분기 배수, 재주행 미실행."
+"치명_낙하거리" = 1500.0
 
 [node name="페인트코어" type="Node" parent="." unique_id=334496010 groups=["페인트코어"]]
 script = ExtResource("core")
@@ -2647,7 +2651,7 @@ position = Vector2(15680, 8064)
 "필요횟수_수동" = 1
 "시작상태" = 1
 _points = SubResource("Resource_4sxcx")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_maxro"), SubResource("Resource_c3ioe")])
+_meshes = Array[ExtResource("mesh")]([])
 collision_size = 0.0
 metadata/role = "foundation"
 
@@ -2695,19 +2699,19 @@ width = 3.0
 default_color = Color(0.7, 0.7, 0.7, 0.8)
 
 [node name="구역5_붕괴발판3" parent="지형" unique_id=1684680444 instance=ExtResource("black")]
-position = Vector2(15264, 7240)
+position = Vector2(15424, 7240)
 script = ExtResource("crumble")
 "붕괴_대기" = 0.9
 "복구_대기" = 3.0
 "필요횟수_수동" = 1
 "시작상태" = 1
 _points = SubResource("Resource_1yfam")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_u17dg"), SubResource("Resource_rphes")])
+_meshes = Array[ExtResource("mesh")]([])
 collision_size = 0.0
 metadata/role = "crumble"
 
 [node name="표면균열" type="Line2D" parent="지형/구역5_붕괴발판3" unique_id=557420877]
-points = PackedVector2Array(-38.4, -64, -12.8, -40, 12.8, -56, 38.4, -24)
+points = PackedVector2Array(-57.6, -64, -19.2, -40, 19.2, -56, 57.6, -24)
 width = 3.0
 default_color = Color(0.7, 0.7, 0.7, 0.8)
 
@@ -2759,6 +2763,7 @@ metadata/role = "exterior"
 [node name="장치" type="Node2D" parent="." unique_id=67374484]
 
 [node name="구역1_구덩이_물받이" parent="장치" unique_id=1719333357 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(1536, 1408)
 "크기" = Vector2(1024, 192)
 
@@ -2796,27 +2801,33 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="구역1_하강_완충수1" parent="장치" unique_id=1438302861 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(2656, 1120)
 "크기" = Vector2(192, 160)
 
 [node name="구역1_하강_완충수2" parent="장치" unique_id=1079662450 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(2848, 1440)
 "크기" = Vector2(192, 160)
 
 [node name="구역1_하강_완충수3" parent="장치" unique_id=1032112197 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(3040, 1760)
 "크기" = Vector2(192, 160)
 
 [node name="구역1_하강_완충수4" parent="장치" unique_id=1246435424 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(3232, 2080)
 "크기" = Vector2(192, 160)
 
 [node name="구역1_폭포1" parent="장치" unique_id=1286668842 instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
 position = Vector2(1344, 512)
 "색" = 1
 "크기" = Vector2(256, 560)
 
 [node name="구역1_폭포2" parent="장치" unique_id=1430206284 instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
 position = Vector2(1792, 512)
 "색" = 0
 "크기" = Vector2(256, 560)
@@ -2833,6 +2844,7 @@ collision_layer = 0
 "반응반경" = 96.0
 
 [node name="구역2_구덩이_물받이" parent="장치" unique_id=195421991 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(4864, 2944)
 "크기" = Vector2(1024, 192)
 "색" = 0
@@ -2871,22 +2883,27 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="구역2_하강_완충수1" parent="장치" unique_id=1965628513 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(5984, 2656)
 "크기" = Vector2(192, 160)
 
 [node name="구역2_하강_완충수2" parent="장치" unique_id=749752405 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(6176, 2976)
 "크기" = Vector2(192, 160)
 
 [node name="구역2_하강_완충수3" parent="장치" unique_id=924461629 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(6368, 3296)
 "크기" = Vector2(192, 160)
 
 [node name="구역2_하강_완충수4" parent="장치" unique_id=123132866 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(6560, 3616)
 "크기" = Vector2(192, 160)
 
 [node name="구역2_진입_완충수" parent="장치" unique_id=407260594 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(3744, 2560)
 "크기" = Vector2(320, 96)
 
@@ -2901,9 +2918,11 @@ metadata/pressure_button_origin = Vector2(4864, 1944)
 shape = SubResource("RectangleShape2D_jmcvk")
 
 [node name="구역2_압력발판" type="AnimatableBody2D" parent="장치" unique_id=37819963]
-position = Vector2(4160, 2584)
+position = Vector2(4184, 2584)
 script = ExtResource("button")
-"폭" = 160.0
+"높이" = 24.0
+"매립_지형" = NodePath("../../지형/구역2_일체형_수로바닥")
+"폭" = 144
 "작동방식" = 1
 "누름_가능_그룹" = PackedStringArray("player")
 "대상들" = Array[NodePath]([NodePath("../구역2_버튼이동다리")])
@@ -2937,6 +2956,7 @@ position = Vector2(5120, 2256)
 "색_전환주기" = 8.0
 
 [node name="구역3_구덩이_물받이" parent="장치" unique_id=764113817 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(8192, 4480)
 "크기" = Vector2(1024, 192)
 "색" = 0
@@ -2975,69 +2995,33 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="구역3_하강_완충수1" parent="장치" unique_id=1803276423 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(9312, 4192)
 "크기" = Vector2(192, 160)
 
 [node name="구역3_하강_완충수2" parent="장치" unique_id=2059975606 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(9504, 4512)
 "크기" = Vector2(192, 160)
 
 [node name="구역3_하강_완충수3" parent="장치" unique_id=2132751930 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(9696, 4832)
 "크기" = Vector2(192, 160)
 
 [node name="구역3_하강_완충수4" parent="장치" unique_id=220609168 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(9888, 5152)
 "크기" = Vector2(192, 160)
 
 [node name="구역3_진입_완충수" parent="장치" unique_id=1517176022 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(7072, 4096)
 "크기" = Vector2(320, 96)
 
-[node name="구역3_물길우회_출구발판1" parent="장치" unique_id=239343384 instance=ExtResource("grate")]
-position = Vector2(8640, 4204)
-collision_mask = 0
-"크기" = Vector2(96, 24)
-"필요횟수" = 1
-
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판1" unique_id=1135171355]
-shape = SubResource("grate229")
-one_way_collision = true
-one_way_collision_margin = 4.0
-
-[node name="구역3_물길우회_출구발판2" parent="장치" unique_id=1416837734 instance=ExtResource("grate")]
-position = Vector2(8640, 4300)
-collision_mask = 0
-"크기" = Vector2(96, 24)
-"필요횟수" = 1
-
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판2" unique_id=949144100]
-shape = SubResource("grate230")
-one_way_collision = true
-one_way_collision_margin = 4.0
-
-[node name="구역3_물길우회_출구발판3" parent="장치" unique_id=1339660231 instance=ExtResource("grate")]
-position = Vector2(8640, 4396)
-collision_mask = 0
-"크기" = Vector2(96, 24)
-"필요횟수" = 1
-
-[node name="충돌" type="CollisionShape2D" parent="장치/구역3_물길우회_출구발판3" unique_id=1596246069]
-shape = SubResource("grate231")
-one_way_collision = true
-one_way_collision_margin = 4.0
-
-[node name="구역3_발판변색_분사기" parent="장치" unique_id=1991735385 instance=ExtResource("sprayer")]
-position = Vector2(8448, 3792)
-"총구거리" = 32.0
-"탄속" = 560.0
-"발사간격" = 4.0
-"탄낙차" = 0.0
-"발사색" = 1
-"색_번갈아" = true
-"색_전환주기" = 8.0
 
 [node name="구역4_구덩이_물받이" parent="장치" unique_id=1020723151 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(11520, 6016)
 "크기" = Vector2(1024, 192)
 
@@ -3075,22 +3059,27 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="구역4_하강_완충수1" parent="장치" unique_id=2080342685 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(12640, 5728)
 "크기" = Vector2(192, 160)
 
 [node name="구역4_하강_완충수2" parent="장치" unique_id=1849125347 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(12832, 6048)
 "크기" = Vector2(192, 160)
 
 [node name="구역4_하강_완충수3" parent="장치" unique_id=12489391 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(13024, 6368)
 "크기" = Vector2(192, 160)
 
 [node name="구역4_하강_완충수4" parent="장치" unique_id=126200280 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(13216, 6688)
 "크기" = Vector2(192, 160)
 
 [node name="구역4_진입_완충수" parent="장치" unique_id=1617282993 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(10400, 5632)
 "크기" = Vector2(320, 96)
 
@@ -3105,9 +3094,11 @@ metadata/pressure_button_origin = Vector2(11520, 5016)
 shape = SubResource("RectangleShape2D_btilu")
 
 [node name="구역4_압력발판" type="AnimatableBody2D" parent="장치" unique_id=1126004649]
-position = Vector2(10816, 5656)
+position = Vector2(10840, 5656)
 script = ExtResource("button")
-"폭" = 160.0
+"높이" = 24.0
+"매립_지형" = NodePath("../../지형/구역4_일체형_수로바닥")
+"폭" = 144
 "작동방식" = 1
 "누름_가능_그룹" = PackedStringArray("player")
 "대상들" = Array[NodePath]([NodePath("../구역4_버튼이동다리")])
@@ -3131,11 +3122,13 @@ position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_n66ct")
 
 [node name="구역4_폭포1" parent="장치" unique_id=460069061 instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
 position = Vector2(11328, 5120)
 "색" = 1
 "크기" = Vector2(256, 560)
 
 [node name="구역4_폭포2" parent="장치" unique_id=764305583 instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
 position = Vector2(11776, 5120)
 "색" = 0
 "크기" = Vector2(256, 560)
@@ -3148,12 +3141,16 @@ script = ExtResource("valveGroup")
 [node name="구역4_폭포차단_레버" parent="장치" unique_id=593070923 instance=ExtResource("lever")]
 position = Vector2(10656, 5568)
 collision_layer = 0
-"대상_유체" = NodePath("../구역4_폭포묶음")
 "반응반경" = 96.0
+"종류" = 1
+"갈래_A" = NodePath("../구역4_폭포묶음")
+"갈래_B" = NodePath("../구역4_우회배수")
+"시작_갈래_A" = true
 
 [node name="구역5_구덩이_물받이" parent="장치" unique_id=60619353 instance=ExtResource("pool")]
-position = Vector2(14848, 7552)
-"크기" = Vector2(1024, 192)
+script = ExtResource("latest_pool_art")
+position = Vector2(14976, 7552)
+"크기" = Vector2(1280, 192)
 "색" = 0
 
 [node name="구역5_복귀발판1" parent="장치" unique_id=1862690073 instance=ExtResource("grate")]
@@ -3190,31 +3187,38 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="구역5_하강_완충수1" parent="장치" unique_id=320394071 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(15968, 7264)
 "크기" = Vector2(192, 160)
 
 [node name="구역5_하강_완충수2" parent="장치" unique_id=566924878 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(16160, 7584)
 "크기" = Vector2(192, 160)
 
 [node name="구역5_하강_완충수3" parent="장치" unique_id=1667384038 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(16352, 7904)
 "크기" = Vector2(192, 160)
 
 [node name="구역5_하강_완충수4" parent="장치" unique_id=1716715276 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(16544, 8224)
 "크기" = Vector2(192, 160)
 
 [node name="구역5_진입_완충수" parent="장치" unique_id=59347041 instance=ExtResource("pool")]
+script = ExtResource("latest_pool_art")
 position = Vector2(13728, 7168)
 "크기" = Vector2(320, 96)
 
 [node name="구역5_폭포1" parent="장치" unique_id=543410713 instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
 position = Vector2(14656, 6656)
 "색" = 1
 "크기" = Vector2(256, 560)
 
 [node name="구역5_폭포2" parent="장치" unique_id=271651452 instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
 position = Vector2(15104, 6656)
 "색" = 0
 "크기" = Vector2(256, 560)
@@ -3303,7 +3307,7 @@ position = Vector2(13824, 7168)
 collision_layer = 0
 
 [node name="구역5_통과" parent="체크포인트" unique_id=437717221 instance=ExtResource("checkpoint")]
-position = Vector2(15504, 7168)
+position = Vector2(15648, 7168)
 collision_layer = 0
 
 [node name="출구통로" parent="." unique_id=400825222 instance=ExtResource("exit")]
@@ -3353,5 +3357,22 @@ height = 128.0
 position = Vector2(17216, 8448)
 
 [node name="Player" parent="." unique_id=2001096027 instance=ExtResource("player")]
-position = Vector2(14200, 7040)
+position = Vector2(384, 1024)
 "점프_거리_칸" = 20.0
+
+[node name="CollisionPolygon2D" parent="지형/구역5_일체형_수로바닥/StaticBody2D"]
+polygon = PackedVector2Array(-2112, -896, -1344, -896, -1344, -512, -64, -512, -64, -896, 192, -896, 384, -800, 384, -576, 576, -480, 576, -256, 768, -160, 768, 64, 960, 160, 960, 384, 1088, 384, 2112, 384, 2112, 896, -2112, 896)
+
+[node name="CollisionPolygon2D" parent="지형/구역5_붕괴발판3/StaticBody2D"]
+polygon = PackedVector2Array(-96, -72, 96, -72, 96, 72, -96, 72)
+
+[node name="구역4_우회배수" parent="장치" instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
+position = Vector2(11520, 5760)
+"색" = 2
+"크기" = Vector2(192, 256)
+"켜짐" = false
+metadata/description = "직선 레버 B: 통행 폭포 대신 다리 아래 회색 집수조로 배수"
+
+[editable path="지형/구역5_일체형_수로바닥"]
+[editable path="지형/구역5_붕괴발판3"]

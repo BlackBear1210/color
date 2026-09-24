@@ -13,6 +13,9 @@ uniform vec4 ground_edges[128];
 uniform float ground_top_half_depth : hint_range(1.0, 6.0) = 4.0;
 uniform bool ground_top_enabled = true;
 uniform bool ground_side_enabled = true;
+// Horizontal three-stone sockets: left, right, surface y, adjacent stone width.
+uniform int socket_joint_count = 0;
+uniform vec4 socket_joints[8];
 
 // Approved end-stone finish, parameterized by the actual exposed side edge.
 vec4 ground_side_stone(vec4 frame) {
@@ -384,6 +387,26 @@ void fragment() {
   // Fit whole coping stones between the actual endpoints, joint to joint.
   float stone_count = max(1.0,floor(faces.w/(198.0*0.2353)+0.5));
   float stone_phase = fract(clamp(faces.z/faces.w,0.0,1.0)*stone_count);
+  // Fit each adjacent stone to the metal cutout. Keep its outer mortar joint,
+  // but sample stone interior at the socket so the old diagonal cannot fork.
+  for (int joint = 0; joint < 8; joint++) {
+   if (joint >= socket_joint_count) { break; }
+   vec4 socket = socket_joints[joint];
+   float sx = ground_visual_pos.x;
+   float sy = ground_visual_pos.y - socket.z;
+   if (sy < -4.01 || sy > 24.01 || socket.w <= 0.0) { continue; }
+   float inset = 2.0 + max(0.0, 6.0 - (sy + 4.0));
+   if (sy >= 9.0) { inset = 0.0; }
+   float left_outer = socket.x - socket.w;
+   float right_outer = socket.y + socket.w;
+   if (sx >= left_outer && sx <= socket.x + inset) {
+    float t = clamp((sx-left_outer)/(socket.w+inset),0.0,1.0);
+    stone_phase = t * 0.78;
+   } else if (sx >= socket.y - inset && sx <= right_outer) {
+    float t = clamp((sx-socket.y+inset)/(socket.w+inset),0.0,1.0);
+    stone_phase = 0.22 + t * 0.78;
+   }
+  }
   vec2 cap_uv = vec2((266.0+stone_phase*198.0)/1774.0,
                      source_y/887.0);
   vec4 cap = texture(ground_cap_tex,cap_uv);

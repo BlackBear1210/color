@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCENES = ['stage_2-1', 'stage_2-2', 'stage_2-3', 'stage_2-4']
+SCENES = ['stage_2-1', 'stage_2-2', 'stage_2-3', 'stage_2-4', 'stage_2-6', 'stage_2-7', 'stage_2-8']
 OUT_DIR = ROOT / 'graphify-out'
 ROUTE_FILE = ROOT / 'tools/하수도_주행검사.gd'
 
@@ -83,6 +83,7 @@ def stage_graph(key):
     ext, subs, nodes = parse_scene(path)
     G = {'id': key, 'title': key, 'frame': None, 'nodes': [], 'edges': [], 'routes': []}
     by_name = {}
+    그릇들 = {}   # [2026-09-22] 장치 아래 Node2D 그릇(문·다리·끌어오는땅) — 버튼이 옮기는 지형은 여기 안에 있다
     for n in nodes:
         p = n['props']
         pos = vec(re.search(r'\(([^)]+)\)', p['position'])[1]) if 'position' in p else [0.0, 0.0]
@@ -93,7 +94,14 @@ def stage_graph(key):
             G['frame'] = vec(re.search(r'\(([^)]+)\)', p['카메라_리밋'])[1])
             G['start'] = vec(re.search(r'\(([^)]+)\)', p['시작_위치'])[1])
             continue
-        if n['parent'] == '지형' and ('지형' in inst or 'WALL' in inst):
+        if n['parent'] == '장치' and n['type'] == 'Node2D':
+            그릇들[n['name']] = pos
+            continue
+        움직임 = n['parent'].startswith('장치/') and n['parent'].count('/') == 1 and ('지형' in inst or 'WALL' in inst)
+        if 움직임:
+            그릇 = n['parent'].split('/')[1]
+            pos = [pos[0] + 그릇들.get(그릇, [0, 0])[0], pos[1] + 그릇들.get(그릇, [0, 0])[1]]
+        if (n['parent'] == '지형' or 움직임) and ('지형' in inst or 'WALL' in inst):
             pts = points_of(p, subs)
             if not pts:
                 continue
@@ -105,9 +113,9 @@ def stage_graph(key):
             if '내부_바탕흰색' in p:  # 내부 무늬 지형: 시작상태 0 이지만 바탕은 실제 흑백
                 color = '흰색' if p['내부_바탕흰색'] == 'true' else '검정'
             role = p.get('metadata/role', '"플랫폼"').strip('"')
-            item = {'id': n['name'], 'kind': '지형', 'color': color, 'ledge': 선반, 'role': role,
+            item = {'id': (n['parent'].split('/')[1] if 움직임 else n['name']), 'kind': '지형', 'color': color, 'ledge': 선반, 'role': ('움직임' if 움직임 else role),
                     'poly': [[q[0] + pos[0], q[1] + pos[1]] for q in pts], 'bbox': bb, 'x': (bb[0] + bb[2]) / 2, 'y': bb[1],
-                    'detail': f"{'유령 발판(칠해야 밟힘)' if 유령 else color} · {'공중선반' if 선반 else '기본지형'} · {role} · {bb[2]-bb[0]:.0f}×{bb[3]-bb[1]:.0f}"
+                    'detail': f"{'유령 발판(칠해야 밟힘)' if 유령 else color} · {'버튼이 움직이는 지형(문·다리·땅)' if 움직임 else ('공중선반' if 선반 else '기본지형')} · {role} · {bb[2]-bb[0]:.0f}×{bb[3]-bb[1]:.0f}"
                              + (' · 내부 무늬' if 'color_inlays' in n['block'] else '')
                              + (' · 일방통행' if 'one_way_collision = true' in n['block'] else '')}
             if 유령:
@@ -138,6 +146,23 @@ def stage_graph(key):
             item = {'id': n['name'], 'kind': '저장고', 'x': pos[0], 'y': pos[1] - size[1] / 2, 'w': size[0], 'h': size[1],
                     'supply': p.get('공급_유체', '').replace('NodePath("../', '').rstrip('")'),
                     'detail': f"물저장고(칠할 수 있음 · 밟을 수 있음 · 안 칠하면 검정) · 필요횟수 {p.get('필요횟수', '1')} · 칠한 색으로 공급 물을 켠다"}
+        elif '양동이.tscn' in inst:
+            # [2026-09-21] 2-6 — 같은 색 몸만 민다 · 같은 색 물을 담는다 · 굳거나(채운뒤_밀수없음) 배출구에서 E 로 `배출_유체` 를 켠다
+            item = {'id': n['name'], 'kind': '양동이', 'color': 색이름[int(p.get('색', '0'))], 'x': pos[0], 'y': pos[1] - 100, 'w': 92, 'h': 100,
+                    'out': p.get('배출_유체', '').replace('NodePath("../', '').rstrip('")'),
+                    'detail': f"양동이 {색이름[int(p.get('색', '0'))]} · {'채우면 굳음' if p.get('채운뒤_밀수없음', 'true') != 'false' else '채워도 움직임(운반)'} · 밟을 수 있음 · 색 사망 없음"}
+        elif '움직이는발판.tscn' in inst:
+            # [2026-09-22] 2-8 — 플레이어를 태우는 왕복 발판(안 칠하면 검정). 원점에서 이동거리만큼 사인 왕복
+            size = vec(re.search(r'\(([^)]+)\)', p.get('크기', 'Vector2(180, 28)'))[1])
+            item = {'id': n['name'], 'kind': '발판', 'x': pos[0], 'y': pos[1] - size[1] / 2, 'w': size[0], 'h': size[1],
+                    'detail': f"움직이는 발판 · {'상하' if p.get('이동방향', '0') == '1' else '좌우'} {p.get('이동거리', '300')}px · {p.get('왕복시간', '3.4')}초 · 안 칠하면 검정"}
+        elif '박스.tscn' in inst:
+            item = {'id': n['name'], 'kind': '박스', 'x': pos[0], 'y': pos[1] - 96, 'w': 96, 'h': 96, 'detail': '박스 · 누구나 민다 · 버튼을 누른다 · 색 사망 없음'}
+        elif n['type'] == 'AnimatableBody2D' and '압력버튼' in (ext.get((re.search(r'script = ExtResource\("([^"]+)"\)', n['block']) or [None, ''])[1], '') or ''):
+            # [2026-09-22] 2-7 — 그룹(player/박스/양동이) · 순간/유지 · 대상(문·다리·땅) 을 움직인다
+            targets = re.findall(r'NodePath\("\.\./([^"]+)"\)', p.get('대상들', '')) + re.findall(r'NodePath\("\.\./\.\./[^"]*?/([^"/]+)"\)', p.get('대상들', ''))
+            item = {'id': n['name'], 'kind': '버튼', 'x': pos[0], 'y': pos[1] - 32, 'w': float(p.get('폭', '96')), 'h': 32, 'targets': targets,
+                    'detail': f"압력버튼 · {'한 번 유지' if p.get('작동방식', '0') == '1' else '누르는 동안만'} · 누름 {p.get('누름_가능_그룹', 'player')} · 움직임 {p.get('대상_이동량들', '')}"}
         elif '제어레버.tscn' in inst:
             item = {'id': n['name'], 'kind': '레버', 'x': pos[0], 'y': pos[1],
                     'targets': [v.replace('NodePath("../', '').rstrip('")') for k, v in p.items() if k in ('대상_유체', '갈래_A', '갈래_B')],
@@ -202,6 +227,12 @@ def stage_graph(key):
                     edge(f['id'], n['id'], '공급' if f['on'] else '공급(저장고를 칠하면)')
         if n['kind'] == '저장고' and n.get('supply') and n['supply'] in by_name:
             edge(n['id'], n['supply'], '칠하면 켠다(내 색)')
+        if n['kind'] == '양동이' and n.get('out') and n['out'] in by_name:
+            edge(n['id'], n['out'], '배출구에서 E → 켠다(담은 색)')
+        if n['kind'] == '버튼':
+            for t in n.get('targets', []):
+                if t in by_name:
+                    edge(n['id'], t, '누르면 움직인다')
         if n['kind'] == '레버':
             for t in n['targets']:
                 if t in by_name:
@@ -333,7 +364,7 @@ canvas{flex:1;cursor:grab}#hint{color:var(--dim);font-size:11px}
 <canvas id="c"></canvas>
 <script>
 const DATA = __DATA__;
-const kinds = ['지형','유체','웅덩이','호퍼','격자','저장고','레버','가시','회전톱','체크포인트','통로','플레이어','경로'];
+const kinds = ['지형','유체','웅덩이','호퍼','격자','저장고','양동이','박스','버튼','발판','레버','가시','회전톱','체크포인트','통로','플레이어','경로'];
 const show = Object.fromEntries(kinds.map(k=>[k,true])); show['경로']=true;
 const rel = {hazard:true, route:true, flow:true};
 const fd = document.getElementById('filters');
@@ -348,11 +379,11 @@ const edges=[]; DATA.stages.forEach(s=>s.edges.forEach(e=>{const a=byId[s.id+'/'
 const cv=document.getElementById('c'),ctx=cv.getContext('2d'); let scale=0.11, tx=120, ty=40, drag=null, sel=null;
 function resize(){cv.width=cv.clientWidth;cv.height=cv.clientHeight; if(!resize.done){resize.done=true; scale=Math.min((cv.width-40)/13000,(cv.height-40)/oy); tx=100*scale+20; ty=300*scale+20;} draw();} window.addEventListener('resize',resize);
 const KC={'검정':'#111','흰색':'#eee','회색':'#888','유령':'#5a4a8a','무색':'#5a4a8a'};
-function nodeColor(n){if(n.kind==='지형')return KC[n.color]||'#333'; if(n.kind==='유체'||n.kind==='웅덩이')return {'검정':'#1e3a8a','흰색':'#93c5fd','회색':'#64748b'}[n.color]||'#3b82f6'; return {'호퍼':'#ffb347','격자':'#4ade80','저장고':'#fb923c','레버':'#f472b6','가시':'#ef4444','회전톱':'#ef4444','체크포인트':'#facc15','통로':'#38bdf8','플레이어':'#fff','경로':'#c084fc'}[n.kind]||'#999';}
+function nodeColor(n){if(n.kind==='지형')return KC[n.color]||'#333'; if(n.kind==='유체'||n.kind==='웅덩이')return {'검정':'#1e3a8a','흰색':'#93c5fd','회색':'#64748b'}[n.color]||'#3b82f6'; return {'호퍼':'#ffb347','격자':'#4ade80','저장고':'#fb923c','양동이':'#a3e635','박스':'#d6d3d1','버튼':'#fde047','발판':'#67e8f9','레버':'#f472b6','가시':'#ef4444','회전톱':'#ef4444','체크포인트':'#facc15','통로':'#38bdf8','플레이어':'#fff','경로':'#c084fc'}[n.kind]||'#999';}
 function rect(n){ // 화면 사각형 (월드 px)
   if(n.kind==='지형')return [n.bbox[0],n.bbox[1]+stageY[n.stage],n.bbox[2]-n.bbox[0],n.bbox[3]-n.bbox[1]];
   if(n.kind==='유체'||n.kind==='웅덩이')return [n.x-n.w/2,n.Y,n.w,n.h];
-  if(n.kind==='호퍼'||n.kind==='격자'||n.kind==='저장고')return [n.x-n.w/2,n.Y,n.w,n.h];
+  if(n.kind==='호퍼'||n.kind==='격자'||n.kind==='저장고'||n.kind==='양동이'||n.kind==='박스'||n.kind==='버튼'||n.kind==='발판')return [n.x-n.w/2,n.Y,n.w,n.h];
   if(n.kind==='가시')return [n.x-n.w/2,n.Y-10,n.w,20];
   const r=n.kind==='경로'?260:90; return [n.X-r/2,n.Y-r/2,r,r];
 }

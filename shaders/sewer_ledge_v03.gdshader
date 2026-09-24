@@ -178,11 +178,17 @@ vec2 ledge_uv(vec2 p) {
 void fragment() {
 	vec4 base = texture(TEXTURE, ledge_uv(local_pos));      
 	
+	// 2026-09-21 fix: ink_black/ink_white below are luminance maps tuned for the DARK brick art.
+	// When the node's own art is the white one (base_is_white), feeding it in made
+	// black paint come out as light bricks and white paint as flat white
+	// (stage 2-5: a white-prefab ghost ledge painted black looked white but killed white players).
+	// Always derive the stone luminance from the dark art: own texture, or the alt (black) pair.
 	vec4 alt = alt_invert
 		? vec4(vec3(1.0 - base.r), base.a)
-		: texture(alt_tex, UV);
+		: texture(alt_tex, ledge_uv(local_pos));
+	vec4 dark = base_is_white ? alt : base;
 	
-	float stone = dot(base.rgb, vec3(0.2126,0.7152,0.0722));
+	float stone = dot(dark.rgb, vec3(0.2126,0.7152,0.0722));
  vec3 ink_black = vec3(stone * 0.72);
 	vec3 ink_white = vec3(mix(0.30,0.94,smoothstep(0.01,0.27,stone)));
 	if (sewer_trim) {
@@ -362,7 +368,9 @@ void fragment() {
 
 		
 		float step_x = uv_per_lp.x * ghost_smear * 0.5;
-        vec4 blurred = texture(TEXTURE, ledge_uv(lp_snapped));
+        vec4 blurred = base_is_white
+            ? (alt_invert ? vec4(vec3(1.0 - texture(TEXTURE, ledge_uv(lp_snapped)).r), 1.0) : texture(alt_tex, ledge_uv(lp_snapped)))
+            : texture(TEXTURE, ledge_uv(lp_snapped));
         float ghost_stone = dot(blurred.rgb, vec3(0.2126,0.7152,0.0722));
         blurred.rgb = base_is_white ? vec3(mix(0.30,0.94,smoothstep(0.01,0.27,ghost_stone))) : vec3(ghost_stone*0.72);
 

@@ -158,7 +158,12 @@ func _모양_갱신() -> void:
 
 
 func _켜짐_반영() -> void:
-	monitoring = 켜짐
+	# ★[2026-09-21] 유체.gd 와 같은 고침 — monitoring 만 끄면 monitorable 이 남아 **총알(다른 Area2D)에는 계속 잡힌다.**
+	#   레버로 끈 웅덩이가 보이지도 않는데 총알을 삼켰다(2-5 밸브 물에서 발견 · 검사 `tools/test_유체_끄면_총알통과.gd`).
+	#   레이어는 즉시 비우고(물리 콜백 안에서도 허용) monitoring/monitorable 은 지연 반영한다.
+	collision_layer = 32 if 켜짐 else 0
+	set_deferred("monitoring", 켜짐)
+	set_deferred("monitorable", 켜짐)
 	visible = 켜짐
 
 
@@ -272,6 +277,8 @@ func 현재색() -> int:
 
 ## `유체.gd::_physics_process` 의 2) 와 같은 일. 켰을 때만 돈다.
 func _페인트_지우기() -> void:
+	if not monitoring:            # 켠 프레임에는 아직 지연 반영 전(유체.gd 와 같음)
+		return
 	for 바디 in get_overlapping_bodies():
 		var 대상 := _칠할대상_찾기(바디)
 		if 대상 == null:

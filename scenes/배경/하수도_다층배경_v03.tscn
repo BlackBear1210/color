@@ -1,0 +1,75 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v03/01_far.png" id="far"]
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v03/04_quiet_wall.png" id="mid"]
+[ext_resource type="Texture2D" path="res://assets/background/stage_2/layers_v03/04_quiet_wall.png" id="near"]
+[ext_resource type="Shader" path="res://shaders/sewer_layer_join_v03.gdshader" id="shader"]
+
+[sub_resource type="ShaderMaterial" id="far_material"]
+shader = ExtResource("shader")
+shader_parameter/opaque_wall = true
+shader_parameter/edge_width = 0.004
+shader_parameter/haze_color = Color(0.24, 0.24, 0.24, 1)
+shader_parameter/atmosphere = 0.0
+shader_parameter/tone_curve = Vector3(0.25, 0.20, 0.65)
+shader_parameter/tone_limits = Vector2(0.12, 0.30)
+
+[sub_resource type="ShaderMaterial" id="mid_material"]
+shader = ExtResource("shader")
+shader_parameter/opaque_wall = false
+shader_parameter/edge_width = 0.004
+shader_parameter/haze_color = Color(0.20, 0.20, 0.20, 1)
+shader_parameter/atmosphere = 0.0
+shader_parameter/tone_curve = Vector3(0.35, 0.18, 0.65)
+shader_parameter/tone_limits = Vector2(0.09, 0.30)
+shader_parameter/silhouette_mode = 1
+
+[sub_resource type="ShaderMaterial" id="near_material"]
+shader = ExtResource("shader")
+shader_parameter/opaque_wall = false
+shader_parameter/edge_width = 0.004
+shader_parameter/haze_color = Color(0.24, 0.24, 0.24, 1)
+shader_parameter/atmosphere = 0.0
+shader_parameter/tone_curve = Vector3(0.35, 0.23, 0.9)
+shader_parameter/tone_limits = Vector2(0.10, 0.38)
+shader_parameter/silhouette_mode = 2
+
+[node name="하수도_다층배경_v03" type="Node2D"]
+editor_description = "2-9 가독성 배경. 아치는 먼 층에만 남기고 중간은 받침 없는 세로 지지대, 가까운 층은 평평한 벽면으로 구분합니다. 실제 지형과 혼동되는 수평 마감과 광택을 제거하고 중간 회색의 좁은 명도 범위를 사용합니다."
+texture_filter = 2
+
+[node name="먼터널" type="Parallax2D" parent="."]
+z_index = -100
+scroll_scale = Vector2(0.2, 0.15)
+repeat_size = Vector2(3072, 2048)
+repeat_times = 3
+
+[node name="그림" type="Sprite2D" parent="먼터널"]
+material = SubResource("far_material")
+scale = Vector2(2, 2)
+texture = ExtResource("far")
+centered = false
+
+[node name="중간기둥" type="Parallax2D" parent="."]
+z_index = -90
+scroll_scale = Vector2(0.5, 0.4)
+repeat_size = Vector2(2304, 1536)
+repeat_times = 3
+scroll_offset = Vector2(360, 180)
+
+[node name="그림" type="Sprite2D" parent="중간기둥"]
+material = SubResource("mid_material")
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("mid")
+centered = false
+
+[node name="가까운벽" type="Parallax2D" parent="."]
+z_index = -80
+scroll_scale = Vector2(0.85, 0.75)
+repeat_size = Vector2(1536, 1024)
+repeat_times = 3
+
+[node name="그림" type="Sprite2D" parent="가까운벽"]
+material = SubResource("near_material")
+texture = ExtResource("near")
+centered = false

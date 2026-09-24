@@ -30,6 +30,9 @@
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="28_makdc"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="29_sladu"]
 
+[ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
+[ext_resource type="Script" path="res://scripts/스마트월드/호퍼_주철_기존배치.gd" id="latest_hopper_art"]
+
 [sub_resource type="Resource" id="Resource_3xiq2"]
 script = ExtResource("5_kqhvq")
 position = Vector2(-512, -2048)
@@ -2458,6 +2461,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S1_출구물" parent="장치" unique_id=1622344719 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
 position = Vector2(3264, 2936)
 monitoring = false
@@ -2465,12 +2469,14 @@ monitoring = false
 "켜짐" = false
 
 [node name="S1" parent="장치" unique_id=1326298406 instance=ExtResource("23_ghk8r")]
+script = ExtResource("latest_hopper_art")
 position = Vector2(3264, 2936)
 "폭" = 192.0
 "높이" = 56.0
 "출구_유체" = NodePath("../S1_출구물")
 "출구_물줄기_폭" = 320.0
 "자동_출구_연결" = false
+"z_index" = 3
 
 [node name="윗면" type="CollisionShape2D" parent="장치/S1" unique_id=1576734344]
 position = Vector2(0, -50)
@@ -2479,17 +2485,21 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S1_고정공급" parent="장치" unique_id=477784455 instance=ExtResource("22_uomlx")]
-position = Vector2(3192, 2832)
+script = ExtResource("latest_water_art")
+"position" = Vector2(3192, 2832)
 "색" = 1
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
+"호퍼_유입" = true
 
 [node name="S1_저장고공급" parent="장치" unique_id=27406635 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
-position = Vector2(3336, 2832)
+"position" = Vector2(3336, 2832)
 monitoring = false
 "색" = 0
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
 "켜짐" = false
+"호퍼_유입" = true
 
 [node name="T1" parent="장치" unique_id=1494110935 instance=ExtResource("24_amjx8")]
 position = Vector2(2696, 3280)
@@ -2553,6 +2563,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S2_출구물" parent="장치" unique_id=258576086 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
 position = Vector2(6112, 2168)
 monitoring = false
@@ -2560,12 +2571,14 @@ monitoring = false
 "켜짐" = false
 
 [node name="S2" parent="장치" unique_id=110943847 instance=ExtResource("23_ghk8r")]
+script = ExtResource("latest_hopper_art")
 position = Vector2(6112, 2168)
 "폭" = 192.0
 "높이" = 56.0
 "출구_유체" = NodePath("../S2_출구물")
 "출구_물줄기_폭" = 320.0
 "자동_출구_연결" = false
+"z_index" = 3
 
 [node name="윗면" type="CollisionShape2D" parent="장치/S2" unique_id=607440399]
 position = Vector2(0, -50)
@@ -2574,17 +2587,21 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S2_고정공급" parent="장치" unique_id=1802069489 instance=ExtResource("22_uomlx")]
-position = Vector2(6040, 2064)
+script = ExtResource("latest_water_art")
+"position" = Vector2(6040, 2064)
 "색" = 1
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
+"호퍼_유입" = true
 
 [node name="S2_저장고공급" parent="장치" unique_id=35958436 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
-position = Vector2(6184, 2064)
+"position" = Vector2(6184, 2064)
 monitoring = false
 "색" = 0
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
 "켜짐" = false
+"호퍼_유입" = true
 
 [node name="T2" parent="장치" unique_id=356608984 instance=ExtResource("24_amjx8")]
 position = Vector2(5640, 2384)
@@ -2648,6 +2665,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S3a_출구물" parent="장치" unique_id=740909590 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
 position = Vector2(5408, 1400)
 monitoring = false
@@ -2655,12 +2673,14 @@ monitoring = false
 "켜짐" = false
 
 [node name="S3a" parent="장치" unique_id=1686616331 instance=ExtResource("23_ghk8r")]
+script = ExtResource("latest_hopper_art")
 position = Vector2(5408, 1400)
 "폭" = 192.0
 "높이" = 56.0
 "출구_유체" = NodePath("../S3a_출구물")
 "출구_물줄기_폭" = 320.0
 "자동_출구_연결" = false
+"z_index" = 3
 
 [node name="윗면" type="CollisionShape2D" parent="장치/S3a" unique_id=368125070]
 position = Vector2(0, -50)
@@ -2669,17 +2689,21 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S3a_고정공급" parent="장치" unique_id=590463172 instance=ExtResource("22_uomlx")]
-position = Vector2(5480, 1296)
+script = ExtResource("latest_water_art")
+"position" = Vector2(5480, 1296)
 "색" = 1
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
+"호퍼_유입" = true
 
 [node name="S3a_저장고공급" parent="장치" unique_id=864582223 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
-position = Vector2(5336, 1296)
+"position" = Vector2(5336, 1296)
 monitoring = false
 "색" = 0
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
 "켜짐" = false
+"호퍼_유입" = true
 
 [node name="T3a" parent="장치" unique_id=271562272 instance=ExtResource("24_amjx8")]
 position = Vector2(5640, 2000)
@@ -2743,6 +2767,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S3b_출구물" parent="장치" unique_id=1774490698 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
 position = Vector2(8736, 1400)
 monitoring = false
@@ -2750,12 +2775,14 @@ monitoring = false
 "켜짐" = false
 
 [node name="S3b" parent="장치" unique_id=1152017551 instance=ExtResource("23_ghk8r")]
+script = ExtResource("latest_hopper_art")
 position = Vector2(8736, 1400)
 "폭" = 192.0
 "높이" = 56.0
 "출구_유체" = NodePath("../S3b_출구물")
 "출구_물줄기_폭" = 320.0
 "자동_출구_연결" = false
+"z_index" = 3
 
 [node name="윗면" type="CollisionShape2D" parent="장치/S3b" unique_id=283009265]
 position = Vector2(0, -50)
@@ -2764,17 +2791,21 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="S3b_고정공급" parent="장치" unique_id=2131568934 instance=ExtResource("22_uomlx")]
-position = Vector2(8664, 1296)
+script = ExtResource("latest_water_art")
+"position" = Vector2(8664, 1296)
 "색" = 1
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
+"호퍼_유입" = true
 
 [node name="S3b_저장고공급" parent="장치" unique_id=132318996 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
-position = Vector2(8808, 1296)
+"position" = Vector2(8808, 1296)
 monitoring = false
 "색" = 0
-"크기" = Vector2(48, 64)
+"크기" = Vector2(48, 60)
 "켜짐" = false
+"호퍼_유입" = true
 
 [node name="T3b" parent="장치" unique_id=815089235 instance=ExtResource("24_amjx8")]
 position = Vector2(8300, 2000)
@@ -2788,6 +2819,7 @@ position = Vector2(8300, 2000)
 [node name="관_S3b고정" parent="장치" unique_id=707361593 instance=ExtResource("25_tkhb3")]
 
 [node name="H4_출구물" parent="장치" unique_id=1304901993 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
 position = Vector2(9060, 832)
 monitoring = false
@@ -2795,12 +2827,14 @@ monitoring = false
 "켜짐" = false
 
 [node name="H4" parent="장치" unique_id=1008466971 instance=ExtResource("23_ghk8r")]
+script = ExtResource("latest_hopper_art")
 position = Vector2(9060, 832)
 "폭" = 192.0
 "높이" = 56.0
 "출구_유체" = NodePath("../H4_출구물")
 "출구_물줄기_폭" = 192.0
 "자동_출구_연결" = false
+"z_index" = 3
 
 [node name="윗면" type="CollisionShape2D" parent="장치/H4" unique_id=1089099264]
 position = Vector2(0, -50)
@@ -2809,17 +2843,21 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="H4_고정공급" parent="장치" unique_id=814010829 instance=ExtResource("22_uomlx")]
-position = Vector2(8988, 656)
+script = ExtResource("latest_water_art")
+"position" = Vector2(8988, 656)
 "색" = 1
-"크기" = Vector2(48, 80)
+"크기" = Vector2(48, 132)
+"호퍼_유입" = true
 
 [node name="H4_저장고공급" parent="장치" unique_id=435343128 instance=ExtResource("22_uomlx")]
+script = ExtResource("latest_water_art")
 visible = false
-position = Vector2(9132, 656)
+"position" = Vector2(9132, 656)
 monitoring = false
 "색" = 0
-"크기" = Vector2(48, 80)
+"크기" = Vector2(48, 132)
 "켜짐" = false
+"호퍼_유입" = true
 
 [node name="T4" parent="장치" unique_id=771677241 instance=ExtResource("24_amjx8")]
 position = Vector2(6800, 1232)

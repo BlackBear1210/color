@@ -382,7 +382,12 @@ func _직사각_판정(이름: StringName) -> CollisionShape2D:
 
 
 func _켜짐_반영() -> void:
-	monitoring = 켜짐
+	# ★[2026-09-21 아스트라 추정 · Claude 실측] monitoring 만 끄면 monitorable 이 남아 다른 Area2D(총알)의 감지와 레이 조회에는
+	#   계속 잡힌다 → 밸브로 잠근 물(안 보임)이 총알을 막았다(2-5). 레이어를 즉시 비우고(물리 콜백 안에서도 허용)
+	#   겹침 감지는 지연 반영해 레버가 물리 콜백 중에 토글해도 된다. 회귀 검사: `tools/test_유체_끄면_총알통과.gd`.
+	collision_layer = 32 if 켜짐 else 0
+	set_deferred("monitoring", 켜짐)
+	set_deferred("monitorable", 켜짐)
 	visible = 켜짐
 
 
@@ -600,7 +605,9 @@ static func 섞기(a: int, b: int) -> int:
 
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint() or not 켜짐:
+	# ★[2026-09-21] `monitoring` 은 켤 때 지연 반영된다(_켜짐_반영) — 켠 그 프레임에 겹침을 물으면
+	#   "Can't find overlapping areas when monitoring is off" 오류가 난다(2-5 직선 레버에서 실측). 한 프레임 건너뛴다.
+	if Engine.is_editor_hint() or not 켜짐 or not monitoring:
 		return
 
 	# ── 0) 차오르기 (켜 둔 유체만) ──

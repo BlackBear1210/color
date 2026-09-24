@@ -43,7 +43,7 @@ static func _자르기(parts: Array[PackedVector2Array], others: Array[PackedVec
 		parts = next
 	return parts
 
-static func 생성(terrain, points: PackedVector2Array, others: Array[PackedVector2Array], top: bool, side: bool) -> Array[MeshInstance2D]:
+static func 생성(terrain, points: PackedVector2Array, others: Array[PackedVector2Array], top: bool, side: bool, submerged: Array[PackedVector2Array] = []) -> Array[MeshInstance2D]:
 	var result: Array[MeshInstance2D] = []
 	if points.size() < 3 or terrain.shape_material == null or terrain.shape_material.fill_textures.is_empty():
 		return result
@@ -94,6 +94,8 @@ static func 생성(terrain, points: PackedVector2Array, others: Array[PackedVect
 				var ri := minf(3.0, left.distance_to(right) * 0.2) if interval.y > 0.9999 and tangent.cross(following) > 0.01 else 0.0
 				pieces.append(PackedVector2Array([left + outward * 4.0 + tangent * li, right + outward * 4.0 - tangent * ri, right, left]))
 		pieces = _자르기(pieces, others)
+		# 수면 아래의 벽 모서리/바닥 윗면은 수중에 잠겨 보이지 않아야 한다.
+		pieces = _자르기(pieces, submerged)
 		var vertices := PackedVector2Array()
 		var indices := PackedInt32Array()
 		for piece in pieces:
