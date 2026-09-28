@@ -193,7 +193,8 @@ func _재구성() -> void:
 
 func _편집기_주인_지정(노드: Node) -> void:
 	# 새로 만든 보조 노드에만 owner를 준다. 읽어 온 SS2D 노드는 절대 다시 소유하지 않는다.
-	if Engine.is_editor_hint() and get_tree() != null:
+	# 씬 로딩 중 export setter가 먼저 호출될 수 있어 트리 진입 전에 get_tree()를 호출하지 않는다.
+	if Engine.is_editor_hint() and is_inside_tree():
 		노드.owner = get_tree().edited_scene_root
 
 

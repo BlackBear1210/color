@@ -12,10 +12,53 @@ var _white_active: bool = false
 		호퍼_유입 = value
 		_물_애니_크기_맞추기()
 
+## [2026-09-27] 물줄기 v3 외관(흰물_디자인.물줄기_v3). 2-9 시범 뒤 기본 켬 — 하수도 전 스테이지.
+## 판정은 바뀌지 않는다(아래 _판정_폴리곤들 그대로).
+@export var 물줄기_v3: bool = true:
+	set(value):
+		물줄기_v3 = value
+		_물_애니_크기_맞추기()
+
 func _ready() -> void:
 	super._ready()
 	# 상위 _ready 안에서 호출될 때는 준비 검사 때문에 외관 생성이 미뤄질 수 있다.
 	call_deferred("_물_그림_갱신")
+	if not Engine.is_editor_hint():
+		_바닥_찾기()
+
+## [2026-09-27] v3 물막·물보라를 **실제 바닥 윗면**에 앉힌다(그림만 — 판정은 그대로).
+## 판정 사각형이 바닥 속까지 내려간 물줄기(2-5 F1: 60px)는 물막이 벽돌 속에 그려졌다.
+## 아랫끝에서 위로 4px 씩 올라가며 "지형(레이어 1) 안인가" 를 묻고, 처음 벗어난 곳이 바닥 윗면이다.
+## 위로 쏘는 광선은 시작점을 품은 바닥을 못 본다(hit_from_inside) → 점 질의로 한다.
+## 격자(통과플랫폼)도 레이어 1 이지만 물 아랫끝이 격자 속에 있는 배치는 없어서 문제되지 않는다.
+func _바닥_찾기() -> void:
+	# 지형 콜리전이 물리 서버에 올라간 뒤에 묻는다(첫 물리 프레임 전에는 비어 있다).
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	if not is_inside_tree() or 호퍼_유입 or not is_instance_valid(_white_visual):
+		return
+	var 공간 := get_world_2d().direct_space_state
+	var 질의 := PhysicsPointQueryParameters2D.new()
+	질의.collision_mask = 1
+	질의.collide_with_areas = false
+	var 아래 := 크기.y - 1.0
+	# 물줄기 절반 · 240px 넘게 파묻혔으면 뭔가 다른 배치다 — 손대지 않는다.
+	var 한계 := minf(크기.y * 0.5, 240.0)
+	var 파묻힘 := 0.0
+	while 파묻힘 <= 한계:
+		질의.position = to_global(Vector2(0.0, 아래 - 파묻힘))
+		if 공간.intersect_point(질의, 1).is_empty():
+			break
+		파묻힘 += 4.0
+	if 파묻힘 < 4.0 or 파묻힘 > 한계:
+		return
+	# 4px 걸음으로 지나친 만큼 1px 씩 되돌아가 윗면을 정확히 잡는다.
+	while 파묻힘 > 0.0:
+		질의.position = to_global(Vector2(0.0, 아래 - 파묻힘 + 1.0))
+		if not 공간.intersect_point(질의, 1).is_empty():
+			break
+		파묻힘 -= 1.0
+	_white_visual.set("보이는_높이", 크기.y - 파묻힘)
 
 func _새물인가() -> bool:
 	return 종류 == 종류_.물
@@ -51,6 +94,9 @@ func _물_애니_크기_맞추기() -> void:
 		_white_visual.set("크기", 크기)
 		_white_visual.set("흐름속도", 흐름속도)
 		_white_visual.set("형태", 1 if 크기.x >= 160.0 else 0)
+		# v3 는 판정 사각형보다 가늘어지지 않도록 판정_여유를 알아야 한다(형태를 정한 뒤에 켠다)
+		_white_visual.set("판정_여유", 판정_여유)
+		_white_visual.set("물줄기_v3", 물줄기_v3)
 
 func _판정_폴리곤들(frame_index: int) -> Array:
 	if not _새물인가():

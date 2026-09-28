@@ -1,7 +1,8 @@
 @tool
 extends "res://scripts/스마트월드/지형.gd"
 const SEWER_SHADER = preload("res://shaders/하수도_벽돌_페인트.gdshader")
-@export_range(0.0, 0.2, 0.01) var 근접반사_세기: float = 0.10
+# 지형마다 수행하던 광선 검사와 재질 갱신은 기본으로 끈다. 필요할 때만 명시적으로 켠다.
+@export_range(0.0, 0.2, 0.01) var 근접반사_세기: float = 0.0
 @export_range(80.0, 350.0, 10.0) var 근접반사_반경: float = 190.0
 ## 아틀라스의 잘린 영역을 실제 텍스처로 풀어야 페인트 셰이더의 UV와 흑백 짝이 일치한다.
 ## 공용 지형 규칙은 그대로 상속하고 이 재질의 아틀라스 준비만 담당한다.
@@ -87,6 +88,10 @@ func _process(delta: float) -> void:
 	# 부모의 물감 번짐/회수는 원래 속도로 유지한다.
 	super._process(delta)
 	if Engine.is_editor_hint():
+		return
+	# 꺼진 효과는 플레이어 검색·경계 계산·물리 광선 검사에 진입하지 않는다.
+	if 근접반사_세기 <= 0.0 or not is_inside_tree():
+		_반사_끄기()
 		return
 	_반사_대기 -= delta
 	if _반사_대기 > 0.0:

@@ -35,6 +35,12 @@ const 격자_아틀라스 = preload("res://assets/textures/obstacles/grate/cast_
 		queue_redraw()
 
 func _ready() -> void:
+	# 얇은 격자가 이동 광원에 번쩍이지 않도록 원래 흑백 명도를 고정한다.
+	var 격자재질 := CanvasItemMaterial.new()
+	격자재질.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	material = 격자재질
+	# 축소되는 철망의 가는 선은 밉맵으로 평균화해 카메라 이동 시 반짝임을 줄인다.
+	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	collision_layer = 1
 	collision_mask = 0
 	_다시_만들기()

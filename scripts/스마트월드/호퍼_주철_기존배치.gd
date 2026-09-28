@@ -10,6 +10,8 @@ func _다시_만들기() -> void:
 
 func _draw() -> void:
 	# 원본 입구 y260과 노즐 끝 y700을 각각 -높이와 0에 맞춘다.
-	var ratio := Vector2(폭 / 400.0, 높이 / 440.0)
-	var destination := Rect2(Vector2(-256.0 * ratio.x, -높이 - 20.0 * ratio.y), Vector2(512,480) * ratio)
-	draw_texture_rect_region(주철_아틀라스, destination, Rect2(0,240,512,480))
+	_주철_그리기(입구_아트_배율(), 0)
+
+func 입구_아트_배율() -> Vector2:
+	# 같은 입구 수면이 기존 높이로 눌린 아트에도 정확히 맞도록 배율만 다르게 준다.
+	return Vector2(폭 / 400.0, 높이 / 440.0)

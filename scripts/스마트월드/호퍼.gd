@@ -23,6 +23,10 @@ extends StaticBody2D
 ## ============================================================================
 class_name 호퍼
 
+## [2026-09-27] 입구 수면과 출구가 같은 혼합 결과를 쓰도록 판정 결과를 전달한다.
+## 물 목록은 착수 위치 전용이며, 연출이 충돌이나 유체 색을 다시 바꾸지 않는다.
+signal 입구_상태_갱신(물색: int, 유입들: Array)
+
 @export var 폭: float = 120.0:
 	set(v): 폭 = maxf(v, 32.0); _다시_만들기()
 @export var 높이: float = 56.0:
@@ -342,14 +346,16 @@ func _physics_process(delta: float) -> void:
 			if _출구 != null:
 				_출구.켜짐 = false
 			_출구 = 자동출구
-	if _출구 == null:
-		return
-	var 받은색 := -1
+	# 출구가 없는 호퍼도 입구 수면은 표시해야 하므로 입구부터 계산한다.
+	var 받은색들: Array[int] = []
+	var 유입들: Array = []
 	var 겹치는_영역 := _입구.get_overlapping_areas()
 	for a in 겹치는_영역:
 		var f := a as 유체
-		if f and f.켜짐 and f.종류 == 유체.종류_.물:
-			받은색 = f.색 if 받은색 < 0 else 유체.섞기(받은색, f.색)
+		if f and f != _출구 and f.켜짐 and f.종류 == 유체.종류_.물:
+			받은색들.append(f.색)
+			유입들.append(f)
+	var 받은색 := 입구_색_합치기(받은색들)
 
 	# ★[2026-09-07] 한두 프레임 안 잡힌 것을 "물이 끊겼다"로 세지 않는다.
 	#   왜 필요한지는 위 `끊김_유예` 의 주석 참고 — 물 판정이 8fps 로 다시 구워지면서
@@ -363,6 +369,9 @@ func _physics_process(delta: float) -> void:
 	var 켤까 := _마지막_받은색 >= 0 and _끊긴시간 < 끊김_유예
 	if not 켤까:
 		_마지막_받은색 = -1          # 진짜로 끊겼다 → 다음에 다시 받을 때까지 색도 잊는다
+	입구_상태_갱신.emit(_마지막_받은색, 유입들)
+	if _출구 == null:
+		return
 
 	if _출구.켜짐 != 켤까:
 		if 디버그_로그:
@@ -382,6 +391,20 @@ func _physics_process(delta: float) -> void:
 			for a in 겹치는_영역:
 				목록.append("%s(유체=%s)" % [a.name, a is 유체])
 			print("[호퍼:%s] 입구 겹침 %d개: %s" % [name, 겹치는_영역.size(), 목록])
+
+
+## 흑/백이 하나라도 함께 있으면 반드시 회색이다. 순차 섞기는 검+흰+검을 검정으로
+## 되돌려 겹침 순서에 따라 색이 바뀌므로, 입구 전체의 존재 여부를 먼저 모은다.
+static func 입구_색_합치기(색들: Array[int]) -> int:
+	var 검정 := 색들.has(0)
+	var 흰색 := 색들.has(1)
+	if 검정 and 흰색:
+		return 2
+	if 검정:
+		return 0
+	if 흰색:
+		return 1
+	return 2 if 색들.has(2) else -1
 
 
 ## 유체의 원점은 물이 시작되는 출구다. 포트 중심에서 허용 거리 안인 물만 고른다.
