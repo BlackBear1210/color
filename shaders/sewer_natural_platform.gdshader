@@ -1,4 +1,7 @@
 shader_type canvas_item;
+uniform bool reference_tone = false;
+// Foreground depth (approved ver.2 still): darker, calmer black body; bright coping row stays.
+uniform bool front_depth = false;
 uniform int inlay_count = 0;
 uniform vec4 inlay_rects[16];
 // Prototype snapshot of sewer paint shader; keep paint uniforms synchronized.
@@ -424,6 +427,16 @@ void fragment() {
 	if (sewer_trim) {
 		ink_black *= 0.45;
 	}
+    // Opt-in material response before paint blending, preserving color identity.
+    if (reference_tone) {
+        ink_black = ink_black * 0.82 + vec3(0.018);
+        ink_white = ink_white * 0.78 + vec3(0.08);
+    }
+    // Foreground body only (the coping trim is a separate mesh): halve the level and flatten the
+    // noisy stone grain so the terrain reads as a dark mass under a lit coping row.
+    if (front_depth && ground_platform && cached_draw_mode == 1) {
+        ink_black = mix(vec3(0.045), ink_black * 0.62, 0.78);
+    }
 	vec3 gray = mix(ink_black, ink_white, 0.5);
 
 	vec3 col = base_is_white ? ink_white : ink_black;

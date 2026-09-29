@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_화면효과_v2.tscn" id="sewer_fx_v2"]
 [ext_resource type="Script" path="res://scripts/스마트월드/stage_2_5_월드.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
 [ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_기본지형_검정.tscn" id="3_ground"]
@@ -12,7 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="10_player"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="11_point"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="12_array"]
-[ext_resource type="PackedScene" path="res://scenes/배경/하수도_다층배경_v02.tscn" id="13_bg"]
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_벽돌배경_2_9_조정.tscn" id="13_bg"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="14_passage"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="15_cp"]
 
@@ -768,6 +769,8 @@ script = ExtResource("2_core")
 [node name="지형" type="Node2D" parent="."]
 
 [node name="SS_CEM_FLOOR_1" parent="지형" instance=ExtResource("3_ground")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2144, 1872)
 editor_description = "같은 검정 바닥은 하나로 잇고 입구 계단은 96px씩 올려 갈래를 먼저 관찰하게 한다."
 _points = SubResource("s0_array")
@@ -776,6 +779,8 @@ _points = SubResource("s0_array")
 polygon = PackedVector2Array(-3552, -752, -288, -752, -288, -848, -160, -848, -160, -944, -32, -944, -32, -1040, 96, -1040, 96, -1136, 224, -1136, 224, -752, 3552, -752, 3552, 1136, -3552, 1136)
 
 [node name="SS_WALL_CEIL_1" parent="지형" instance=ExtResource("3_ground")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(4224, -768)
 editor_description = "넓은 천장 덩어리로 카메라 위쪽 공백을 가린다."
 _points = SubResource("s1_array")
@@ -784,6 +789,8 @@ _points = SubResource("s1_array")
 polygon = PackedVector2Array(-5632, -768, 5632, -768, 5632, 768, -5632, 768)
 
 [node name="SS_WALL_END_L" parent="지형" instance=ExtResource("3_ground")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(-640, 560)
 editor_description = "입구 안쪽 면을 막지 않고 화면 반폭보다 두꺼운 외벽을 둔다."
 _points = SubResource("s2_array")
@@ -792,6 +799,8 @@ _points = SubResource("s2_array")
 polygon = PackedVector2Array(-768, -560, 768, -560, 768, 560, -768, 560)
 
 [node name="SS_WALL_END_R" parent="지형" instance=ExtResource("4_white")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(9328, 1504)
 editor_description = "출구통로 뒤쪽을 닫고 흰 출구 바닥과 색을 맞춘다."
 _points = SubResource("s3_array")
@@ -840,6 +849,8 @@ _points = SubResource("s8_array")
 polygon = PackedVector2Array(-96, -32, 96, -32, 96, -16, 64, 16, 0, 32, -64, 16, -96, -16)
 
 [node name="C_회수계단" parent="지형" instance=ExtResource("3_ground")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(6192, 2112)
 editor_description = "발판을 못 칠하거나 회수해 떨어져도 96px 계단으로 왼쪽 준비실에 복귀한다. 오른쪽은 384px 벽이라 걷기 우회가 아니다."
 _points = SubResource("s9_array")
@@ -868,6 +879,8 @@ _points = SubResource("s11_array")
 polygon = PackedVector2Array(-104, -32, 104, -32, 104, -16, 72, 16, 0, 32, -72, 16, -104, -16)
 
 [node name="SS_CEM_FLOOR_6" parent="지형" instance=ExtResource("4_white")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(7744, 2064)
 editor_description = "마지막 도약은 흰 출구에 착지한다. 아래 회수로에서는 384px 단차라 도약 없이 출구로 갈 수 없다."
 _points = SubResource("s12_array")
@@ -941,6 +954,7 @@ position = Vector2(5992, 576)
 "켜짐" = true
 
 [node name="H4_색전환발판" parent="장치" instance=ExtResource("8_hopper")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(5488, 1080)
 "폭" = 160.0
@@ -1023,3 +1037,5 @@ metadata/checkpoint_base_color = 1
 [editable path="지형/C_유령_검정"]
 [editable path="지형/C_유령_흰색"]
 [editable path="지형/SS_CEM_FLOOR_6"]
+
+[node name="하수도화면효과" parent="." instance=ExtResource("sewer_fx_v2")]

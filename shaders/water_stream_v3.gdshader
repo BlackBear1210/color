@@ -8,6 +8,7 @@ uniform sampler2D flow_texture : filter_linear, repeat_enable;
 uniform sampler2D splash_sheet : filter_linear, repeat_disable;
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear;
 uniform bool impact = true;
+uniform bool colored_splash = false;
 uniform int water_tone = 1;
 uniform vec2 extent = vec2(64.0, 320.0);
 uniform int kind = 0;
@@ -16,6 +17,9 @@ uniform float back_depth = 4.0;
 uniform float hit_inset = 7.0;
 uniform float phase = 0.0;
 uniform bool animate = true;
+// Fed every frame by the owning script at runtime (not TIME). A shader that reads TIME
+// forces the Godot editor to redraw every frame, which steals GPU from the running game.
+uniform float anim_time = 0.0;
 uniform float refraction = 1.0;
 
 // Must match the baker constants.
@@ -66,6 +70,13 @@ vec4 splash_at(vec2 p, float center, float ground, float bottom_w, float t, floa
     vec2 sheet = vec2(COLS, FRAMES / COLS) * FRAME_SIZE;
     vec4 s = texture(splash_sheet, (cell * FRAME_SIZE + f) / sheet);
     float v = mix(mix(foam_lo, foam_hi, s.r), body, s.g);
+    // Airborne water keeps its identity; only surface contact gets darker shading.
+    if (colored_splash) {
+        float airborne = 1.0 - smoothstep(ground - 5.0, ground - 1.0, p.y);
+        float own_tone = water_tone == 1 ? mix(0.90, 0.98, s.r)
+            : (water_tone == 0 ? mix(0.035, 0.16, s.r) : mix(0.46, 0.62, s.r));
+        v = mix(v, own_tone, airborne);
+    }
     return vec4(vec3(v), s.a);
 }
 
@@ -153,5 +164,5 @@ void vertex() {
 }
 
 void fragment() {
-    COLOR = stream(pixel, SCREEN_UV, SCREEN_PIXEL_SIZE, phase + (animate ? TIME : 0.0));
+    COLOR = stream(pixel, SCREEN_UV, SCREEN_PIXEL_SIZE, phase + (animate ? anim_time : 0.0));
 }

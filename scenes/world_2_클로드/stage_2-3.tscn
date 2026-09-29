@@ -1,8 +1,9 @@
 [gd_scene format=4 uid="uid://b8ft2am835ert"]
 
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_화면효과_v2.tscn" id="sewer_fx_v2"]
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_4d0vn"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_t48vu"]
-[ext_resource type="PackedScene" path="res://scenes/배경/하수도_다층배경_v02.tscn" id="3_5vnxv"]
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_벽돌배경_2_9_조정.tscn" id="3_5vnxv"]
 [ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_기본지형_검정.tscn" id="4_qs1cv"]
 [ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="5_eqyh6"]
 [ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="6_4rmcq"]
@@ -3586,6 +3587,8 @@ script = ExtResource("2_t48vu")
 [node name="지형" type="Node2D" parent="." unique_id=1231419108]
 
 [node name="외곽_왼벽" parent="지형" unique_id=58081149 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(-512, 1600)
 _points = SubResource("Resource_udmrj")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_n1yca")])
@@ -3593,6 +3596,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "외곽"
 
 [node name="외곽_오른벽" parent="지형" unique_id=3505262 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(12512, 1600)
 _points = SubResource("Resource_q6g2k")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_3bkup")])
@@ -3600,6 +3605,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "외곽"
 
 [node name="외곽_천장" parent="지형" unique_id=1189393781 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(6000, -512)
 _points = SubResource("Resource_03dub")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_pg21i")])
@@ -3607,6 +3614,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "외곽"
 
 [node name="외곽_바닥" parent="지형" unique_id=1216916303 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(6000, 3712)
 _points = SubResource("Resource_ae7s2")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_0fepp")])
@@ -3614,6 +3623,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "외곽"
 
 [node name="천장띠" parent="지형" unique_id=915135075 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(6000, 448)
 _points = SubResource("Resource_78nff")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_edunb")])
@@ -3621,6 +3632,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "채움"
 
 [node name="BCD_천장_채움_흰" parent="지형" unique_id=477287712 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(7344, 1152)
 _points = SubResource("Resource_kee22")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_an8mc")])
@@ -3628,6 +3641,8 @@ shape_material = ExtResource("9_3bkup")
 metadata/role = "채움"
 
 [node name="D_기둥_흰1" parent="지형" unique_id=1167431795 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(9920, 1904)
 _points = SubResource("Resource_at73l")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_a3n2c")])
@@ -3635,6 +3650,8 @@ shape_material = ExtResource("9_3bkup")
 metadata/role = "채움"
 
 [node name="D_기둥_흰2" parent="지형" unique_id=860905892 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(11776, 1904)
 _points = SubResource("Resource_4aj6o")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_gyosc")])
@@ -3642,6 +3659,8 @@ shape_material = ExtResource("9_3bkup")
 metadata/role = "채움"
 
 [node name="A_바닥_검" parent="지형" unique_id=649092261 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(736, 2528)
 _points = SubResource("Resource_154do")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_gglbk")])
@@ -3649,6 +3668,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="A_슬롯1_바닥" parent="지형" unique_id=1628829331 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(1536, 2656)
 _points = SubResource("Resource_dpm87")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_f51xd")])
@@ -3656,6 +3677,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "채움"
 
 [node name="A_바닥_흰" parent="지형" unique_id=305883923 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2080, 2528)
 script = ExtResource("10_futmq")
 "내부_바탕흰색" = true
@@ -3668,6 +3691,8 @@ metadata/role = "플랫폼"
 metadata/color_inlays_v1 = true
 
 [node name="A_슬롯2_바닥" parent="지형" unique_id=281150302 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2624, 2656)
 _points = SubResource("Resource_sbpdf")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_euqlv")])
@@ -3780,6 +3805,8 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="A_G_A" parent="지형" unique_id=1182231005 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(832, 1136)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
@@ -3790,6 +3817,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="B_굴뚝_왼" parent="지형" unique_id=263079024 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2816, 2528)
 _points = SubResource("Resource_rq6s3")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_kkmty")])
@@ -3797,6 +3826,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="B_굴뚝_오른" parent="지형" unique_id=991017282 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(3200, 2080)
 _points = SubResource("Resource_bi5qy")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_k0ed0")])
@@ -3804,6 +3835,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="B_슬래브_3" parent="지형" unique_id=1588661961 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(3904, 1928)
 script = ExtResource("10_futmq")
 "내부_바탕흰색" = false
@@ -3816,6 +3849,8 @@ metadata/role = "플랫폼"
 metadata/color_inlays_v1 = true
 
 [node name="B_슬래브_4" parent="지형" unique_id=202943356 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(4832, 1928)
 _points = SubResource("Resource_txkum")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_sbt6s")])
@@ -3823,6 +3858,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="B_슬래브_5" parent="지형" unique_id=1721182870 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(5504, 1928)
 _points = SubResource("Resource_57tof")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_447da")])
@@ -3830,6 +3867,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="B_오른벽" parent="지형" unique_id=1519701693 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(5696, 1704)
 _points = SubResource("Resource_q2ukj")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_vplr1")])
@@ -3837,6 +3876,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="B_P1_바닥" parent="지형" unique_id=117955577 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(3360, 2880)
 _points = SubResource("Resource_86a8u")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_pil10")])
@@ -3844,6 +3885,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="B_W1" parent="지형" unique_id=1191538538 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(3840, 2600)
 _points = SubResource("Resource_uthby")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_s222m")])
@@ -3851,6 +3894,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="C_복도_바닥" parent="지형" unique_id=359342746 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(6432, 2880)
 _points = SubResource("Resource_bdxjs")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_7h833")])
@@ -3858,6 +3903,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="C_터널_천장" parent="지형" unique_id=495917731 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(7040, 2640)
 _points = SubResource("Resource_qn31v")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_21mbf")])
@@ -3886,6 +3933,8 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="C_c2" parent="지형" unique_id=1644871520 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(5896, 2352)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
@@ -3930,6 +3979,8 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="C_c4" parent="지형" unique_id=1775924294 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(5896, 2096)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
@@ -3974,6 +4025,8 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="C_상층_검" parent="지형" unique_id=1426926298 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(7104, 1928)
 _points = SubResource("Resource_p1kdf")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_pnspo")])
@@ -3981,6 +4034,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="C_상층_흰" parent="지형" unique_id=1457975432 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(8480, 1928)
 script = ExtResource("10_futmq")
 "내부_바탕흰색" = true
@@ -3993,6 +4048,8 @@ metadata/role = "플랫폼"
 metadata/color_inlays_v1 = true
 
 [node name="D_복도끝" parent="지형" unique_id=864279461 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(9280, 2880)
 _points = SubResource("Resource_somb6")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_6akat")])
@@ -4000,6 +4057,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="D_바닥_검1" parent="지형" unique_id=448424956 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(9760, 3040)
 script = ExtResource("10_futmq")
 "내부_바탕흰색" = false
@@ -4012,6 +4071,8 @@ metadata/role = "플랫폼"
 metadata/color_inlays_v1 = true
 
 [node name="D_슬롯1_바닥" parent="지형" unique_id=2063295090 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(9984, 3136)
 _points = SubResource("Resource_mu1h0")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_yww6v")])
@@ -4019,6 +4080,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "채움"
 
 [node name="D_바닥_흰1" parent="지형" unique_id=1921472400 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(10224, 3040)
 _points = SubResource("Resource_2mkyi")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_dcgd2")])
@@ -4026,6 +4089,8 @@ shape_material = ExtResource("9_3bkup")
 metadata/role = "플랫폼"
 
 [node name="D_G_D1" parent="지형" unique_id=527024140 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(10464, 2928)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
@@ -4036,6 +4101,8 @@ shape_material = ExtResource("9_3bkup")
 metadata/role = "플랫폼"
 
 [node name="D_유령1_바닥" parent="지형" unique_id=877622427 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(10464, 3136)
 _points = SubResource("Resource_owj3u")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_wlw83")])
@@ -4043,6 +4110,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "채움"
 
 [node name="D_바닥_흰2" parent="지형" unique_id=37471465 instance=ExtResource("8_6cvu8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(10608, 3040)
 _points = SubResource("Resource_kn1ow")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_0w1wk")])
@@ -4050,6 +4119,8 @@ shape_material = ExtResource("9_3bkup")
 metadata/role = "플랫폼"
 
 [node name="D_슬롯2_바닥" parent="지형" unique_id=1889091706 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(10752, 3136)
 _points = SubResource("Resource_tgh6d")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_r2a15")])
@@ -4057,6 +4128,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "채움"
 
 [node name="D_바닥_검2" parent="지형" unique_id=628151977 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(10976, 3040)
 _points = SubResource("Resource_rfhlq")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_4vggb")])
@@ -4064,6 +4137,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="D_G_D2" parent="지형" unique_id=1219814433 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(11200, 2928)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
@@ -4074,6 +4149,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "플랫폼"
 
 [node name="D_유령2_바닥" parent="지형" unique_id=324431005 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(11200, 3136)
 _points = SubResource("Resource_01c6d")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_kyg3r")])
@@ -4081,6 +4158,8 @@ shape_material = ExtResource("7_n1yca")
 metadata/role = "채움"
 
 [node name="D_바닥_검3" parent="지형" unique_id=1229383337 instance=ExtResource("4_qs1cv")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(11632, 3040)
 _points = SubResource("Resource_7myv0")
 _meshes = Array[ExtResource("6_u14w5")]([SubResource("Resource_bsmgp")])
@@ -4098,6 +4177,7 @@ position = Vector2(1600, 1528)
 "켜짐" = false
 
 [node name="H1" parent="장치" unique_id=1326298406 instance=ExtResource("20_a3n2c")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(1600, 1528)
 collision_mask = 0
@@ -4202,6 +4282,7 @@ position = Vector2(5248, 1976)
 "켜짐" = false
 
 [node name="H2" parent="장치" unique_id=829318839 instance=ExtResource("20_a3n2c")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(3392, 1976)
 collision_mask = 0
@@ -4219,6 +4300,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="H3" parent="장치" unique_id=1221604822 instance=ExtResource("20_a3n2c")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(4416, 1976)
 collision_mask = 0
@@ -4236,6 +4318,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="H4" parent="장치" unique_id=603125726 instance=ExtResource("20_a3n2c")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(5248, 1976)
 collision_mask = 0
@@ -4308,6 +4391,7 @@ position = Vector2(8096, 1912)
 "켜짐" = false
 
 [node name="H5" parent="장치" unique_id=1463927878 instance=ExtResource("20_a3n2c")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(8096, 1912)
 collision_mask = 0
@@ -4383,6 +4467,7 @@ position = Vector2(11136, 2296)
 "켜짐" = false
 
 [node name="H6" parent="장치" unique_id=203908992 instance=ExtResource("20_a3n2c")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(10496, 2296)
 collision_mask = 0
@@ -4400,6 +4485,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="H7" parent="장치" unique_id=2116237012 instance=ExtResource("20_a3n2c")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(11136, 2296)
 collision_mask = 0
@@ -4623,3 +4709,5 @@ position = Vector2(520, 1856)
 [editable path="지형/C_c3"]
 [editable path="지형/C_c4"]
 [editable path="지형/C_c5"]
+
+[node name="하수도화면효과" parent="." instance=ExtResource("sewer_fx_v2")]

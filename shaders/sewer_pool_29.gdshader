@@ -6,6 +6,9 @@ uniform float pool_right_inset = 0.0;
 uniform int pool_tone = 2;
 uniform float phase = 0.0;
 uniform bool animate = true;
+// Fed every frame by the owning script at runtime (not TIME). A shader that reads TIME
+// forces the Godot editor to redraw every frame, which steals GPU from the running game.
+uniform float anim_time = 0.0;
 varying vec2 pixel;
 
 // Low-contrast sediment and broken reflections, without screen sampling.
@@ -80,5 +83,5 @@ void vertex() {
 }
 
 void fragment() {
-    COLOR = pool(pixel, phase + (animate ? TIME : 0.0));
+    COLOR = pool(pixel, phase + (animate ? anim_time : 0.0));
 }

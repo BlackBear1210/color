@@ -389,6 +389,25 @@ func _켜짐_반영() -> void:
 	set_deferred("monitoring", 켜짐)
 	set_deferred("monitorable", 켜짐)
 	visible = 켜짐
+	# ★[2026-09-28 Claude 실측] 껐다가 **다시 켜면** 레이어(32)·monitorable·충돌 도형이 전부 돌아와도
+	#   물리 엔진이 이미 끊긴 겹침 쌍을 다시 만들지 않는다 → 호퍼 입구가 다시 켠 물을 영영 못 받았다
+	#   (2-9 밸브: 흰 물을 껐다 켜면 받은색 -1 · 출구 꺼짐. 커밋된 옛 스크립트에서도 같았다).
+	#   monitorable 을 다시 토글해도 안 되고, **도형을 뺐다 다시 달아야** 겹침을 새로 계산했다.
+	#   monitorable 이 실제로 켜진 뒤(set_deferred 다음) 해야 하므로 지연 호출한다.
+	if 켜짐 and is_inside_tree() and not Engine.is_editor_hint():
+		call_deferred("_판정_다시_달기")
+
+
+## 켜진 판정 도형을 한 번 뺐다 다시 단다 — 물리 엔진이 겹침(호퍼 입구·플레이어·총알)을 새로 계산하게 한다.
+## 꺼져 있던 슬롯(남는 섬)은 건드리지 않는다. 안 바뀐 값을 다시 쓰면 겹침이 한 프레임 끊기는데(`_물_판정_갱신` 주석),
+## 여기선 **다시 켜는 순간 한 번**뿐이고 호퍼는 `끊김_유예` 로 그 한 프레임을 견딘다.
+func _판정_다시_달기() -> void:
+	if not 켜짐:
+		return
+	for c in get_children():
+		if (c is CollisionPolygon2D or c is CollisionShape2D) and not c.disabled:
+			c.disabled = true
+			c.disabled = false
 
 
 ## 물은 반투명 SpriteFrames 3종을 색 규칙과 같은 기준으로 골라 계속 재생한다.
@@ -658,7 +677,17 @@ func _칠할대상_찾기(바디: Object) -> Node:
 
 
 # ── 그림 ───────────────────────────────────────────────────────────────────
+var _에디터_서명 := 0
+
 func _process(delta: float) -> void:
+	# ★[2026-09-30] 에디터에서는 흐르지 않는다 — 매 프레임 다시 그리면 에디터가 쉬지 못해
+	#   F5 로 켠 게임과 GPU 를 나눠 써 프레임이 떨어졌다. 인스펙터 값이 바뀐 때만 다시 그린다.
+	if Engine.is_editor_hint():
+		var 서명 := preload("res://scripts/스마트월드/에디터_다시그리기.gd").서명(self)
+		if 서명 != _에디터_서명:
+			_에디터_서명 = 서명
+			queue_redraw()
+		return
 	if not 켜짐:
 		return
 	_흐름 += delta * 흐름속도

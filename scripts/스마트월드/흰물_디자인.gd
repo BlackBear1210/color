@@ -2,6 +2,8 @@
 extends Node2D
 ## 새 물의 시각 전용 부품. 기존 유체의 충돌을 임의로 덮어쓰지 않는다.
 ## 크기는 노드 scale 대신 이 값으로 바꿔야 물결/물방울의 픽셀 밀도가 유지된다.
+var 웅덩이_전용셰이더: Shader
+
 const WATER_SHADER = preload("res://shaders/white_water_modular_v2.gdshader")
 const FLOW_TEXTURE = preload("res://assets/textures/obstacles/liquid/white_modular_v2/flow_white.png")
 const SPLASH_TEXTURE = preload("res://assets/textures/obstacles/liquid/white_modular_v2/splash_white.png")
@@ -94,6 +96,18 @@ func _ready() -> void:
 	mat.shader = WATER_SHADER
 	material = mat
 	_갱신()
+	# 에디터에서는 시간을 흘리지 않는다(아래 _process 주석). 게임에서만 매 프레임 넣는다.
+	set_process(not Engine.is_editor_hint())
+
+## ★[2026-09-30 Claude 실측] 물 셰이더 5 종이 TIME 을 읽고 있었다. TIME 을 읽는 그림이 화면에 하나라도 있으면
+##   Godot 에디터는 **쉬지 않고 매 프레임 다시 그린다**(저전력 모드 2 초 290 장 vs 없으면 0 장).
+##   가만히 둔 에디터가 내장 GPU 를 41% 쓰고, F5 로 켠 게임은 GPU 를 나눠 30ms(33FPS)까지 떨어졌다.
+##   → 셰이더는 anim_time 유니폼을 읽고, 시간은 여기서 게임 중에만 넣는다. 에디터에서는 물이 멈춰 보인다.
+##   TIME 과 같은 시계(엔진 시작 후 초 · 3600 초에서 되돌림)라 모든 물의 위상 관계는 예전과 같다.
+func _process(_delta: float) -> void:
+	var mat := material as ShaderMaterial
+	if mat != null:
+		mat.set_shader_parameter("anim_time", fmod(float(Time.get_ticks_msec()) * 0.001, 3600.0))
 
 func _v3_쓰나() -> bool:
 	return 물줄기_v3 and 형태 in [0, 1]
@@ -114,8 +128,10 @@ func _갱신() -> void:
 	if _v3_쓰나():
 		_v3_갱신(mat)
 		return
-	if mat.shader != WATER_SHADER:
-		mat.shader = WATER_SHADER
+	var selected: Shader = 웅덩이_전용셰이더 if 형태 == 3 and 웅덩이_전용셰이더 != null else WATER_SHADER
+	# 전용 수면 재질이 색/크기 갱신 때 기본 재질로 돌아가지 않게 한다.
+	if mat.shader != selected:
+		mat.shader = selected
 	mat.set_shader_parameter("flow_texture", FLOW_TEXTURE)
 	mat.set_shader_parameter("splash_texture", SPLASH_TEXTURE)
 	mat.set_shader_parameter("impact", 착수_물보라)
@@ -133,7 +149,15 @@ func _갱신() -> void:
 	queue_redraw()
 
 func _v3_갱신(mat: ShaderMaterial) -> void:
-	var shader := load(STREAM_V3_SHADER_PATH) as Shader
+	# 승인 시안의 낙수 본체까지 교체한다. 웅덩이 셰이더만 바꿔 물줄기가 그대로 남던 누락을 방지한다.
+	var stage: Node = self
+	var sewer := false
+	while stage != null:
+		if stage.scene_file_path.begins_with("res://scenes/world_2_클로드/stage_"):
+			sewer = true
+			break
+		stage = stage.get_parent()
+	var shader := load("res://shaders/water_stream_reference.gdshader" if sewer else STREAM_V3_SHADER_PATH) as Shader
 	var flow := load(STREAM_V3_FLOW_PATH) as Texture2D
 	var sheet := load(STREAM_V3_SPLASH_PATH) as Texture2D
 	if shader == null or flow == null or sheet == null:
@@ -145,6 +169,8 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 		mat.shader = shader
 	mat.set_shader_parameter("flow_texture", flow)
 	mat.set_shader_parameter("splash_sheet", sheet)
+	# 하수도에서만 새 낙수 색 규칙을 적용한다. 다른 챕터의 기존 외관은 유지한다.
+	mat.set_shader_parameter("colored_splash", sewer)
 	mat.set_shader_parameter("impact", 착수_물보라)
 	mat.set_shader_parameter("water_tone", 물색)
 	var 높이 := 보이는_높이 if 보이는_높이 > 0.0 else 크기.y

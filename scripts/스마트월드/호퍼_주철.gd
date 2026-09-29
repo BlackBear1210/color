@@ -8,6 +8,8 @@ const 주철_아틀라스 = preload("res://assets/textures/obstacles/hopper/cast
 ## 노즐 안지름 = 호퍼 폭 × 0.2 (원화 400 폭 기준 관 안지름 80 — 도구 머리말의 실측값과 같아야 한다).
 const 노즐_안지름_비율 := 0.2
 const 입구_수면_스크립트 = preload("res://scripts/스마트월드/호퍼_입구수면.gd")
+## 밝은 금속면만 조율한다. 자식의 입구 수면/물색에는 modulate를 전파하지 않는다.
+@export_range(0.5, 1.0, 0.01) var 주철_명도: float = 1.0
 var _하수도_입구연출: bool = false
 
 func _ready() -> void:
@@ -105,4 +107,4 @@ func _주철_그리기(ratio: Vector2, 방향: int) -> void:
 	# 평면 출구 아래 원화의 타원 잔여가 남지 않게 실제 포트(y700)에서 그림만 자른다.
 	var 셀높이 := 460.0 if _하수도_입구연출 and 방향 == 0 else 480.0
 	var destination := Rect2(Vector2(-256.0 * ratio.x, -높이 - 20.0 * ratio.y), Vector2(512, 셀높이) * ratio)
-	draw_texture_rect_region(주철_아틀라스, destination, Rect2(512 * 방향, 240, 512, 셀높이))
+	draw_texture_rect_region(주철_아틀라스, destination, Rect2(512 * 방향, 240, 512, 셀높이), Color(주철_명도, 주철_명도, 주철_명도))

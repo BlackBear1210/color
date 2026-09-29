@@ -106,7 +106,12 @@ func _대상_이동(delta: float) -> void:
 		var 이동량 := 대상_이동량들[i] if i < 대상_이동량들.size() else Vector2.ZERO
 		var 목표 := _대상_시작위치들[i] + (이동량 if _활성 else Vector2.ZERO)
 		# 물리 프레임에서 Node2D를 움직여 SS2D 자식 충돌도 그림과 같은 위치로 갱신한다.
-		대상.position = 대상.position.move_toward(목표, 이동속도 * delta)
+		# ★[2026-09-30 Claude 실측] 이미 목표에 있으면 **대입하지 않는다.** 같은 값을 넣어도 Godot 는
+		#   TRANSFORM_CHANGED 를 보내고, 하수도 지형은 그걸 받아 이웃 지형 전부에 마감 재계산을 퍼뜨렸다
+		#   (2-9: 매 틱 지형 27 개 재계산 → 스크립트만 평균 6.7ms · 순간 19ms → 60FPS 미만).
+		var 새위치 := 대상.position.move_toward(목표, 이동속도 * delta)
+		if 새위치 != 대상.position:
+			대상.position = 새위치
 
 
 func _누를_수_있는_몸이_올라섰나() -> bool:

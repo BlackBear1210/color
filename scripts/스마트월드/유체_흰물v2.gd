@@ -5,6 +5,33 @@ extends "res://scripts/스마트월드/유체.gd"
 const WHITE_DESIGN = preload("res://scenes/장식/유체/흰물_디자인.tscn")
 var _white_visual: Node2D
 var _white_active: bool = false
+var _바닥_그림높이: float = 0.0
+var _수면_검사대기: float = 0.0
+
+func _웅덩이_착수_맞추기(delta: float) -> void:
+	# 물리 길이는 유지하고 웅덩이 윗면에서 그림/물보라만 끝낸다. 꺼지면 바닥으로 복구한다.
+	_수면_검사대기 -= delta
+	if _수면_검사대기 > 0.0 or Engine.is_editor_hint() or 호퍼_유입:
+		return
+	_수면_검사대기 = 0.1
+	var stage: Node = self
+	while stage != null and not stage.scene_file_path.begins_with("res://scenes/world_2_클로드/stage_"):
+		stage = stage.get_parent()
+	if stage == null or not is_instance_valid(_white_visual):
+		return
+	var height := minf(_바닥_그림높이, 크기.y) if _바닥_그림높이 > 0.0 else 크기.y
+	for pool in get_tree().get_nodes_in_group("웅덩이"):
+		if not pool.get("켜짐"):
+			continue
+		var size: Vector2 = pool.get("크기")
+		var local: Vector2 = pool.to_local(global_position)
+		if absf(local.x) > size.x * 0.5:
+			continue
+		var surface := to_local(pool.to_global(Vector2(local.x, -size.y))).y
+		if surface > 0.0 and surface <= height:
+			height = surface
+	_white_visual.set("보이는_높이", height)
+
 
 ## 호퍼 유입은 바닥 충돌이 아니므로 끝에서 물보라가 터지지 않게 한다.
 @export var 호퍼_유입: bool = false:
@@ -19,8 +46,67 @@ var _white_active: bool = false
 		물줄기_v3 = value
 		_물_애니_크기_맞추기()
 
+## ── [2026-09-30 도형님] 레버·저장고·호퍼로 켜고 끌 때 "빡" 나타나지 않고 위에서 흘러내리게 ──
+## 켜면: 앞끝(머리)이 출구에서 중력처럼 가속하며 떨어진다. **판정도 머리까지만** 생긴다 —
+##       물이 아직 안 보이는 곳에서 죽으면 안 된다.
+## 끄면: 판정은 즉시 없어지고(꺼진 물 규칙 · 총알 통과) 그림만 위에서부터 끊겨 남은 물이 떨어진다.
+## 게임 시작 때의 첫 상태는 연출 없이 바로.
+const 흐름_처음속도 := 250.0     ## px/s
+const 흐름_중력 := 2600.0        ## px/s² — 800px 물줄기가 약 0.7 초에 바닥에 닿는다
+var _흐름_준비 := false
+var _이전_켜짐 := true
+var _머리 := -1.0                ## <0 = 연출 없음(전부 보임)
+var _꼬리 := -1.0                ## <0 = 연출 없음
+var _머리_속도 := 0.0
+var _꼬리_속도 := 0.0
+
+func _켜짐_반영() -> void:
+	super._켜짐_반영()
+	if not _흐름_준비 or Engine.is_editor_hint() or not _새물인가():
+		_이전_켜짐 = 켜짐
+		return
+	if 켜짐 and not _이전_켜짐:
+		_머리 = 0.0
+		_머리_속도 = 흐름_처음속도
+		_꼬리 = -1.0
+		call_deferred("_물_판정_갱신")
+	elif not 켜짐 and _이전_켜짐:
+		_꼬리 = 0.0
+		_꼬리_속도 = 흐름_처음속도
+		visible = true            # 판정·총알·감지는 이미 꺼졌다 — 남은 물 그림만 떨어뜨린다
+	_이전_켜짐 = 켜짐
+	_흐름_셰이더()
+
+func _흐름_셰이더() -> void:
+	if not is_instance_valid(_white_visual):
+		return
+	var mat := _white_visual.material as ShaderMaterial
+	if mat == null:
+		return
+	mat.set_shader_parameter("flow_head", _머리 if _머리 >= 0.0 else 100000.0)
+	mat.set_shader_parameter("flow_tail", _꼬리 if _꼬리 >= 0.0 else -100000.0)
+
+func _흐름_진행(delta: float) -> void:
+	if _머리 >= 0.0:
+		_머리_속도 += 흐름_중력 * delta
+		_머리 += _머리_속도 * delta
+		if _머리 >= 크기.y + 40.0 or not 켜짐:
+			_머리 = -1.0
+		_물_판정_갱신()        # 판정 아랫끝이 머리를 따라 내려온다(_판정_폴리곤들)
+		_흐름_셰이더()
+	if _꼬리 >= 0.0:
+		_꼬리_속도 += 흐름_중력 * delta
+		_꼬리 += _꼬리_속도 * delta
+		if _꼬리 >= 크기.y + 40.0 or 켜짐:
+			_꼬리 = -1.0
+			visible = 켜짐
+		_흐름_셰이더()
+
 func _ready() -> void:
 	super._ready()
+	_이전_켜짐 = 켜짐
+	# 첫 상태가 자리 잡은 다음부터만 흘러내림 연출(스테이지 시작 때 모든 물이 떨어지는 일이 없게).
+	set_deferred("_흐름_준비", true)
 	# 상위 _ready 안에서 호출될 때는 준비 검사 때문에 외관 생성이 미뤄질 수 있다.
 	call_deferred("_물_그림_갱신")
 	if not Engine.is_editor_hint():
@@ -58,7 +144,8 @@ func _바닥_찾기() -> void:
 		if not 공간.intersect_point(질의, 1).is_empty():
 			break
 		파묻힘 -= 1.0
-	_white_visual.set("보이는_높이", 크기.y - 파묻힘)
+	_바닥_그림높이 = 크기.y - 파묻힘
+	_white_visual.set("보이는_높이", _바닥_그림높이)
 
 func _새물인가() -> bool:
 	return 종류 == 종류_.물
@@ -107,12 +194,20 @@ func _판정_폴리곤들(frame_index: int) -> Array:
 	var half_width := maxf(1.0, 크기.x * 0.5 - inset + 판정_여유)
 	var top := minf(3.0, 크기.y * 0.1)
 	var bottom := maxf(top + 1.0, 크기.y - minf(9.0, 크기.y * 0.2))
+	# 흘러내리는 중이면 판정도 머리(앞끝)까지만 — 보이지 않는 물에 닿아 죽지 않게.
+	if _머리 >= 0.0:
+		if _머리 - 6.0 <= top + 1.0:
+			return []
+		bottom = minf(bottom, _머리 - 6.0)
 	return [PackedVector2Array([Vector2(-half_width, top), Vector2(half_width, top), Vector2(half_width, bottom), Vector2(-half_width, bottom)])]
 
 func _물_애니_재생중() -> bool:
 	return (is_instance_valid(_white_visual) and _새물인가()) or super._물_애니_재생중()
 
 func _process(delta: float) -> void:
+	_웅덩이_착수_맞추기(delta)
+	if _머리 >= 0.0 or _꼬리 >= 0.0:
+		_흐름_진행(delta)
 	if not _새물인가():
 		super._process(delta)
 		return

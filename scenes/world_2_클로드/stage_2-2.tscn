@@ -1,5 +1,6 @@
 [gd_scene format=4 uid="uid://evywb5l5d4eb"]
 
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_화면효과_v2.tscn" id="sewer_fx_v2"]
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_mw2bu"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_x0ds8"]
 [ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_기본지형_검정.tscn" id="3_ytbp8"]
@@ -28,11 +29,11 @@
 [ext_resource type="Shader" uid="uid://j7gny2bxxkwu" path="res://shaders/sewer_ledge_v03.gdshader" id="ledge_shader"]
 [ext_resource type="Texture2D" uid="uid://b5tm2fxf37cvp" path="res://assets/textures/smartshape/sewer_ledge_v03/white/fill.png" id="ledge_white"]
 [ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중선반_흰색.tscn" id="sewer_air_white"]
-[ext_resource type="PackedScene" path="res://scenes/배경/하수도_다층배경_2_2.tscn" id="sewer_background"]
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_벽돌배경_2_9_조정.tscn" id="sewer_background"]
 
 [ext_resource type="Script" path="res://scripts/스마트월드/호퍼_주철_기존배치.gd" id="latest_hopper_art"]
 [ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
-[ext_resource type="Script" path="res://scripts/스마트월드/웅덩이_흰물v2.gd" id="latest_pool_art"]
+[ext_resource type="Script" path="res://scripts/스마트월드/웅덩이_하수도29.gd" id="latest_pool_art"]
 
 [sub_resource type="Resource" id="Resource_n1f0m"]
 script = ExtResource("4_7je74")
@@ -4703,6 +4704,8 @@ script = ExtResource("2_x0ds8")
 [node name="지형" type="Node2D" parent="." unique_id=1967184044]
 
 [node name="외곽_왼벽" parent="지형" unique_id=426990818 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(-512, 2176)
 _points = SubResource("Resource_ws7s4")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_670hx")])
@@ -4710,6 +4713,8 @@ shape_material = SubResource("Resource_kxumd")
 metadata/role = "외곽"
 
 [node name="외곽_오른벽" parent="지형" unique_id=318838851 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(5120, 2176)
 _points = SubResource("Resource_ptl67")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_mp636")])
@@ -4717,6 +4722,8 @@ shape_material = SubResource("Resource_66ff2")
 metadata/role = "외곽"
 
 [node name="외곽_천장" parent="지형" unique_id=1539946832 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2304, -512)
 _points = SubResource("Resource_4l5kv")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_imuqb")])
@@ -4724,6 +4731,8 @@ shape_material = SubResource("Resource_xy4tg")
 metadata/role = "외곽"
 
 [node name="외곽_바닥" parent="지형" unique_id=203893245 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2304, 4864)
 _points = SubResource("Resource_lb2xr")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_ais3f")])
@@ -4731,6 +4740,8 @@ shape_material = SubResource("Resource_dex0s")
 metadata/role = "외곽"
 
 [node name="천장띠" parent="지형" unique_id=2030913121 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2304, 608)
 _points = SubResource("Resource_s012j")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_x6e74")])
@@ -4738,6 +4749,8 @@ shape_material = SubResource("Resource_gqxup")
 metadata/role = "채움"
 
 [node name="좌상_덩어리" parent="지형" unique_id=258025119 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(928, 1600)
 _points = SubResource("Resource_6vb03")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_4pqs4")])
@@ -4745,6 +4758,8 @@ shape_material = SubResource("Resource_urnai")
 metadata/role = "채움"
 
 [node name="좌하_채움" parent="지형" unique_id=1818889024 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(384, 3968)
 _points = SubResource("Resource_xlosn")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_y7n6d")])
@@ -4752,6 +4767,8 @@ shape_material = SubResource("Resource_p8scp")
 metadata/role = "채움"
 
 [node name="슬롯_바닥" parent="지형" unique_id=1797334676 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(1728, 4128)
 _points = SubResource("Resource_2rdyw")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_u73m2")])
@@ -4759,6 +4776,8 @@ shape_material = SubResource("Resource_bi2u3")
 metadata/role = "채움"
 
 [node name="우측_프레임" parent="지형" unique_id=1064556603 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(4224, 2784)
 _points = SubResource("Resource_mae0f")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_syp2p")])
@@ -4766,6 +4785,8 @@ shape_material = SubResource("Resource_nunx1")
 metadata/role = "채움"
 
 [node name="탑_왼벽" parent="지형" unique_id=660555551 instance=ExtResource("6_6fbqg")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(384, 2720)
 script = ExtResource("color_inlay_script")
 "내부_바탕흰색" = true
@@ -4779,6 +4800,8 @@ metadata/color_inlays_v1 = true
 metadata/sewer_look_v1 = true
 
 [node name="탑_바닥" parent="지형" unique_id=1043162033 instance=ExtResource("6_6fbqg")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(1216, 3904)
 _points = SubResource("Resource_n3rlv")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_7y68x")])
@@ -5008,6 +5031,8 @@ position = Vector2(112, 8.8)
 "방향" = 1
 
 [node name="L2_흰바닥" parent="지형" unique_id=407349575 instance=ExtResource("6_6fbqg")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(1632, 2464)
 script = ExtResource("color_inlay_script")
 "내부_바탕흰색" = true
@@ -5021,6 +5046,8 @@ metadata/color_inlays_v1 = true
 metadata/sewer_look_v1 = true
 
 [node name="L1_흰바닥" parent="지형" unique_id=1277735472 instance=ExtResource("6_6fbqg")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(1632, 3040)
 _points = SubResource("Resource_x8cxd")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_yi84q")])
@@ -5028,6 +5055,8 @@ shape_material = SubResource("Resource_onxrt")
 metadata/role = "플랫폼"
 
 [node name="홀_바닥" parent="지형" unique_id=840315416 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(2816, 3904)
 script = ExtResource("color_inlay_script")
 "내부_바탕흰색" = false
@@ -5041,6 +5070,8 @@ metadata/color_inlays_v1 = true
 metadata/sewer_look_v1 = true
 
 [node name="우측_덩어리" parent="지형" unique_id=1072677844 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(3200, 2504)
 script = ExtResource("color_inlay_script")
 "내부_바탕흰색" = false
@@ -5054,6 +5085,8 @@ metadata/color_inlays_v1 = true
 metadata/sewer_look_v1 = true
 
 [node name="F1_발코니" parent="지형" unique_id=787185374 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(3008, 3144)
 _points = SubResource("Resource_4dfg6")
 _meshes = Array[ExtResource("6_vbjfv")]([SubResource("Resource_7r67p")])
@@ -5061,6 +5094,8 @@ shape_material = SubResource("Resource_b7qiv")
 metadata/role = "플랫폼"
 
 [node name="L3_유령발판" parent="지형" unique_id=2046790131 instance=ExtResource("3_ytbp8")]
+"시안_명도조율" = true
+"앞지형_깊이" = true
 position = Vector2(3024, 1712)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
@@ -5249,6 +5284,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="호퍼_L1" parent="장치" unique_id=1326298406 instance=ExtResource("8_vbjfv")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(2208, 2976)
 collision_mask = 0
@@ -5264,6 +5300,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="호퍼_L2" parent="장치" unique_id=40439962 instance=ExtResource("8_vbjfv")]
+"주철_명도" = 0.88
 script = ExtResource("latest_hopper_art")
 position = Vector2(2208, 2336)
 collision_mask = 0
@@ -5315,9 +5352,10 @@ collision_layer = 0
 [node name="L3_흰웅덩이" parent="장치" unique_id=1482486332 instance=ExtResource("12_pd147")]
 script = ExtResource("latest_pool_art")
 position = Vector2(3120, 1792)
-"크기" = Vector2(480, 112)
+"크기" = Vector2(480, 32)
 "색" = 1
 "페인트_지움" = true
+"받아주는_최소수심" = 32.0
 
 [node name="위험물" type="Node2D" parent="." unique_id=2112837252]
 
@@ -5417,3 +5455,5 @@ position = Vector2(3232, 3488)
 [editable path="지형/탑_l8"]
 [editable path="지형/탑_l9"]
 [editable path="지형/탑_l10"]
+
+[node name="하수도화면효과" parent="." instance=ExtResource("sewer_fx_v2")]

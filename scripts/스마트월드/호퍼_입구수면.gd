@@ -101,7 +101,7 @@ func _draw() -> void:
 		for 줄 in range(4):
 			var x := lerpf(시작x, 끝x, (줄 + 0.5) / 4.0)
 			draw_line(Vector2(x, 위), Vector2(x + sin(_시간 * 5.0 + 줄) * 0.4, 착수y), 물결색(int(접점["색"])), 0.55, true)
-		_착수_그리기(Vector2((시작x + 끝x) * 0.5, 착수y), 끝x - 시작x, 왼쪽, 오른쪽, 물결, 배율.x)
+		_착수_그리기(Vector2((시작x + 끝x) * 0.5, 착수y), 끝x - 시작x, 왼쪽, 오른쪽, 수면색(_색), 배율.x)
 	# 입구의 앞 금속 띠만 마지막에 재사용한다. 물이 호퍼 앞면을 타고 흐르지 않는다.
 	var 방향: int = _호퍼.get("출구방향")
 	var 원본 := Rect2(방향 * 512 + 52, 286, 408, 58)
@@ -109,7 +109,7 @@ func _draw() -> void:
 	draw_texture_rect_region(아틀라스, 목적, 원본)
 
 func _착수_그리기(중심: Vector2, 물폭: float, 왼쪽: float, 오른쪽: float, 물결: Color, 배율: float) -> void:
-	# 섞인 입구색으로 작은 왕관과 포물선 물방울을 그린다. 방 전체를 가리는 분무는 없다.
+	# 수면 잔물결의 어두운 색 대신 실제 입구 물색으로 작은 왕관과 포물선 물방울을 그린다. 방 전체를 가리는 분무는 없다.
 	var 진폭 := clampf(물폭 * 0.08, 1.2, 5.0)
 	var 왕관 := PackedVector2Array()
 	for i in range(13):

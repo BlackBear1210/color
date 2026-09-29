@@ -34,6 +34,13 @@ func _ready() -> void:
 	_white_visual = WHITE_POOL.instantiate()
 	_white_visual.name = "WhitePoolV2"
 	_white_visual.set("형태", 3)
+	# 승인된 하수도 수면만 교체하고 다른 챕터의 웅덩이는 유지한다.
+	var stage: Node = self
+	while stage != null:
+		if stage.scene_file_path.begins_with("res://scenes/world_2_클로드/stage_"):
+			_white_visual.set("웅덩이_전용셰이더", preload("res://shaders/sewer_pool_shallow.gdshader"))
+			break
+		stage = stage.get_parent()
 	add_child(_white_visual)
 	_외관_맞추기()
 	# 형제 지형이 ready를 마친 후 한 번 수집한다. 매 프레임 지형 검색을 하지 않는다.
