@@ -41,7 +41,9 @@ for(let i=0;i<5;i++){
  // 구덩이·착륙대·경사·하강 계단은 이어진 윤곽 하나다. 평지와 경사를 조각내지 않는다.
  // 첫 방의 낮은 단상도 같은 바닥의 점으로 만든다. 위쪽 유령 지름길을 선택할 수 있다.
  const approach=i===0?[[x,y],[x+384,y],[x+384,y-96],[x+640,y-96],[x+640,y]]:[[x,y]];
- const top=[...approach,[x+768,y],[x+768,y+384],[x+1792,y+384],[x+1792,y],[x+2304,y]];
+ // 마지막 방은 건너편을 256px 뒤로 물려 붕괴 2→바닥 직행을 막는다.
+ const landing=i===4?2048:1792;
+ const top=[...approach,[x+768,y],[x+768,y+384],[x+landing,y+384],[x+landing,y],[x+2304,y]];
  for(let j=0;j<4;j++)top.push([x+2496+j*192,y+96+j*320],[x+2496+j*192,y+320+j*320]);
  top.push([x+3200,y+1280]);
  const end=i===4?frame.right:x+3200;
@@ -51,12 +53,12 @@ for(let i=0;i<5;i++){
  // 아래 물받이는 실제 충돌 바닥 위에 있다. 떨어진 뒤 왼쪽 복귀 발판으로 재시도한다.
  // 분사기 아래는 검정 물이 흰 탄을 흡수한다. 다리가 없을 때 바닥이 흰색으로 칠해지는 것을 막는다.
  // 해당 물받이에 떨어질 때는 검정으로 전환해야 한다. 나머지 완충수는 회색이다.
- pool(`구역${n}_구덩이_물받이`,x+1280,y+384,1024,192,[1,2,4].includes(i)?0:2);
+ pool(`구역${n}_구덩이_물받이`,x+(i===4?1408:1280),y+384,i===4?1280:1024,192,[1,2,4].includes(i)?0:2);
  // 두꺼운 중앙 발판 밑으로 머리가 들어가지 않게 복귀 계단은 구덩이 왼쪽의 얇은 격자로 둔다.
  for(let j=1;j<=3;j++)device(`구역${n}_복귀발판${j}`,'grate',x+864,y+j*96+12,'"크기" = Vector2(128, 24)\n"필요횟수" = 1');
  for(let j=0;j<4;j++)pool(`구역${n}_하강_완충수${j+1}`,x+2400+j*192,y+96+j*320,192,160);
  if(i>0)pool(`구역${n}_진입_완충수`,x+160,y,320,96);
- safeAreas.push([x+96,y-8,544,16],[x+1824,y-8,224,16]);
+ safeAreas.push([x+96,y-8,544,16],i===4?[x+2064,y-8,32,16]:[x+1824,y-8,224,16]);
  if(i===0){
   for(const [j,l,r] of [[1,1024,1216],[2,1408,1664]])box(`구역1_징검다리${j}`,x+l,y,x+r,y+144);
   box('구역1_투명_상부지름길',x+864,y-192,x+1728,y-48,{ghost:true,role:'ghost'});
@@ -71,11 +73,10 @@ for(let i=0;i<5;i++){
  }
  if(i===2){
   for(const [j,l,r] of [[1,1024,1280],[2,1408,1664]])box(`구역3_투명발판${j}`,x+l,y,x+r,y+144,{ghost:true,role:'ghost'});
-  // 총알을 아끼면 아래 물길로 돌아간다. 상부 투명 다리와 하부 우회가 실제로 다시 합류한다.
-  for(let j=1;j<=3;j++)device(`구역3_물길우회_출구발판${j}`,'grate',x+1728,y+j*96+12,'"크기" = Vector2(96, 24)\n"필요횟수" = 1');
+  // 하부 물받이는 실패 복귀용이다. 오른쪽 우회 사다리를 두지 않아 투명 발판 사격을 생략하지 못한다.
  }
  if(i===4){
-  for(const [j,l,r] of [[1,1024,1216],[2,1344,1536],[3,1632,1760]])box(`구역5_붕괴발판${j}`,x+l,y,x+r,y+144,{crumble:true,role:'crumble'});
+  for(const [j,l,r] of [[1,1024,1216],[2,1344,1536],[3,1760,1952]])box(`구역5_붕괴발판${j}`,x+l,y,x+r,y+144,{crumble:true,role:'crumble'});
  }
  if([0,3,4].includes(i)){
   const gate=`구역${n}_밸브수문`,group=`구역${n}_폭포묶음`;
@@ -86,10 +87,14 @@ for(let i=0;i<5;i++){
    device(name,'water',x+xx,y-512,`"색" = ${color}\n"크기" = Vector2(${width}, 560)\n"켜짐" = true\n"낙하_받아줌" = false`);
   }
   device(group,'valveGroup',0,0,`"유체들" = Array[NodePath]([${waterNames.map(v=>`NodePath("../${v}")`).join(', ')}])\n"수문" = NodePath("../../지형/${gate}")\n"열림_이동량" = Vector2(0, -640)`);
-  device(`구역${n}_폭포차단_레버`,'lever',x+416,y-(i===0?160:64),`"종류" = 0\n"반응반경" = 96.0\n"대상_유체" = NodePath("../${group}")\n"시작_켜짐" = true`);
+  // 방4는 차단 반복 대신 A(통행 폭포)→B(다리 아래 집수조)로 흐름을 전환한다.
+  const leverProps=i===3?`"종류" = 1\n"갈래_A" = NodePath("../${group}")\n"갈래_B" = NodePath("../구역4_우회배수")\n"시작_갈래_A" = true`:`"종류" = 0\n"대상_유체" = NodePath("../${group}")\n"시작_켜짐" = true`;
+  device(`구역${n}_폭포차단_레버`,'lever',x+416,y-(i===0?160:64),`"반응반경" = 96.0\n${leverProps}`);
+  if(i===3)device('구역4_우회배수','water',11520,5760,'"색" = 2\n"크기" = Vector2(192, 256)\n"켜짐" = false');
   motions.push({name:gate,delta:[0,-640],role:'gate'});
  }
- if(i===1||i===2||i===4)sprayer(`구역${n}_발판변색_분사기`,x+(i===4?1440:1536),y-304);
+ // 투명 발판 방은 자동 분사로 대신 풀리지 않게 플레이어의 사격을 요구한다.
+ if(i===1||i===4)sprayer(`구역${n}_발판변색_분사기`,x+(i===4?1440:1536),y-304);
 }
 
 // 카메라 모서리 밖까지 벽 두께를 연장해 직사각형 맵 외부가 비어 보이지 않게 한다.
@@ -97,7 +102,7 @@ const {left:L,right:R,top:T,bottom:B,padding:P}=frame;
 box('외곽_왼벽',L-P,T,L,B,{role:'exterior'});box('외곽_오른벽',R,T,R+P,B,{role:'exterior'});
 box('외곽_천장',L-P,T-P,R+P,T,{role:'exterior'});box('외곽_바닥',L-P,B,R+P,B+P,{role:'exterior'});
 
-node(NAME,null,'Node2D',`script = ExtResource("world")\n"스테이지_이름" = "2-11 · 잠긴 폭포의 계단"\n"시작_위치" = ${vec(start)}\n"카메라_리밋" = Rect2(${L}, ${T}, ${R-L}, ${B-T})\n"카메라_줌" = 0.85\n"낙사_y" = ${B-32}.0\n"안전구역들" = Array[Rect2]([${safeAreas.map(r=>`Rect2(${r.join(', ')})`).join(', ')}])\nmetadata/design = "좌측 최상단 → 우측 최하단. 물·밸브·압력발판·투명·붕괴. 실제 주행 미실행."`);
+node(NAME,null,'Node2D',`script = ExtResource("world")\n"스테이지_이름" = "2-11 · 잠긴 폭포의 계단"\n"시작_위치" = ${vec(start)}\n"카메라_리밋" = Rect2(${L}, ${T}, ${R-L}, ${B-T})\n"카메라_줌" = 1.0\n"치명_낙하거리" = 1500.0\n"낙사_y" = ${B-32}.0\n"안전구역들" = Array[Rect2]([${safeAreas.map(r=>`Rect2(${r.join(', ')})`).join(', ')}])\nmetadata/design = "수정 전 Claude 71단계 무사망·0발 실측. 수정 후 투명/붕괴 필수화 및 분기 배수, 재주행 미실행."`);
 // 월드와 분사기는 이름이 아니라 그룹으로 코어를 찾는다. 씬에 그룹을 반드시 직렬화한다.
 node('페인트코어','.','Node','script = ExtResource("core")\n"최대_탄약" = 12',null,['페인트코어']);
 node('지형','.','Node2D');
@@ -133,7 +138,7 @@ for(const d of devices){
  }
 }
 // 각 폭포 위에 실제 SS2D 배관을 두어 급수 방향과 밸브의 대상이 눈에 들어오게 한다.
-for(const d of devices.filter(d=>d.id==='water')){
+for(const d of devices.filter(d=>d.id==='water'&&d.name!=='구역4_우회배수')){
  const id=`pipe${subs.length}`,name=d.name+'_급수관';pointArray(id,[[-192,-128],[0,-128],[0,0]],false);
  node(name,'장치',null,`position = Vector2(${d.x}, ${d.y})`,'pipe');
  node('경로',`장치/${name}`,null,`_points = SubResource("${id}")`);
@@ -141,7 +146,7 @@ for(const d of devices.filter(d=>d.id==='water')){
  node('끝_물_포트',`장치/${name}`,null,'position = Vector2(0, 0)');
 }
 node('체크포인트','.','Node2D');
-for(const z of zones)for(const [label,dx] of [['진입',256],['통과',1936]])node(`구역${z.zone}_${label}`,'체크포인트',null,`position = Vector2(${z.x+dx}, ${z.y})`,'checkpoint');
+for(const z of zones)for(const [label,dx] of [['진입',256],['통과',z.zone===5?2080:1936]])node(`구역${z.zone}_${label}`,'체크포인트',null,`position = Vector2(${z.x+dx}, ${z.y})`,'checkpoint');
 node('출구통로','.',null,'position = Vector2(16896, 8448)\n"높이" = 256.0\n"깊이" = 512.0\n"두께" = 96.0\n"다음_씬" = "res://scenes/lobby/lobby.tscn"','exit');
 node('끝도달_검사점','.','Marker2D',`position = ${vec(destination)}`);
 node('Player','.',null,`position = ${vec(start)}\n"점프_높이_칸" = 10.0\n"점프_거리_칸" = 20.0`,'player');
@@ -198,7 +203,7 @@ assert.equal(terrain.filter(t=>t.role==='crumble').length,3);
 assert.equal(devices.filter(d=>d.id==='moving').length,2);
 assert(nodes.some(n=>n.text.includes('groups=["페인트코어"]')),'페인트코어 그룹 누락');
 for(const z of zones){
- assert(devices.some(d=>d.id==='pool'&&d.x===z.x+1280&&d.y===z.y+384),'구덩이 물받이 누락');
+ assert(devices.some(d=>d.id==='pool'&&d.x===z.x+(z.zone===5?1408:1280)&&d.y===z.y+384),'구덩이 물받이 누락');
  assert.equal(devices.filter(d=>d.id==='grate'&&d.name.startsWith(`구역${z.zone}_복귀`)).length,3);
 }
 // 높은 이동 다리가 도착했을 때 양 끝 틈은 128px, 투명 첫 발판까지의 틈은 256px다.

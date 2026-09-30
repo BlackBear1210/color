@@ -14,6 +14,9 @@ uniform float back_depth = 4.0;
 uniform float corner_inset = 3.0;
 uniform float phase = 0.0;
 uniform bool animate = true;
+// Fed every frame by the owning script at runtime (not TIME). A shader that reads TIME
+// forces the Godot editor to redraw every frame, which steals GPU from the running game.
+uniform float anim_time = 0.0;
 varying vec2 pixel;
 
 float band(float distance_to_edge) {
@@ -174,5 +177,5 @@ void vertex() {
     pixel = VERTEX + vec2(extent.x * 0.5, 0.0);
 }
 void fragment() {
-    COLOR = water(pixel, phase + (animate ? TIME : 0.0));
+    COLOR = water(pixel, phase + (animate ? anim_time : 0.0));
 }

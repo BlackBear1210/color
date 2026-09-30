@@ -19,6 +19,7 @@ const refs={
   black:['PackedScene',kit+'WALL_벽체/TEMPLATE_WALL_SOLID.tscn'],
   white:['PackedScene',kit+'WALL_벽체/TEMPLATE_WALL_SOLID_WHITE.tscn'],
   grate:['PackedScene',parts+'통과플랫폼.tscn'],
+  return_grate:['Script','res://scripts/스마트월드/stage_2_10_반환격자.gd'],
   bucket:['PackedScene',parts+'양동이.tscn'],
   water:['PackedScene',parts+'유체.tscn'],
   pipe:['PackedScene',kit+'PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn'],
@@ -76,14 +77,14 @@ for(let i=0;i<5;i++){
   ribbon(`구역${n}_오른쪽_검정복귀`,rightTop);
   box(`합류${n}_중앙차단기둥`,2816,a,3328,d-384);
 
-  // 이 세 발판은 서로 떨어진 별개 발판이다. 회랑을 조각낸 것이 아니다.
-  // 아래에서 뛸 때 머리가 다음 발판에 끼지 않도록 상면만 밟는 충돌로 설정한다.
-  for(const [j,l,r] of [[1,448,640],[2,128,320],[3,448,640]]){
-    const y=d-768-96*j;
-    box(`구역${n}_왼쪽_반환발판${j}`,l,y,r,y+144,2,{oneWay:true});
-    box(`구역${n}_오른쪽_반환발판${j}`,WIDTH-r,y,WIDTH-l,y+144,1,{oneWay:true});
+  // 48px 처마가 생긴 두꺼운 지그재그 대신 128px 간격의 얇은 단방향 사다리로 반환한다.
+  for(let j=1;j<=3;j++){
+    const y=d-768-128*j+8;
+    for(const [side,x,color] of [['왼쪽',672,1],['오른쪽',5472,0]])
+      instance(`구역${n}_${side}_반환발판${j}`,'grate',x,y,
+        `script = ExtResource("return_grate")\n"크기" = Vector2(192, 16)\n"필요횟수" = 1\n"시작색" = ${color}`,'지형');
   }
-  route.push({zone:n,departure:d,arrival:a,left:'white',right:'black',turnRise:96,turnGap:128});
+  route.push({zone:n,departure:d,arrival:a,left:'white',right:'black',turnRise:128,turnGap:0});
   if(i<4){
     // 합류점의 짧은 계단만 위로 뛰어넘는다. 그 위에는 중앙 차단기둥이 있어 다음 구역은 다시 좌우로 돌아야 한다.
     for(let j=1;j<=4;j++){
@@ -111,7 +112,8 @@ instance('급수_검정','water',4128,workshop-400,
 instance('버튼_물찬양동이','button',3712,workshop+24,
   `script = ExtResource("button")\n"폭" = 160.0\n"높이" = 24.0\n"작동방식" = 0\n"누름_가능_그룹" = PackedStringArray("양동이")\n"대상들" = Array[NodePath]([NodePath("../../지형/양동이문_중앙덮개")])\n"대상_이동량들" = Array[Vector2]([Vector2(0, -640)])\n"이동속도" = 400.0`);
 // 사격 방향은 수직, 탄낙차는 0으로 두어 지정한 평지에만 페인트가 명중한다.
-for(const i of [0,3])instance(`분사기_${i+1}구역_발밑변색`,'sprayer',3584,departures[i]-304,
+// 첫 구역은 분기와 반환 사다리 학습에 집중한다. 실측상 바닥을 바꾸지 못한 분사기는 제거한다.
+for(const i of [3])instance(`분사기_${i+1}구역_발밑변색`,'sprayer',3584,departures[i]-304,
   `"각도" = 90.0\n"총구거리" = 32.0\n"탄속" = 560.0\n"탄낙차" = 0.0\n"발사간격" = 3.2\n"발사색" = 1\n"색_번갈아" = true\n"색_전환주기" = 6.4\n"위상" = ${i===0?'0.0':'3.2'}`);
 // 톱은 분사기가 없는 검정 경로의 넓은 끝 평지에서만 움직인다. 범위를 넘으면 경사로 안전 지대다.
 for(const i of [1,4])instance(`회전톱_${i+1}구역`,'saw',5200,departures[i]-816,
@@ -124,7 +126,8 @@ node('stage_2-10',null,'Node2D',`script = ExtResource("world")
 "스테이지_이름" = "2-10 · 갈라진 수직 수로"
 "시작_위치" = Vector2(${CENTER}, ${departures[0]})
 "카메라_리밋" = Rect2(${L}, ${T}, ${R-L}, ${B-T})
-"카메라_줌" = 0.85
+"카메라_줌" = 1.0
+"치명_낙하거리" = 1500.0
 "낙사_y" = ${B-64}.0
 metadata/design = "아래 중앙 → 위 중앙. 좌우 선택 5곳, 중앙 직통 차단, 승강기 0대."
 metadata/validation = "Godot 실행 및 실제 주행 미실행. 정적 좌표·연결 확인."`);
@@ -170,9 +173,9 @@ for(const d of devices){
   node(d.name,d.parent,isButton?'AnimatableBody2D':null,
     `position = Vector2(${d.x}, ${d.y})\n${d.props}`,isButton?null:d.id);
   if(d.id==='grate'){
-    const width=Number(d.props.match(/Vector2\((\d+)/)[1]);
+    const [,width,height]=d.props.match(/"크기" = Vector2\((\d+), (\d+)\)/);
     const id=`grate${subs.length}`;
-    subs.push(`[sub_resource type="RectangleShape2D" id="${id}"]\nsize = Vector2(${width}, 24)`);
+    subs.push(`[sub_resource type="RectangleShape2D" id="${id}"]\nsize = Vector2(${width}, ${height})`);
     node('충돌',`${d.parent}/${d.name}`,'CollisionShape2D',
       `shape = SubResource("${id}")\none_way_collision = true\none_way_collision_margin = 4.0`);
   }

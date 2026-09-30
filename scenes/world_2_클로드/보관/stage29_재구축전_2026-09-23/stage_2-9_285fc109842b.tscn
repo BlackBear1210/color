@@ -1,0 +1,1726 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/월드.gd" id="world"]
+[ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="core"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_기본지형_검정.tscn" id="black"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_기본지형_흰색.tscn" id="white"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중선반_검정.tscn" id="ledge"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_다층배경_v02.tscn" id="background"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="water"]
+[ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="water_art"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/웅덩이.tscn" id="pool"]
+[ext_resource type="Script" path="res://scripts/스마트월드/웅덩이_흰물v2.gd" id="pool_art"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/호퍼_주철_직하.tscn" id="hopper"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/제어레버.tscn" id="valve"]
+[ext_resource type="Script" path="res://scripts/스마트월드/압력버튼.gd" id="button"]
+[ext_resource type="Script" path="res://scripts/스마트월드/통과플랫폼.gd" id="grate"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="lift"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/회전톱.tscn" id="saw"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="checkpoint"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="exit"]
+
+[sub_resource type="Resource" id="t0_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t0_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 0)
+
+[sub_resource type="Resource" id="t0_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 96)
+
+[sub_resource type="Resource" id="t0_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 96)
+
+[sub_resource type="Resource" id="t0_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t0_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t0_0"),
+1: SubResource("t0_1"),
+2: SubResource("t0_2"),
+3: SubResource("t0_3"),
+4: SubResource("t0_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t1_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t1_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(256, 0)
+
+[sub_resource type="Resource" id="t1_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(256, 64)
+
+[sub_resource type="Resource" id="t1_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 64)
+
+[sub_resource type="Resource" id="t1_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t1_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t1_0"),
+1: SubResource("t1_1"),
+2: SubResource("t1_2"),
+3: SubResource("t1_3"),
+4: SubResource("t1_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t2_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t2_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(832, 0)
+
+[sub_resource type="Resource" id="t2_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(832, 96)
+
+[sub_resource type="Resource" id="t2_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 96)
+
+[sub_resource type="Resource" id="t2_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t2_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t2_0"),
+1: SubResource("t2_1"),
+2: SubResource("t2_2"),
+3: SubResource("t2_3"),
+4: SubResource("t2_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t3_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t3_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1920, 0)
+
+[sub_resource type="Resource" id="t3_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1920, 160)
+
+[sub_resource type="Resource" id="t3_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 160)
+
+[sub_resource type="Resource" id="t3_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t3_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t3_0"),
+1: SubResource("t3_1"),
+2: SubResource("t3_2"),
+3: SubResource("t3_3"),
+4: SubResource("t3_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="RectangleShape2D" id="g24"]
+size = Vector2(128, 16)
+
+[sub_resource type="RectangleShape2D" id="g25"]
+size = Vector2(128, 16)
+
+[sub_resource type="RectangleShape2D" id="g26"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g27"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g28"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g29"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g30"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g31"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g32"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g33"]
+size = Vector2(192, 16)
+
+[sub_resource type="Resource" id="t4_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t4_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 0)
+
+[sub_resource type="Resource" id="t4_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 96)
+
+[sub_resource type="Resource" id="t4_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 96)
+
+[sub_resource type="Resource" id="t4_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t4_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t4_0"),
+1: SubResource("t4_1"),
+2: SubResource("t4_2"),
+3: SubResource("t4_3"),
+4: SubResource("t4_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t5_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t5_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(608, 0)
+
+[sub_resource type="Resource" id="t5_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(608, 96)
+
+[sub_resource type="Resource" id="t5_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 96)
+
+[sub_resource type="Resource" id="t5_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t5_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t5_0"),
+1: SubResource("t5_1"),
+2: SubResource("t5_2"),
+3: SubResource("t5_3"),
+4: SubResource("t5_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t6_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t6_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1920, 0)
+
+[sub_resource type="Resource" id="t6_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1920, 128)
+
+[sub_resource type="Resource" id="t6_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 128)
+
+[sub_resource type="Resource" id="t6_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t6_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t6_0"),
+1: SubResource("t6_1"),
+2: SubResource("t6_2"),
+3: SubResource("t6_3"),
+4: SubResource("t6_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t7_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t7_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1696, 0)
+
+[sub_resource type="Resource" id="t7_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1696, 64)
+
+[sub_resource type="Resource" id="t7_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 64)
+
+[sub_resource type="Resource" id="t7_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t7_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t7_0"),
+1: SubResource("t7_1"),
+2: SubResource("t7_2"),
+3: SubResource("t7_3"),
+4: SubResource("t7_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t8_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t8_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 0)
+
+[sub_resource type="Resource" id="t8_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 512)
+
+[sub_resource type="Resource" id="t8_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 512)
+
+[sub_resource type="Resource" id="t8_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t8_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t8_0"),
+1: SubResource("t8_1"),
+2: SubResource("t8_2"),
+3: SubResource("t8_3"),
+4: SubResource("t8_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t9_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t9_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 0)
+
+[sub_resource type="Resource" id="t9_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 768)
+
+[sub_resource type="Resource" id="t9_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 768)
+
+[sub_resource type="Resource" id="t9_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t9_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t9_0"),
+1: SubResource("t9_1"),
+2: SubResource("t9_2"),
+3: SubResource("t9_3"),
+4: SubResource("t9_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t10_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t10_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 0)
+
+[sub_resource type="Resource" id="t10_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 1152)
+
+[sub_resource type="Resource" id="t10_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 1152)
+
+[sub_resource type="Resource" id="t10_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t10_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t10_0"),
+1: SubResource("t10_1"),
+2: SubResource("t10_2"),
+3: SubResource("t10_3"),
+4: SubResource("t10_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t11_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t11_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, 0)
+
+[sub_resource type="Resource" id="t11_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1088, 160)
+
+[sub_resource type="Resource" id="t11_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 160)
+
+[sub_resource type="Resource" id="t11_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t11_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t11_0"),
+1: SubResource("t11_1"),
+2: SubResource("t11_2"),
+3: SubResource("t11_3"),
+4: SubResource("t11_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t12_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t12_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1408, 0)
+
+[sub_resource type="Resource" id="t12_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1408, 160)
+
+[sub_resource type="Resource" id="t12_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 160)
+
+[sub_resource type="Resource" id="t12_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t12_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t12_0"),
+1: SubResource("t12_1"),
+2: SubResource("t12_2"),
+3: SubResource("t12_3"),
+4: SubResource("t12_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t13_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t13_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, 0)
+
+[sub_resource type="Resource" id="t13_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, 16)
+
+[sub_resource type="Resource" id="t13_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(168, 48)
+
+[sub_resource type="Resource" id="t13_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(96, 40)
+
+[sub_resource type="Resource" id="t13_5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(24, 56)
+
+[sub_resource type="Resource" id="t13_6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 16)
+
+[sub_resource type="Resource" id="t13_7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t13_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t13_0"),
+1: SubResource("t13_1"),
+2: SubResource("t13_2"),
+3: SubResource("t13_3"),
+4: SubResource("t13_4"),
+5: SubResource("t13_5"),
+6: SubResource("t13_6"),
+7: SubResource("t13_7")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+_constraints = {Vector2i(0, 7): 15}
+_next_key = 8
+
+[sub_resource type="Resource" id="t14_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t14_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1792, 0)
+
+[sub_resource type="Resource" id="t14_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1792, 224)
+
+[sub_resource type="Resource" id="t14_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 224)
+
+[sub_resource type="Resource" id="t14_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t14_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t14_0"),
+1: SubResource("t14_1"),
+2: SubResource("t14_2"),
+3: SubResource("t14_3"),
+4: SubResource("t14_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="RectangleShape2D" id="g103"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g104"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g105"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g106"]
+size = Vector2(192, 16)
+
+[sub_resource type="Resource" id="t15_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t15_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(960, 0)
+
+[sub_resource type="Resource" id="t15_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(960, 64)
+
+[sub_resource type="Resource" id="t15_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 64)
+
+[sub_resource type="Resource" id="t15_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t15_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t15_0"),
+1: SubResource("t15_1"),
+2: SubResource("t15_2"),
+3: SubResource("t15_3"),
+4: SubResource("t15_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="RectangleShape2D" id="g113"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g114"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g115"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g116"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g117"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g118"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g119"]
+size = Vector2(192, 16)
+
+[sub_resource type="Resource" id="t16_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t16_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 0)
+
+[sub_resource type="Resource" id="t16_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 96)
+
+[sub_resource type="Resource" id="t16_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 96)
+
+[sub_resource type="Resource" id="t16_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t16_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t16_0"),
+1: SubResource("t16_1"),
+2: SubResource("t16_2"),
+3: SubResource("t16_3"),
+4: SubResource("t16_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t17_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t17_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(320, 0)
+
+[sub_resource type="Resource" id="t17_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(320, 64)
+
+[sub_resource type="Resource" id="t17_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 64)
+
+[sub_resource type="Resource" id="t17_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t17_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t17_0"),
+1: SubResource("t17_1"),
+2: SubResource("t17_2"),
+3: SubResource("t17_3"),
+4: SubResource("t17_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t18_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t18_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(256, 0)
+
+[sub_resource type="Resource" id="t18_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(256, 16)
+
+[sub_resource type="Resource" id="t18_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(232, 48)
+
+[sub_resource type="Resource" id="t18_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(128, 40)
+
+[sub_resource type="Resource" id="t18_5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(24, 56)
+
+[sub_resource type="Resource" id="t18_6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 16)
+
+[sub_resource type="Resource" id="t18_7"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t18_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t18_0"),
+1: SubResource("t18_1"),
+2: SubResource("t18_2"),
+3: SubResource("t18_3"),
+4: SubResource("t18_4"),
+5: SubResource("t18_5"),
+6: SubResource("t18_6"),
+7: SubResource("t18_7")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+_constraints = {Vector2i(0, 7): 15}
+_next_key = 8
+
+[sub_resource type="Resource" id="t19_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t19_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1664, 0)
+
+[sub_resource type="Resource" id="t19_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(1664, 96)
+
+[sub_resource type="Resource" id="t19_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 96)
+
+[sub_resource type="Resource" id="t19_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t19_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t19_0"),
+1: SubResource("t19_1"),
+2: SubResource("t19_2"),
+3: SubResource("t19_3"),
+4: SubResource("t19_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t20_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t20_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(3232, 0)
+
+[sub_resource type="Resource" id="t20_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(3232, 128)
+
+[sub_resource type="Resource" id="t20_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 128)
+
+[sub_resource type="Resource" id="t20_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t20_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t20_0"),
+1: SubResource("t20_1"),
+2: SubResource("t20_2"),
+3: SubResource("t20_3"),
+4: SubResource("t20_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="RectangleShape2D" id="g153"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g154"]
+size = Vector2(192, 16)
+
+[sub_resource type="RectangleShape2D" id="g155"]
+size = Vector2(192, 16)
+
+[sub_resource type="Resource" id="t21_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t21_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(3712, 0)
+
+[sub_resource type="Resource" id="t21_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(3712, 128)
+
+[sub_resource type="Resource" id="t21_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 128)
+
+[sub_resource type="Resource" id="t21_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t21_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t21_0"),
+1: SubResource("t21_1"),
+2: SubResource("t21_2"),
+3: SubResource("t21_3"),
+4: SubResource("t21_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t22_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t22_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 0)
+
+[sub_resource type="Resource" id="t22_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(512, 1920)
+
+[sub_resource type="Resource" id="t22_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 1920)
+
+[sub_resource type="Resource" id="t22_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t22_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t22_0"),
+1: SubResource("t22_1"),
+2: SubResource("t22_2"),
+3: SubResource("t22_3"),
+4: SubResource("t22_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t23_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t23_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(640, 0)
+
+[sub_resource type="Resource" id="t23_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(640, 3072)
+
+[sub_resource type="Resource" id="t23_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 3072)
+
+[sub_resource type="Resource" id="t23_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t23_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t23_0"),
+1: SubResource("t23_1"),
+2: SubResource("t23_2"),
+3: SubResource("t23_3"),
+4: SubResource("t23_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[sub_resource type="Resource" id="t24_0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t24_1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(7040, 0)
+
+[sub_resource type="Resource" id="t24_2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(7040, 384)
+
+[sub_resource type="Resource" id="t24_3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 384)
+
+[sub_resource type="Resource" id="t24_4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 0)
+
+[sub_resource type="Resource" id="t24_points"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("t24_0"),
+1: SubResource("t24_1"),
+2: SubResource("t24_2"),
+3: SubResource("t24_3"),
+4: SubResource("t24_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {Vector2i(0, 4): 15}
+_next_key = 5
+
+[node name="stage_2-9" type="Node2D"]
+script = ExtResource("world")
+"스테이지_이름" = "2-9 · 엇갈린 배수실"
+"카메라_리밋" = Rect2(0, 1408, 7040, 3456)
+"카메라_줌" = 1.0
+"시작_위치_방식" = 0
+"시작_위치" = Vector2(768, 4096)
+"낙사_y" = 4800.0
+"치명_낙하거리" = 1500.0
+
+[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+script = ExtResource("core")
+
+[node name="하수도배경" parent="." instance=ExtResource("background")]
+
+[node name="지형" type="Node2D" parent="."]
+
+[node name="장치" type="Node2D" parent="."]
+[node name="A_출발" parent="지형" instance=ExtResource("black")]
+position = Vector2(512, 4096)
+_points = SubResource("t0_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/A_출발/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 96, 0, 96)
+
+[node name="A_징검" parent="지형" instance=ExtResource("white")]
+position = Vector2(1184, 4096)
+_points = SubResource("t1_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/A_징검/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 256, 0, 256, 64, 0, 64)
+
+[node name="A_갱도접근" parent="지형" instance=ExtResource("black")]
+position = Vector2(1600, 4096)
+_points = SubResource("t2_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/A_갱도접근/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 832, 0, 832, 96, 0, 96)
+
+[node name="A_물받이바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(512, 4320)
+_points = SubResource("t3_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/A_물받이바닥/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 1920, 0, 1920, 160, 0, 160)
+
+[node name="A_낙하물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(1216, 4320)
+script = ExtResource("pool_art")
+"크기" = Vector2(1408, 64)
+"색" = 2
+
+[node name="A_복귀1104" type="StaticBody2D" parent="장치"]
+position = Vector2(1104, 4216)
+script = ExtResource("grate")
+"크기" = Vector2(128, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/A_복귀1104"]
+shape = SubResource("g24")
+one_way_collision = true
+
+[node name="A_복귀1520" type="StaticBody2D" parent="장치"]
+position = Vector2(1520, 4216)
+script = ExtResource("grate")
+"크기" = Vector2(128, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/A_복귀1520"]
+shape = SubResource("g25")
+one_way_collision = true
+
+[node name="B_상승1" type="StaticBody2D" parent="장치"]
+position = Vector2(2272, 3992)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승1"]
+shape = SubResource("g26")
+one_way_collision = true
+
+[node name="B_상승2" type="StaticBody2D" parent="장치"]
+position = Vector2(2336, 3880)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승2"]
+shape = SubResource("g27")
+one_way_collision = true
+
+[node name="B_상승3" type="StaticBody2D" parent="장치"]
+position = Vector2(2272, 3768)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승3"]
+shape = SubResource("g28")
+one_way_collision = true
+
+[node name="B_상승4" type="StaticBody2D" parent="장치"]
+position = Vector2(2336, 3656)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승4"]
+shape = SubResource("g29")
+one_way_collision = true
+
+[node name="B_상승5" type="StaticBody2D" parent="장치"]
+position = Vector2(2272, 3544)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승5"]
+shape = SubResource("g30")
+one_way_collision = true
+
+[node name="B_상승6" type="StaticBody2D" parent="장치"]
+position = Vector2(2336, 3432)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승6"]
+shape = SubResource("g31")
+one_way_collision = true
+
+[node name="B_상승7" type="StaticBody2D" parent="장치"]
+position = Vector2(2272, 3320)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승7"]
+shape = SubResource("g32")
+one_way_collision = true
+
+[node name="B_상승8" type="StaticBody2D" parent="장치"]
+position = Vector2(2336, 3208)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/B_상승8"]
+shape = SubResource("g33")
+one_way_collision = true
+
+[node name="C_배관실오른쪽" parent="지형" instance=ExtResource("black")]
+position = Vector2(1696, 3200)
+_points = SubResource("t4_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/C_배관실오른쪽/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 96, 0, 96)
+
+[node name="C_배관실왼쪽" parent="지형" instance=ExtResource("black")]
+position = Vector2(768, 3200)
+_points = SubResource("t5_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/C_배관실왼쪽/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 608, 0, 608, 96, 0, 96)
+
+[node name="C_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(512, 2560)
+_points = SubResource("t6_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/C_천장/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 1920, 0, 1920, 128, 0, 128)
+
+[node name="C_검정공급" parent="장치" instance=ExtResource("water")]
+position = Vector2(1472, 2688)
+script = ExtResource("water_art")
+"크기" = Vector2(64, 524)
+"색" = 0
+"흐름속도" = 250.0
+"호퍼_유입" = true
+
+[node name="C_흰공급" parent="장치" instance=ExtResource("water")]
+position = Vector2(1600, 2688)
+script = ExtResource("water_art")
+"크기" = Vector2(64, 524)
+"색" = 1
+"흐름속도" = 250.0
+"호퍼_유입" = true
+
+[node name="C_혼합호퍼" parent="장치" instance=ExtResource("hopper")]
+position = Vector2(1536, 3364)
+z_index = 3
+"폭" = 320.0
+"높이" = 164.0
+"자동_출구_연결" = false
+"출구_유체" = NodePath("../D_호퍼출력")
+"출구_물줄기_폭" = -1.0
+
+[node name="D_호퍼출력" parent="장치" instance=ExtResource("water")]
+position = Vector2(1536, 3420)
+script = ExtResource("water_art")
+"크기" = Vector2(128, 292)
+"색" = 2
+"흐름속도" = 250.0
+"호퍼_유입" = false
+
+[node name="C_흰공급밸브" parent="장치" instance=ExtResource("valve")]
+position = Vector2(1904, 3168)
+"대상_유체" = NodePath("../C_흰공급")
+
+[node name="C_배수문버튼" type="AnimatableBody2D" parent="장치"]
+position = Vector2(960, 3224)
+script = ExtResource("button")
+"폭" = 112.0
+"작동방식" = 1
+"대상들" = Array[NodePath]([NodePath("../../지형/E_진입수문")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, -512)])
+"이동속도" = 320.0
+
+[node name="D_배수로" parent="지형" instance=ExtResource("black")]
+position = Vector2(512, 3712)
+_points = SubResource("t7_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/D_배수로/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 1696, 0, 1696, 64, 0, 64)
+
+[node name="E_진입수문" parent="지형" instance=ExtResource("black")]
+position = Vector2(2432, 3200)
+_points = SubResource("t8_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/E_진입수문/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 128, 0, 128, 512, 0, 512)
+
+[node name="E_수문아래벽" parent="지형" instance=ExtResource("black")]
+position = Vector2(2432, 3712)
+_points = SubResource("t9_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/E_수문아래벽/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 128, 0, 128, 768, 0, 768)
+
+[node name="E_수문위벽" parent="지형" instance=ExtResource("black")]
+position = Vector2(2432, 2048)
+_points = SubResource("t10_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/E_수문위벽/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 128, 0, 128, 1152, 0, 1152)
+
+[node name="E_기계실" parent="지형" instance=ExtResource("black")]
+position = Vector2(2560, 3712)
+_points = SubResource("t11_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/E_기계실/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 1088, 0, 1088, 160, 0, 160)
+
+[node name="E_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(2560, 3040)
+_points = SubResource("t12_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/E_천장/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 1408, 0, 1408, 160, 0, 160)
+
+[node name="E_연결발판" parent="지형" instance=ExtResource("ledge")]
+position = Vector2(3776, 3968)
+_points = SubResource("t13_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/E_연결발판/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 192, 0, 192, 16, 168, 48, 96, 40, 24, 56, 0, 16)
+
+[node name="E_연결버튼" type="AnimatableBody2D" parent="장치"]
+position = Vector2(3520, 3736)
+script = ExtResource("button")
+"폭" = 112.0
+"작동방식" = 1
+"대상들" = Array[NodePath]([NodePath("../../지형/E_연결발판")])
+"대상_이동량들" = Array[Vector2]([Vector2(0, -256)])
+"이동속도" = 320.0
+
+[node name="E_승강발판" parent="장치" instance=ExtResource("lift")]
+position = Vector2(4064, 2960)
+"크기" = Vector2(192, 32)
+"이동방향" = 1
+"이동거리" = 768.0
+"왕복시간" = 5.0
+"필요횟수" = 1
+
+[node name="E_물받이바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(2560, 4256)
+_points = SubResource("t14_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/E_물받이바닥/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 1792, 0, 1792, 224, 0, 224)
+
+[node name="E_낙하물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(4000, 4256)
+script = ExtResource("pool_art")
+"크기" = Vector2(576, 64)
+"색" = 2
+
+[node name="E_복귀1" type="StaticBody2D" parent="장치"]
+position = Vector2(4064, 4152)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/E_복귀1"]
+shape = SubResource("g103")
+one_way_collision = true
+
+[node name="E_복귀2" type="StaticBody2D" parent="장치"]
+position = Vector2(4064, 4040)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/E_복귀2"]
+shape = SubResource("g104")
+one_way_collision = true
+
+[node name="E_복귀3" type="StaticBody2D" parent="장치"]
+position = Vector2(4064, 3928)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/E_복귀3"]
+shape = SubResource("g105")
+one_way_collision = true
+
+[node name="E_복귀4" type="StaticBody2D" parent="장치"]
+position = Vector2(4064, 3816)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/E_복귀4"]
+shape = SubResource("g106")
+one_way_collision = true
+
+[node name="E_왕복톱" parent="장치" instance=ExtResource("saw")]
+position = Vector2(3104, 3664)
+"반지름" = 30.0
+"이동거리" = 224.0
+"왕복시간" = 4.0
+
+[node name="F_역방향통로" parent="지형" instance=ExtResource("black")]
+position = Vector2(3008, 2944)
+_points = SubResource("t15_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/F_역방향통로/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 960, 0, 960, 64, 0, 64)
+
+[node name="F_왕복톱" parent="장치" instance=ExtResource("saw")]
+position = Vector2(3456, 2896)
+"반지름" = 28.0
+"이동거리" = 192.0
+"왕복시간" = 3.6
+
+[node name="F_상승1" type="StaticBody2D" parent="장치"]
+position = Vector2(2784, 2840)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/F_상승1"]
+shape = SubResource("g113")
+one_way_collision = true
+
+[node name="F_상승2" type="StaticBody2D" parent="장치"]
+position = Vector2(2848, 2728)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/F_상승2"]
+shape = SubResource("g114")
+one_way_collision = true
+
+[node name="F_상승3" type="StaticBody2D" parent="장치"]
+position = Vector2(2784, 2616)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/F_상승3"]
+shape = SubResource("g115")
+one_way_collision = true
+
+[node name="F_상승4" type="StaticBody2D" parent="장치"]
+position = Vector2(2848, 2504)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/F_상승4"]
+shape = SubResource("g116")
+one_way_collision = true
+
+[node name="F_상승5" type="StaticBody2D" parent="장치"]
+position = Vector2(2784, 2392)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/F_상승5"]
+shape = SubResource("g117")
+one_way_collision = true
+
+[node name="F_상승6" type="StaticBody2D" parent="장치"]
+position = Vector2(2848, 2280)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/F_상승6"]
+shape = SubResource("g118")
+one_way_collision = true
+
+[node name="F_상승7" type="StaticBody2D" parent="장치"]
+position = Vector2(2784, 2168)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/F_상승7"]
+shape = SubResource("g119")
+one_way_collision = true
+
+[node name="G_출발" parent="지형" instance=ExtResource("black")]
+position = Vector2(2912, 2048)
+_points = SubResource("t16_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/G_출발/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 96, 0, 96)
+
+[node name="G_흰발판" parent="지형" instance=ExtResource("white")]
+position = Vector2(3584, 2048)
+_points = SubResource("t17_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/G_흰발판/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 320, 0, 320, 64, 0, 64)
+
+[node name="G_검정높은발판" parent="지형" instance=ExtResource("ledge")]
+position = Vector2(4064, 1968)
+_points = SubResource("t18_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/G_검정높은발판/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 256, 0, 256, 16, 232, 48, 128, 40, 24, 56, 0, 16)
+
+[node name="G_출구길" parent="지형" instance=ExtResource("black")]
+position = Vector2(4480, 2048)
+_points = SubResource("t19_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/G_출구길/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 1664, 0, 1664, 96, 0, 96)
+
+[node name="G_수조바닥" parent="지형" instance=ExtResource("black")]
+position = Vector2(2912, 2496)
+_points = SubResource("t20_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/G_수조바닥/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 3232, 0, 3232, 128, 0, 128)
+
+[node name="G_낙하물받이" parent="장치" instance=ExtResource("pool")]
+position = Vector2(4784, 2496)
+script = ExtResource("pool_art")
+"크기" = Vector2(2592, 64)
+"색" = 2
+
+[node name="G_복귀1" type="StaticBody2D" parent="장치"]
+position = Vector2(5952, 2392)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/G_복귀1"]
+shape = SubResource("g153")
+one_way_collision = true
+
+[node name="G_복귀2" type="StaticBody2D" parent="장치"]
+position = Vector2(5952, 2280)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/G_복귀2"]
+shape = SubResource("g154")
+one_way_collision = true
+
+[node name="G_복귀3" type="StaticBody2D" parent="장치"]
+position = Vector2(5952, 2168)
+script = ExtResource("grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+
+[node name="충돌" type="CollisionShape2D" parent="장치/G_복귀3"]
+shape = SubResource("g155")
+one_way_collision = true
+
+[node name="G_얇은흰물" parent="장치" instance=ExtResource("water")]
+position = Vector2(5520, 1536)
+script = ExtResource("water_art")
+"크기" = Vector2(64, 512)
+"색" = 1
+"흐름속도" = 250.0
+"호퍼_유입" = false
+
+[node name="G_천장" parent="지형" instance=ExtResource("black")]
+position = Vector2(2688, 1408)
+_points = SubResource("t21_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/G_천장/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 3712, 0, 3712, 128, 0, 128)
+
+[node name="외벽_왼쪽" parent="지형" instance=ExtResource("black")]
+position = Vector2(0, 2560)
+_points = SubResource("t22_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/외벽_왼쪽/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 1920, 0, 1920)
+
+[node name="외벽_오른쪽" parent="지형" instance=ExtResource("black")]
+position = Vector2(6400, 1408)
+_points = SubResource("t23_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/외벽_오른쪽/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 640, 0, 640, 3072, 0, 3072)
+
+[node name="바닥_전체" parent="지형" instance=ExtResource("black")]
+position = Vector2(0, 4480)
+_points = SubResource("t24_points")
+cached_draw_mode = 1
+
+[node name="CollisionPolygon2D" parent="지형/바닥_전체/StaticBody2D"]
+polygon = PackedVector2Array(0, 0, 7040, 0, 7040, 384, 0, 384)
+
+[node name="체크포인트_입구" parent="장치" instance=ExtResource("checkpoint")]
+position = Vector2(768, 4096)
+
+
+[node name="체크포인트_호퍼앞" parent="장치" instance=ExtResource("checkpoint")]
+position = Vector2(2016, 3200)
+
+
+[node name="체크포인트_배수로" parent="장치" instance=ExtResource("checkpoint")]
+position = Vector2(768, 3712)
+
+
+[node name="체크포인트_기계실" parent="장치" instance=ExtResource("checkpoint")]
+position = Vector2(2688, 3712)
+
+
+[node name="체크포인트_상부통로" parent="장치" instance=ExtResource("checkpoint")]
+position = Vector2(3840, 2944)
+
+
+[node name="체크포인트_출구구간" parent="장치" instance=ExtResource("checkpoint")]
+position = Vector2(3104, 2048)
+
+
+[node name="출구통로" parent="." instance=ExtResource("exit")]
+position = Vector2(6144, 2048)
+"높이" = 256.0
+"깊이" = 420.0
+"다음_씬" = "res://scenes/lobby/lobby.tscn"
+
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector2(768, 4096)
+"점프_높이_칸" = 10.0
+"점프_거리_칸" = 20.0
+
+[editable path="지형/A_출발"]
+[editable path="지형/A_징검"]
+[editable path="지형/A_갱도접근"]
+[editable path="지형/A_물받이바닥"]
+[editable path="지형/C_배관실오른쪽"]
+[editable path="지형/C_배관실왼쪽"]
+[editable path="지형/C_천장"]
+[editable path="지형/D_배수로"]
+[editable path="지형/E_진입수문"]
+[editable path="지형/E_수문아래벽"]
+[editable path="지형/E_수문위벽"]
+[editable path="지형/E_기계실"]
+[editable path="지형/E_천장"]
+[editable path="지형/E_연결발판"]
+[editable path="지형/E_물받이바닥"]
+[editable path="지형/F_역방향통로"]
+[editable path="지형/G_출발"]
+[editable path="지형/G_흰발판"]
+[editable path="지형/G_검정높은발판"]
+[editable path="지형/G_출구길"]
+[editable path="지형/G_수조바닥"]
+[editable path="지형/G_천장"]
+[editable path="지형/외벽_왼쪽"]
+[editable path="지형/외벽_오른쪽"]
+[editable path="지형/바닥_전체"]

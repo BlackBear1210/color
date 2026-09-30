@@ -19,6 +19,7 @@ const resources = {
   mesh: ['Script', 'res://addons/rmsmartshape/shapes/mesh.gd'],
   player: ['PackedScene', 'res://scenes/player/Player.tscn'],
   lift: ['PackedScene', obj + '움직이는발판.tscn'],
+  grate: ['Script', 'res://scripts/스마트월드/통과플랫폼.gd'],
   pool: ['PackedScene', obj + '웅덩이.tscn'],
   button: ['Script', 'res://scripts/스마트월드/압력버튼.gd'],
   saw: ['PackedScene', 'res://scenes/장애물/회전톱.tscn'],
@@ -56,8 +57,8 @@ box('F1_복귀받침',4256,3232,4672,3520);
 // F3은 작은 흰 방 + 검정 승강기. F1의 유지 버튼이 문을 위로 밀어 진입을 허용한다.
 slope('F3_검정진입경사',5120,2976,5568,2944,1,160);
 box('F3_흰준비선반',5696,2944,5888,3104,2);
-box('F3_흰천장',5696,2496,5888,2656,2);
-box('F3_문',6016,2496,6176,2944,1,'metadata/설명 = "F1 버튼으로 위로 512px 이동하는 지름길 문"');
+// F3의 낮은 덧천장은 제거한다. 기존 2층 바닥 밑면까지 448px 공간을 확보한다.
+box('F3_문',6016,2496,6176,2944,1,'metadata/description = "F1 버튼으로 지붕 속까지 2240px 수납하는 문"');
 box('F3_검정승강기참',6016,2944,6144,3104);
 box('F3_안쪽벽',6528,2496,6848,3104);
 
@@ -86,9 +87,10 @@ box('L3_출구쉼터',10752,1536,12544,1728);
 box('지붕_서쪽',0,704,3968,896);
 box('지붕_흰정비실',4096,-64,6144,896,2);
 box('지붕_동쪽',6272,704,13568,896);
-box('L1_흰천장',8192,2656,9984,2816,2);
-box('L2_흰천장',8192,1888,9984,2048,2);
-box('F1_흰천장',1664,2496,3136,2656,2);
+// 몸96+점프160보다 여유 있게 천장을 올려 색 전환 입력 시점을 강제하지 않는다.
+box('L1_흰천장',8192,2656,9984,2752,2);
+box('L2_흰천장',8192,1888,9984,1984,2);
+// F1도 위층 바닥이 이미 천장 역할을 한다. 덧천장을 올려 위층과 겹치게 만들지 않는다.
 box('서쪽_외벽',-320,704,0,3712);
 box('서쪽_저층벽',0,2752,512,3712);
 box('동쪽_외벽',13056,896,13376,3456);
@@ -109,11 +111,13 @@ const node = (name,parent,type,props='',instance=null,groups=[]) => {
 node('stage_2-9',null,'Node2D',`script = ExtResource("world")
 "스테이지_이름" = "2-9 · 돌아오는 물길"
 "카메라_리밋" = Rect2(-320, 384, 13888, 3840)
-"카메라_줌" = 0.85
+"카메라_줌" = 1.0
+"치명_낙하거리" = 1500.0
+"시작_위치_방식" = 0
 "시작_위치" = Vector2(768, 3072)
 "낙사_y" = 4096.0
-metadata/설계 = "F1 흰 막다른 선반 → 유지 버튼 → 옆 낙하 복귀 / F2 동쪽·서쪽 왕복 / F3 중앙 지름길"
-metadata/검증 = "정적 확인만 수행. Godot 엔진 및 주행검사 미실행."`);
+metadata/design = "F1 버튼 → F3 승강기 → 중앙 격자로 3층 / 외곽 왕복은 선택 경로"
+metadata/validation = "수정 전 Claude 실측 실패. 수정 후 정적 검사만 수행, 재주행 필요."`);
 node('페인트코어','.','Node','script = ExtResource("core")\n"최대_탄약" = 12',null,['페인트코어']);
 node('지형','.','Node2D');
 
@@ -147,10 +151,17 @@ ${p.extra}`,p.color===2?'white':'black');
 }
 node('장치','.','Node2D');
 const inst=(name,id,x,y,props='')=>node(name,'장치',null,`position = Vector2(${x}, ${y})\n${props}`,id);
-const lift=(name,x,top,dist,seconds)=>inst(name,'lift',x,top+16,`"크기" = Vector2(256, 32)\n"이동방향" = 1\n"이동거리" = ${dist}.0\n"왕복시간" = ${seconds}.0\n"필요횟수" = 1`);
-lift('승강기_동쪽_F2',12800,2304,768,10);
-lift('승강기_서쪽_F2',256,1536,768,10);
-lift('승강기_중앙_F3',6336,2304,640,7);
+const lift=(name,x,top,dist,seconds,width)=>inst(name,'lift',x,top+16,`"크기" = Vector2(${width}, 32)\n"이동방향" = 1\n"이동거리" = ${dist}.0\n"왕복시간" = ${seconds}.0\n"필요횟수" = 1`);
+lift('승강기_동쪽_F2',12800,2304,768,5,512);
+lift('승강기_서쪽_F2',256,1536,768,5,512);
+lift('승강기_중앙_F3',6336,2304,640,5,384);
+// 승강기 타이밍에 의존하지 않는 교차점과 상층 지름길. 기존 128px 세로 틈을 사용한다.
+for(let j=0;j<=5;j++){
+  const name=j===0?'중앙_상부참':`중앙_상층격자${j}`, width=j===0?384:128, x=j===0?6336:6208;
+  sub.push(`[sub_resource type="RectangleShape2D" id="shortcut${j}"]\nsize = Vector2(${width}, 16)`);
+  node(name,'장치','StaticBody2D',`position = Vector2(${x}, ${2304-j*128+8})\nscript = ExtResource("grate")\n"크기" = Vector2(${width}, 16)\n"필요횟수" = 1`);
+  node('충돌',`장치/${name}`,'CollisionShape2D',`shape = SubResource("shortcut${j}")\none_way_collision = true\none_way_collision_margin = 4.0`);
+}
 inst('집수조_동쪽','pool',12800,3328,'"크기" = Vector2(512, 96)\n"색" = 2');
 inst('집수조_서쪽','pool',256,2560,'"크기" = Vector2(512, 96)\n"색" = 2');
 inst('집수조_중앙','pool',6336,3232,'"크기" = Vector2(384, 96)\n"색" = 2');
@@ -160,8 +171,8 @@ script = ExtResource("button")
 "작동방식" = 1
 "누름_가능_그룹" = PackedStringArray("player")
 "대상들" = Array[NodePath]([NodePath("../../지형/F3_문")])
-"대상_이동량들" = Array[Vector2]([Vector2(0, -512)])
-"이동속도" = 384.0`);
+"대상_이동량들" = Array[Vector2]([Vector2(0, -2240)])
+"이동속도" = 640.0`);
 inst('회전톱_F2_수로','saw',11264,3024,'"반지름" = 36.0\n"이동거리" = 384.0\n"왕복시간" = 3.0');
 inst('회전톱_출구종합','saw',9472,1584,'"반지름" = 40.0\n"이동거리" = 512.0\n"왕복시간" = 4.0');
 for(const [name,x,y] of [['시작',768,3072],['F1',4000,2880],['갈림길',4960,3152],['동쪽',12160,3072],['서쪽',896,2304],['상층',896,1536],['출구앞',11008,1536]])
@@ -170,7 +181,7 @@ node('출구통로','.',null,`position = Vector2(12544, 1536)
 "높이" = 256.0
 "깊이" = 420.0
 "다음_씬" = "res://scenes/lobby/lobby.tscn"
-metadata/설명 = "후속 스테이지가 지정되지 않아 독립 실행 완료 시 로비로 돌아간다."`,'exit');
+metadata/description = "후속 스테이지가 지정되지 않아 독립 실행 완료 시 로비로 돌아간다."`,'exit');
 node('끝도달_검사점','.','Marker2D','position = Vector2(12416, 1536)');
 node('Player','.',null,'position = Vector2(768, 3072)\n"점프_높이_칸" = 10.0\n"점프_거리_칸" = 20.0','player');
 

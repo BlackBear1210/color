@@ -85,3 +85,12 @@ Rules:
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+
+
+## 시각 작업 완료 기준 (2026-09-28 사용자 요청)
+- 시안 적용은 코드 연결/정적 검사만으로 완료라고 보고하지 않는다.
+- 실제 게임의 같은 스테이지·카메라 줌·해상도에서 수정 전후 PNG를 확보하고 직접 열어 본다.
+- 배경/지형 분리, 벽돌 크기, 벽등 형태와 빛 범위, 물색 구분, HUD, 반복 이음새를 시안과 비교한다.
+- 입수 효과는 정지 화면만으로 판정하지 않고 진입/물 안 이동/재진입/리스폰 및 소멸을 확인한다.
+- 실행은 위 Godot 명시적 허용 규칙을 따른다. 허용 없이는 "수정 완료·시각 검증 대기"로 보고하며 시안과 같다고 단정하지 않는다.
+- 결과 보고에는 실제 엔진 캡처 경로와 남은 차이를 적는다. 생성형 시안은 검증 이미지로 대체 사용하지 않는다.

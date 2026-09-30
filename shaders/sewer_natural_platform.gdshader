@@ -1,4 +1,7 @@
 shader_type canvas_item;
+uniform bool reference_tone = false;
+// Foreground depth (approved ver.2 still): darker, calmer black body; bright coping row stays.
+uniform bool front_depth = false;
 uniform int inlay_count = 0;
 uniform vec4 inlay_rects[16];
 // Prototype snapshot of sewer paint shader; keep paint uniforms synchronized.
@@ -13,6 +16,9 @@ uniform vec4 ground_edges[128];
 uniform float ground_top_half_depth : hint_range(1.0, 6.0) = 4.0;
 uniform bool ground_top_enabled = true;
 uniform bool ground_side_enabled = true;
+// Horizontal three-stone sockets: left, right, surface y, adjacent stone width.
+uniform int socket_joint_count = 0;
+uniform vec4 socket_joints[8];
 
 // Approved end-stone finish, parameterized by the actual exposed side edge.
 vec4 ground_side_stone(vec4 frame) {
@@ -384,6 +390,26 @@ void fragment() {
   // Fit whole coping stones between the actual endpoints, joint to joint.
   float stone_count = max(1.0,floor(faces.w/(198.0*0.2353)+0.5));
   float stone_phase = fract(clamp(faces.z/faces.w,0.0,1.0)*stone_count);
+  // Fit each adjacent stone to the metal cutout. Keep its outer mortar joint,
+  // but sample stone interior at the socket so the old diagonal cannot fork.
+  for (int joint = 0; joint < 8; joint++) {
+   if (joint >= socket_joint_count) { break; }
+   vec4 socket = socket_joints[joint];
+   float sx = ground_visual_pos.x;
+   float sy = ground_visual_pos.y - socket.z;
+   if (sy < -4.01 || sy > 24.01 || socket.w <= 0.0) { continue; }
+   float inset = 2.0 + max(0.0, 6.0 - (sy + 4.0));
+   if (sy >= 9.0) { inset = 0.0; }
+   float left_outer = socket.x - socket.w;
+   float right_outer = socket.y + socket.w;
+   if (sx >= left_outer && sx <= socket.x + inset) {
+    float t = clamp((sx-left_outer)/(socket.w+inset),0.0,1.0);
+    stone_phase = t * 0.78;
+   } else if (sx >= socket.y - inset && sx <= right_outer) {
+    float t = clamp((sx-socket.y+inset)/(socket.w+inset),0.0,1.0);
+    stone_phase = 0.22 + t * 0.78;
+   }
+  }
   vec2 cap_uv = vec2((266.0+stone_phase*198.0)/1774.0,
                      source_y/887.0);
   vec4 cap = texture(ground_cap_tex,cap_uv);
@@ -401,6 +427,16 @@ void fragment() {
 	if (sewer_trim) {
 		ink_black *= 0.45;
 	}
+    // Opt-in material response before paint blending, preserving color identity.
+    if (reference_tone) {
+        ink_black = ink_black * 0.82 + vec3(0.018);
+        ink_white = ink_white * 0.78 + vec3(0.08);
+    }
+    // Foreground body only (the coping trim is a separate mesh): halve the level and flatten the
+    // noisy stone grain so the terrain reads as a dark mass under a lit coping row.
+    if (front_depth && ground_platform && cached_draw_mode == 1) {
+        ink_black = mix(vec3(0.045), ink_black * 0.62, 0.78);
+    }
 	vec3 gray = mix(ink_black, ink_white, 0.5);
 
 	vec3 col = base_is_white ? ink_white : ink_black;

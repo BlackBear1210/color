@@ -23,6 +23,12 @@ extends CharacterBody2D
 @export_group("물 운반")
 ## 채워진 상태에서 E를 누르면 이 유체를 켠다. 비워 두면 E로 비울 수 없다.
 @export var 배출_유체: NodePath
+## ★[2026-09-21 Claude · 2-6] 비우기를 **이 자리 근처에서만** 받는다. 비워 두면 예전처럼 어디서든 비운다.
+##   왜: `비우기()` 는 양동이가 어디 있든 `배출_유체` 를 켰다 — 물을 받자마자 그 자리에서 E 를 누르면 끝이라
+##   "실어 나른다" 가 성립하지 않았다(2-6 「무거운 것」 이 산책이 된 원인 중 하나). 배출구(관 입구)를 지정하면
+##   양동이가 그 안(`배출_거리`)에 있을 때만 비워진다. 2-7 의 양동이는 이 값을 안 써서 동작이 안 바뀐다.
+@export var 배출_지점: NodePath
+@export_range(40.0, 600.0, 1.0) var 배출_거리: float = 140.0
 @export var 물참: bool = false:
 	set(v):
 		물참 = v
@@ -95,11 +101,23 @@ func 닿아있나(플레이어: Node2D) -> bool:
 	return 플레이어 != null and global_position.distance_to(플레이어.global_position) <= 상호작용_거리
 
 
+## 배출구 안에 있나 — 주행검사·HUD 가 "여기서 E 가 먹히나" 를 물을 때 쓴다.
+func 배출구_안인가() -> bool:
+	if 배출_지점.is_empty():
+		return true
+	var 지점 := get_node_or_null(배출_지점) as Node2D
+	return 지점 == null or global_position.distance_to(지점.global_position) <= 배출_거리
+
+
 ## 물을 실었을 때만 지정된 출구 유체에 그 색을 넘긴다.
 ## 반환값은 월드가 E를 소비할지(성공) 평소 회수로 넘길지(실패) 결정하는 데 쓴다.
 func 비우기() -> bool:
 	if not 물참 or 배출_유체.is_empty():
 		return false
+	if not 배출_지점.is_empty():
+		var 지점 := get_node_or_null(배출_지점) as Node2D
+		if 지점 != null and global_position.distance_to(지점.global_position) > 배출_거리:
+			return false          # 배출구에서 멀다 — E 는 평소 회수로 넘어간다
 	var 출구 := get_node_or_null(배출_유체) as 유체
 	if 출구 == null:
 		push_warning("[양동이:%s] 배출_유체 경로(%s)에서 유체를 못 찾음" % [name, 배출_유체])

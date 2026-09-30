@@ -447,6 +447,8 @@ func _반대색_대상_찾기(맞은것: Object) -> Node:
 
 
 func _리스폰() -> void:
+	# 같은 자리에서 재시작해도 입수 화면 효과가 남거나 다시 튀지 않도록 명시적으로 초기화한다.
+	get_tree().call_group("하수도_입수효과", "입수_초기화")
 	if _카메라:
 		_카메라.add_trauma(0.55)
 	_플레이어.set("velocity", Vector2.ZERO)

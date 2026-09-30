@@ -247,6 +247,12 @@ func _궤적_그리기(페인트색: Color) -> void:
 			위치 = 다음
 
 
+var _에디터_서명 := 0
+
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
-		queue_redraw()
+		# ★[2026-09-30] 매 프레임 다시 그리면 에디터가 쉬지 못해 F5 게임 프레임을 깎는다 → 값이 바뀐 때만.
+		var 서명 := preload("res://scripts/스마트월드/에디터_다시그리기.gd").서명(self)
+		if 서명 != _에디터_서명:
+			_에디터_서명 = 서명
+			queue_redraw()

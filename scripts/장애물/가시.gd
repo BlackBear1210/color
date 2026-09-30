@@ -19,6 +19,22 @@ extends Area2D
 
 const 공통 := preload("res://scripts/장애물/장애물_공통.gd")
 
+## ★[2026-09-28] 주철 가시판 그림(도형님 확정 시안 3). 흰 삼각형 + 빨간 점은 벽돌·주철 세계에서 혼자 벡터 도형이라 튀었고,
+##   흰색이라 "흰 몸이면 밟아도 되나?" 로 읽힐 수 있었다(가시는 색과 무관하게 죽인다) → 회색 주철로.
+##   그림은 tools/생성_가시_주철.py 가 호퍼 원화 재질로 굽는다(손으로 그리지 말 것). **판정 폴리곤은 그대로다.**
+##   아틀라스 규격(도구 머리말과 같아야 한다): 칸 32 x 30 을 6 종 가로로 · 그 뒤에 받침판 왼/오른 끝 마감 4 x 30.
+##   세로 30 = 여백 4 + 가시 상자 22 + 여백 4.
+const 주철_가시 = preload("res://assets/textures/obstacles/spike/cast_iron_v1/spike_atlas.png")
+const 칸_그림폭 := 32.0
+const 그림_여백 := 4.0
+const 그림_상자 := 22.0
+const 변형_수 := 6
+const 마감_폭 := 4.0
+
+## 옛 그림(흰 삼각형 + 빨간 점)으로 되돌린다. 비교·디버그용.
+@export var 옛_그림: bool = false:
+	set(v): 옛_그림 = v; queue_redraw()
+
 @export_range(1, 20) var 칸수: int = 3:
 	set(v): 칸수 = maxi(v, 1); _재구성()
 ## 0=위 1=아래 2=왼쪽 3=오른쪽 (가시가 향하는 방향)
@@ -53,8 +69,37 @@ func _재구성() -> void:
 	queue_redraw()
 
 func _draw() -> void:
+	if not 옛_그림 and 주철_가시 != null:
+		_주철_그리기()
+		return
 	for p in _폴리들:
 		공통.폴리곤_외곽선(self, p, 공통.위험_코어, 공통.위험_외곽, 2.0)
 		# 끝쪽에 붉은 경고점 — 흑백 화면에서 "위험"을 즉시 읽히게
 		var 끝: Vector2 = p[1]
 		draw_circle(끝, 2.4, 공통.위험_경고)
+
+
+## 가시 상자(폭 = 칸수 × 32, 높이 = 가시높이)를 판정과 똑같은 자리에 그린다.
+## 방향은 "위" 그림을 돌려서 쓴다 — 판정 폴리곤도 같은 회전 관계다(장애물_공통.가시_폴리곤들).
+func _주철_그리기() -> void:
+	var 회전 := 0.0
+	match 방향:
+		1: 회전 = PI            # 아래 (천장에 박힘)
+		2: 회전 = -PI * 0.5     # 왼쪽 (오른쪽 벽에 박힘)
+		3: 회전 = PI * 0.5      # 오른쪽 (왼쪽 벽에 박힘)
+	draw_set_transform(Vector2.ZERO, 회전, Vector2.ONE)
+	var 폭 := float(칸수) * 32.0
+	var 세로배율 := 가시높이 / 그림_상자                     # 2-10 처럼 높이 20 이면 그림도 그만큼 눌린다
+	var 위 := -가시높이 * 0.5 - 그림_여백 * 세로배율
+	var 높이 := (그림_상자 + 그림_여백 * 2.0) * 세로배율
+	var 씨앗 := int(round(global_position.x)) * 73856093 ^ int(round(global_position.y)) * 19349663
+	for i in 칸수:
+		# 칸마다 다른 말뚝을 고른다(자리로 정해지므로 매 프레임 바뀌지 않는다) — 복사해 붙인 느낌을 없앤다
+		var 변형 := posmod(씨앗 + i * 83492791, 변형_수)
+		var 원본 := Rect2(칸_그림폭 * 변형, 0.0, 칸_그림폭, 그림_상자 + 그림_여백 * 2.0)
+		draw_texture_rect_region(주철_가시, Rect2(-폭 * 0.5 + 32.0 * i, 위, 32.0, 높이), 원본)
+	var 마감_x := 칸_그림폭 * 변형_수
+	var 원본_높이 := 그림_상자 + 그림_여백 * 2.0
+	draw_texture_rect_region(주철_가시, Rect2(-폭 * 0.5 - 마감_폭, 위, 마감_폭, 높이), Rect2(마감_x, 0.0, 마감_폭, 원본_높이))
+	draw_texture_rect_region(주철_가시, Rect2(폭 * 0.5, 위, 마감_폭, 높이), Rect2(마감_x + 마감_폭, 0.0, 마감_폭, 원본_높이))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

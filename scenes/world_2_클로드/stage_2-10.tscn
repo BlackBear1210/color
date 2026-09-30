@@ -1,12 +1,14 @@
 [gd_scene format=4 uid="uid://csvlwpgce6u26"]
 
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_화면효과_v2.tscn" id="sewer_fx_v2"]
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_벽돌배경_2_9_조정.tscn" id="sewer_v05"]
 [ext_resource type="Texture2D" uid="uid://dw7g6rpenprq7" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_black.png" id="7_xpq3l"]
 [ext_resource type="Texture2D" uid="uid://cnrulj44img8x" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_edge_black.png" id="8_7cwgn"]
 [ext_resource type="Texture2D" uid="uid://mjvxjkrwel7l" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_white.png" id="10_t1ywe"]
 [ext_resource type="Texture2D" uid="uid://cwtjttga77xuq" path="res://assets/textures/smartshape/wall_sparse_bricks_v1/wall_sparse_bricks_edge_white.png" id="11_c4y6k"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID.tscn" id="black"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/양동이.tscn" id="bucket"]
-[ext_resource type="Script" uid="uid://gp4t7lfxp2fn" path="res://scripts/스마트월드/압력버튼.gd" id="button"]
+[ext_resource type="Script" path="res://scripts/스마트월드/압력버튼_매립.gd" id="button"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="checkpoint"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="core"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="exit"]
@@ -22,6 +24,9 @@
 [ext_resource type="PackedScene" uid="uid://xopxff8t4a3b" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="water"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/WALL_벽체/TEMPLATE_WALL_SOLID_WHITE.tscn" id="white"]
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="world"]
+[ext_resource type="Script" path="res://scripts/스마트월드/stage_2_10_반환격자.gd" id="return_grate"]
+
+[ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
 
 [sub_resource type="Resource" id="terrain0p0"]
 resource_local_to_scene = true
@@ -5405,7 +5410,9 @@ script = ExtResource("world")
 "시작_위치" = Vector2(3072, 12288)
 "낙사_y" = 12608.0
 metadata/design = "아래 중앙 → 위 중앙. 좌우 선택 5곳, 중앙 직통 차단, 승강기 0대."
-metadata/validation = "Godot 실행 및 실제 주행 미실행. 정적 좌표·연결 확인."
+metadata/validation = "Claude 수정 전 실측: 반환 발판 통과 불가. 2026-09-22 격자 교체 후 정적 검사만 수행; 재주행 필요."
+"카메라_줌" = 1.0
+"치명_낙하거리" = 1500.0
 
 [node name="페인트코어" type="Node" parent="." unique_id=1843957626 groups=["페인트코어"]]
 script = ExtResource("core")
@@ -5470,62 +5477,47 @@ _meshes = Array[ExtResource("mesh")]([SubResource("Resource_dlgrm"), SubResource
 collision_size = 0.0
 metadata/role = "플랫폼"
 
-[node name="구역1_왼쪽_반환발판1" parent="지형" unique_id=1478403514 instance=ExtResource("white")]
-position = Vector2(544, 11496)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_5h4vr")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_p0cdb"), SubResource("Resource_mgyd7")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역1_왼쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 11400)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역1_오른쪽_반환발판1" parent="지형" unique_id=202556271 instance=ExtResource("black")]
-position = Vector2(5600, 11496)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_ufo13")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_g4qd8"), SubResource("Resource_kjkr8")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역1_오른쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 11400)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역1_왼쪽_반환발판2" parent="지형" unique_id=1455764274 instance=ExtResource("white")]
-position = Vector2(224, 11400)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_31584")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_ulvd6"), SubResource("Resource_8ic20")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역1_왼쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 11272)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역1_오른쪽_반환발판2" parent="지형" unique_id=2103302629 instance=ExtResource("black")]
-position = Vector2(5920, 11400)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_el8dl")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_5ue8b"), SubResource("Resource_jl7lc")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역1_오른쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 11272)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역1_왼쪽_반환발판3" parent="지형" unique_id=6449563 instance=ExtResource("white")]
-position = Vector2(544, 11304)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_7heca")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_m7dbc"), SubResource("Resource_wexmf")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역1_왼쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 11144)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역1_오른쪽_반환발판3" parent="지형" unique_id=207869206 instance=ExtResource("black")]
-position = Vector2(5600, 11304)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_gsbng")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_i0poq"), SubResource("Resource_gy3te")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역1_오른쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 11144)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
 [node name="구역2_왼쪽_흰상행" parent="지형" unique_id=894445385 instance=ExtResource("white")]
 position = Vector2(1728, 9824)
@@ -5575,62 +5567,47 @@ _meshes = Array[ExtResource("mesh")]([SubResource("Resource_fbdca"), SubResource
 collision_size = 0.0
 metadata/role = "플랫폼"
 
-[node name="구역2_왼쪽_반환발판1" parent="지형" unique_id=893423074 instance=ExtResource("white")]
-position = Vector2(544, 9320)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_xggam")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_gl3je"), SubResource("Resource_r8cvd")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역2_왼쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 9224)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역2_오른쪽_반환발판1" parent="지형" unique_id=1412842923 instance=ExtResource("black")]
-position = Vector2(5600, 9320)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_x88l5")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_4hbwd"), SubResource("Resource_liea3")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역2_오른쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 9224)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역2_왼쪽_반환발판2" parent="지형" unique_id=803361712 instance=ExtResource("white")]
-position = Vector2(224, 9224)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_cmv17")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_fqbo4"), SubResource("Resource_xdyoq")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역2_왼쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 9096)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역2_오른쪽_반환발판2" parent="지형" unique_id=1525110628 instance=ExtResource("black")]
-position = Vector2(5920, 9224)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_e5s8f")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_0oa5m"), SubResource("Resource_7bdnt")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역2_오른쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 9096)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역2_왼쪽_반환발판3" parent="지형" unique_id=488718022 instance=ExtResource("white")]
-position = Vector2(544, 9128)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_3nrsj")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_5w07x"), SubResource("Resource_hdove")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역2_왼쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 8968)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역2_오른쪽_반환발판3" parent="지형" unique_id=187263959 instance=ExtResource("black")]
-position = Vector2(5600, 9128)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_wl76b")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_nim6g"), SubResource("Resource_wq2qj")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역2_오른쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 8968)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
 [node name="구역3_왼쪽_흰상행" parent="지형" unique_id=247983005 instance=ExtResource("white")]
 position = Vector2(1728, 7904)
@@ -5680,62 +5657,47 @@ _meshes = Array[ExtResource("mesh")]([SubResource("Resource_nf3u1"), SubResource
 collision_size = 0.0
 metadata/role = "플랫폼"
 
-[node name="구역3_왼쪽_반환발판1" parent="지형" unique_id=10776279 instance=ExtResource("white")]
-position = Vector2(544, 7400)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_kjq5v")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_71iab"), SubResource("Resource_lcoby")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역3_왼쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 7304)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역3_오른쪽_반환발판1" parent="지형" unique_id=102215711 instance=ExtResource("black")]
-position = Vector2(5600, 7400)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_dojb1")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_xbadl"), SubResource("Resource_bro8x")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역3_오른쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 7304)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역3_왼쪽_반환발판2" parent="지형" unique_id=651640537 instance=ExtResource("white")]
-position = Vector2(224, 7304)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_ujpcy")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_na7ia"), SubResource("Resource_tkyta")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역3_왼쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 7176)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역3_오른쪽_반환발판2" parent="지형" unique_id=1275997056 instance=ExtResource("black")]
-position = Vector2(5920, 7304)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_vifpf")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_ls8me"), SubResource("Resource_plgfm")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역3_오른쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 7176)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역3_왼쪽_반환발판3" parent="지형" unique_id=568362731 instance=ExtResource("white")]
-position = Vector2(544, 7208)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_cx0ag")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_w2pbs"), SubResource("Resource_dab0u")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역3_왼쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 7048)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역3_오른쪽_반환발판3" parent="지형" unique_id=1858847509 instance=ExtResource("black")]
-position = Vector2(5600, 7208)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_ihtk1")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_sslhw"), SubResource("Resource_qpfbj")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역3_오른쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 7048)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
 [node name="구역4_왼쪽_흰상행" parent="지형" unique_id=671240076 instance=ExtResource("white")]
 position = Vector2(1728, 5728)
@@ -5785,62 +5747,47 @@ _meshes = Array[ExtResource("mesh")]([SubResource("Resource_4nvuc"), SubResource
 collision_size = 0.0
 metadata/role = "플랫폼"
 
-[node name="구역4_왼쪽_반환발판1" parent="지형" unique_id=678711346 instance=ExtResource("white")]
-position = Vector2(544, 5224)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_2ne7k")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_kq80a"), SubResource("Resource_jscjw")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역4_왼쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 5128)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역4_오른쪽_반환발판1" parent="지형" unique_id=1999996078 instance=ExtResource("black")]
-position = Vector2(5600, 5224)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_ccseu")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_xbpmi"), SubResource("Resource_30xwk")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역4_오른쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 5128)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역4_왼쪽_반환발판2" parent="지형" unique_id=887402415 instance=ExtResource("white")]
-position = Vector2(224, 5128)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_cmyda")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_sq2t5"), SubResource("Resource_5ye5k")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역4_왼쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 5000)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역4_오른쪽_반환발판2" parent="지형" unique_id=556117521 instance=ExtResource("black")]
-position = Vector2(5920, 5128)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_eesrj")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_jpqfx"), SubResource("Resource_r4it5")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역4_오른쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 5000)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역4_왼쪽_반환발판3" parent="지형" unique_id=906424200 instance=ExtResource("white")]
-position = Vector2(544, 5032)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_p62a1")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_yt2hn"), SubResource("Resource_4g3w1")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역4_왼쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 4872)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역4_오른쪽_반환발판3" parent="지형" unique_id=1957150059 instance=ExtResource("black")]
-position = Vector2(5600, 5032)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_eanct")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_tvgcg"), SubResource("Resource_05k5t")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역4_오른쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 4872)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
 [node name="구역5_왼쪽_흰상행" parent="지형" unique_id=266600045 instance=ExtResource("white")]
 position = Vector2(1728, 3552)
@@ -5890,62 +5837,47 @@ _meshes = Array[ExtResource("mesh")]([SubResource("Resource_ctrbr"), SubResource
 collision_size = 0.0
 metadata/role = "플랫폼"
 
-[node name="구역5_왼쪽_반환발판1" parent="지형" unique_id=2066655664 instance=ExtResource("white")]
-position = Vector2(544, 3048)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_weaiu")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_iu7to"), SubResource("Resource_vfgrj")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역5_왼쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 2952)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역5_오른쪽_반환발판1" parent="지형" unique_id=1337716002 instance=ExtResource("black")]
-position = Vector2(5600, 3048)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_rmwy2")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_6j2h0"), SubResource("Resource_y7x2k")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역5_오른쪽_반환발판1" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 2952)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역5_왼쪽_반환발판2" parent="지형" unique_id=1078278323 instance=ExtResource("white")]
-position = Vector2(224, 2952)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_dqh1h")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_pcjhs"), SubResource("Resource_gfqpj")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역5_왼쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 2824)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역5_오른쪽_반환발판2" parent="지형" unique_id=1253755741 instance=ExtResource("black")]
-position = Vector2(5920, 2952)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_k8617")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_pimsl"), SubResource("Resource_sxc8b")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역5_오른쪽_반환발판2" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 2824)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
-[node name="구역5_왼쪽_반환발판3" parent="지형" unique_id=1616007610 instance=ExtResource("white")]
-position = Vector2(544, 2856)
-"필요횟수_수동" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_gowpe")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_dt45i"), SubResource("Resource_hj3vs")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역5_왼쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(672, 2696)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 1
 
-[node name="구역5_오른쪽_반환발판3" parent="지형" unique_id=2072468190 instance=ExtResource("black")]
-position = Vector2(5600, 2856)
-"필요횟수_수동" = 1
-"시작상태" = 1
-"위치별_판정" = true
-_points = SubResource("Resource_pek70")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_ebrwg"), SubResource("Resource_ud1p1")])
-collision_size = 0.0
-metadata/role = "플랫폼"
+[node name="구역5_오른쪽_반환발판3" type="StaticBody2D" parent="지형"]
+position = Vector2(5472, 2696)
+script = ExtResource("return_grate")
+"크기" = Vector2(192, 16)
+"필요횟수" = 1
+"시작색" = 0
 
 [node name="외곽_왼벽" parent="지형" unique_id=544266187 instance=ExtResource("black")]
 position = Vector2(-1152, 6848)
@@ -6006,14 +5938,17 @@ position = Vector2(4256, 8576)
 "채운뒤_밀수없음" = false
 
 [node name="급수_검정" parent="장치" unique_id=1796663713 instance=ExtResource("water")]
+script = ExtResource("latest_water_art")
 position = Vector2(4128, 8176)
 "색" = 0
 "크기" = Vector2(96, 400)
 
 [node name="버튼_물찬양동이" type="AnimatableBody2D" parent="장치" unique_id=2117221884]
-position = Vector2(3712, 8600)
+position = Vector2(3704, 8600)
 script = ExtResource("button")
-"폭" = 160.0
+"높이" = 24.0
+"매립_지형" = NodePath("../../지형/구역2_오른쪽_검정복귀")
+"폭" = 144
 "누름_가능_그룹" = PackedStringArray("양동이")
 "대상들" = Array[NodePath]([NodePath("../../지형/양동이문_중앙덮개")])
 "대상_이동량들" = Array[Vector2]([Vector2(0, -640)])
@@ -6035,14 +5970,6 @@ visible = false
 position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_s70dp")
 
-[node name="분사기_1구역_발밑변색" parent="장치" unique_id=1110863223 instance=ExtResource("sprayer")]
-position = Vector2(3584, 11984)
-"총구거리" = 32.0
-"탄속" = 560.0
-"발사간격" = 3.2
-"탄낙차" = 0.0
-"발사색" = 1
-"색_전환주기" = 6.4
 
 [node name="분사기_4구역_발밑변색" parent="장치" unique_id=589961335 instance=ExtResource("sprayer")]
 position = Vector2(3584, 5712)
@@ -6345,3 +6272,7 @@ position = Vector2(3072, 2048)
 [node name="Player" parent="." unique_id=1230469260 instance=ExtResource("player")]
 position = Vector2(3072, 12288)
 "점프_거리_칸" = 20.0
+
+[node name="하수도배경" parent="." instance=ExtResource("sewer_v05")]
+
+[node name="하수도화면효과" parent="." instance=ExtResource("sewer_fx_v2")]
