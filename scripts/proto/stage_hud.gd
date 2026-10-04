@@ -25,6 +25,8 @@ var 스테이지이름: String = ""
 var 사망수: int = 0
 ## 좌상단 "↩ 회수대기 N" 을 띄울지. 타일맵 페인트 스테이지에서는 꺼야 한다(위 _draw 주석 참고).
 var 회수대기_표시: bool = true
+## 공통 구체 HUD가 있는 스테이지에서는 사망 수를 중복으로 그리지 않는다.
+var 머리_표시: bool = true
 
 var _팝업들: Array[Dictionary] = []      ## { pos:Vector2(월드), text:String, color:Color, age:float }
 var _메시지: String = ""
@@ -112,7 +114,8 @@ func _draw() -> void:
 	#   그쪽은 점 HUD(페인트_HUD.gd)가 회수 상태를 대신 보여주므로 여기서는 감춘다.
 	if _매니저 and 회수대기_표시:
 		머리 += "    ↩ 회수대기 %d" % _매니저.큐_크기()
-	_글자_외곽(폰트, Vector2(18, 30), 머리, 18, Color(0.95, 0.95, 0.95))
+	if 머리_표시:
+		_글자_외곽(폰트, Vector2(18, 30), 머리, 18, Color(0.95, 0.95, 0.95))
 
 	# ── 마우스가 가리킨 플랫폼 ──
 	var 대상 := _마우스_아래_플랫폼()

@@ -1,4 +1,5 @@
 shader_type canvas_item;
+#include "res://shaders/wood_deck.gdshaderinc"
 // ============================================================================
 // [2026-08-01 신규] SmartShape2D 지형용 페인트 셰이더
 // ----------------------------------------------------------------------------
@@ -137,6 +138,13 @@ void fragment() {
 	// 어느 쪽이 검정 아트인지는 base_is_white 가 정한다.
 	vec3 ink_black = base_is_white ? alt.rgb : base.rgb;
 	vec3 ink_white = base_is_white ? base.rgb : alt.rgb;
+	// Opt-in chapter-one deck shares one grain source across both paint colors.
+	if (wood_mode > 0) {
+		vec2 tones = wood_tones(UV);
+		ink_black = vec3(tones.x);
+		ink_white = vec3(tones.y);
+		base.rgb = base_is_white ? ink_white : ink_black;
+	}
 	vec3 gray = mix(ink_black, ink_white, 0.5);
 
 	vec3 col = base.rgb;                   // 무색 = 기본 아트 그대로
@@ -315,6 +323,15 @@ void fragment() {
 			+ texture(TEXTURE, uv_base + vec2(step_x * 2.0, 0.0))
 			+ texture(TEXTURE, uv_base - vec2(step_x * 2.0, 0.0));
 		blurred *= 0.2;
+		// Deck carriers are white geometry textures, not visible paint. Blur the wood instead.
+		if (wood_mode > 0) {
+			vec2 tones = wood_tones(uv_base)
+				+ wood_tones(uv_base + vec2(step_x, 0.0))
+				+ wood_tones(uv_base - vec2(step_x, 0.0))
+				+ wood_tones(uv_base + vec2(step_x * 2.0, 0.0))
+				+ wood_tones(uv_base - vec2(step_x * 2.0, 0.0));
+			blurred.rgb = vec3((base_is_white ? tones.y : tones.x) * 0.2);
+		}
 
 		vec3 ghost_rgb = mix(blurred.rgb, ghost_tint.rgb, ghost_tint_amount);
 		col = mix(col, ghost_rgb, g);
