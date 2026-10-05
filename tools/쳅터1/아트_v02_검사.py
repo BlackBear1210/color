@@ -48,15 +48,16 @@ def main():
                 name=re.search(r'name="([^"]+)"',node).group(1)
                 target=re.search(r'"다음_씬" = "([^"]*)"',node)
                 door=re.search(r'"다음_연결" = "([^"]*)"',node)
-                if target and door: links[(dn.이름,name)]=(Path(target.group(1)).stem,door.group(1))
+                # 편집기가 기본값을 생략해 저장해도 연결구의 기본 목적지(왼쪽)를 적용한다.
+                if target: links[(dn.이름,name)]=(Path(target.group(1)).stem,door.group(1) if door else '왼쪽')
             if 'parent="지형"' in node.splitlines()[0] and '_points = SubResource' in node:
                 _,pts=world_points(text,node)
                 assert len(pts)>=3
                 count+=1
         terrain+=count
         # 새 생성기에서도 어둠 배수와 레이어 시차가 씬에 저장되는지 확인한다.
-        if '"배경_명도"' not in text: errors.append(f'{dn.이름}: 배경 명도 설정 누락')
-        if '"레이어_움직임" = true' not in text: errors.append(f'{dn.이름}: 레이어 움직임 누락')
+        # 명도 .62와 움직임 true는 스크립트 기본값이므로 속성 부재 자체는 오류가 아니다.
+        if '"레이어_움직임" = false' in text: errors.append(f'{dn.이름}: 레이어 움직임 꺼짐')
         if 'Color(0.72, 0.74, 0.7, 1)' in text: errors.append(f'{dn.이름}: 기존 유색 조명')
         scenes.append({'name':dn.이름,'terrain':count,'sha256':digest(p)})
     for key,target in links.items():

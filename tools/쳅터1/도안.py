@@ -80,6 +80,55 @@ class 도안:
             if 문["높이"] < 규격.규칙["통로_최소높이"]:
                 self.경고.append(f"문 {문['이름']} 높이 {문['높이']}칸 < 통로 최소 {규격.규칙['통로_최소높이']}칸")
         self.g = g
+        if self.d.get("목재_맞물림", False):
+            self._목재_맞물림()
+
+    def _목재_맞물림(self):
+        """바닥 안에 박힌 흰 판자만 엇갈려 물린다. 밟는 윗선과 빈 공간은 그대로 둔다."""
+        source = [row[:] for row in self.g]
+        for item in _계단_펼치기(self.d.get("지형", [])):
+            k, x, y, w, h = item[:5]
+            if k != "흰" or h < 2 or y+h+2 >= self.h or x < 2 or x+w+2 >= self.w:
+                continue
+            # 공중 흰 발판이나 다른 기믹을 침범하지 않고, 구조 안에 묻힌 색 경계만 바꾼다.
+            if not all(source[y+h][xx] == 1 for xx in range(x,x+w)):
+                continue
+            for row in range(1,h+2):
+                yy=y+row
+                left = (-1,1,0,2)[row%4]
+                right = (1,-1,2,0)[row%4]
+                if row >= h:
+                    left += row-h+1
+                    right -= row-h+1
+                lo, hi = x+left, x+w+right
+                for xx in range(max(1,x-2),min(self.w-1,x+w+2)):
+                    # 노출된 면의 색은 바꾸지 않아 점프·사망 판정의 기존 경계를 유지한다.
+                    surrounded=all(source[yy+dy][xx+dx] != 0 for dx,dy in ((-1,0),(1,0),(0,-1),(0,1)))
+                    if not surrounded: continue
+                    if source[yy][xx] == 3 and x <= xx < x+w and row < h:
+                        self.g[yy][xx] = 3 if lo <= xx < hi else 1
+                    elif source[yy][xx] == 1 and lo <= xx < hi:
+                        self.g[yy][xx] = 3
+        # 장식용 연장 때문에 제작 규격(흰색 30%)을 넘지 않도록 묻힌 행의 끝만 줄인다.
+        black_and_ghost=sum(v in (2,4) for row in self.g for v in row)
+        limit=int(black_and_ghost*3/7)
+        count=sum(v == 3 for row in self.g for v in row)
+        while count > limit:
+            trimmed=False
+            for item in _계단_펼치기(self.d.get("지형", [])):
+                k,x,y,w,h=item[:5]
+                if k != '흰': continue
+                for yy in range(y+1,min(y+h+2,self.h-1)):
+                    xs=[xx for xx in range(max(1,x-2),min(self.w-1,x+w+2)) if self.g[yy][xx] == 3]
+                    if len(xs) <= 2: continue
+                    for xx in (xs[0],xs[-1]):
+                        if count <= limit: break
+                        if not all(source[yy+dy][xx+dx] != 0 for dx,dy in ((-1,0),(1,0),(0,-1),(0,1))): continue
+                        # 윗행이나 아랫행과 연결되는 중심부는 남기고 끝 한 칸씩만 정리한다.
+                        self.g[yy][xx]=1
+                        count-=1
+                        trimmed=True
+            if not trimmed: break
 
     def 칸(self, x, y):
         """도안 좌표(바깥 포함). 바깥은 구조, 단 문 터널은 빈칸."""
