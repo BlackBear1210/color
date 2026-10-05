@@ -140,7 +140,8 @@ void fragment() {
 	vec3 ink_white = base_is_white ? base.rgb : alt.rgb;
 	// Opt-in chapter-one deck shares one grain source across both paint colors.
 	if (wood_mode > 0) {
-		vec2 tones = wood_tones(UV);
+		// [2026-10-05 Claude] 월드 좌표를 같이 넘겨 32px 판자 줄마다 2.5D 명암(wood_front_shade)을 넣는다.
+		vec2 tones = wood_tones_at(UV, local_pos + wood_origin);
 		ink_black = vec3(tones.x);
 		ink_white = vec3(tones.y);
 		base.rgb = base_is_white ? ink_white : ink_black;
@@ -314,6 +315,8 @@ void fragment() {
 		float grid = max(ghost_mosaic, 1.0);
 		vec2 lp_snapped = (floor(local_pos / grid) + 0.5) * grid;
 		vec2 uv_base = UV + (lp_snapped - local_pos) * uv_per_lp;
+		// Keep the independent cap face selector stable during ghost quantization.
+		if (wood_mode == 2) { uv_base.y = UV.y; }
 
 		// Motion blur: five horizontal taps, spaced in local px.
 		float step_x = uv_per_lp.x * ghost_smear * 0.5;
@@ -325,11 +328,12 @@ void fragment() {
 		blurred *= 0.2;
 		// Deck carriers are white geometry textures, not visible paint. Blur the wood instead.
 		if (wood_mode > 0) {
-			vec2 tones = wood_tones(uv_base)
-				+ wood_tones(uv_base + vec2(step_x, 0.0))
-				+ wood_tones(uv_base - vec2(step_x, 0.0))
-				+ wood_tones(uv_base + vec2(step_x * 2.0, 0.0))
-				+ wood_tones(uv_base - vec2(step_x * 2.0, 0.0));
+			vec2 wpos = lp_snapped + wood_origin;
+			vec2 tones = wood_tones_at(uv_base, wpos)
+				+ wood_tones_at(uv_base + vec2(step_x, 0.0), wpos)
+				+ wood_tones_at(uv_base - vec2(step_x, 0.0), wpos)
+				+ wood_tones_at(uv_base + vec2(step_x * 2.0, 0.0), wpos)
+				+ wood_tones_at(uv_base - vec2(step_x * 2.0, 0.0), wpos);
 			blurred.rgb = vec3((base_is_white ? tones.y : tones.x) * 0.2);
 		}
 

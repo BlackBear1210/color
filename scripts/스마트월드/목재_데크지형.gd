@@ -1,44 +1,119 @@
 @tool
 extends "res://scripts/스마트월드/지형.gd"
-## 쳅터1 목재. 발 딛는 면에만 상판을 놓고 옆·아랫면은 어두운 목재 단면으로 남긴다.
-## [2026-10-05] 기존 앞면 명도를 윗면으로 옮기고 앞면을 낮춰 발이 닿는 면을 구분한다.
-## 셰이더는 ASCII만 허용하므로 wood_deck.gdshaderinc 변경 이유도 이곳에 기록한다.
+## 목재 앞면은 SS2D 채우기, 상판과 옆 단면은 독립된 덮개 메시로 그린다.
+## 외곽 엣지의 UV를 돌려 쓰지 않으므로 계단 옆면에 상판이 내려가지 않는다.
 const 결 := preload("res://assets/textures/smartshape/wood_deck_v3/grain.png")
+const 상판결 := preload("res://assets/textures/smartshape/wood_deck_v4/top_grain.png")
+const 덮개 := preload("res://scripts/스마트월드/목재_상판메시.gd")
+var _덮개재질: ShaderMaterial
+var _상판초기화완료: bool = false
+var 덮개_생성횟수: int = 0
 
-func _ready() -> void:
-	# 원본 공용 템플릿을 바꾸지 않고 이 파생 템플릿의 재질만 복제한다.
-	var 흰색기본 := 시작상태 == 상태.흰색
-	var 색폴더 := "white" if 흰색기본 else "black"
+func _재질준비() -> void:
+	# 공용 원본과 이웃 지형의 재질은 바꾸지 않는다. 저장된 이전 테두리도 확실히 끈다.
+	var 색폴더 := "white" if 시작상태 == 상태.흰색 else "black"
 	var 재질 := SS2D_Material_Shape.new()
 	재질.fill_textures = [load("res://assets/textures/smartshape/wood_deck_v3/%s/fill.tres" % 색폴더)]
-	재질.fill_texture_scale = 0.18
+	# 한 가로 판자 높이를 32px 칸과 맞춰 흰색 맞물림 경계가 나무결 중간을 자르지 않게 한다.
+	재질.fill_texture_scale = 0.28125
 	재질.fill_texture_z_index = -1
 	재질.fill_texture_absolute_position = true
-	var 엣지 := SS2D_Material_Edge.new()
-	엣지.textures = [load("res://assets/textures/smartshape/wood_deck_v3/%s/edge.tres" % 색폴더)]
-	엣지.texture_scale = 0.18
-	엣지.fit_mode = 1
-	# 사방에 윗면을 두르면 액자처럼 보이므로 위를 향한 거의 수평인 변에만 상판을 붙인다.
-	# 실제 외곽의 모따기·부서진 밑면은 채우기 메시가 그대로 보여 준다.
-	엣지.uniform_width = true
-	엣지.use_corner_texture = false
-	엣지.use_taper_texture = false
-	var 메타 := SS2D_Material_Edge_Metadata.new()
-	메타.edge_material = 엣지
-	메타.normal_range = SS2D_NormalRange.new(80.0, 20.0)
-	메타.weld = true
-	# 바깥으로 돌출한 그림 위에 발이 묻히지 않도록 마감판 전체를 충돌선 안에 둔다.
-	메타.offset = -1.0
-	재질.set_edge_meta_materials([메타])
-	shape_material = 재질
-	# 편집기에서도 런타임과 같은 색을 보이며 기존 페인트 설치가 이를 이어받는다.
+	재질.set_edge_meta_materials([])
 	재질.fill_mesh_material = _셰이더_만들기(재질.fill_textures[0], true, false)
-	엣지.material = _셰이더_만들기(엣지.textures[0], true, true)
+	render_edges = false
+	shape_material = 재질
+	_상판초기화완료 = true
+
+func _ready() -> void:
+	_재질준비()
 	super()
+	# 점 편집과 형제 추가에만 반응한다. 고정 지형의 메시를 매 프레임 만들지 않는다.
+	if get_parent() != null and not get_parent().child_order_changed.is_connected(_이웃연결):
+		get_parent().child_order_changed.connect(_이웃연결)
+	_이웃연결()
+
+func _이웃연결() -> void:
+	if get_parent() == null:
+		return
+	for node in get_parent().get_children():
+		if node == self or not node.has_method("get_point_array"):
+			continue
+		if not node.points_modified.is_connected(set_as_dirty):
+			node.points_modified.connect(set_as_dirty)
+	set_as_dirty()
+
+func _process(delta: float) -> void:
+	# 열린 편집기에서 스크립트가 교체되어도 _ready 재호출 없이 이전 액자 메시를 지운다.
+	if not _상판초기화완료:
+		_재질준비()
+		_meshes.clear()
+		force_update()
+	super(delta)
+
+func _build_meshes() -> void:
+	if _덮개재질 != null:
+		_셰이더들.erase(_덮개재질)
+	_덮개재질 = null
+	if render_edges:
+		render_edges = false
+	super()
+	if shape_material == null or _points == null:
+		return
+	var points: PackedVector2Array = _points.get_tessellated_points()
+	if points.size() < 3:
+		return
+	var bounds := Rect2(points[0], Vector2.ZERO)
+	for p in points:
+		bounds = bounds.expand(p)
+	var others: Array[PackedVector2Array] = []
+	if get_parent() != null:
+		for node in get_parent().get_children():
+			if node == self or not node is Node2D or not node.has_method("get_point_array"):
+				continue
+			if not node.is_visible_in_tree():
+				continue
+			var array: Resource = node.call("get_point_array")
+			var poly := PackedVector2Array()
+			var other_points: PackedVector2Array = array.call("get_tessellated_points")
+			for p in other_points:
+				poly.append(to_local(node.to_global(p)))
+			if poly.size() < 3:
+				continue
+			var other_bounds := Rect2(poly[0],Vector2.ZERO)
+			for p in poly:
+				other_bounds = other_bounds.expand(p)
+			if bounds.grow(30.0).intersects(other_bounds,true):
+				others.append(덮개.정리(poly))
+	var mesh := 덮개.생성(points,others,global_position)
+	if mesh.get_surface_count() == 0:
+		return
+	var piece := SS2D_Mesh.new()
+	piece.mesh = mesh
+	piece.texture = shape_material.fill_textures[0]
+	piece.z_index = 0
+	_덮개재질 = _셰이더_만들기(piece.texture,true,false)
+	_덮개재질.set_shader_parameter("wood_mode",2)
+	piece.material = _덮개재질
+	_meshes.append(piece)
+	# 같은 로컬 원점과 페인트 목록을 공유해 칠하기·유령 효과가 앞면/상판에서 함께 바뀐다.
+	if not Engine.is_editor_hint():
+		_셰이더들.append(_덮개재질)
+		_유니폼_갱신.call_deferred()
+	덮개_생성횟수 += 1
+
+## ★[2026-10-05 Claude] 2.5D 명암 안 — 도형님이 엔진 캡처(docs 작업기록 · tools/쳅터1/목재_v04_검토/)를 보고 고른다.
+##   0 = 판자 맞춤만(명암은 v03 그대로) · 1 = 안 A 은은한 명암 · 2 = 안 B 깊은 명암(기본) · 3 = 안 C 먹선(검은 이음새 테두리)
+##   셰이더(wood_deck.gdshaderinc)의 wood_style 로 넘어간다. 바꾸려면 이 숫자 하나만 고친다.
+const 명암_안 := 2
 
 func _셰이더_만들기(source: Texture2D, quiet: bool = false, edge: bool = false) -> ShaderMaterial:
 	var mat := super._셰이더_만들기(source, quiet, edge)
 	if mat != null:
-		mat.set_shader_parameter("wood_mode", 2 if edge else 1)
-		mat.set_shader_parameter("wood_grain", 결)
+		mat.set_shader_parameter("wood_mode",1)
+		mat.set_shader_parameter("wood_grain",결)
+		mat.set_shader_parameter("wood_top_grain",상판결)
+		mat.set_shader_parameter("wood_style",명암_안)
+		# 셰이더는 노드-로컬 좌표만 안다 → 지형 노드 위치를 넘겨 월드 32px 판자 줄(앞면 원화)과 맞춘다.
+		#   지형은 움직이지 않으므로 만들 때 한 번이면 된다.
+		mat.set_shader_parameter("wood_origin",global_position if is_inside_tree() else position)
 	return mat
