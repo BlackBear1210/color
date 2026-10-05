@@ -30,6 +30,8 @@ import 규격  # noqa: E402
 import 도안 as 도안모듈  # noqa: E402
 import 검사 as 검사모듈  # noqa: E402
 import 도면  # noqa: E402
+import 기믹 as 기믹모듈  # noqa: E402
+import 모양  # noqa: E402
 
 저장소 = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 도안폴더 = os.path.join(저장소, "scenes", "쳅터1", "도안")
@@ -131,12 +133,57 @@ def 문장식_가구(dn):
     return out
 
 
+# [2026-10-05] 기믹 장면 — 공용 키트(scenes/집/스마트월드_장애물) 그대로 인스턴스한다. 쓰는 것만 ext 에 싣는다.
+기믹_장면 = {
+    # [2026-10-05 2차] 쳅터1 빛은 창문빛.tscn(색레이저.gd 상속 — 판정 같음, 그림만 창문 달빛·빛 기둥·그을음)
+    "빛줄기": ("light", "res://scenes/쳅터1/기믹/창문빛.tscn"),
+    "도약대": ("pad", "res://scenes/집/스마트월드_장애물/도약대.tscn"),
+    "움직이는발판": ("mover", "res://scenes/집/스마트월드_장애물/움직이는발판.tscn"),
+}
+
+
+def 기믹_노드들(dn, ids):
+    """기믹 → 씬 노드 글. 좌표·속성 계산은 기믹.py 의 엔진값() 한 곳에서만."""
+    out = []
+    for g in 기믹모듈.목록(dn):
+        k = type(g).__name__
+        e = g.엔진값()
+        머리 = f'[node name="{k}{g.i:02d}" parent="장애물" instance=ExtResource("{ids["기믹:" + k]}")]'
+        if k == "빛줄기":
+            본 = [f"position = {V(*e['원점'])}", f'"길이" = {수(e["길이"])}', f'"두께" = {수(e["두께"])}',
+                 f'"각도" = {수(e["각도"])}', f'"시작색" = {기믹모듈.색번호[g.색]}', f'"주기" = {수(g.주기)}',
+                 f'"위상" = {수(g.위상)}', f'"점멸" = {"true" if g.점멸 else "false"}', f'"근원" = {e["근원"]}']
+        elif k == "도약대":
+            본 = [f"position = {V(*e['원점'])}", f'"폭" = {수(e["폭"])}', f'"도약속도" = {수(round(e["속도"], 1))}',
+                 f'"색_제한" = {"true" if g.색 else "false"}']
+            if g.색:
+                본.append(f'"색" = {기믹모듈.색번호[g.색]}')
+        else:
+            본 = [f"position = {V(*e['원점'])}", f'"크기" = {V(*e["크기"])}', f'"이동거리" = {수(e["이동거리"])}',
+                 f'"이동방향" = {e["이동방향"]}', f'"왕복시간" = {수(g.왕복)}', f'"시작지연" = {수(g.지연)}']
+        out.append("\n".join([머리] + 본) + "\n")
+    return out
+
+
+def 창문_가구(dn):
+    """[2026-10-05 2차] 근원이 "창문" 인 빛 → 빛이 나오는 점에 창문 그림(배경 가구)을 붙인다.
+    창문(8×12칸, 기준 '천장' = y 가 윗변) 의 가운데가 빛 원점에 오게."""
+    out = []
+    for g in 기믹모듈.목록(dn):
+        if isinstance(g, 기믹모듈.빛줄기) and g.근원 == "창문":
+            w, h, _기준 = 규격.가구표["창문"]
+            out.append(["창문", g.원점[0] / C, g.원점[1] / C - h / 2])
+    return out
+
+
 def 씬_글(dn):
     d = dn.d
     ext = list(EXT)
+    for k in sorted({type(g).__name__ for g in 기믹모듈.목록(dn)}):
+        ext.append((f"기믹:{k}", "PackedScene", None, 기믹_장면[k][1]))
     프리셋 = d.get("배경", {}).get("프리셋", "방_판자")      # [2차] 도형님 선택 D = 판자·폐허
     ext.append(("프리셋", "Resource", None, f"res://assets/background/쳅터1/프리셋/{프리셋}.tres"))
-    가구들 = [g for g in d.get("가구", []) if g[0] in 규격.가구표] + 문장식_가구(dn)
+    가구들 = [g for g in d.get("가구", []) if g[0] in 규격.가구표] + 문장식_가구(dn) + 창문_가구(dn)
     가구종류 = sorted({g[0] for g in 가구들})
     for i, 이름 in enumerate(가구종류):
         ext.append((f"가구:{이름}", "Texture2D", None, f"{레이어}가구/{이름}.png"))
@@ -146,11 +193,14 @@ def 씬_글(dn):
             ids[k] = f"{i + 1}_{_ASCII[k]}"
         elif k == "프리셋":
             ids[k] = f"{i + 1}_preset"
+        elif k.startswith("기믹:"):
+            ids[k] = f"{i + 1}_{기믹_장면[k.split(':', 1)[1]][0]}"
         else:
             ids[k] = f"{i + 1}_furn{가구종류.index(k.split(':', 1)[1])}"
 
     서브, 노드 = [], []
-    for k, 이름, 점, _n in dn.다각형들():
+    # [2026-10-05] 칸 다각형을 덜 각지게(모따기·안쪽으로만 들쭉날쭉) — tools/쳅터1/모양.py
+    for k, 이름, 점, _n in 모양.다각형들(dn):
         xs = [p[0] for p in 점]
         ys = [p[1] for p in 점]
         cx, cy = int(round((min(xs) + max(xs)) / 2)), int(round((min(ys) + max(ys)) / 2))
@@ -192,7 +242,8 @@ def 씬_글(dn):
         f'metadata/frame_only = {"true" if d.get("큰틀") else "false"}',
     ]) + "\n")
     줄.append(f'[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]\nscript = ExtResource("{ids["코어"]}")\n')
-    줄.append('[node name="어둠" type="CanvasModulate" parent="."]\ncolor = Color(0.72, 0.74, 0.7, 1)\n')
+    # 배경 명도는 배경 노드에서 조절하고, 공통 조명은 순수 회색으로 색 번짐을 막는다.
+    줄.append('[node name="어둠" type="CanvasModulate" parent="."]\ncolor = Color(0.74, 0.74, 0.74, 1)\n')
 
     # 배경
     b = dn.벽
@@ -205,6 +256,9 @@ def 씬_글(dn):
         f'"천장_y" = {수(b["위"] * C)}',
         f'"낡음_덮어쓰기" = {int(d.get("배경", {}).get("낡음", -1))}',
         f'"씨앗" = {int(hashlib.md5(dn.이름.encode()).hexdigest()[:6], 16) % 100000}',
+        # 다시 생성해도 방별 어두움과 레이어 움직임 설정을 보존한다.
+        f'"배경_명도" = {float(d.get("배경", {}).get("명도", 0.62))}',
+        '"레이어_움직임" = true',
     ]) + "\n")
     줄.append('[node name="가구" type="Node2D" parent="배경"]\nz_index = -90\n')
     세기 = {}
@@ -235,10 +289,12 @@ def 씬_글(dn):
             f'"되돌아가기" = {"true" if 문.get("되돌아가기", True) and 연결 else "false"}',
         ]) + "\n")
 
-    # 가시
+    # 가시 · 기믹 — 둘 다 "장애물" 노드 아래
     가시들 = d.get("가시", [])
-    if 가시들:
+    기믹줄 = 기믹_노드들(dn, ids)
+    if 가시들 or 기믹줄:
         줄.append('[node name="장애물" type="Node2D" parent="."]\n')
+    if 가시들:
         k = 0
         for gx, gy, gw in 가시들:
             x = gx
@@ -248,6 +304,7 @@ def 씬_글(dn):
                 줄.append(f'[node name="가시{k:02d}" parent="장애물" instance=ExtResource("{ids["가시"]}")]\n'
                          f"position = {V((x + n / 2) * C, gy * C)}\n\"칸수\" = {n}\n")
                 x += n
+    줄.extend(기믹줄)
 
     줄.append('[node name="체크포인트" type="Node2D" parent="."]\n')
     for j, (cx, cy) in enumerate(d.get("체크", [])):
@@ -278,8 +335,18 @@ def 씬_쓰기(dn, 강제):
         if not 손안댐 and not 강제:
             return "멈춤(에디터에서 저장된 흔적 — --강제 로만 덮음)"
     os.makedirs(씬폴더, exist_ok=True)
-    with open(경로, "w", encoding="utf-8", newline="\n") as f:
+    # [2026-10-05] 편집기가 열려 있으면 바뀐 파일을 다시 읽느라 잠깐 잡고 있다 → 임시 파일 + 바꿔치기 + 재시도
+    import time
+    임시 = 경로 + ".임시"
+    with open(임시, "w", encoding="utf-8", newline="\n") as f:
         f.write(새것)
+    for _ in range(40):
+        try:
+            os.replace(임시, 경로)
+            return "생성"
+        except OSError:
+            time.sleep(0.25)
+    os.replace(임시, 경로)
     return "생성"
 
 
@@ -324,7 +391,7 @@ def 미리보기(dn, 배율=0.25, 플레이어="시작"):
             t = t.resize((int(t.width * 배율), max(1, int(t.height * 배율))))
             for x in range(0, w, t.width):
                 img.alpha_composite(t, (x, int(y위치(t))))
-    for 이름, x, y, *_ in dn.d.get("가구", []):
+    for 이름, x, y, *_ in dn.d.get("가구", []) + 창문_가구(dn):
         if 이름 not in 규격.가구표:
             continue
         x0, y0, fw, fh = 규격.가구_사각(이름, x, y)
@@ -333,7 +400,7 @@ def 미리보기(dn, 배율=0.25, 플레이어="시작"):
         img.alpha_composite(t, (int(x0 * C * 배율), int(y0 * C * 배율)))
     d = ImageDraw.Draw(img, "RGBA")
     색 = {"구조": (24, 21, 19), "검정": (10, 10, 10), "흰": (226, 224, 218), "유령": (200, 200, 210, 70)}
-    for k, 이름, 점, _n in dn.다각형들():
+    for k, 이름, 점, _n in 모양.다각형들(dn):
         pts = [(px * 배율, py * 배율) for px, py in 점]
         d.polygon(pts, fill=색[k])
     # 윗면 마감선(데크 입술 흉내) — 칸 단위로 위가 비어 있는 면
@@ -351,6 +418,21 @@ def 미리보기(dn, 배율=0.25, 플레이어="시작"):
         for xx in range(gx, gx + gw):
             x, y = xx * C * 배율, gy * C * 배율
             d.polygon([(x, y), (x + C * 배율 / 2, y - 22 * 배율), (x + C * 배율, y)], fill=(110, 106, 100))
+    # [2026-10-05] 기믹 — 빛줄기(반투명 띠) · 도약대(사다리꼴) · 움직이는 발판(출발 자리 + 지나가는 길 점선)
+    for g in 기믹모듈.목록(dn):
+        if isinstance(g, 기믹모듈.빛줄기):
+            c = (250, 250, 240) if g.색 == "흰" else (0, 0, 0)
+            d.polygon([(x * 배율, y * 배율) for x, y in g.꼭짓점()], fill=c + (110 if g.고정 else 50,))
+        elif isinstance(g, 기믹모듈.도약대):
+            l, t, r, b = [v * 배율 for v in g.사각()]
+            d.polygon([(l, b), (l + (r - l) * 0.15, t + (b - t) * 0.3), (r - (r - l) * 0.15, t + (b - t) * 0.3), (r, b)],
+                      fill=(90, 84, 76) if not g.색 else ((20, 20, 20) if g.색 == "검정" else (230, 228, 220)), outline=(200, 190, 170))
+        else:
+            칸들 = g.위치들()
+            l0, t0, r0, b0 = 칸들[0]
+            l1, t1, r1, b1 = 칸들[-1]
+            d.rectangle([l0 * 배율, t0 * 배율, r1 * 배율, b1 * 배율], outline=(150, 140, 120, 120))
+            d.rectangle([l0 * 배율, t0 * 배율, r0 * 배율, b0 * 배율], fill=(16, 16, 16), outline=(120, 108, 92))
     # 플레이어 — 전경 띠보다 먼저 그려서 길목 전경 뒤로 가려지게
     if 플레이어:
         if 플레이어 == "시작":
@@ -452,7 +534,7 @@ def main():
             continue
         for w in dn.경고:
             print("  ⚠", dn.이름, w)
-        r = 검사모듈.검사(dn, True, True)
+        r = 검사모듈.검사(dn, True, True, 경로_저장=True)
         실패 += len(r["실패"])
         도면.그리기(dn, r, os.path.join(도안폴더, f"{dn.이름}.png"))
         상태 = 씬_쓰기(dn, 강제)

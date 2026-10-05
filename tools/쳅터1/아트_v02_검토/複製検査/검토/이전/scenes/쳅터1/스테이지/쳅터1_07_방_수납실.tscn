@@ -1,0 +1,1758 @@
+; 아트 v02 부분 갱신: 지형 점·배경·가구 / 기믹·카메라·연결 속성 보존
+[gd_scene load_steps=323 format=3]
+
+[ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
+[ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_검정.tscn" id="3_tpl_black"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_흰색.tscn" id="4_tpl_white"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_투명.tscn" id="5_tpl_ghost"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="6_ss2d_point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="7_ss2d_points"]
+[ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="8_player"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="9_checkpoint"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/가시.tscn" id="10_spike"]
+[ext_resource type="Script" path="res://scripts/쳅터1/연결구.gd" id="11_link"]
+[ext_resource type="Script" path="res://scripts/쳅터1/방배경.gd" id="12_bg"]
+[ext_resource type="Resource" path="res://assets/background/쳅터1/프리셋/방_판자.tres" id="13_preset"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/상자더미.png" id="14_furn0"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/선반.png" id="15_furn1"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="16_furn2"]
+
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/상자더미.png" id="art_v02_14_furn0"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/선반.png" id="art_v02_15_furn1"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="art_v02_16_furn2"]
+[sub_resource type="Resource" id="P_S01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2432, -1376)
+
+[sub_resource type="Resource" id="P_S01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1104, -1376)
+
+[sub_resource type="Resource" id="P_S01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1104, -544)
+
+[sub_resource type="Resource" id="P_S01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1120, -544)
+
+[sub_resource type="Resource" id="P_S01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1120, 480)
+
+[sub_resource type="Resource" id="P_S01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0, 480)
+
+[sub_resource type="Resource" id="P_S01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(4.53, 460)
+
+[sub_resource type="Resource" id="P_S01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0.65, 414.82)
+
+[sub_resource type="Resource" id="P_S01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0.79, 364.38)
+
+[sub_resource type="Resource" id="P_S01_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0.01, 313.94)
+
+[sub_resource type="Resource" id="P_S01_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0, 264)
+
+[sub_resource type="Resource" id="P_S01_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(8, 256)
+
+[sub_resource type="Resource" id="P_S01_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(248, 256)
+
+[sub_resource type="Resource" id="P_S01_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(256, 264)
+
+[sub_resource type="Resource" id="P_S01_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(249.03, 276)
+
+[sub_resource type="Resource" id="P_S01_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(252.04, 323.11)
+
+[sub_resource type="Resource" id="P_S01_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(253.88, 373.63)
+
+[sub_resource type="Resource" id="P_S01_17"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(255.09, 420.03)
+
+[sub_resource type="Resource" id="P_S01_18"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(252.39, 459.27)
+
+[sub_resource type="Resource" id="P_S01_19"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(256, 480)
+
+[sub_resource type="Resource" id="P_S01_20"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(320, 480)
+
+[sub_resource type="Resource" id="P_S01_21"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(325.16, 460)
+
+[sub_resource type="Resource" id="P_S01_22"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(325.19, 406.48)
+
+[sub_resource type="Resource" id="P_S01_23"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(320, 360)
+
+[sub_resource type="Resource" id="P_S01_24"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(328, 352)
+
+[sub_resource type="Resource" id="P_S01_25"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(536, 352)
+
+[sub_resource type="Resource" id="P_S01_26"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(544, 360)
+
+[sub_resource type="Resource" id="P_S01_27"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(539.9, 372)
+
+[sub_resource type="Resource" id="P_S01_28"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(543.75, 415.56)
+
+[sub_resource type="Resource" id="P_S01_29"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(544, 480)
+
+[sub_resource type="Resource" id="P_S01_30"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(640, 480)
+
+[sub_resource type="Resource" id="P_S01_31"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(640, 544)
+
+[sub_resource type="Resource" id="P_S01_32"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(832, 544)
+
+[sub_resource type="Resource" id="P_S01_33"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(832, 480)
+
+[sub_resource type="Resource" id="P_S01_34"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1664, 480)
+
+[sub_resource type="Resource" id="P_S01_35"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1670.18, 460)
+
+[sub_resource type="Resource" id="P_S01_36"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1668.64, 403.67)
+
+[sub_resource type="Resource" id="P_S01_37"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1665.92, 358.96)
+
+[sub_resource type="Resource" id="P_S01_38"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1664, 320)
+
+[sub_resource type="Resource" id="P_S01_39"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1644, 317.41)
+
+[sub_resource type="Resource" id="P_S01_40"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1610.67, 304.94)
+
+[sub_resource type="Resource" id="P_S01_41"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1571.55, 304.09)
+
+[sub_resource type="Resource" id="P_S01_42"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1541.23, 317.93)
+
+[sub_resource type="Resource" id="P_S01_43"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1505.26, 313.35)
+
+[sub_resource type="Resource" id="P_S01_44"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1472.11, 318.06)
+
+[sub_resource type="Resource" id="P_S01_45"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1439.85, 316.56)
+
+[sub_resource type="Resource" id="P_S01_46"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1392.24, 312.68)
+
+[sub_resource type="Resource" id="P_S01_47"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1359.56, 315.13)
+
+[sub_resource type="Resource" id="P_S01_48"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1308.78, 312.13)
+
+[sub_resource type="Resource" id="P_S01_49"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1275.15, 309.55)
+
+[sub_resource type="Resource" id="P_S01_50"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1225.08, 318.75)
+
+[sub_resource type="Resource" id="P_S01_51"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1180.5, 304.41)
+
+[sub_resource type="Resource" id="P_S01_52"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1138, 320)
+
+[sub_resource type="Resource" id="P_S01_53"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1120, 302)
+
+[sub_resource type="Resource" id="P_S01_54"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1126.23, 300)
+
+[sub_resource type="Resource" id="P_S01_55"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1120.28, 249.19)
+
+[sub_resource type="Resource" id="P_S01_56"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1124.19, 211.77)
+
+[sub_resource type="Resource" id="P_S01_57"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1120.7, 173.13)
+
+[sub_resource type="Resource" id="P_S01_58"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1124.13, 123.77)
+
+[sub_resource type="Resource" id="P_S01_59"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1120, 64)
+
+[sub_resource type="Resource" id="P_S01_60"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1100, 49.45)
+
+[sub_resource type="Resource" id="P_S01_61"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1070.86, 58.72)
+
+[sub_resource type="Resource" id="P_S01_62"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1034.48, 60.79)
+
+[sub_resource type="Resource" id="P_S01_63"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(992.53, 54.44)
+
+[sub_resource type="Resource" id="P_S01_64"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(942.86, 60.82)
+
+[sub_resource type="Resource" id="P_S01_65"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(908.76, 61.12)
+
+[sub_resource type="Resource" id="P_S01_66"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(875.26, 49.35)
+
+[sub_resource type="Resource" id="P_S01_67"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(844.68, 57.22)
+
+[sub_resource type="Resource" id="P_S01_68"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(807.72, 58.41)
+
+[sub_resource type="Resource" id="P_S01_69"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(758.47, 59.08)
+
+[sub_resource type="Resource" id="P_S01_70"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(707.9, 60.75)
+
+[sub_resource type="Resource" id="P_S01_71"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(665.36, 55.03)
+
+[sub_resource type="Resource" id="P_S01_72"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(626, 64)
+
+[sub_resource type="Resource" id="P_S01_73"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(608, 46)
+
+[sub_resource type="Resource" id="P_S01_74"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(610.74, 44)
+
+[sub_resource type="Resource" id="P_S01_75"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(610.55, -14.74)
+
+[sub_resource type="Resource" id="P_S01_76"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(612, -69.18)
+
+[sub_resource type="Resource" id="P_S01_77"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(608, -88)
+
+[sub_resource type="Resource" id="P_S01_78"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(616, -96)
+
+[sub_resource type="Resource" id="P_S01_79"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1664, -96)
+
+[sub_resource type="Resource" id="P_S01_80"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1667.01, -116)
+
+[sub_resource type="Resource" id="P_S01_81"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1668.9, -172.97)
+
+[sub_resource type="Resource" id="P_S01_82"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1667.1, -219.75)
+
+[sub_resource type="Resource" id="P_S01_83"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1664, -256)
+
+[sub_resource type="Resource" id="P_S01_84"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1644, -284)
+
+[sub_resource type="Resource" id="P_S01_85"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1609, -258.3)
+
+[sub_resource type="Resource" id="P_S01_86"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1573.07, -259.18)
+
+[sub_resource type="Resource" id="P_S01_87"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1543.59, -260.88)
+
+[sub_resource type="Resource" id="P_S01_88"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1502.66, -284)
+
+[sub_resource type="Resource" id="P_S01_89"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1464.28, -270.98)
+
+[sub_resource type="Resource" id="P_S01_90"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1434.05, -266.45)
+
+[sub_resource type="Resource" id="P_S01_91"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1385.19, -263.97)
+
+[sub_resource type="Resource" id="P_S01_92"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1354.93, -263.88)
+
+[sub_resource type="Resource" id="P_S01_93"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1313.5, -267.48)
+
+[sub_resource type="Resource" id="P_S01_94"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1266.44, -261)
+
+[sub_resource type="Resource" id="P_S01_95"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1226.81, -267.44)
+
+[sub_resource type="Resource" id="P_S01_96"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1178.68, -259.47)
+
+[sub_resource type="Resource" id="P_S01_97"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1138, -256)
+
+[sub_resource type="Resource" id="P_S01_98"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1120, -274)
+
+[sub_resource type="Resource" id="P_S01_99"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1125.63, -276)
+
+[sub_resource type="Resource" id="P_S01_100"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1123.48, -329.3)
+
+[sub_resource type="Resource" id="P_S01_101"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1126.93, -381.36)
+
+[sub_resource type="Resource" id="P_S01_102"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1123.93, -431.71)
+
+[sub_resource type="Resource" id="P_S01_103"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1120.81, -480.18)
+
+[sub_resource type="Resource" id="P_S01_104"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1120, -544)
+
+[sub_resource type="Resource" id="P_S01_105"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1100, -544.72)
+
+[sub_resource type="Resource" id="P_S01_106"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1060.09, -572)
+
+[sub_resource type="Resource" id="P_S01_107"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1022.43, -572)
+
+[sub_resource type="Resource" id="P_S01_108"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(979.34, -556.4)
+
+[sub_resource type="Resource" id="P_S01_109"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(946.53, -546.18)
+
+[sub_resource type="Resource" id="P_S01_110"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(907.9, -555.37)
+
+[sub_resource type="Resource" id="P_S01_111"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(863.99, -548.12)
+
+[sub_resource type="Resource" id="P_S01_112"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(829.36, -556.8)
+
+[sub_resource type="Resource" id="P_S01_113"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(778.07, -552.78)
+
+[sub_resource type="Resource" id="P_S01_114"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(741.25, -559.13)
+
+[sub_resource type="Resource" id="P_S01_115"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(689.35, -552.77)
+
+[sub_resource type="Resource" id="P_S01_116"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(657.04, -556.52)
+
+[sub_resource type="Resource" id="P_S01_117"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(614.72, -545.44)
+
+[sub_resource type="Resource" id="P_S01_118"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(582.27, -546.06)
+
+[sub_resource type="Resource" id="P_S01_119"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(531.94, -559.65)
+
+[sub_resource type="Resource" id="P_S01_120"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(495.47, -556.75)
+
+[sub_resource type="Resource" id="P_S01_121"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(465.09, -546.12)
+
+[sub_resource type="Resource" id="P_S01_122"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(416.67, -553.85)
+
+[sub_resource type="Resource" id="P_S01_123"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(376.44, -572)
+
+[sub_resource type="Resource" id="P_S01_124"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(336.93, -556.36)
+
+[sub_resource type="Resource" id="P_S01_125"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(299.79, -550.36)
+
+[sub_resource type="Resource" id="P_S01_126"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(248.55, -572)
+
+[sub_resource type="Resource" id="P_S01_127"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(213.11, -552.3)
+
+[sub_resource type="Resource" id="P_S01_128"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(165.99, -547.88)
+
+[sub_resource type="Resource" id="P_S01_129"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(129.89, -551.92)
+
+[sub_resource type="Resource" id="P_S01_130"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(81.67, -546.57)
+
+[sub_resource type="Resource" id="P_S01_131"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(31.39, -545.95)
+
+[sub_resource type="Resource" id="P_S01_132"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-13.57, -551.14)
+
+[sub_resource type="Resource" id="P_S01_133"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-65.25, -572)
+
+[sub_resource type="Resource" id="P_S01_134"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-105.39, -548.41)
+
+[sub_resource type="Resource" id="P_S01_135"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-148.46, -546.9)
+
+[sub_resource type="Resource" id="P_S01_136"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-176.95, -572)
+
+[sub_resource type="Resource" id="P_S01_137"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-213.48, -555.79)
+
+[sub_resource type="Resource" id="P_S01_138"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-245.59, -556.44)
+
+[sub_resource type="Resource" id="P_S01_139"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-287.42, -554.11)
+
+[sub_resource type="Resource" id="P_S01_140"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-333.46, -572)
+
+[sub_resource type="Resource" id="P_S01_141"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-365.37, -572)
+
+[sub_resource type="Resource" id="P_S01_142"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-399.25, -550.32)
+
+[sub_resource type="Resource" id="P_S01_143"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-434.41, -558.08)
+
+[sub_resource type="Resource" id="P_S01_144"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-479.76, -553.54)
+
+[sub_resource type="Resource" id="P_S01_145"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-528.79, -554.52)
+
+[sub_resource type="Resource" id="P_S01_146"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-565.81, -572)
+
+[sub_resource type="Resource" id="P_S01_147"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-613.76, -555.05)
+
+[sub_resource type="Resource" id="P_S01_148"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-644.32, -558.6)
+
+[sub_resource type="Resource" id="P_S01_149"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-686.29, -544.6)
+
+[sub_resource type="Resource" id="P_S01_150"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-732.62, -553.65)
+
+[sub_resource type="Resource" id="P_S01_151"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-761.63, -552.1)
+
+[sub_resource type="Resource" id="P_S01_152"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-808.59, -544.72)
+
+[sub_resource type="Resource" id="P_S01_153"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-843.16, -572)
+
+[sub_resource type="Resource" id="P_S01_154"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-881.47, -559.46)
+
+[sub_resource type="Resource" id="P_S01_155"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-921.71, -546.52)
+
+[sub_resource type="Resource" id="P_S01_156"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-972.39, -572)
+
+[sub_resource type="Resource" id="P_S01_157"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1003.77, -558.64)
+
+[sub_resource type="Resource" id="P_S01_158"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1052.42, -557.16)
+
+[sub_resource type="Resource" id="P_S01_159"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1104, -544)
+
+[sub_resource type="Resource" id="P_S01_160"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1104, -1376)
+
+[sub_resource type="Resource" id="P_S01_161"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2432, -1376)
+
+[sub_resource type="Resource" id="P_S01_162"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2432, 1376)
+
+[sub_resource type="Resource" id="P_S01_163"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2432, 1376)
+
+[sub_resource type="Resource" id="P_S01_164"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2432, -1376)
+
+[sub_resource type="Resource" id="PA_S01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S01_0"),
+1: SubResource("P_S01_1"),
+2: SubResource("P_S01_2"),
+3: SubResource("P_S01_3"),
+4: SubResource("P_S01_4"),
+5: SubResource("P_S01_5"),
+6: SubResource("P_S01_6"),
+7: SubResource("P_S01_7"),
+8: SubResource("P_S01_8"),
+9: SubResource("P_S01_9"),
+10: SubResource("P_S01_10"),
+11: SubResource("P_S01_11"),
+12: SubResource("P_S01_12"),
+13: SubResource("P_S01_13"),
+14: SubResource("P_S01_14"),
+15: SubResource("P_S01_15"),
+16: SubResource("P_S01_16"),
+17: SubResource("P_S01_17"),
+18: SubResource("P_S01_18"),
+19: SubResource("P_S01_19"),
+20: SubResource("P_S01_20"),
+21: SubResource("P_S01_21"),
+22: SubResource("P_S01_22"),
+23: SubResource("P_S01_23"),
+24: SubResource("P_S01_24"),
+25: SubResource("P_S01_25"),
+26: SubResource("P_S01_26"),
+27: SubResource("P_S01_27"),
+28: SubResource("P_S01_28"),
+29: SubResource("P_S01_29"),
+30: SubResource("P_S01_30"),
+31: SubResource("P_S01_31"),
+32: SubResource("P_S01_32"),
+33: SubResource("P_S01_33"),
+34: SubResource("P_S01_34"),
+35: SubResource("P_S01_35"),
+36: SubResource("P_S01_36"),
+37: SubResource("P_S01_37"),
+38: SubResource("P_S01_38"),
+39: SubResource("P_S01_39"),
+40: SubResource("P_S01_40"),
+41: SubResource("P_S01_41"),
+42: SubResource("P_S01_42"),
+43: SubResource("P_S01_43"),
+44: SubResource("P_S01_44"),
+45: SubResource("P_S01_45"),
+46: SubResource("P_S01_46"),
+47: SubResource("P_S01_47"),
+48: SubResource("P_S01_48"),
+49: SubResource("P_S01_49"),
+50: SubResource("P_S01_50"),
+51: SubResource("P_S01_51"),
+52: SubResource("P_S01_52"),
+53: SubResource("P_S01_53"),
+54: SubResource("P_S01_54"),
+55: SubResource("P_S01_55"),
+56: SubResource("P_S01_56"),
+57: SubResource("P_S01_57"),
+58: SubResource("P_S01_58"),
+59: SubResource("P_S01_59"),
+60: SubResource("P_S01_60"),
+61: SubResource("P_S01_61"),
+62: SubResource("P_S01_62"),
+63: SubResource("P_S01_63"),
+64: SubResource("P_S01_64"),
+65: SubResource("P_S01_65"),
+66: SubResource("P_S01_66"),
+67: SubResource("P_S01_67"),
+68: SubResource("P_S01_68"),
+69: SubResource("P_S01_69"),
+70: SubResource("P_S01_70"),
+71: SubResource("P_S01_71"),
+72: SubResource("P_S01_72"),
+73: SubResource("P_S01_73"),
+74: SubResource("P_S01_74"),
+75: SubResource("P_S01_75"),
+76: SubResource("P_S01_76"),
+77: SubResource("P_S01_77"),
+78: SubResource("P_S01_78"),
+79: SubResource("P_S01_79"),
+80: SubResource("P_S01_80"),
+81: SubResource("P_S01_81"),
+82: SubResource("P_S01_82"),
+83: SubResource("P_S01_83"),
+84: SubResource("P_S01_84"),
+85: SubResource("P_S01_85"),
+86: SubResource("P_S01_86"),
+87: SubResource("P_S01_87"),
+88: SubResource("P_S01_88"),
+89: SubResource("P_S01_89"),
+90: SubResource("P_S01_90"),
+91: SubResource("P_S01_91"),
+92: SubResource("P_S01_92"),
+93: SubResource("P_S01_93"),
+94: SubResource("P_S01_94"),
+95: SubResource("P_S01_95"),
+96: SubResource("P_S01_96"),
+97: SubResource("P_S01_97"),
+98: SubResource("P_S01_98"),
+99: SubResource("P_S01_99"),
+100: SubResource("P_S01_100"),
+101: SubResource("P_S01_101"),
+102: SubResource("P_S01_102"),
+103: SubResource("P_S01_103"),
+104: SubResource("P_S01_104"),
+105: SubResource("P_S01_105"),
+106: SubResource("P_S01_106"),
+107: SubResource("P_S01_107"),
+108: SubResource("P_S01_108"),
+109: SubResource("P_S01_109"),
+110: SubResource("P_S01_110"),
+111: SubResource("P_S01_111"),
+112: SubResource("P_S01_112"),
+113: SubResource("P_S01_113"),
+114: SubResource("P_S01_114"),
+115: SubResource("P_S01_115"),
+116: SubResource("P_S01_116"),
+117: SubResource("P_S01_117"),
+118: SubResource("P_S01_118"),
+119: SubResource("P_S01_119"),
+120: SubResource("P_S01_120"),
+121: SubResource("P_S01_121"),
+122: SubResource("P_S01_122"),
+123: SubResource("P_S01_123"),
+124: SubResource("P_S01_124"),
+125: SubResource("P_S01_125"),
+126: SubResource("P_S01_126"),
+127: SubResource("P_S01_127"),
+128: SubResource("P_S01_128"),
+129: SubResource("P_S01_129"),
+130: SubResource("P_S01_130"),
+131: SubResource("P_S01_131"),
+132: SubResource("P_S01_132"),
+133: SubResource("P_S01_133"),
+134: SubResource("P_S01_134"),
+135: SubResource("P_S01_135"),
+136: SubResource("P_S01_136"),
+137: SubResource("P_S01_137"),
+138: SubResource("P_S01_138"),
+139: SubResource("P_S01_139"),
+140: SubResource("P_S01_140"),
+141: SubResource("P_S01_141"),
+142: SubResource("P_S01_142"),
+143: SubResource("P_S01_143"),
+144: SubResource("P_S01_144"),
+145: SubResource("P_S01_145"),
+146: SubResource("P_S01_146"),
+147: SubResource("P_S01_147"),
+148: SubResource("P_S01_148"),
+149: SubResource("P_S01_149"),
+150: SubResource("P_S01_150"),
+151: SubResource("P_S01_151"),
+152: SubResource("P_S01_152"),
+153: SubResource("P_S01_153"),
+154: SubResource("P_S01_154"),
+155: SubResource("P_S01_155"),
+156: SubResource("P_S01_156"),
+157: SubResource("P_S01_157"),
+158: SubResource("P_S01_158"),
+159: SubResource("P_S01_159"),
+160: SubResource("P_S01_160"),
+161: SubResource("P_S01_161"),
+162: SubResource("P_S01_162"),
+163: SubResource("P_S01_163"),
+164: SubResource("P_S01_164")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164)
+_constraints = {
+Vector2i(0, 164): 15
+}
+_next_key = 165
+
+[sub_resource type="Resource" id="P_G01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, -24)
+
+[sub_resource type="Resource" id="P_G01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-152, -32)
+
+[sub_resource type="Resource" id="P_G01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(152, -32)
+
+[sub_resource type="Resource" id="P_G01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(160, -24)
+
+[sub_resource type="Resource" id="P_G01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(155.39, -12)
+
+[sub_resource type="Resource" id="P_G01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(160, 14)
+
+[sub_resource type="Resource" id="P_G01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(142, 32)
+
+[sub_resource type="Resource" id="P_G01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(140, 26.09)
+
+[sub_resource type="Resource" id="P_G01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(105.25, 16.46)
+
+[sub_resource type="Resource" id="P_G01_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(66.29, 4)
+
+[sub_resource type="Resource" id="P_G01_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(35.74, 25.29)
+
+[sub_resource type="Resource" id="P_G01_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-9.76, 19.12)
+
+[sub_resource type="Resource" id="P_G01_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-54.42, 28.42)
+
+[sub_resource type="Resource" id="P_G01_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-91.25, 4)
+
+[sub_resource type="Resource" id="P_G01_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-134.97, 4)
+
+[sub_resource type="Resource" id="P_G01_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-142, 32)
+
+[sub_resource type="Resource" id="P_G01_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, 14)
+
+[sub_resource type="Resource" id="P_G01_17"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-155.24, 12)
+
+[sub_resource type="Resource" id="P_G01_18"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, -24)
+
+[sub_resource type="Resource" id="PA_G01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_G01_0"),
+1: SubResource("P_G01_1"),
+2: SubResource("P_G01_2"),
+3: SubResource("P_G01_3"),
+4: SubResource("P_G01_4"),
+5: SubResource("P_G01_5"),
+6: SubResource("P_G01_6"),
+7: SubResource("P_G01_7"),
+8: SubResource("P_G01_8"),
+9: SubResource("P_G01_9"),
+10: SubResource("P_G01_10"),
+11: SubResource("P_G01_11"),
+12: SubResource("P_G01_12"),
+13: SubResource("P_G01_13"),
+14: SubResource("P_G01_14"),
+15: SubResource("P_G01_15"),
+16: SubResource("P_G01_16"),
+17: SubResource("P_G01_17"),
+18: SubResource("P_G01_18")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
+_constraints = {
+Vector2i(0, 18): 15
+}
+_next_key = 19
+
+[sub_resource type="Resource" id="P_W01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -24)
+
+[sub_resource type="Resource" id="P_W01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-56, -32)
+
+[sub_resource type="Resource" id="P_W01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(56, -32)
+
+[sub_resource type="Resource" id="P_W01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -24)
+
+[sub_resource type="Resource" id="P_W01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(61.71, -12)
+
+[sub_resource type="Resource" id="P_W01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 14)
+
+[sub_resource type="Resource" id="P_W01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(46, 32)
+
+[sub_resource type="Resource" id="P_W01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(44, 27.12)
+
+[sub_resource type="Resource" id="P_W01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-5.92, 28.61)
+
+[sub_resource type="Resource" id="P_W01_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-46, 32)
+
+[sub_resource type="Resource" id="P_W01_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, 14)
+
+[sub_resource type="Resource" id="P_W01_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-62.85, 12)
+
+[sub_resource type="Resource" id="P_W01_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -24)
+
+[sub_resource type="Resource" id="PA_W01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W01_0"),
+1: SubResource("P_W01_1"),
+2: SubResource("P_W01_2"),
+3: SubResource("P_W01_3"),
+4: SubResource("P_W01_4"),
+5: SubResource("P_W01_5"),
+6: SubResource("P_W01_6"),
+7: SubResource("P_W01_7"),
+8: SubResource("P_W01_8"),
+9: SubResource("P_W01_9"),
+10: SubResource("P_W01_10"),
+11: SubResource("P_W01_11"),
+12: SubResource("P_W01_12")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+_constraints = {
+Vector2i(0, 12): 15
+}
+_next_key = 13
+
+[sub_resource type="Resource" id="P_S02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-208, -72)
+
+[sub_resource type="Resource" id="P_S02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-200, -80)
+
+[sub_resource type="Resource" id="P_S02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(200, -80)
+
+[sub_resource type="Resource" id="P_S02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(208, -72)
+
+[sub_resource type="Resource" id="P_S02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(206.89, -60)
+
+[sub_resource type="Resource" id="P_S02_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(204.96, -1.24)
+
+[sub_resource type="Resource" id="P_S02_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(202.37, 54.76)
+
+[sub_resource type="Resource" id="P_S02_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(208, 62)
+
+[sub_resource type="Resource" id="P_S02_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(190, 80)
+
+[sub_resource type="Resource" id="P_S02_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(188, 68.79)
+
+[sub_resource type="Resource" id="P_S02_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(151.23, 79.38)
+
+[sub_resource type="Resource" id="P_S02_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(109.19, 74.06)
+
+[sub_resource type="Resource" id="P_S02_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(65.15, 68.01)
+
+[sub_resource type="Resource" id="P_S02_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(29.68, 75.29)
+
+[sub_resource type="Resource" id="P_S02_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-0.85, 65.28)
+
+[sub_resource type="Resource" id="P_S02_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-50.71, 74.55)
+
+[sub_resource type="Resource" id="P_S02_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-93.25, 75.53)
+
+[sub_resource type="Resource" id="P_S02_17"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-125.39, 67.45)
+
+[sub_resource type="Resource" id="P_S02_18"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-170.09, 72.5)
+
+[sub_resource type="Resource" id="P_S02_19"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-190, 80)
+
+[sub_resource type="Resource" id="P_S02_20"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-208, 62)
+
+[sub_resource type="Resource" id="P_S02_21"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-205.09, 60)
+
+[sub_resource type="Resource" id="P_S02_22"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-207.52, 17.68)
+
+[sub_resource type="Resource" id="P_S02_23"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-203.33, -20.63)
+
+[sub_resource type="Resource" id="P_S02_24"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-203.93, -59.93)
+
+[sub_resource type="Resource" id="P_S02_25"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-208, -72)
+
+[sub_resource type="Resource" id="PA_S02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S02_0"),
+1: SubResource("P_S02_1"),
+2: SubResource("P_S02_2"),
+3: SubResource("P_S02_3"),
+4: SubResource("P_S02_4"),
+5: SubResource("P_S02_5"),
+6: SubResource("P_S02_6"),
+7: SubResource("P_S02_7"),
+8: SubResource("P_S02_8"),
+9: SubResource("P_S02_9"),
+10: SubResource("P_S02_10"),
+11: SubResource("P_S02_11"),
+12: SubResource("P_S02_12"),
+13: SubResource("P_S02_13"),
+14: SubResource("P_S02_14"),
+15: SubResource("P_S02_15"),
+16: SubResource("P_S02_16"),
+17: SubResource("P_S02_17"),
+18: SubResource("P_S02_18"),
+19: SubResource("P_S02_19"),
+20: SubResource("P_S02_20"),
+21: SubResource("P_S02_21"),
+22: SubResource("P_S02_22"),
+23: SubResource("P_S02_23"),
+24: SubResource("P_S02_24"),
+25: SubResource("P_S02_25")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
+_constraints = {
+Vector2i(0, 25): 15
+}
+_next_key = 26
+
+[sub_resource type="Resource" id="P_B01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -24)
+
+[sub_resource type="Resource" id="P_B01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-88, -32)
+
+[sub_resource type="Resource" id="P_B01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(88, -32)
+
+[sub_resource type="Resource" id="P_B01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -24)
+
+[sub_resource type="Resource" id="P_B01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(95, -12)
+
+[sub_resource type="Resource" id="P_B01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 14)
+
+[sub_resource type="Resource" id="P_B01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(78, 32)
+
+[sub_resource type="Resource" id="P_B01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(76, 26.32)
+
+[sub_resource type="Resource" id="P_B01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(37.88, 19.06)
+
+[sub_resource type="Resource" id="P_B01_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(9.54, 25.24)
+
+[sub_resource type="Resource" id="P_B01_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-30.44, 4)
+
+[sub_resource type="Resource" id="P_B01_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-75.81, 27.13)
+
+[sub_resource type="Resource" id="P_B01_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-78, 32)
+
+[sub_resource type="Resource" id="P_B01_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 14)
+
+[sub_resource type="Resource" id="P_B01_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-89.94, 12)
+
+[sub_resource type="Resource" id="P_B01_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -24)
+
+[sub_resource type="Resource" id="PA_B01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B01_0"),
+1: SubResource("P_B01_1"),
+2: SubResource("P_B01_2"),
+3: SubResource("P_B01_3"),
+4: SubResource("P_B01_4"),
+5: SubResource("P_B01_5"),
+6: SubResource("P_B01_6"),
+7: SubResource("P_B01_7"),
+8: SubResource("P_B01_8"),
+9: SubResource("P_B01_9"),
+10: SubResource("P_B01_10"),
+11: SubResource("P_B01_11"),
+12: SubResource("P_B01_12"),
+13: SubResource("P_B01_13"),
+14: SubResource("P_B01_14"),
+15: SubResource("P_B01_15")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+_constraints = {
+Vector2i(0, 15): 15
+}
+_next_key = 16
+
+[sub_resource type="Resource" id="P_B02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-176, -32)
+
+[sub_resource type="Resource" id="P_B02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(168, -32)
+
+[sub_resource type="Resource" id="P_B02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(176, -24)
+
+[sub_resource type="Resource" id="P_B02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(175.05, -12)
+
+[sub_resource type="Resource" id="P_B02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(176, 14)
+
+[sub_resource type="Resource" id="P_B02_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(158, 32)
+
+[sub_resource type="Resource" id="P_B02_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(156, 21.76)
+
+[sub_resource type="Resource" id="P_B02_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(113.49, 30.9)
+
+[sub_resource type="Resource" id="P_B02_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(73.45, 21.78)
+
+[sub_resource type="Resource" id="P_B02_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(37.29, 24.05)
+
+[sub_resource type="Resource" id="P_B02_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-14, 4)
+
+[sub_resource type="Resource" id="P_B02_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-46.66, 18.97)
+
+[sub_resource type="Resource" id="P_B02_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-76.87, 30.86)
+
+[sub_resource type="Resource" id="P_B02_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-105.21, 25.79)
+
+[sub_resource type="Resource" id="P_B02_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-149.22, 25.16)
+
+[sub_resource type="Resource" id="P_B02_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-176, 32)
+
+[sub_resource type="Resource" id="P_B02_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-176, -32)
+
+[sub_resource type="Resource" id="PA_B02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B02_0"),
+1: SubResource("P_B02_1"),
+2: SubResource("P_B02_2"),
+3: SubResource("P_B02_3"),
+4: SubResource("P_B02_4"),
+5: SubResource("P_B02_5"),
+6: SubResource("P_B02_6"),
+7: SubResource("P_B02_7"),
+8: SubResource("P_B02_8"),
+9: SubResource("P_B02_9"),
+10: SubResource("P_B02_10"),
+11: SubResource("P_B02_11"),
+12: SubResource("P_B02_12"),
+13: SubResource("P_B02_13"),
+14: SubResource("P_B02_14"),
+15: SubResource("P_B02_15"),
+16: SubResource("P_B02_16")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+_constraints = {
+Vector2i(0, 16): 15
+}
+_next_key = 17
+
+[sub_resource type="Resource" id="P_B03_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -24)
+
+[sub_resource type="Resource" id="P_B03_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-88, -32)
+
+[sub_resource type="Resource" id="P_B03_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(88, -32)
+
+[sub_resource type="Resource" id="P_B03_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -24)
+
+[sub_resource type="Resource" id="P_B03_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(92.19, -12)
+
+[sub_resource type="Resource" id="P_B03_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 14)
+
+[sub_resource type="Resource" id="P_B03_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(78, 32)
+
+[sub_resource type="Resource" id="P_B03_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(76, 27.13)
+
+[sub_resource type="Resource" id="P_B03_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(24.38, 27.1)
+
+[sub_resource type="Resource" id="P_B03_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-14.29, 4)
+
+[sub_resource type="Resource" id="P_B03_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-59.12, 19.89)
+
+[sub_resource type="Resource" id="P_B03_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-78, 32)
+
+[sub_resource type="Resource" id="P_B03_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 14)
+
+[sub_resource type="Resource" id="P_B03_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-94.5, 12)
+
+[sub_resource type="Resource" id="P_B03_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -24)
+
+[sub_resource type="Resource" id="PA_B03"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B03_0"),
+1: SubResource("P_B03_1"),
+2: SubResource("P_B03_2"),
+3: SubResource("P_B03_3"),
+4: SubResource("P_B03_4"),
+5: SubResource("P_B03_5"),
+6: SubResource("P_B03_6"),
+7: SubResource("P_B03_7"),
+8: SubResource("P_B03_8"),
+9: SubResource("P_B03_9"),
+10: SubResource("P_B03_10"),
+11: SubResource("P_B03_11"),
+12: SubResource("P_B03_12"),
+13: SubResource("P_B03_13"),
+14: SubResource("P_B03_14")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+_constraints = {
+Vector2i(0, 14): 15
+}
+_next_key = 15
+
+[sub_resource type="Resource" id="P_B04_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, -24)
+
+[sub_resource type="Resource" id="P_B04_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-152, -32)
+
+[sub_resource type="Resource" id="P_B04_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(152, -32)
+
+[sub_resource type="Resource" id="P_B04_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(160, -24)
+
+[sub_resource type="Resource" id="P_B04_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(159.68, -12)
+
+[sub_resource type="Resource" id="P_B04_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(160, 14)
+
+[sub_resource type="Resource" id="P_B04_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(142, 32)
+
+[sub_resource type="Resource" id="P_B04_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(140, 26.97)
+
+[sub_resource type="Resource" id="P_B04_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96.53, 19.91)
+
+[sub_resource type="Resource" id="P_B04_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(60.46, 18.03)
+
+[sub_resource type="Resource" id="P_B04_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(21.33, 19.2)
+
+[sub_resource type="Resource" id="P_B04_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-24.75, 4)
+
+[sub_resource type="Resource" id="P_B04_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-58.9, 26.76)
+
+[sub_resource type="Resource" id="P_B04_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-100.98, 24.35)
+
+[sub_resource type="Resource" id="P_B04_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-142, 32)
+
+[sub_resource type="Resource" id="P_B04_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, 14)
+
+[sub_resource type="Resource" id="P_B04_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-158.16, 12)
+
+[sub_resource type="Resource" id="P_B04_17"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, -24)
+
+[sub_resource type="Resource" id="PA_B04"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B04_0"),
+1: SubResource("P_B04_1"),
+2: SubResource("P_B04_2"),
+3: SubResource("P_B04_3"),
+4: SubResource("P_B04_4"),
+5: SubResource("P_B04_5"),
+6: SubResource("P_B04_6"),
+7: SubResource("P_B04_7"),
+8: SubResource("P_B04_8"),
+9: SubResource("P_B04_9"),
+10: SubResource("P_B04_10"),
+11: SubResource("P_B04_11"),
+12: SubResource("P_B04_12"),
+13: SubResource("P_B04_13"),
+14: SubResource("P_B04_14"),
+15: SubResource("P_B04_15"),
+16: SubResource("P_B04_16"),
+17: SubResource("P_B04_17")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+_constraints = {
+Vector2i(0, 17): 15
+}
+_next_key = 18
+
+[sub_resource type="Resource" id="P_W02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_W02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_W02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_W02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_W02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_W02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W02_0"),
+1: SubResource("P_W02_1"),
+2: SubResource("P_W02_2"),
+3: SubResource("P_W02_3"),
+4: SubResource("P_W02_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[node name="쳅터1_07_방_수납실" type="Node2D"]
+script = ExtResource("1_world")
+"스테이지_이름" = "07 · 수납실 (비대칭 S)"
+"카메라_리밋" = Rect2(0, 0, 2560, 1408)
+"카메라_줌" = 1.0
+"시작_위치" = Vector2(2320, 1184)
+"낙사_y" = 2048
+"치명_낙하거리" = 1500
+metadata/blueprint = "res://scenes/쳅터1/도안/쳅터1_07_방_수납실.json"
+metadata/frame_only = false
+
+[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+script = ExtResource("2_core")
+
+[node name="어둠" type="CanvasModulate" parent="."]
+color = Color(0.74, 0.74, 0.74, 1)
+
+[node name="배경" type="Node2D" parent="."]
+script = ExtResource("12_bg")
+"프리셋" = ExtResource("13_preset")
+"방_크기" = Vector2(2560, 1408)
+"바닥_y" = 1184
+"천장_y" = 160
+"낡음_덮어쓰기" = 3
+"씨앗" = 1057
+"배경_명도" = 0.6
+"레이어_움직임" = true
+
+[node name="가구" type="Node2D" parent="배경"]
+z_index = -90
+
+[node name="선반1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(832, 864)
+texture = ExtResource("art_v02_15_furn1")
+centered = false
+
+[node name="상자더미1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(544, 1056)
+texture = ExtResource("art_v02_14_furn0")
+centered = false
+
+[node name="선반2" type="Sprite2D" parent="배경/가구"]
+position = Vector2(1984, 864)
+texture = ExtResource("art_v02_15_furn1")
+centered = false
+
+[node name="창문1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(256, 256)
+texture = ExtResource("art_v02_16_furn2")
+centered = false
+
+[node name="지형" type="Node2D" parent="."]
+
+[node name="구조01" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(1280, 704)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S01")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="유령판01" parent="지형" instance=ExtResource("5_tpl_ghost")]
+position = Vector2(1088, 608)
+_points = SubResource("PA_G01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
+[node name="흰판01" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(1792, 608)
+"위치별_판정" = true
+_points = SubResource("PA_W01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="구조02" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(1488, 688)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S02")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="검정판01" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(800, 736)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판02" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(336, 864)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B02")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판03" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(640, 992)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B03")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판04" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(1088, 1120)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B04")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판02" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(2016, 1216)
+"위치별_판정" = true
+_points = SubResource("PA_W02")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="연결" type="Node2D" parent="."]
+
+[node name="오른쪽아래" type="Node2D" parent="연결"]
+position = Vector2(2400, 1184)
+script = ExtResource("11_link")
+"방향" = 1
+"높이" = 160
+"벽두께" = 160
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_06_복도_C.tscn"
+"다음_연결" = "왼쪽"
+"되돌아가기" = true
+
+[node name="오른쪽위" type="Node2D" parent="연결"]
+position = Vector2(2400, 608)
+script = ExtResource("11_link")
+"방향" = 1
+"높이" = 160
+"벽두께" = 160
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_08_계단_중앙.tscn"
+"다음_연결" = "왼쪽"
+"되돌아가기" = true
+
+[node name="체크포인트" type="Node2D" parent="."]
+
+[node name="체크01" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(2320, 1184)
+collision_layer = 0
+
+[node name="체크02" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(1424, 960)
+collision_layer = 0
+
+[node name="체크03" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(272, 832)
+collision_layer = 0
+
+[node name="체크04" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(2128, 608)
+collision_layer = 0
+
+[node name="Player" parent="." instance=ExtResource("8_player")]
+position = Vector2(2320, 1184)
+"점프_거리_칸" = 20.0

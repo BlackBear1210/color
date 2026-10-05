@@ -11,6 +11,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 import 규격
+import 기믹 as 기믹모듈
 
 S = 12                  # 도면 px / 칸
 여백 = 3                 # 도안 둘레로 바깥 지형을 몇 칸 보여줄지
@@ -126,6 +127,38 @@ def 그리기(dn, 검사결과, 출력경로):
             x, y = P(xx, gy)
             d.polygon([(x + 1, y), (x + S / 2, y - S + 3), (x + S - 1, y)], fill=(176, 52, 40))
 
+    # ── 기믹 (2026-10-05) ──
+    f기 = _글꼴(11, True)
+    for g in 기믹모듈.목록(dn):
+        if isinstance(g, 기믹모듈.빛줄기):
+            색 = (255, 236, 120) if g.색 == "흰" else (60, 40, 120)
+            pts = [P(x / 규격.칸, y / 규격.칸) for x, y in g.꼭짓점()]
+            d.polygon(pts, fill=색 + (110 if g.고정 else 50,), outline=색 + (230,))
+            ox, oy = P(g.원점[0] / 규격.칸, g.원점[1] / 규격.칸)
+            d.ellipse([ox - 5, oy - 5, ox + 5, oy + 5], fill=색 + (255,), outline=(60, 50, 30))
+            표 = f"{g.근원} {g.색}" + ("" if g.고정 else (" 점멸" if g.점멸 else f" {g.주기:g}초"))
+            d.text((ox + 8, oy - 6), 표, font=f기, fill=(90, 70, 20) if g.색 == "흰" else (60, 40, 120))
+        elif isinstance(g, 기믹모듈.도약대):
+            l, t, r, b = g.사각()
+            a, bb = P(l / 규격.칸, t / 규격.칸)
+            c, e = P(r / 규격.칸, b / 규격.칸)
+            d.polygon([(a, e), (a + 3, bb + 3), (c - 3, bb + 3), (c, e)], fill=(40, 150, 140), outline=(20, 90, 80))
+            x0 = (a + c) / 2
+            d.line([(x0, bb), (x0, bb - g.오름 * S)], fill=(40, 150, 140, 160), width=2)
+            d.polygon([(x0 - 5, bb - g.오름 * S + 8), (x0, bb - g.오름 * S), (x0 + 5, bb - g.오름 * S + 8)], fill=(40, 150, 140))
+            d.text((c + 3, bb - 14), f"도약 {g.오름}칸" + (f"({g.색}만)" if g.색 else ""), font=f기, fill=(20, 110, 100))
+        else:
+            칸들 = g.위치들()
+            l0, t0, r0, _ = 칸들[0]
+            l1, t1, r1, b1 = 칸들[-1]
+            a, bb = P(l0 / 규격.칸, t0 / 규격.칸)
+            c, e = P(r1 / 규격.칸, b1 / 규격.칸)
+            _점선(d, [(a, bb), (c, bb), (c, e), (a, e), (a, bb)], (200, 90, 30), 2)
+            a0, b0 = P(l0 / 규격.칸, t0 / 규격.칸)
+            c0, e0 = P(r0 / 규격.칸, t0 / 규격.칸 + 0.9)
+            d.rectangle([a0, b0, c0, e0], fill=(200, 90, 30), outline=(120, 50, 10))
+            d.text((c + 3, bb), f"움직이는 발판 {g.방향} {g.거리}칸 · {g.왕복:g}초", font=f기, fill=(160, 70, 20))
+
     # ── 도달 구간(검사) ──
     if 검사결과:
         구간 = 검사결과["구간"]
@@ -195,7 +228,7 @@ def 그리기(dn, 검사결과, 출력경로):
             _점선(d, [(lx, ly), (lx + 18, ly), (lx + 18, ly + 14), (lx, ly + 14), (lx, ly)], (70, 70, 140), 2)
         d.text((lx + 24, ly - 2), 표, font=_글꼴(13), fill=(50, 44, 38))
         lx += 34 + d.textlength(표, font=_글꼴(13))
-    for 표, 색 in [("가시", (176, 52, 40)), ("S 시작", (40, 150, 70)), ("체크포인트", (40, 90, 200)), ("연결(↔ 되돌아가기)", (210, 120, 10)),
+    for 표, 색 in [("가시", (176, 52, 40)), ("빛줄기(흰/검정)", (230, 200, 90)), ("도약대", (40, 150, 140)), ("움직이는 발판", (200, 90, 30)), ("S 시작", (40, 150, 70)), ("체크포인트", (40, 90, 200)), ("연결(↔ 되돌아가기)", (210, 120, 10)),
                   ("검사: 닿는 바닥", (40, 170, 70)), ("못 닿는 바닥", (220, 60, 60))]:
         d.rectangle([lx, ly + 3, lx + 12, ly + 11], fill=색)
         d.text((lx + 16, ly - 2), 표, font=_글꼴(13), fill=(50, 44, 38))
@@ -221,8 +254,23 @@ def 그리기(dn, 검사결과, 출력경로):
         my += 26
 
     os.makedirs(os.path.dirname(출력경로), exist_ok=True)
-    img.save(출력경로, optimize=True)
+    안전저장(img, 출력경로)
     return 출력경로
+
+
+def 안전저장(img, 경로, 횟수=40):
+    """[2026-10-05] Godot 편집기가 열려 있으면 PNG 를 다시 가져오느라(import) 잠깐 파일을 잡고 있어
+    바로 덮어쓰면 Errno 22 가 난다. 옆에 임시 파일로 쓴 뒤 바꿔치기하고, 잡혀 있으면 잠깐 기다렸다 다시."""
+    import time
+    임시 = 경로 + ".임시"          # .png 로 끝나면 편집기가 이것까지 가져오려 한다
+    img.save(임시, format="PNG", optimize=True)
+    for _ in range(횟수):
+        try:
+            os.replace(임시, 경로)
+            return
+        except OSError:
+            time.sleep(0.25)
+    os.replace(임시, 경로)
 
 
 def _점선(d, pts, 색, 굵기, 길이=7):
