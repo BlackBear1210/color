@@ -63,6 +63,10 @@ var _쿨: float = 0.0
 var _조준중: bool = false
 var _궤적: PackedVector2Array = PackedVector2Array()   ## 월드 좌표
 var _궤적_닿음: bool = false                            ## 지형에 닿아 끊겼나(탄착 마커용)
+## ★[2026-10-06 Claude] 탄착 지점이 "칠 안 되는 곳"인가 → 빨간 점 대신 X 를 그린다.
+##   칠 안 되는 곳 = 칠할 수 없는 물체(명중 메서드 없음) · 안칠해짐 지형(큰 구조) · 회색 ·
+##   이미 내 색인 지형(칠하고 회수 안 함). 판단은 지형.칠_가능_미리보기() — 명중()과 같은 규칙.
+var _탄착_불가: bool = false
 var _흐름: float = 0.0
 
 
@@ -185,6 +189,7 @@ func _발사_속도() -> Vector2:
 func _궤적_계산() -> PackedVector2Array:
 	var 점들 := PackedVector2Array()
 	_궤적_닿음 = false
+	_탄착_불가 = false
 
 	var 속도 := _발사_속도()
 	if 속도 == Vector2.ZERO:
@@ -217,10 +222,27 @@ func _궤적_계산() -> PackedVector2Array:
 		if 결과:
 			점들.append(결과["position"])     # 탄착점까지만 — 지형 뒤로는 안 그린다
 			_궤적_닿음 = true
+			_탄착_불가 = not _칠_가능(결과.get("collider"))
 			break
 		위치 = 다음
 		점들.append(위치)
 	return 점들
+
+
+## [2026-10-06] 탄착 대상이 지금 얼굴색으로 칠해지나. 발사()와 같은 색(조준 쪽 입)을 쓴다.
+##   총알._칠할대상_찾기 와 같이 콜리전 → 부모로 올라가 `명중` 이 있는 노드를 찾는다.
+##   `칠_가능_미리보기` 가 없는 칠 대상(식물·장치 등)은 규칙을 모르니 '가능'으로 둔다 — 거짓 X 를 막는다.
+func _칠_가능(맞은것: Object) -> bool:
+	var n := 맞은것 as Node
+	while n != null and not n.has_method("명중"):
+		n = n.get_parent()
+	if n == null:
+		return false                      # 칠할 수 없는 물체(벽·문·장치 몸통 등)
+	if not n.has_method("칠_가능_미리보기"):
+		return true
+	var 커서 := get_global_mouse_position()
+	var 색: int = 플레이어.call("얼굴색", 커서.x - 플레이어.global_position.x) 		if 플레이어.has_method("얼굴색") else 플레이어.get("player_color")
+	return bool(n.call("칠_가능_미리보기", 색))
 
 
 func _draw() -> void:
@@ -246,5 +268,13 @@ func _draw() -> void:
 	# (최대 사거리까지 날아가 안 닿은 경우에 마커를 그리면 "여기 맞는다"는 거짓말이 된다)
 	if _궤적_닿음:
 		var 끝 := _궤적[n - 1]
-		draw_circle(끝, 궤적_점크기 + 궤적_링여유 + 2.0, 궤적_링색)
-		draw_circle(끝, 궤적_점크기 + 2.0, 궤적_탄착색)
+		if _탄착_불가:
+			# [2026-10-06] 칠 안 되는 곳 = 빨간 X (어두운 테두리 → 흑백 어느 배경에서도 보인다)
+			var k := 7.0
+			for d in [Vector2(k, k), Vector2(k, -k)]:
+				draw_line(끝 - d, 끝 + d, 궤적_링색, 6.0, true)
+			for d in [Vector2(k, k), Vector2(k, -k)]:
+				draw_line(끝 - d, 끝 + d, 궤적_탄착색, 3.0, true)
+		else:
+			draw_circle(끝, 궤적_점크기 + 궤적_링여유 + 2.0, 궤적_링색)
+			draw_circle(끝, 궤적_점크기 + 2.0, 궤적_탄착색)
