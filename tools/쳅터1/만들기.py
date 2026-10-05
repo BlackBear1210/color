@@ -176,6 +176,18 @@ def 창문_가구(dn):
     return out
 
 
+def _안에(pt, 다각형):
+    """[2026-10-06] 점이 다각형(px) 안인가 — 무늬 줄을 담을 구조 다각형을 고른다(짝수-홀수 규칙)."""
+    x, y = pt
+    안 = False
+    n = len(다각형)
+    for i in range(n):
+        (x1, y1), (x2, y2) = 다각형[i], 다각형[(i + 1) % n]
+        if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1:
+            안 = not 안
+    return 안
+
+
 def 씬_글(dn):
     d = dn.d
     ext = list(EXT)
@@ -223,6 +235,14 @@ def 씬_글(dn):
         본 += [f"{a} = {b}" for a, b in 속성]
         본 += [f'_points = SubResource("PA_{sid_a}")', "collision_size = 0.0",
               f"metadata/role = {문자열(역할)}", f"metadata/design_kind = {문자열(k)}"]
+        # [2026-10-06 Claude] 하수도식 흑백 맞물림 — 이 구조 다각형 안에 든 무늬 줄을 노드 로컬 Rect2 로 넘긴다.
+        #   목재_데크지형.내부_무늬 → 셰이더 wood_inlay_rects 가 구조 앞면에만 흰 판자로 그린다(구조는 칠하기 금지).
+        if k == "구조":
+            무늬 = [(x0 * C - cx, yy * C - cy, (x1 - x0) * C, C) for x0, yy, x1 in getattr(dn, "무늬", [])
+                   if _안에(((x0 + x1) / 2 * C, (yy + 0.5) * C), 점)]
+            if 무늬:
+                본.append('"내부_무늬" = Array[Rect2]([' + ", ".join(
+                    f"Rect2({수(a)}, {수(b)}, {수(c)}, {수(e)})" for a, b, c, e in 무늬[:48]) + "])")
         노드.append("\n".join(본) + "\n")
 
     W, H = dn.w * C, dn.h * C

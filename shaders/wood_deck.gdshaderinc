@@ -12,6 +12,54 @@ uniform int wood_style = 2;
 // Node global position. local_pos + wood_origin = world px, so the 32 px board rows of
 // the front art (grain.png: 9 rows per 1024 px at scale 0.28125) can be found exactly.
 uniform vec2 wood_origin = vec2(0.0);
+// [2026-10-05 Claude v05] Nail map for the front boards, same UV as wood_grain
+// (tools/chapter1 v05 nail script): R = head cover, G = head shade, B = drop shadow.
+uniform sampler2D wood_nails : filter_linear_mipmap, repeat_enable;
+
+// [2026-10-06 Claude] Sewer-style color interlock for the unpaintable structure body:
+// node-local rects (x0, y0, x1, y1), one per 32 px board row, drawn in the opposite wood tone.
+// Built by the chapter-1 blueprint tool (inner rows below embedded white decks), never on an
+// exposed surface, so paint shot at the surface can never reach them (structure is unpaintable).
+uniform int wood_inlay_count = 0;
+uniform vec4 wood_inlay_rects[48];
+
+// x = inside the inlay row, y = cut-end joint where the row stops in the middle of a board.
+vec2 wood_inlay(vec2 lp) {
+ for (int i = 0; i < 48; i++) {
+  if (i >= wood_inlay_count) { break; }
+  vec4 r = wood_inlay_rects[i];
+  if (lp.y >= r.y && lp.y < r.w && lp.x >= r.x - 1.6 && lp.x < r.z + 1.6) {
+   float inside = step(r.x, lp.x) * step(lp.x, r.z);
+   float edge = 1.0 - smoothstep(0.5, 1.6, min(abs(lp.x - r.x), abs(lp.x - r.z)));
+   return vec2(inside, edge);
+  }
+ }
+ return vec2(0.0);
+}
+
+// Round iron nail head at offset d (px) from its centre, lit from the upper left.
+// x = cover, y = head shade, z = drop shadow toward the lower right.
+vec3 wood_nail(vec2 d, float r) {
+ float dist = length(d);
+ float cover = clamp(r + 0.5 - dist, 0.0, 1.0);
+ vec2 nn = d / r;
+ float nz = sqrt(max(1.0 - dot(nn, nn), 0.0));
+ float shade = clamp(dot(vec3(nn, nz), vec3(-0.565, -0.668, 0.484)), 0.0, 1.0);
+ shade = pow(shade, 1.6) * (1.0 - 0.55 * clamp((dist / r - 0.78) / 0.22, 0.0, 1.0));
+ float shadow = clamp(r + 1.4 - length(d - vec2(0.9, 1.2)), 0.0, 1.0);
+ return vec3(cover, shade, shadow);
+}
+
+// Nail over a (black, white) tone pair: soft shadow first, then the iron head.
+vec2 wood_apply_nail(vec2 t, vec3 n) {
+ t *= 1.0 - n.z * 0.45 * (1.0 - n.x);
+ return mix(t, vec2(0.012 + n.y * 0.20, 0.16 + n.y * 0.62), n.x);
+}
+
+// Mirrored repeat, as SS2D uses for the front fill.
+float wood_mirror(float v) {
+ return 1.0 - abs(mod(v, 2.0) - 1.0);
+}
 
 // A two-pixel joint with derivative filtering stays legible at different zooms.
 float wood_joint(float coordinate) {
@@ -82,7 +130,8 @@ vec2 wood_tones_at(vec2 uv, vec2 world) {
   float g = texture(wood_grain, p).r;
   float black = clamp(g * 0.66, 0.018, 0.25) * 0.50;
   float white = mix(0.12, min(0.84, 0.66 + g * 0.52), smoothstep(0.01, 0.065, g)) * 0.8505;
-  return wood_front_shade(vec2(black, white), world, g);
+  vec2 front = wood_front_shade(vec2(black, white), world, g);
+  return wood_apply_nail(front, texture(wood_nails, p).rgb);
  }
  // UV.y selects independent geometric faces. The top can never wrap a wall.
  if (uv.y >= 4.0) {
@@ -92,13 +141,10 @@ vec2 wood_tones_at(vec2 uv, vec2 world) {
    // Right end cap line: closes the cut end of the deck (the right side face is hidden).
    return vec2(0.010, mix(0.20, 0.34, across));
   }
-  if (face > 5.5) { return vec2(0.014 + 0.05, 0.34 + 0.10); }
-  if (face > 4.5) {
-   // Right wall shade strip, rows aligned with the front boards.
-   float g5 = deck_grain(uv.x * 2.0, across);
-   float k5 = mix(0.55, 1.0, across);
-   return vec2((0.030 + g5 * 0.08) * k5, (0.36 + g5 * 0.16) * k5);
-  }
+  // [2026-10-06] Underside strip: the box is seen from the upper left, so its bottom face is
+  // hidden. It used to be a lighter band that read as a ledge sticking out under every
+  // platform; now it is only a thin dark contact edge.
+  if (face > 5.5) { return vec2(0.006, 0.10); }
   // Left side face of the box. uv.x is already the front board row (mesh bakes the
   // 22 px rise), so seams continue around the corner from the front art.
   float course = uv.x;
@@ -115,7 +161,14 @@ vec2 wood_tones_at(vec2 uv, vec2 world) {
   if (wood_style > 0) { white = (0.40 + g * 0.14 + rings * 0.06) * light + 0.06; }
   vec2 tone = vec2(black, white);
   float ink = s.w > 0.5 ? 0.95 : 0.8;
-  return mix(tone, vec2(0.016, s.w > 0.5 ? 0.06 : 0.25), joint * ink);
+  tone = mix(tone, vec2(0.016, s.w > 0.5 ? 0.06 : 0.25), joint * ink);
+  // [v05] Crisp vertical arris where the side face turns onto the front, darker back edge.
+  float arris4 = smoothstep(0.90, 0.96, across);
+  tone = mix(tone, vec2(min(tone.x + 0.07, 0.30), min(tone.y + 0.16, 0.92)), arris4);
+  tone *= mix(0.72, 1.0, smoothstep(0.0, 0.10, across));
+  // One nail per board end, near the front corner.
+  vec2 d4 = vec2((across - 0.70) * 18.0, (fract(course) - 0.5) * 32.0);
+  return wood_apply_nail(tone, wood_nail(d4, 1.9));
  }
  if (uv.y >= 2.0) {
   float g = deck_grain(uv.x*4.0,fract(uv.y));
@@ -142,7 +195,35 @@ vec2 wood_tones_at(vec2 uv, vec2 world) {
    top_white *= 1.0 - back * (0.06 + s.y * 0.25);
    top_black *= 1.0 - back * 0.25;
    arris = smoothstep(0.86, 0.99, depth);
-   return vec2(top_black + arris * 0.025, min(0.92, top_white + arris * 0.06));
+   // [v05] Hairline cracks along the grain on most boards: thin, tapered at both ends,
+   // with a faint lit lip on the near side (light from the upper left).
+   float bi = floor(course);
+   float fc = fract(course);
+   if (wood_hash(bi * 1.7 + 3.0) > 0.28) {
+    float cd = 0.25 + 0.45 * wood_hash(bi * 2.3 + 1.0);
+    float cs = 0.08 + 0.35 * wood_hash(bi * 4.1 + 2.0);
+    float ce = min(cs + 0.30 + 0.30 * wood_hash(bi * 5.3 + 7.0), 0.94);
+    // v06: splits follow the board length, parallel to the shared depth projection.
+    float wob = 0.012 * sin(depth * 7.0 + bi * 2.0) + 0.004 * sin(depth * 29.0 + bi);
+    float dpx = (fc - cd - wob) * 64.0;
+    float u = clamp((depth - cs) / max(ce - cs, 0.001), 0.0, 1.0);
+    float taper = sin(u * 3.14159) * step(cs, depth) * step(depth, ce);
+    float crack = (1.0 - smoothstep(0.15, 0.15 + 0.55 * taper, abs(dpx))) * taper;
+    float lipc = (1.0 - smoothstep(0.2, 0.6, abs(dpx - 0.9))) * taper;
+    top_black = mix(top_black, 0.012, crack * 0.65) + lipc * 0.012;
+    top_white = mix(top_white, 0.24, crack * 0.6) + lipc * 0.05;
+   }
+   // Light catches the board edge just past each joint (light from the upper left).
+   float past = fc;
+   float seam_lit = smoothstep(0.012, 0.025, past) * (1.0 - smoothstep(0.03, 0.05, past));
+   top_black += seam_lit * 0.02;
+   top_white += seam_lit * 0.07;
+   // Broken highlights read as worn timber, instead of a continuous plastic rim.
+   float wear = mix(0.38, 1.0, smoothstep(0.12, 0.45, grain));
+   float scratch = deck_grain(course + 0.008, depth) - grain;
+   top_black += clamp(scratch * 0.12, -0.012, 0.020);
+   top_white += clamp(scratch * 0.28, -0.035, 0.045);
+   return vec2(top_black + arris * 0.045 * wear, min(0.94, top_white + arris * 0.12 * wear));
   }
   return vec2(top_black+arris*0.010, min(0.88,top_white+arris*0.020));
  }
@@ -159,7 +240,18 @@ vec2 wood_tones_at(vec2 uv, vec2 world) {
   black = black * (1.0 - contact * 0.3);
   if (s.w > 0.5) { white = mix(white, 0.06, smoothstep(0.80, 1.0, y)); }
  }
- return vec2(black,white);
+ // [v05] Bright arris along the top of the lip, then nails beside every board joint.
+ float lip_px = y * 8.0;
+ float edge = 1.0 - smoothstep(0.6, 1.4, lip_px);
+ float wear = mix(0.40, 1.0, smoothstep(0.10, 0.42, grain));
+ vec2 lip = vec2(black + edge * 0.06 * wear, min(0.95, white + edge * 0.20 * wear));
+ // The same board joint must continue from the deck down its short front lip.
+ lip = mix(lip, vec2(0.009, 0.14), seam * 0.88);
+ float k = floor(course + 0.5);
+ float off = course - k;
+ float side = off >= 0.0 ? 1.0 : -1.0;
+ vec2 dl = vec2((off - side * 0.15) * 64.0, lip_px - 4.2);
+ return wood_apply_nail(lip, wood_nail(dl, 1.8));
 }
 
 // Old entry point kept for callers that have no world position.

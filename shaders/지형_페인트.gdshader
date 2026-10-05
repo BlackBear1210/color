@@ -106,9 +106,13 @@ uniform vec4 ghost_tint : source_color = vec4(0.78, 0.82, 0.88, 1.0);
 uniform float ghost_tint_amount = 0.30;
 
 varying vec2 local_pos;
+// [2026-10-05 Claude v05] 목재 상판 접촉 그림자(상자 밑동·계단 안쪽 모서리). 덮개 메시가 꼭짓점 색에
+// (1, ao, 1, 1) 로 굽는다. g/r 비율로 읽어서 modulate 가 곱해져도 값이 같다. 채우기 메시는 흰색 = 1.
+varying float wood_ao;
 
 void vertex() {
 	local_pos = VERTEX;
+	wood_ao = COLOR.g / max(COLOR.r, 0.0001);
 }
 
 // 값싼 해시 노이즈 — 얼룩 테두리를 유기적으로 흔들기만 하면 되므로 품질보다 속도.
@@ -141,10 +145,16 @@ void fragment() {
 	// Opt-in chapter-one deck shares one grain source across both paint colors.
 	if (wood_mode > 0) {
 		// [2026-10-05 Claude] 월드 좌표를 같이 넘겨 32px 판자 줄마다 2.5D 명암(wood_front_shade)을 넣는다.
-		vec2 tones = wood_tones_at(UV, local_pos + wood_origin);
+		vec2 tones = wood_tones_at(UV, local_pos + wood_origin) * wood_ao;
 		ink_black = vec3(tones.x);
 		ink_white = vec3(tones.y);
 		base.rgb = base_is_white ? ink_white : ink_black;
+		// [2026-10-06 Claude] 하수도식 흑백 맞물림 — 구조 앞면 안쪽 줄만 반대색 판자로(칠하기 전 바탕에만 적용).
+		if (wood_mode == 1 && wood_inlay_count > 0) {
+			vec2 inl = wood_inlay(local_pos);
+			base.rgb = mix(base.rgb, base_is_white ? ink_black : ink_white, inl.x);
+			base.rgb *= 1.0 - 0.75 * inl.y;
+		}
 	}
 	vec3 gray = mix(ink_black, ink_white, 0.5);
 
@@ -334,7 +344,7 @@ void fragment() {
 				+ wood_tones_at(uv_base - vec2(step_x, 0.0), wpos)
 				+ wood_tones_at(uv_base + vec2(step_x * 2.0, 0.0), wpos)
 				+ wood_tones_at(uv_base - vec2(step_x * 2.0, 0.0), wpos);
-			blurred.rgb = vec3((base_is_white ? tones.y : tones.x) * 0.2);
+			blurred.rgb = vec3((base_is_white ? tones.y : tones.x) * 0.2 * wood_ao);
 		}
 
 		vec3 ghost_rgb = mix(blurred.rgb, ghost_tint.rgb, ghost_tint_amount);

@@ -80,55 +80,71 @@ class 도안:
             if 문["높이"] < 규격.규칙["통로_최소높이"]:
                 self.경고.append(f"문 {문['이름']} 높이 {문['높이']}칸 < 통로 최소 {규격.규칙['통로_최소높이']}칸")
         self.g = g
+        self.무늬 = []      # [2026-10-06] 구조 안쪽 반대색 무늬(칸) — _목재_맞물림 이 채운다
         if self.d.get("목재_맞물림", False):
             self._목재_맞물림()
 
     def _목재_맞물림(self):
-        """바닥 안에 박힌 흰 판자만 엇갈려 물린다. 밟는 윗선과 빈 공간은 그대로 둔다."""
-        source = [row[:] for row in self.g]
+        """[2026-10-06 Claude] 하수도식 흑백 맞물림 — 흰 판 아래 **구조 안쪽**에 반대색 판자 줄을 엇갈려 박는다.
+
+        도형님(10-06): "하수도 쳅터는 흰·검정이 더 안쪽으로 퍼져 있다. 색이 자연스럽게 퍼지는 표현이면서,
+        플레이어가 색을 쏴도 표면 타일에만 맞고 안쪽 타일까지 닿지 않게 하려는 것."
+          · 예전(v03): 흰 판(지형) 자체의 모양을 깎고 구조 칸을 흰 판으로 바꿨다 → 칠할 수 있는 흰 지형이
+            안쪽까지 들어가 있어, 표면에 쏜 물감 원이 안쪽 무늬까지 칠했다. 깊이도 판 두께+1 줄뿐이라 얕았다.
+          · 지금: 격자(self.g)는 **건드리지 않는다**(흰 판 = 설계한 사각형 그대로, 밟는 면·판정 불변).
+            대신 구조 칸 위에 그릴 무늬(self.무늬 = [(x0, y, x1)] 칸 단위 가로 줄)를 만든다.
+            구조는 칠하기 금지(칠하기_허용=false · 안칠해짐)라 물감이 무늬에 절대 닿지 않는다.
+            그림은 목재 셰이더의 inlay(만들기.py → 목재_데크지형.내부_무늬)가 그린다 — 하수도 내부벽돌과 같은 원리.
+          · 규칙: 무늬 칸은 8 이웃이 전부 지형인 '묻힌' 구조 칸만(표면에서 최소 1칸 = 32px 안쪽, 하수도 24px 규칙과 같은 뜻).
+            흰 판 두께 안쪽 줄은 옆으로 1~3칸 번지고, 판 아래로는 4~6줄 내려가며 엇갈려 좁아진다.
+            마지막 줄들은 가운데가 끊겨 '스며 들어가다 흩어지는' 모양이 된다.
+        """
+        self.무늬 = []
+        src = self.g
+
+        def 묻힘(xx, yy):
+            if not (1 <= xx < self.w - 1 and 1 <= yy < self.h - 1) or src[yy][xx] != 1:
+                return False
+            return all(src[yy + dy][xx + dx] != 0 for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+
+        def 줄_넣기(yy, lo, hi, 구멍=None):
+            run = None
+            for xx in range(lo, hi + 1):
+                ok = xx < hi and 묻힘(xx, yy) and xx != 구멍
+                if ok and run is None:
+                    run = xx
+                elif not ok and run is not None:
+                    self.무늬.append((run, yy, xx))
+                    run = None
+
         for item in _계단_펼치기(self.d.get("지형", [])):
             k, x, y, w, h = item[:5]
-            if k != "흰" or h < 2 or y+h+2 >= self.h or x < 2 or x+w+2 >= self.w:
+            if k != "흰" or y + h >= self.h - 1:
                 continue
-            # 공중 흰 발판이나 다른 기믹을 침범하지 않고, 구조 안에 묻힌 색 경계만 바꾼다.
-            if not all(source[y+h][xx] == 1 for xx in range(x,x+w)):
+            # 구조 위에 얹힌(묻힌) 흰 판만. 공중 흰 발판이나 기믹 판은 그대로 둔다.
+            if not all(src[y + h][xx] == 1 for xx in range(x, x + w)):
                 continue
-            for row in range(1,h+2):
-                yy=y+row
-                left = (-1,1,0,2)[row%4]
-                right = (1,-1,2,0)[row%4]
-                if row >= h:
-                    left += row-h+1
-                    right -= row-h+1
-                lo, hi = x+left, x+w+right
-                for xx in range(max(1,x-2),min(self.w-1,x+w+2)):
-                    # 노출된 면의 색은 바꾸지 않아 점프·사망 판정의 기존 경계를 유지한다.
-                    surrounded=all(source[yy+dy][xx+dx] != 0 for dx,dy in ((-1,0),(1,0),(0,-1),(0,1)))
-                    if not surrounded: continue
-                    if source[yy][xx] == 3 and x <= xx < x+w and row < h:
-                        self.g[yy][xx] = 3 if lo <= xx < hi else 1
-                    elif source[yy][xx] == 1 and lo <= xx < hi:
-                        self.g[yy][xx] = 3
-        # 장식용 연장 때문에 제작 규격(흰색 30%)을 넘지 않도록 묻힌 행의 끝만 줄인다.
-        black_and_ghost=sum(v in (2,4) for row in self.g for v in row)
-        limit=int(black_and_ghost*3/7)
-        count=sum(v == 3 for row in self.g for v in row)
-        while count > limit:
-            trimmed=False
-            for item in _계단_펼치기(self.d.get("지형", [])):
-                k,x,y,w,h=item[:5]
-                if k != '흰': continue
-                for yy in range(y+1,min(y+h+2,self.h-1)):
-                    xs=[xx for xx in range(max(1,x-2),min(self.w-1,x+w+2)) if self.g[yy][xx] == 3]
-                    if len(xs) <= 2: continue
-                    for xx in (xs[0],xs[-1]):
-                        if count <= limit: break
-                        if not all(source[yy+dy][xx+dx] != 0 for dx,dy in ((-1,0),(1,0),(0,-1),(0,1))): continue
-                        # 윗행이나 아랫행과 연결되는 중심부는 남기고 끝 한 칸씩만 정리한다.
-                        self.g[yy][xx]=1
-                        count-=1
-                        trimmed=True
-            if not trimmed: break
+            씨 = (x * 7 + y * 13) % 5
+            # ① 판 두께 안쪽 줄: 옆 구조로 번진다(밟는 맨 윗줄 y 는 제외 — 표면 색 경계는 설계 그대로)
+            for r in range(1, h):
+                L = (1, 2, 1, 3, 2)[(r + 씨) % 5]
+                R = (2, 1, 3, 1, 2)[(r + 씨 + 2) % 5]
+                줄_넣기(y + r, x - L, x)
+                줄_넣기(y + r, x + w, x + w + R)
+            # ② 판 아래: 처음엔 판보다 넓게 번졌다가 엇갈리며 좁아진다
+            깊이 = 4 + (w >= 6) + (w >= 9)
+            lo, hi = x - (1 + 씨 % 2), x + w + (1 + (씨 + 1) % 2)
+            왼_흔들 = (0, 2, -1, 2, 1, 2)
+            오른_흔들 = (1, -1, 2, 1, 2, 1)
+            for d in range(깊이):
+                if d:
+                    lo += 왼_흔들[(d + 씨) % 6]
+                    hi -= 오른_흔들[(d + 씨) % 6]
+                if hi - lo < 2:
+                    break
+                # 마지막 두 줄은 가운데 한 칸을 비워 흩어지는 느낌
+                구멍 = (lo + hi) // 2 + (d % 2) if d >= 깊이 - 2 and hi - lo >= 4 else None
+                줄_넣기(y + h + d, lo, hi, 구멍)
 
     def 칸(self, x, y):
         """도안 좌표(바깥 포함). 바깥은 구조, 단 문 터널은 빈칸."""
