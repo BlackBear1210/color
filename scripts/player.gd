@@ -59,6 +59,10 @@ func _점프_재계산() -> void:
 	gravity = 2.0 * 높이 * move_speed * move_speed * k * k / maxf(거리 * 거리, 0.0001)
 	jump_velocity = -sqrt(2.0 * gravity * 상승_배수 * 높이)
 
+## [2026-10-04] 쳅터1 연결구 전환 중 자동 걷기(-1/+1). 0 이 아니면 입력 대신 이 방향으로 걷고
+## 점프·색 전환을 받지 않는다. `scripts/쳅터1/전경전환.gd` 만 쓴다. 기본 0 = 기존과 같다.
+var 자동_걷기: float = 0.0
+
 var _coyote_timer:      float = 0.0
 var _jump_buffer_timer: float = 0.0
 var _fall_timer:        float = 0.0  ## 낙하가 시작된 뒤 경과 시간(낙하 가속용, 착지/상승 시 0으로 리셋)
@@ -151,7 +155,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y *= JUMP_CUT_MULTIPLIER
 
 	# ── 점프 버퍼: 착지 직전 점프 입력을 잠깐 기억 ─────────────────
-	if Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("jump") and 자동_걷기 == 0.0:
 		_jump_buffer_timer = JUMP_BUFFER_TIME
 
 	# ── 코요테 타임: 절벽 끝에서 떨어진 직후에도 점프 가능 ─────────
@@ -177,11 +181,13 @@ func _physics_process(delta: float) -> void:
 	_jump_buffer_timer = max(_jump_buffer_timer - delta, 0.0)
 
 	# ── 색 전환 입력 ─────────────────────────────────────────────────
-	if Input.is_action_just_pressed("toggle_color"):
+	if Input.is_action_just_pressed("toggle_color") and 자동_걷기 == 0.0:
 		_toggle_color()
 
 	# ── 좌우 이동 ────────────────────────────────────────────────────
 	var dir := Input.get_axis("move_left", "move_right")
+	if 자동_걷기 != 0.0:
+		dir = 자동_걷기
 	velocity.x = dir * move_speed
 
 	var 착지_직전속도 := velocity.y

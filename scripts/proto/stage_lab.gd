@@ -105,6 +105,10 @@ var _사망수: int = 0
 var _클리어됨: bool = false
 
 func _ready() -> void:
+	# 공통 HUD의 시간·사망은 타일맵 스테이지에서도 동일한 완료 규칙을 쓴다.
+	var 기록 := preload("res://scripts/ui/실행_기록.gd").new()
+	기록.name = "실행기록"
+	add_child(기록)
 	player = get_node_or_null("Player") as CharacterBody2D
 	if player == null:
 		push_warning("[stage_lab] Player 노드를 찾지 못했습니다 — 조립을 건너뜁니다.")
@@ -252,10 +256,11 @@ func _ready() -> void:
 	#   돌려주므로 점 HUD 가 12칸 줄을 스스로 건너뛰고 회수 묶음만 그린다.
 	if 타일페인트 != null:
 		hud.회수대기_표시 = false          # 매니저 큐가 항상 0 이라 거짓말이 된다
+		hud.머리_표시 = false              # 새 공통 HUD에 사망 수가 있으므로 중복을 막는다
 		var 페인트HUD: CanvasLayer = 페인트HUD_씬.instantiate()
 		페인트HUD.name = "페인트HUD"
 		# StageHUD 가 좌상단 한 줄(스테이지 이름·사망 수)을 이미 쓰고 있다 → 그 아래로 내린다.
-		페인트HUD.여백 = Vector2(30, 52)
+		페인트HUD.여백 = Vector2(34, 26)
 		add_child(페인트HUD)
 		페인트HUD.연결(player, 페인트HUD어댑터_타일.new(타일페인트))
 
@@ -462,6 +467,7 @@ func _목표_도달(body: Node2D) -> void:
 	if body != player or _클리어됨:
 		return
 	_클리어됨 = true
+	get_node("실행기록").완료_저장()
 	# ★[2026-07-25] 잉크 와이프(포탈 느낌) 대신 **어둠 페이드**.
 	# 통로 안으로 걸어 들어가며 어두워졌다가, 다음 스테이지의 입구 통로에서 밝아진다
 	# → "화면이 전환됐다"가 아니라 "터널을 지나왔다"로 읽힌다.
@@ -504,6 +510,7 @@ func 죽기(사유: String) -> void:
 		return
 	_사망중 = true
 	_사망수 += 1
+	get_node("실행기록").사망_추가()
 	if hud:
 		hud.사망수 = _사망수
 		hud.메시지("%s (%d회)" % [사유, _사망수])

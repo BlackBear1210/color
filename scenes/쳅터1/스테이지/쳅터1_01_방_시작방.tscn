@@ -1,0 +1,2965 @@
+[gd_scene format=4 uid="uid://dww6rfe78roy7"]
+
+[ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
+[ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_검정.tscn" id="3_tpl_black"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_흰색.tscn" id="4_tpl_white"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_투명.tscn" id="5_tpl_ghost"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="6_ss2d_point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="7_ss2d_points"]
+[ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="8_player"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="9_checkpoint"]
+[ext_resource type="Script" uid="uid://buirx8ppmb74m" path="res://scripts/쳅터1/연결구.gd" id="11_link"]
+[ext_resource type="Script" uid="uid://chw2s7ivx7trp" path="res://scripts/쳅터1/방배경.gd" id="12_bg"]
+[ext_resource type="Resource" path="res://assets/background/쳅터1/프리셋/방_판자.tres" id="13_preset"]
+[ext_resource type="Texture2D" uid="uid://bk12jrimddq0f" path="res://assets/background/쳅터1/레이어_v01/가구/샹들리에.png" id="14_furn0"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="15_eotcd"]
+[ext_resource type="Texture2D" uid="uid://b0j4eub40td0r" path="res://assets/background/쳅터1/레이어_v01/가구/시계.png" id="15_furn1"]
+[ext_resource type="Texture2D" uid="uid://ca02yknsfvt7y" path="res://assets/background/쳅터1/레이어_v01/가구/액자_팔각.png" id="16_furn2"]
+[ext_resource type="Shader" uid="uid://cdfwb1cf3jysf" path="res://shaders/지형_페인트.gdshader" id="16_ku0qd"]
+[ext_resource type="Texture2D" uid="uid://w7cb2pfjqdt4" path="res://assets/background/쳅터1/레이어_v01/가구/옷장.png" id="17_furn3"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_deck_v3/white/fill.tres" id="17_kwrtr"]
+[ext_resource type="Texture2D" uid="uid://dyc6ptnsmgtfu" path="res://assets/textures/smartshape/wood_deck_v3/grain.png" id="18_a6w0i"]
+[ext_resource type="Texture2D" uid="uid://d1fthme5lvpv1" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="18_furn4"]
+[ext_resource type="Texture2D" uid="uid://glp4gq2ks6c8" path="res://assets/background/쳅터1/레이어_v01/가구/책상.png" id="19_furn5"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_deck_v3/black/fill.tres" id="19_j5gdb"]
+[ext_resource type="Texture2D" uid="uid://dqxfcxxoai55" path="res://assets/textures/smartshape/wood_deck_v3/white/edge.tres" id="20_5kvp2"]
+[ext_resource type="Texture2D" uid="uid://ce1n6wkb4f4gy" path="res://assets/background/쳅터1/레이어_v01/가구/침대.png" id="20_furn6"]
+[ext_resource type="Texture2D" uid="uid://b0et076ri6h5a" path="res://assets/textures/smartshape/wood_deck_v3/black/edge.tres" id="21_71pkt"]
+[ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="22_3etju"]
+[ext_resource type="Script" uid="uid://d0xjijisx1woh" path="res://addons/rmsmartshape/materials/edge_material.gd" id="23_oqx1q"]
+[ext_resource type="Script" uid="uid://d218yx0d1ilsn" path="res://addons/rmsmartshape/normal_range.gd" id="24_ta5m0"]
+[ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="25_ut4lm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1tdni"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_l5v60"]
+_surfaces = [{
+"aabb": AABB(-2944, -1568, 0, 5888, 3136, 1e-05),
+"attribute_data": PackedByteArray("/////8ieED9w3J4/yJ4QP3Dcnj//////sBcQPxpnvz+wFxA/Gme/P/////+YfQ8//r/gP5h9Dz/+v+A//////0C7ET8btwtAQLsRPxu3C0D/////qBcUP8VpGUCoFxQ/xWkZQP////9YAhQ/N/4rQFgCFD83/itA/////6gqDz8bz0xAqCoPPxvPTED/////cFwTP/6nXkBwXBM//qdeQP////+olxI/xplvQKiXEj/GmW9A/////wDtET/iyH1AAO0RP+LIfUD/////SGgSP3HMhkBIaBI/ccyGQP////8Img8/HNONQAiaDz8c041A/////+glFD9xHKFA6CUUP3EcoUD/////jOO8P3EcoUCM47w/cRyhQP////+wl8A//3+iQLCXwD//f6JA//////y/vj9xKKxA/L++P3EorED/////sJfAP1Q1tECwl8A/VDW0QP////9cQrg/VFW3QFxCuD9UVbdA/////1RVtz/jeLJAVFW3P+N4skD/////hPagPzh+tkCE9qA/OH62QP/////opY0/HEu1QOiljT8cS7VA/////wBAbD9UUbVAAEBsP1RRtUD/////OI4+P1QFt0A4jj4/VAW3QP/////oJRQ/VFW3QOglFD9UVbdA/////xgHEj84zrpAGAcSPzjOukD/////eMkSPxy/w0B4yRI/HL/DQP////8A7RE/cbjLQADtET9xuMtA/////9jLDz9UFdZA2MsPP1QV1kD/////yPEQP/8z3UDI8RA//zPdQP////8ArQ4/qmrnQACtDj+qaudA/////+glFD////lA6CUUP///+UD/////vITaP///+UC8hNo////5QP/////gON4/jWP7QOA43j+NY/tA/////xgn2z/ieP1AGCfbP+J4/UD/////nN3dP44lA0Gc3d0/jiUDQf/////gON4/cRwIQeA43j9xHAhB//////YSrkBxHAhB9hKuQHEcCEH/////9hKuQKqqDUH2Eq5AqqoNQf/////ZS8RAqqoNQdlLxECqqg1B/////9lLxEBxHAhB2UvEQHEcCEH/////qioBQXEcCEGqKgFBcRwIQf////8voQFBOM4IQS+hAUE4zghB/////5egAUHj2AlBl6ABQePYCUH/////js8OQY4bC0GOzw5BjhsLQf////+0lw5BOM4IQbSXDkE4zghB/////zgOD0FxHAhBOA4PQXEcCEH/////2r8bQVSpAkHavxtBVKkCQf////84jhtB43gAQTiOG0HjeABB/////70EHEE4jv9AvQQcQTiO/0D/////JjQmQTiO/0AmNCZBOI7/QP////+qqiZB43gAQaqqJkHjeABB/////3JQJkGOgwFBclAmQY6DAUH/////AJwmQY5fBUEAnCZBjl8FQf////+qqiZBcRwIQaqqJkFxHAhB/////+yJRkEAYAZB7IlGQQBgBkH/////xklGQVXVAUHGSUZBVdUBQf////9LYEZBVLX6QEtgRkFUtfpA/////6A5RkE4fvBAoDlGQTh+8ED/////jktGQf9X5kCOS0ZB/1fmQP////+qWkZBHKveQKpaRkEcq95A/////0w8RkEb19RATDxGQRvX1ED/////aINGQTiuy0Bog0ZBOK7LQP/////sMUZBVEnCQOwxRkFUScJA/////4RqRkEc57tAhGpGQRznu0D/////9iZGQVTps0D2JkZBVOmzQP////+XeEZB/3eqQJd4RkH/d6pA/////zhaRkHj6KNAOFpGQePoo0D/////HIdGQTg+m0Ach0ZBOD6bQP////+g/URBVN2OQKD9REFU3Y5A/////1SlQkEcv45AVKVCQRy/jkD/////ONJAQTg6jkA40kBBODqOQP////+gtT5BVM2OQKC1PkFUzY5A/////6rSPEFUlYtAqtI8QVSVi0D/////0DI6QVSVj0DQMjpBVJWPQP/////sSThB/3+OQOxJOEH/f45A/////xIuM0GN245AEi4zQY3bjkD/////43gwQar2j0DjeDBBqvaPQP////+Efi1B4zyQQIR+LUHjPJBA/////9rfKkEcS49A2t8qQRxLj0D/////cQAoQTjSj0BxAChBONKPQP////+9PCZBcfiNQL08JkFx+I1A/////6o6JEFUlYtAqjokQVSVi0D/////CUEiQcYlkEAJQSJBxiWQQP////9CByBBjdeOQEIHIEGN145A/////3vtHUE4+o5Ae+0dQTj6jkD/////2scbQRwTjkDaxxtBHBOOQP////9oAxlBOKKPQGgDGUE4oo9A/////2gbFkHGEZBAaBsWQcYRkED/////CTEUQXEojkAJMRRBcSiOQP////9CaxFBcQiPQEJrEUFxCI9A/////8ZBD0HjnI5AxkEPQeOcjkD/////L0ENQVSVi0AvQQ1BVJWLQP////+huQpBHOuPQKG5CkEc649A/////17uCEFUlYtAXu4IQVSVi0D/////VSkGQVR1jkBVKQZBVHWOQP////+hTQNB/2+QQKFNA0H/b5BA/////9qrAkHGcZBA2qsCQcZxkED/////L6EBQcZRjUAvoQFBxlGNQP////8c0wFBHLeDQBzTAUEct4NA/////y+hAUHiOHdAL6EBQeI4d0D/////tBcCQcZxdEC0FwJBxnF0QP////+qzhtBcIRbQKrOG0FwhFtA/////ziOG0Ebx0pAOI4bQRvHSkD/////vQQcQf7/R0C9BBxB/v9HQP////8AgCJB/v9HQACAIkH+/0dA/////4T2IkEbx0pAhPYiQRvHSkD/////VbEiQcbxTkBVsSJBxvFOQP////8m6CJBODZdQCboIkE4Nl1A/////4T2IkHGcXRAhPYiQcZxdED/////vQRmQanKWkC9BGZBqcpaQP/////soWVBjTtNQOyhZUGNO01A/////y+hZUGN4zxAL6FlQY3jPED/////oNFiQcahN0Cg0WJBxqE3QP////+hAWFB4vA5QKEBYUHi8DlA/////yVcX0HG4TlAJVxfQcbhOUD/////TCxdQamSO0BMLF1BqZI7QP/////aO1tBcCw8QNo7W0FwLDxA/////3FMVkGpKjNAcUxWQakqM0D/////9hJUQRtnPED2ElRBG2c8QP////8cQ1JBN4Y3QBxDUkE3hjdA/////6CZT0GNYzdAoJlPQY1jN0D/////mDBNQYzzO0CYME1BjPM7QP////9Cf0tBjas3QEJ/S0GNqzdA/////0wQSUE3JjtATBBJQTcmO0D/////lzBHQY3jPECXMEdBjeM8QP/////sJUZBjaM2QOwlRkGNozZA/////+N8RkHG8TVA43xGQcbxNUD/////CUFGQVQFIkAJQUZBVAUiQP////9eLkZBVBUQQF4uRkFUFRBA//////ZWRkHiCAJA9lZGQeIIAkD/////CUFGQTau6j8JQUZBNq7qP//////scUZBcDzIP+xxRkFwPMg//////3qJRkGqqq0/eolGQaqqrT//////ODJGQXAsiT84MkZBcCyJP//////sJUZB4DheP+wlRkHgOF4//////6D9REFovE4/oP1EQWi8Tj//////oRVCQVB1VD+hFUJBUHVUP/////8muD9B4NhMPya4P0Hg2Ew//////71YPUFwPE4/vVg9QXA8Tj//////47A6QWj8Vj/jsDpBaPxWP/////8mQDhBGEdWPyZAOEEYR1Y//////8d9NUFonE0/x301QWicTT//////cpQzQVD1Sj9ylDNBUPVKP//////slTBBUFU3P+yVMEFQVTc//////xK6LkFQ1Vk/ErouQVDVWT//////jhMtQfgfUD+OEy1B+B9QP/////+hDStBMC5eP6ENK0EwLl4//////yY4KUEYx0w/JjgpQRjHTD//////VbkmQeAYVD9VuSZB4BhUP/////9xzCRBGAdXP3HMJEEYB1c//////3KAIkHAMVg/coAiQcAxWD//////od0gQcgxTD+h3SBByDFMP/////+haR5BiCNJP6FpHkGII0k//////y99HEEwzlo/L30cQTDOWj//////OI4ZQVBVNz84jhlBUFU3P/////+hoRdBoGpVP6GhF0GgalU//////16uFEHAsU8/Xq4UQcCxTz//////4+wRQcBRWj/j7BFBwFFaP/////9ozw9BqMpYP2jPD0Goylg//////8bpDEEYp0k/xukMQRinST//////VaUKQcARUD9VpQpBwBFQP/////+XfAhBwPFMP5d8CEHA8Uw//////2j/BUEYR1c/aP8FQRhHVz//////e0UEQahKSD97RQRBqEpIP/////+9ZAJBiMNZP71kAkGIw1k//////7S/AEGoKkw/tL8AQagqTD//////caT8QBjnUz9xpPxAGOdTP/////8cj/hAUJVWPxyP+EBQlVY//////6pa9ECQw08/qlr0QJDDTz//////2ePuQDhOXT/Z4+5AOE5dP//////s9ehAUFU3P+z16EBQVTc//////9nD5ED4P1M/2cPkQPg/Uz//////ErrfQBjHUD8Sut9AGMdQP/////8ldNdAyBFPPyV010DIEU8//////0sQ0kAAoFQ/SxDSQACgVD//////EnrMQIjjTD8SesxAiONMP/////9n78dAUNVTP2fvx0BQ1VM//////0vgwkA4Dk0/S+DCQDgOTT//////Jdy8QPh/Tj8l3LxA+H9OP/////9UtbhAUFU3P1S1uEBQVTc//////0ugtEA4LlI/S6C0QDguUj//////LrGuQFBVNz8usa5AUFU3P//////Zk6pAcHxNP9mTqkBwfE0//////2hPp0D4X00/aE+nQPhfTT//////COWjQIjDSD8I5aNAiMNIP/////+gDZ5AUFVVP6ANnkBQVVU//////9mbmkDgGFs/2ZuaQOAYWz//////ErqWQOB4Sj8SupZA4HhKP/////8AuJJAwDFLPwC4kkDAMUs//////zg2jUCIA0w/ODaNQIgDTD//////QjOHQHBcTD9CM4dAcFxMP/////+OO4FA+D9MP447gUD4P0w//////0vod0D4v04/S+h3QPi/Tj//////LpFtQFBVNz8ukW1AUFU3P/////+9lGNA+P9WP72UY0D4/1Y//////y6BWECIY1k/LoFYQIhjWT//////4ohPQFBVNz/iiE9AUFU3P/////+9JERAUNVaP70kREBQ1Vo//////6mKPEA4LlI/qYo8QDguUj//////emk0QAAgUT96aTRAACBRP/////9K6ClAkANYP0roKUCQA1g////////fH0BoHFY//98fQGgcVj//////cqwRQBhnST9yrBFAGGdJP//////iaAZA4PhVP+JoBkDg+FU//////7jk+z+oyks/uOT7P6jKSz//////cNzqPzhOTT9w3Oo/OE5NP//////EsdU/wJFSP8Sx1T/AkVI//////yxhxT/AcU4/LGHFP8BxTj//////gNazP2h8Sj+A1rM/aHxKP/////8kdKQ/AABWPyR0pD8AAFY//////zTulT/IcVo/NO6VP8hxWj//////GEeHP+BYWT8YR4c/4FhZP/////84jmg/GOdPPziOaD8Y508//////6AqED82jvs/oCoQPzaO+z//////HCfAP1SVpEAcJ8A/VJWkQP////9eyg5BVLUOQV7KDkFUtQ5B/////wDwG0EAYAZBAPAbQQBgBkH/////ACQ2QY2PjkAAJDZBjY+OQP////975QFB4/iMQHvlAUHj+IxA/////3u9G0H+f21Ae70bQf5/bUD/////hBbbQDCOTj+EFttAMI5OP//////OnhhAMC5PP86eGEAwLk8//////3AcED/+5z1AcBwQP/7nPUD/////EnIBQaqSDkEScgFBqpIOQf////84jhtBcRwIQTiOG0FxHAhB/////ziOG0HGcXRAOI4bQcZxdED/////JhBZQTiWN0AmEFlBOJY3QP////8QWkg/UFU3PxBaSD9QVTc//////7SXDkHGcRBBtJcOQcZxEEH/////43hkQRqfN0DjeGRBGp83QP////8voQFBxnEQQS+hAUHGcRBB/////7iEET/GfZZAuIQRP8Z9lkD/////7CVGQXEcCEHsJUZBcRwIQf////8voWVBxnF0QC+hZUHGcXRA/////+wlRkHGcZBA7CVGQcZxkED/////43BGQY3zlEDjcEZBjfOUQP////+A9iI/4DheP4D2Ij/gOF4//////4D2Ij9UVWnAgPYiP1RVacD/////VVWFwI3jVUFVVYXAjeNVQf////9VVYXAVFVpwFVVhcBUVWnA/////3sJiUFUVWnAewmJQVRVacD/////6CUUP+A4Xj/oJRQ/4DheP/////+o6hI//P95P6jqEj/8/3k//////xhHDz/iLPBAGEcPP+Is8ED/////CPllQf5/bUAI+WVB/n9tQP////97CYlBjeNVQXsJiUGN41VB"),
+"format": 34359742527,
+"index_count": 741,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsADAANAA4ADwAQABEAEgATABQAFQAWABcAGAAZABoAGwAcAB0AHgAfACAAIQAiACMAIwAkACUAJgAnACgAKAApACoAKwAsAC0ALgAvADAAMAAxADIAMwA0ADUANgA3ADgAOAA5ADoAOwA8AD0APQA+AD8APwBAAEEAQQBCAEMARABFAEYARgBHAEgASABJAEoASwBMAE0ATgBPAFAAUQBSAFMAUwBUAFUAVQBWAFcAWABZAFoAWwBcAF0AXQBeAF8AXwBgAGEAYgBjAGQAZQBmAGcAZwBoAGkAagBrAGwAbQBuAG8AcABxAHIAcgBzAHQAdQB2AHcAeAB5AHoAegB7AHwAfAB9AH4AfgB/AIAAgQCCAIMAhACFAIYAhwCIAIkAigCLAIwAjQCOAI8AjwCQAJEAkQCSAJMAkwCUAJUAlQCWAJcAmACZAJoAmgCbAJwAnACdAJ4AnwCgAKEAoQCiAKMAowCkAKUApQCmAKcAqACpAKoAqgCrAKwArQCuAK8ArwCwALEAsQCyALMAswC0ALUAtQC2ALcAuAC5ALoAuwC8AL0AvQC+AL8AvwDAAMEAwQDCAMMAxADFAMYAxwDIAMkAygDLAMwAzQDOAM8A0ADRANIA0gDTANQA1QADAAUABgAIAAkADAAOANYA1gAPABEAEgAUABUAGAAaABsAHgAgACEAJgAoACoA1wArAC0A2AAuADAAMAAyADMANgA4ADoAOgA7AD0APQA/AEEARABGAEgASABKANkASwBNAE4ATgBQAFEAUQBTAFUAVQBXAFgAWABaAFsAXQBfAGEA2gBiAGQA2wBlAGcAZwBpAGoAcAByAHQAdQB3AHgAegB8AH4AfgCAAIEAgQCDAIQAigCMAI0AjwCRAJMAkwCVAJcAlwCYAJoAmgCcAJ4AnwChAKMApQCnAKgAqgCsANwA3ACtAK8ArwCxALMAtQC3ALgAuAC6ALsAuwC9AL8AwQDDAMQAxADGAMcAxwDJAN0AzADNAM8A0ADSANQA1QAFAN4ABgAJAAsA1gARABIAHgAhACMAJgAqAN8A1wAtAOAA2AAwADMANgA6AD0APQBBAEMASADZAEsASwBOAFEAUQBVAFgAXQBhANoA2gBkAOEA2wBnAGoAcAB0AOIAdQB4AHoAegB+AIEAiQCKAI0AjwCTAJcAmgCeAJ8AowClAKgAqgDcAK8AtQC4ALsAuwC/AMEAxADHAN0AygDMAM8A0ADUAOMAAgDVAN4ADADWABIAJQAmAN8A5ADXAOAA4ADYADMANgA9AEMASABLAFEAUQBYAFsAXQDaAOEA4QDbAGoA5QBwAOIAdQB6AIEAiQCNAI8AjwCXAJoAmgCfAKMAowCoAKoAqgCvALMAtQC7AMEAxADdAMoAygDPANAAAgDeAAYADAASABUAJQDfAOYA5ADgADMAWwBdAOEA4QBqAGwA5QDiAHUAdQCBAIQAhwCJAI8AmgCjAKoAxADKANAADAAVABcA5AAzADUAUQBbAOEA5QB1AIQAxADQAOMA5wAMABcA5AA1AOgASABRAOEA5QCEAIYACwDnABcARABIAOEACwAXABgARADhAGwACwAYABsARABsAOkABgALABsA6gBEAOkABgAbAB0A6wDqAOkAQwDrAOkANgBDAOkA6AA2AOkAjwCaAKoAqgCzALUAtQDBAMQA4wDsAO0A7gDvAO8A7wDtAOwAjwCqALUAtQDEAOMA4wDtAPAA7wDsAPEAjwC1AOMA7gDvAPEAjwDjAPAA7gDxAPIAhwCPAPAA7gDyAAAAhgCHAPAA7gAAAAIA5QCGAPAA7gACAAYAbwDlAPAA7gAGAB0AbQBvAPAA7gAdAPMA9ABtAPAA7gDzAB4A6QD0APAA7gAeACMA6QDwAPUA9QDuACMA6ADpAPUA9QAjACUA5ADoAPUA9QAlAOYA5gDkAPUA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 246,
+"vertex_data": PackedByteArray("7HnMxFzPJsQAAAAAKYzMxFIYG8QAAAAA9qDMxAoXD8QAAAAAhVPMxFzP9sMAAAAA7AHMxMMV48MAAAAAzQTMxHtUyMMAAAAAKazMxDMTmcMAAAAAMxvMxADAfsMAAAAAwzXMxDPzTcMAAAAAzUzMxJoZJcMAAAAAKTzMxLge78IAAAAAH53MxBQunsIAAAAAAADMxAAAAEIAAAAAAACtxAAAAEIAAAAAAACsxAAAIEIAAAAAXH+sxI9Cv0IAAAAAAACsxAAADkMAAAAAAECuxAAAIEMAAAAAAICuxAAABEMAAAAAPYq0xPYoG0MAAAAASMG5xABAFEMAAAAAMxvAxNdjFEMAAAAAZkbGxDMzHkMAAAAAAADMxAAAIEMAAAAASEnMxAAANEMAAAAACi/MxACAZ0MAAAAAzUzMxAq3ikMAAAAAZpbMxFyPqEMAAAAAuG7MxKQQvUMAAAAAH73MxOF62kMAAAAAAADMxAAACEQAAAAAAAClxAAACEQAAAAAAACkxAAACkQAAAAAKdSkxAAADUQAAAAApBikxNezGUQAAAAAAACkxAAAKEQAAAAAAACQwwAAKEQAAAAAAACQwwAAOEQAAAAAAADAwgAAOEQAAAAAAADAwgAAKEQAAAAAAADcQwAAKEQAAAAAAADgQwAAKkQAAAAA4frfQwAALUQAAAAASPEoREihMEQAAAAAAAAoRAAAKkQAAAAAAAAqRAAAKEQAAAAAZtZgRBROGEQAAAAAAABgRAAAEkQAAAAAAABiRAAAEEQAAAAAAACHRAAAEEQAAAAAAACIRAAAEkQAAAAAHz2HRAAAFUQAAAAAUuCHRHEdIEQAAAAAAACIRAAAKEQAAAAAANjMRAAAI0QAAAAAcU3MRIXrFUQAAAAAFH7MRB8FCUQAAAAAjyrMRLie9EMAAAAASFHMRNdj10MAAAAA7HHMRPZIwUMAAAAAUjDMROH6pEMAAAAA7MnMRJqZikMAAAAA7BnMRAoXX0MAAAAAKZTMROxROkMAAAAAPQLMRD1KDEMAAAAAj7LMRM3Mq0IAAAAA9nDMROF6QEIAAAAA7NHMRGZm5r8AAAAAAIDJRDMzksIAAAAAXG/ERFyPk8IAAAAAZn7ARD2KmcIAAAAAuO67RIXrksIAAAAAhdu3RAAAuMIAAAAAUjCyRIXricIAAAAAUhCuRGZmlsIAAAAAXAejRK5HksIAAAAAFC6dRD2KhcIAAAAAXL+WREhhgsIAAAAAuBaRRI9CjcIAAAAAPeKKRBQuh8IAAAAAjxKHRACAnMIAAAAAKbyCRAAAuMIAAAAAAPB8RIVrg8IAAAAAj1JzRMN1ksIAAAAAXD9qRGbmkMIAAAAA9vhgRM1Mm8IAAAAAewRVRApXicIAAAAAZnZIROxRhMIAAAAAADBARApXmsIAAAAAwzU0RI9CkMIAAAAAuN4qRJoZlcIAAAAAUjgiRAAAuMIAAAAA4UoXRFwPhsIAAAAA4YoPRAAAuMIAAAAA15MDREjhlsIAAAAAw3XuQ3sUgMIAAAAAAADpQwAAgMIAAAAAAADgQwAApMIAAAAAXK/hQ+xRCcMAAAAAAADgQwAAOMMAAAAAAADkQwAAQMMAAAAAZhZhRB/lg8MAAAAAAABgRAAAnMMAAAAAAABiRAAAoMMAAAAAAAB+RAAAoMMAAAAAAACARAAAnMMAAAAAH9V+RAAAlsMAAAAA7MF/RHt0gcMAAAAAAACARAAAQMMAAAAAhWsIRaTwhMMAAAAAzQAIRQp3mMMAAAAAAAAIRQAAsMMAAAAA4fYEReyRt8MAAAAAwwEDRbg+tMMAAAAAjzoBRXtUtMMAAAAA17v9RB/lscMAAAAAhYv5RK4HscMAAAAAj+LuRAAAvsMAAAAAexTqRDOzsMMAAAAAjyrmRJq5t8MAAAAAj2rgRIXrt8MAAAAAwzXbRJpZscMAAAAAw43XRNeDt8MAAAAAKUzSREiBssMAAAAAAEDORAAAsMMAAAAAAADMRAAAucMAAAAA17vMRAAAusMAAAAAjzrMRKSw1sMAAAAAPRLMRB+F8MMAAAAA7GnMRABgAsQAAAAAjzrMRNeDC8QAAAAAKaTMRD3qF8QAAAAACtfMROF6IcQAAAAAjxrMRBSeLsQAAAAAAADMRAAAOMQAAAAAAIDJRJrJOsQAAAAA9jjDROzBOcQAAAAAHx2+RKQgO8QAAAAAH/24RKTgOsQAAAAApECzRHFNOcQAAAAAM/utRBRuOcQAAAAAcQWoRHH9OsQAAAAAe+SjRK53O8QAAAAAzWydRAAAP8QAAAAA9miZRD3KOMQAAAAAUtiVRJqJOsQAAAAAmnmRROwBOMQAAAAAhYONRNcjO8QAAAAArh+IRI/SOcQAAAAACveDRIVLOcQAAAAA7AF+RMMVOcQAAAAApPB2RLg+O8QAAAAArldsRIXLO8QAAAAAUghkRHGdOMQAAAAAKVxXRAAAP8QAAAAAKQxPRMOVOcQAAAAAcU1CRHGdOsQAAAAAw2U2RNezOMQAAAAAj0ItRD36OMQAAAAAuL4gRNezO8QAAAAAM/MWRCmMOsQAAAAAXJ8NRCkcO8QAAAAAuN4CRABAOcQAAAAAM9P2Q4/yO8QAAAAAmpnmQ3HNOMQAAAAA12PYQwBAO8QAAAAAPWrDQ4XbOcQAAAAAZsaxQwBgOcQAAAAAKZyfQz2aOsQAAAAASAGIQz0qOMQAAAAArsdcQwAAP8QAAAAAroc4Q5r5OcQAAAAAAAANQ4VrOsQAAAAAPQqLQj26OsQAAAAAmpm3QT26OcQAAAAAXI/KwbgeO8QAAAAAuB6BwrjeOcQAAAAAPYrYwgoXO8QAAAAAAEAgw3vUOsQAAAAAuB5EwwAAP8QAAAAA12Nnw+EqOsQAAAAAe1SNwwAAP8QAAAAA4RqfwzMDO8QAAAAAUjitw1IIO8QAAAAAmvm7w83cO8QAAAAAwzXVw5qZOcQAAAAAChfkwwCQOMQAAAAAKdz0wxSOO8QAAAAAZhYDxM1sO8QAAAAAhfsOxApHO8QAAAAArvcbxAo3O8QAAAAAhdsoxCk8O8QAAAAAj0I0xPbIOsQAAAAAcW0/xAAAP8QAAAAAZjZKxM1MOcQAAAAAzSxWxLjeOMQAAAAAzdxfxAAAP8QAAAAAPSpsxCmcOMQAAAAAAGB0xOEqOsQAAAAArid9xIVbOsQAAAAAAECExBQeOcQAAAAA4aqJxMN1OcQAAAAAFFaRxFy/O8QAAAAAM2uXxCl8OcQAAAAAH/2bxEhRO8QAAAAAZpagxIULO8QAAAAAcU2mxPYYOsQAAAAAH7WqxArXOsQAAAAAmnGvxHGNO8QAAAAA9pizxOF6OcQAAAAAzYS3xBSuOMQAAAAAmnm7xKTgOMQAAAAA4ZrAxNeTOsQAAAAAmonMxKRwBcQAAAAAZh6sxAAAUEIAAAAA4dooRAAAO0QAAAAAZqZhRAAAI0QAAAAAe2ypRDOzlcIAAAAAFE7iQwAAqMIAAAAAKcxgRAAAVMMAAAAACtfJQuzROsQAAAAAw5WNxB+1OsQAAAAAhYvMxPaIrsMAAAAA9mjeQymcOkQAAAAAAABgRAAAKEQAAAAAAABgRAAAQMMAAAAAM9v0RI+it8MAAAAA1/PExAAAP8QAAAAAAAAoRAAAQEQAAAAAAMAGRcOVt8MAAAAAAADgQwAAQEQAAAAA4VrMxClc6cEAAAAAAADMRAAAKEQAAAAAAAAIRQAAQMMAAAAAAADMRAAAgMIAAAAA7KHMRPYoGMIAAAAAAADKxAAAOMQAAAAAAADKxAAAxMQAAAAAAAA4xQAAxEQAAAAAAAA4xQAAxMQAAAAAAAA4RQAAxMQAAAAAAADMxAAAOMQAAAAAjyrMxAAAM8QAAAAAUqjMxHu080MAAAAA4V4IRQAAVMMAAAAAAAA4RQAAxEQAAAAA//////7//7//////+//9v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////3//u///////7//7//////////v/////////+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////f/+v//////+//6///////3/AMD//////v//v//////+//+///////7//7//////////v/////////+///////7//7///////f/+v//////+//+//////////7//////////v/////////+//////////7///////v//v//////+//+///////7//7///////f8AwP/////+//+///////7//7///////f/+v//////+//+///////7//7//////////v//////+//+//////////7///////v/+v//////+//+///////7//7///////v//v//////7//2///////7//7///////v//v//////q/wnA//////7//7//////+//9v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v/////////+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+//////////7///////v//v//////+//+///////7//7///////v//v/////////+//////////7//////////v//////+//+///////7//7///////v//v/////////+///////7//7//////////v//////+//+///////7//7//////////v/////////+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v/////////+//////////7///////v//v//////+//+//////////7///////v//v/////////+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v//////+//+//////////7///////v//v//////+//+///////7//7//////////v//////+//+///////7//7///////v//v//////+//+//////////7///////v//v//////9//6///////7//7///////v/+v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v//////+//+///////7//7///////v//v//////+//+//////////7///////v//v/////////+//////////7///////v//v/////////+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v//////+//+///////7//7///////v//v//////+//+//////////7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v//////+//+//////////7///////v//v/////////+///////7//7//////////v//////+//+//////////7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v//////+//+//////////7///////v//v//////+//+///////7//7//////////v//////+//+///////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////3//7///////v//v//////+//+///////7//7///////v//v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_b22kv"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_l5v60")
+material = SubResource("ShaderMaterial_1tdni")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l4j68"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ho1vj"]
+_surfaces = [{
+"aabb": AABB(-2944, -1568, 0, 1328, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8mtJlAAACAPya0mUAAAIA//////ya0mUAAAAAAJrSZQAAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAA4xQAAxMQAAAAAAAA4xWZmwMQAAAAAAADKxGZmwMQAAAAAAADKxAAAxMQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_vjchi"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_ho1vj")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hnxkv"]
+_surfaces = [{
+"aabb": AABB(-1632, 32, 0, 248, 28.800003, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8voWU/AACAPy+hZT8AAIA//////y+hZT8AAAAAL6FlPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADMxAAAAEIAAAAAAADMxDQzc0IAAAAAAACtxDQzc0IAAAAAAACtxAAAAEIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_tufff"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_hnxkv")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6m1i1"]
+_surfaces = [{
+"aabb": AABB(-1632, 544, 0, 312, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP//////HcZA/AACAP8dxkD8AAIA//////8dxkD8AAAAAx3GQPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADMxAAACEQAAAAAAADMxDQzD0QAAAAAAAClxDQzD0QAAAAAAAClxAAACEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_ly4yk"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_6m1i1")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hsgjw"]
+_surfaces = [{
+"aabb": AABB(-1312, 672, 0, 1024, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////97CW1AAACAP3sJbUAAAIA//////3sJbUAAAAAAewltQAAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACkxAAAKEQAAAAAAACkxDQzL0QAAAAAAACQwzQzL0QAAAAAAACQwwAAKEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_wkv7o"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_hsgjw")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_7xw2v"]
+_surfaces = [{
+"aabb": AABB(-288, 736, 0, 192, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8cxzE/AACAPxzHMT8AAIA//////xzHMT8AAAAAHMcxPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACQwwAAOEQAAAAAAACQwzQzP0QAAAAAAADAwjQzP0QAAAAAAADAwgAAOEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_b6ty5"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_7xw2v")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_7kq7d"]
+_surfaces = [{
+"aabb": AABB(-96, 672, 0, 536, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP//////tJfg/AACAP+0l+D8AAIA//////+0l+D8AAAAA7SX4PwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADAwgAAKEQAAAAAAADAwjQzL0QAAAAAAADcQzQzL0QAAAAAAADcQwAAKEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_v3owh"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_7kq7d")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_121xj"]
+_surfaces = [{
+"aabb": AABB(448, 768, 0, 224, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9MaE8/AACAP0xoTz8AAIA//////0xoTz8AAAAATGhPPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADgQwAAQEQAAAAAAADgQzQzR0QAAAAAAAAoRDQzR0QAAAAAAAAoRAAAQEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_wqbb7"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_121xj")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_atkyq"]
+_surfaces = [{
+"aabb": AABB(680, 672, 0, 216, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8AAEg/AACAPwAASD8AAIA//////wAASD8AAAAAAABIPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAqRAAAKEQAAAAAAAAqRDQzL0QAAAAAAABgRDQzL0QAAAAAAABgRAAAKEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_4r6f5"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_atkyq")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_wf5ac"]
+_surfaces = [{
+"aabb": AABB(904, 576, 0, 176, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+F9iI/AACAP4X2Ij8AAIA//////4X2Ij8AAAAAhfYiPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AABiRAAAEEQAAAAAAABiRDQzF0QAAAAAAACHRDQzF0QAAAAAAACHRAAAEEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_jpw52"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_wf5ac")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_rynuy"]
+_surfaces = [{
+"aabb": AABB(1088, 672, 0, 544, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8T2vs/AACAPxPa+z8AAIA//////xPa+z8AAAAAE9r7PwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACIRAAAKEQAAAAAAACIRDQzL0QAAAAAAADMRDQzL0QAAAAAAADMRAAAKEQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_67f5u"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_rynuy")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_4ue04"]
+_surfaces = [{
+"aabb": AABB(456, -192, 0, 440, 28.799988, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8mtMs/AACAPya0yz8AAIA//////ya0yz8AAAAAJrTLPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADkQwAAQMMAAAAAAADkQzQzI8MAAAAAAABgRDQzI8MAAAAAAABgRAAAQMMAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_cww4e"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_4ue04")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_4uxd5"]
+_surfaces = [{
+"aabb": AABB(904, -320, 0, 112, 28.799988, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9MaM8+AACAP0xozz4AAIA//////0xozz4AAAAATGjPPgAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AABiRAAAoMMAAAAAAABiRJqZkcMAAAAAAAB+RJqZkcMAAAAAAAB+RAAAoMMAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_jpfyj"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_4uxd5")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_u1guy"]
+_surfaces = [{
+"aabb": AABB(1024, -192, 0, 1152, 28.799988, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9VVYVAAACAP1VVhUAAAIA//////1VVhUAAAAAAVVWFQAAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACARAAAQMMAAAAAAACARDQzI8MAAAAAAAAIRTQzI8MAAAAAAAAIRQAAQMMAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_habmq"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_u1guy")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_eotcd"]
+_surfaces = [{
+"aabb": AABB(-1616, -1568, 0, 4560, 28.800049, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP//////H8YNBAACAP8fxg0EAAIA//////8fxg0EAAAAAx/GDQQAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADKxAAAxMQAAAAAAADKxGZmwMQAAAAAAAA4RWZmwMQAAAAAAAA4RQAAxMQAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_ku0qd"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_eotcd")
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="Resource" id="Resource_x1jud"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_l4j68")
+
+[sub_resource type="Resource" id="Resource_phs58"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_vufqq"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_x1jud")
+normal_range = SubResource("Resource_phs58")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_e5uc1"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_vufqq")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_1tdni")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ah3pq"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_50xrt"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////3KcFEHiON4/cpwUQeI43j//////2sseQeI43j/ayx5B4jjeP/////9fQh9BG8fjP19CH0Ebx+M//////+01H0FxHOw/7TUfQXEc7D//////X0IfQaoq/j9fQh9Bqir+P/////+0Nx5BVVUFQLQ3HkFVVQVA/////0wkHEHiOPc/TCQcQeI49z//////TNQZQeMAA0BM1BlB4wADQP/////tZRdBjhsDQO1lF0GOGwNA/////5gwFUFVVQVAmDAVQVVVBUD/////7SUUQaoq/j/tJRRBqir+P/////8TGh5Bx2EEQBMaHkHHYQRA/////75AFEEbx/w/vkAUQRvH/D//////7SUUQRvH4z/tJRRBG8fjPw=="),
+"format": 34359742527,
+"index_count": 39,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACAAJAAoAAAACAAMAAwAFAAsABgAIAAoAAwALAAYABgAKAAwAAAADAAYAAAAGAAwADAANAA0ADQAAAAwA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 14,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwQgAAAMIAAAAAAADAQgAAwMEAAAAA7FG+QgAAQMEAAAAAAADAQgAAYEEAAAAAAACcQgAAAEIAAAAAH4UoQgAAgEAAAAAASOEKQOxRykEAAAAAKVwfwlK4zEEAAAAAAACcwgAAAEIAAAAAAADAwgAAYEEAAAAAAACYQnsU6kEAAAAASGG8wgAAQEEAAAAAAADAwgAAwMEAAAAA//////7//7//////////v/////////+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_dajkj"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_50xrt")
+material = SubResource("ShaderMaterial_ah3pq")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_28iye"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ykk33"]
+_surfaces = [{
+"aabb": AABB(-88, -32, 0, 176, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+F9iI/AACAP4X2Ij8AAIA//////4X2Ij8AAAAAhfYiPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwwtDMTMAAAAAAAACwQtDMTMAAAAAAAACwQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_6f53p"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_ykk33")
+material = SubResource("ShaderMaterial_28iye")
+
+[sub_resource type="Resource" id="Resource_skc2k"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_28iye")
+
+[sub_resource type="Resource" id="Resource_sin4x"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_vcixr"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_skc2k")
+normal_range = SubResource("Resource_sin4x")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_uva7j"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_vcixr")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_ah3pq")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0rjj8"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_umqsk"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////1bVKkE4jhtAVtUqQTiOG0D/////vgQ1QTiOG0C+BDVBOI4bQP////9DezVBVVUeQEN7NUFVVR5A/////2kbNUH/fyJAaRs1Qf9/IkD/////Q3s1QRyHK0BDezVBHIcrQP////+YcDRBHMcxQJhwNEEcxzFA//////dSNEH/7y1A91I0Qf/vLUD/////0coxQY4TMEDRyjFBjhMwQP////9W+S9BHG8sQFb5L0EcbyxA/////zAVLUE4DihAMBUtQTgOKED/////fGkrQRzHMUB8aStBHMcxQP/////RXipBHIcrQNFeKkEchytA/////9FyKkFV1SpA0XIqQVXVKkD/////0V4qQVVVHkDRXipBVVUeQA=="),
+"format": 34359742527,
+"index_count": 39,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsAAAACAAMAAwAFAAYABgAIAAkACQALAAwAAAADAAYAAAAGAAkAAAAJAAwADAANAA0ADQAAAAwA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 14,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwQgAAAMIAAAAAAADAQgAAwMEAAAAAXA+zQgAAQMEAAAAAAADAQgAAYEEAAAAAAACcQgAAAEIAAAAAAACYQh+Fp0EAAAAAAAABQs3M2EEAAAAA4XpUP0jhhEEAAAAAH4VEwgAAgEAAAAAAAACcwgAAAEIAAAAAAADAwgAAYEEAAAAAzUy9wgAAQEEAAAAAAADAwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_nf6sy"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_umqsk")
+material = SubResource("ShaderMaterial_0rjj8")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l36yh"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_i88ci"]
+_surfaces = [{
+"aabb": AABB(-88, -32, 0, 176, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+F9iI/AACAP4X2Ij8AAIA//////4X2Ij8AAAAAhfYiPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwwtDMTMAAAAAAAACwQtDMTMAAAAAAAACwQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_b3tey"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_i88ci")
+material = SubResource("ShaderMaterial_l36yh")
+
+[sub_resource type="Resource" id="Resource_pxccq"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_l36yh")
+
+[sub_resource type="Resource" id="Resource_x2afm"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_sko56"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_pxccq")
+normal_range = SubResource("Resource_x2afm")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_55rl7"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_sko56")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_0rjj8")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2hah0"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_k6y54"]
+_surfaces = [{
+"aabb": AABB(-64, -32, 0, 128, 64, 1e-05),
+"attribute_data": PackedByteArray("/////15C6kDjOF5AXkLqQOM4XkD/////4jj3QOM4XkDiOPdA4zheQP/////sJfhAAABhQOwl+EAAAGFA///////f90CqKmVA/9/3QKoqZUD/////7CX4QMcxbkDsJfhAxzFuQP////+WEPZAx3F0QJYQ9kDHcXRA/////1TV9UDjCHRAVNX1QOMIdED/////xnnxQOO4akDGefFA47hqQP/////P1utAOXZxQM/W60A5dnFA/////6pq60DHcXRAqmrrQMdxdED/////VFXpQMcxbkBUVelAxzFuQP////+N4+lAAIBtQI3j6UAAgG1A/////1RV6UAAAGFAVFXpQAAAYUA="),
+"format": 34359742527,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABQAGAAcACAAJAAoAAAACAAMAAwAFAAcABwAIAAoAAAADAAcABwAKAAsAAAAHAAsACwAMAAwADAAAAAsA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 13,
+"vertex_data": PackedByteArray("AABgwgAAAMIAAAAAAABgQgAAAMIAAAAAAACAQgAAwMEAAAAAXI92QgAAQMEAAAAAAACAQgAAYEEAAAAAAAA4QgAAAEIAAAAAAAAwQlyP9kEAAAAAMzPLQAAAgEAAAAAAZmYpwq5Hu0EAAAAAAAA4wgAAAEIAAAAAAACAwgAAYEEAAAAAzcxswgAAQEEAAAAAAACAwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////3//r//////////v//////+//+///////7//7//////////v//////+//+///////7//78=")
+}]
+
+[sub_resource type="Resource" id="Resource_hsxnh"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_k6y54")
+material = SubResource("ShaderMaterial_2hah0")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hatvo"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_8ln5v"]
+_surfaces = [{
+"aabb": AABB(-56, -32, 0, 112, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////9MaM8+AACAP0xozz4AAIA//////0xozz4AAAAATGjPPgAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AABgwgAAAMIAAAAAAABgwtDMTMAAAAAAAABgQtDMTMAAAAAAAABgQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_l7pbr"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_8ln5v")
+material = SubResource("ShaderMaterial_hatvo")
+
+[sub_resource type="Resource" id="Resource_gfu7k"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_hatvo")
+
+[sub_resource type="Resource" id="Resource_6qqey"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_ay1tc"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_gfu7k")
+normal_range = SubResource("Resource_6qqey")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_yfhqc"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_ay1tc")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_2hah0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ht58l"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("19_j5gdb")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_j1u2k"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////15CUUBUVWlAXkJRQFRVaUD/////AAB6QFRVaUAAAHpAVFVpQP////8S2ntAcRxsQBLae0BxHGxA/////0LbekAbR3BAQtt6QBtHcED/////Etp7QDhOeUAS2ntAOE55QP////9or3dAOI5/QGivd0A4jn9A/////+0lcEBxlHtA7SVwQHGUe0D/////HPdlQFR1f0Ac92VAVHV/QP////8T2lxAqtp8QBPaXECq2nxA//////aSU0A4jn9A9pJTQDiOf0D/////TGhPQDhOeUBMaE9AOE55QP/////jOHdAcQx8QOM4d0BxDHxA/////9B+T0BxnHhA0H5PQHGceED/////TGhPQHEcbEBMaE9AcRxsQA=="),
+"format": 34359742527,
+"index_count": 39,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACAAJAAoAAAACAAMAAwAFAAsABgAIAAoAAAADAAsACwAGAAoACwAKAAwAAAALAAwADAANAA0ADQAAAAwA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 14,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwQgAAAMIAAAAAAADAQgAAwMEAAAAAZma3QgAAQMEAAAAAAADAQgAAYEEAAAAAAACcQgAAAEIAAAAAj8I1QmZmpEEAAAAAmpm5P4/C/UEAAAAAFK4Xwo/CwUEAAAAAAACcwgAAAEIAAAAAAADAwgAAYEEAAAAAAACYQjMzr0EAAAAAcT2/wgAAQEEAAAAAAADAwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v/////////+///////7//7///////v//v//////+//+///////7//7///////v//vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_f6n4o"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("17_kwrtr")
+mesh = SubResource("ArrayMesh_j1u2k")
+material = SubResource("ShaderMaterial_ht58l")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2we5q"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("21_71pkt")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ah1xu"]
+_surfaces = [{
+"aabb": AABB(-88, -32, 0, 176, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+F9iI/AACAP4X2Ij8AAIA//////4X2Ij8AAAAAhfYiPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwwtDMTMAAAAAAAACwQtDMTMAAAAAAAACwQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_dtr2w"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("20_5kvp2")
+mesh = SubResource("ArrayMesh_ah1xu")
+material = SubResource("ShaderMaterial_2we5q")
+
+[sub_resource type="Resource" id="Resource_fx1we"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("20_5kvp2")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_2we5q")
+
+[sub_resource type="Resource" id="Resource_5brt5"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_vbny0"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_fx1we")
+normal_range = SubResource("Resource_5brt5")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_585np"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_vbny0")])
+fill_textures = Array[Texture2D]([ExtResource("17_kwrtr")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_ht58l")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_27igw"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_exa1u"]
+_surfaces = [{
+"aabb": AABB(-384, -64, 0, 768, 128, 1e-05),
+"attribute_data": PackedByteArray("/////15ChkDGcXRAXkKGQMZxdED/////2kvdQMZxdEDaS91AxnF0QP/////jON5A4zh3QOM43kDjOHdA/////1XF3UDjsIVAVcXdQOOwhUD/////4zjeQMdRjUDjON5Ax1GNQP////+OI9xAx3GQQI4j3EDHcZBA/////0vo20A4ao9AS+jbQDhqj0D/////9lrXQBzfjkD2WtdAHN+OQP/////GAdRAAKyNQMYB1EAArI1A/////3thz0BVlYtAe2HPQFWVi0D/////4+DKQHF4j0Dj4MpAcXiPQP////97ucVAVXmOQHu5xUBVeY5A/////0Lrv0A5ro5AQuu/QDmujkD/////hKa6QFWRjkCEprpAVZGOQP////8ACLVAAPCPQAAItUAA8I9A/////7SPr0CO245AtI+vQI7bjkD/////JdSrQHGcj0Al1KtAcZyPQP////9VZaZAHK+PQFVlpkAcr49A/////9DOmUBVlYtA0M6ZQFWVi0D/////AGCUQI4DkEAAYJRAjgOQQP////9x7I9AqpaOQHHsj0Cqlo5A/////xMCikBxbJBAEwKKQHFskED/////qmqHQMdxkECqaodAx3GQQP////9VVYVAx1GNQFVVhUDHUY1A/////0IThkDj+IxAQhOGQOP4jED/////l9jdQI5je0CX2N1AjmN7QP////84/qFAVZWLQDj+oUBVlYtA/////4SGhUA5EoZAhIaFQDkShkD/////0B6eQFWVi0DQHp5AVZWLQP////9VVYVA4zh3QFVVhUDjOHdA"),
+"format": 34359742527,
+"index_count": 87,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsACwAMAA0ADQAOAA8ADwAQABEAEgATABQAFAAVABYAFgAXABgAAAACABkAGQADAAUABgAIAAkACQALAA0ADwARABoAEgAUABYAFgAYABsAGQAFAAYACQANAA8AEgAWABsAGQAGAAkACQAPABoAHAASABsAAAAZAAkAGgAcABsAAAAJABoAAAAaABsAGwAdAB0AHQAAABsA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 30,
+"vertex_data": PackedByteArray("AAC8wwAAgMIAAAAAAAC8QwAAgMIAAAAAAADAQwAAYMIAAAAAzQy+QwrXA0AAAAAAAADAQwAAOEIAAAAAAAC3QwAAgEIAAAAAAAC2Q65HaEIAAAAAw1WiQ4/CW0IAAAAAuN6TQ7geQEIAAAAAH8V/QwAAEEIAAAAAuN5YQ1yPaUIAAAAAClcsQ5qZUkIAAAAAKVz0QilcV0IAAAAA7FGZQo/CVEIAAAAASOHgQexRdEIAAAAAMzOZwaRwW0IAAAAAmplNws3MbEIAAAAAFK7EwuF6bkIAAAAAmhlPwwAAEEIAAAAAPQp+w3sUdkIAAAAAAECSw3E9VUIAAAAAFM6rwx+Ff0IAAAAAAAC3wwAAgEIAAAAAAADAwwAAOEIAAAAAhcu8wwAAMEIAAAAAAGC+QwAAMMIAAAAASGEIwwAAEEIAAAAAhSu/wwAAiEAAAAAACtcpwwAAEEIAAAAAAADAwwAAYMIAAAAA//////7//7//////////v/////////+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v/////////+//////////7///////v//v//////+//+//////////7///////v//v//////+//+///////7//7//////////v//////+//+///////7//7///////v//v/////////+///////7//7//////////v//////+//+/")
+}]
+
+[sub_resource type="Resource" id="Resource_toq17"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_exa1u")
+material = SubResource("ShaderMaterial_27igw")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_msh2y"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_owh35"]
+_surfaces = [{
+"aabb": AABB(-376, -64, 0, 752, 28.800003, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP//////3Ei5AAACAP/cSLkAAAIA///////cSLkAAAAAA9xIuQAAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAC8wwAAgMIAAAAAAAC8w8zMDMIAAAAAAAC8Q8zMDMIAAAAAAAC8QwAAgMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_ir1au"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_owh35")
+material = SubResource("ShaderMaterial_msh2y")
+
+[sub_resource type="Resource" id="Resource_hr2eq"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_msh2y")
+
+[sub_resource type="Resource" id="Resource_j3h4c"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_kwo55"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_hr2eq")
+normal_range = SubResource("Resource_j3h4c")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_fo5lm"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_kwo55")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_27igw")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tig4n"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_udx58"]
+_surfaces = [{
+"aabb": AABB(-112, -32, 0, 224, 64, 1e-05),
+"attribute_data": PackedByteArray("/////7SXDkCO44pAtJcOQI7jikD/////oL0+QI7jikCgvT5AjuOKQP////+0l0BAHEeMQLSXQEAcR4xA/////710QEByXI5AvXRAQHJcjkD/////tJdAQADgkkC0l0BAAOCSQP////8JbTxAAACWQAltPEAAAJZA/////wkNMECOI5FACQ0wQI4jkUD/////Cf0nQFV5lUAJ/SdAVXmVQP////9LKCFAAJCTQEsoIUAAkJNA/////9COFUAcN5RA0I4VQBw3lED/////S+gQQAAAlkBL6BBAAACWQP////+gvQxAAOCSQKC9DEAA4JJA/////4T2O0DHiZRAhPY7QMeJlED/////e4kNQByHkkB7iQ1AHIeSQP////+gvQxAHEeMQKC9DEAcR4xA"),
+"format": 34359742527,
+"index_count": 42,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsAAAACAAMAAwAFAAwABgAIAAkACQALAA0AAwAMAAYABgAJAA0AAAADAAYAAAAGAA0ADQAOAA4ADgAAAA0A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 15,
+"vertex_data": PackedByteArray("AADQwgAAAMIAAAAAAADQQgAAAMIAAAAAAADgQgAAwMEAAAAA7NHeQgAAQMEAAAAAAADgQgAAYEEAAAAAAAC8QgAAAEIAAAAA9igiQgAAgEAAAAAAUri2QI/C50EAAAAAZma+wRSuj0EAAAAA7NGTwo/CrUEAAAAAAAC8wgAAAEIAAAAAAADgwgAAYEEAAAAAAAC4QtejvEEAAAAAuB7ZwgAAQEEAAAAAAADgwgAAwMEAAAAA//////7//7//////////v//////+//+//////////7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+/")
+}]
+
+[sub_resource type="Resource" id="Resource_0q04m"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_udx58")
+material = SubResource("ShaderMaterial_tig4n")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wcdxs"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5qaek"]
+_surfaces = [{
+"aabb": AABB(-104, -32, 0, 208, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+0l0A/AACAP7SXQD8AAIA//////7SXQD8AAAAAtJdAPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADQwgAAAMIAAAAAAADQwtDMTMAAAAAAAADQQtDMTMAAAAAAAADQQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_r7cbb"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_5qaek")
+material = SubResource("ShaderMaterial_wcdxs")
+
+[sub_resource type="Resource" id="Resource_rjilx"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_wcdxs")
+
+[sub_resource type="Resource" id="Resource_afo21"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_8eg2i"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_rjilx")
+normal_range = SubResource("Resource_afo21")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_ypi3v"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_8eg2i")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_tig4n")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yjctd"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_r5sm7"]
+_surfaces = [{
+"aabb": AABB(-112, -32, 0, 224, 64, 1e-05),
+"attribute_data": PackedByteArray("/////zmO/z9VVbdAOY7/P1VVt0D/////Cu0vQFVVt0AK7S9AVVW3QP////8cxzFA47i4QBzHMUDjuLhA/////9EOMUA5zrpA0Q4xQDnOukD/////HMcxQMdRv0AcxzFAx1G/QP////9ynC1Ax3HCQHKcLUDHccJA/////zkuIUByqMBAOS4hQHKowED/////X9IWQOMkwkBf0hZA4yTCQP/////auw9AjmPCQNq7D0COY8JA/////1/CBUA5fsFAX8IFQDl+wUD/////tBcCQMdxwkC0FwJAx3HCQP////8T2vs/x1G/QBPa+z/HUb9A/////+0lLUBV+b9A7SUtQFX5v0D/////Qtv+P+P4vkBC2/4/4/i+QP////8T2vs/47i4QBPa+z/juLhA"),
+"format": 34359742527,
+"index_count": 42,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsAAAACAAMAAwAFAAwABgAIAAkACQALAA0AAAADAAwADAAGAAkAAAAMAAkAAAAJAA0ADQAOAA4ADgAAAA0A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 15,
+"vertex_data": PackedByteArray("AADQwgAAAMIAAAAAAADQQgAAAMIAAAAAAADgQgAAwMEAAAAArsfZQgAAQMEAAAAAAADgQgAAYEEAAAAAAAC8QgAAAEIAAAAAMzMhQhSurUEAAAAAZmaOwPYo8kEAAAAArkcMwqRw/UEAAAAA7FGcwvYo1EEAAAAAAAC8wgAAAEIAAAAAAADgwgAAYEEAAAAAAAC4QvYojkEAAAAAHwXTwgAAQEEAAAAAAADgwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+/")
+}]
+
+[sub_resource type="Resource" id="Resource_75kec"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_r5sm7")
+material = SubResource("ShaderMaterial_yjctd")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s5bev"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_j4gnb"]
+_surfaces = [{
+"aabb": AABB(-104, -32, 0, 208, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+0l0A/AACAP7SXQD8AAIA//////7SXQD8AAAAAtJdAPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADQwgAAAMIAAAAAAADQwtDMTMAAAAAAAADQQtDMTMAAAAAAAADQQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_holsu"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_j4gnb")
+material = SubResource("ShaderMaterial_s5bev")
+
+[sub_resource type="Resource" id="Resource_vj4ce"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_s5bev")
+
+[sub_resource type="Resource" id="Resource_yuyaw"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_s7man"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_vj4ce")
+normal_range = SubResource("Resource_yuyaw")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_s1cro"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_s7man")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_yjctd")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mkhlw"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("19_j5gdb")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_i6062"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////6qqWEA4js1AqqpYQDiOzUD/////JrSAQDiOzUAmtIBAOI7NQP////8voYFAxvHOQC+hgUDG8c5A/////1/6gEAcB9FAX/qAQBwH0UD/////L6GBQKqK1UAvoYFAqorVQP////+0F39AqqrYQLQXf0CqqthA/////wlNbED/b9ZACU1sQP9v1kD/////OW5gQDh22EA5bmBAOHbYQP////9C+1pAqqrYQEL7WkCqqthA/////5jQVkCqitVAmNBWQKqK1UD/////AGBYQMYx1UAAYFhAxjHVQP////8voX5A/5fYQC+hfkD/l9hA/////y9Rc0CN/9ZAL1FzQI3/1kD/////mNBWQMbxzkCY0FZAxvHOQA=="),
+"format": 34359742527,
+"index_count": 39,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACAAJAAoAAAACAAMAAwAFAAsABgAIAAoAAAADAAsAAAALAAwAAAAMAAYAAAAGAAoACgANAA0ADQAAAAoA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 14,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwQgAAAMIAAAAAAADAQgAAwMEAAAAAcb20QgAAQMEAAAAAAADAQgAAYEEAAAAAAACcQgAAAEIAAAAAH4VLwK5HmUEAAAAACtdZwlyP9kEAAAAAAACcwgAAAEIAAAAAAADAwgAAYEEAAAAAH4WywgAAQEEAAAAAAACYQtej/EEAAAAAPQrZQbges0EAAAAAAADAwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_qecpp"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("17_kwrtr")
+mesh = SubResource("ArrayMesh_i6062")
+material = SubResource("ShaderMaterial_mkhlw")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dj3iu"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("21_71pkt")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_t8jq5"]
+_surfaces = [{
+"aabb": AABB(-88, -32, 0, 176, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+F9iI/AACAP4X2Ij8AAIA//////4X2Ij8AAAAAhfYiPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwwtDMTMAAAAAAAACwQtDMTMAAAAAAAACwQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_5s07v"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("20_5kvp2")
+mesh = SubResource("ArrayMesh_t8jq5")
+material = SubResource("ShaderMaterial_dj3iu")
+
+[sub_resource type="Resource" id="Resource_0jm7n"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("20_5kvp2")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_dj3iu")
+
+[sub_resource type="Resource" id="Resource_oawbl"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_tuhcw"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_0jm7n")
+normal_range = SubResource("Resource_oawbl")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_1fbg8"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_tuhcw")])
+fill_textures = Array[Texture2D]([ExtResource("17_kwrtr")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_mkhlw")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j66fr"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_3efce"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////6I9AEHjON5Aoj0AQeM43kD/////Cm0KQeM43kAKbQpB4zjeQP////+P4wpBcZzfQI/jCkFxnN9A/////7XbCkHHseFAtdsKQcex4UD/////j+MKQVU15kCP4wpBVTXmQP/////k2AlBVVXpQOTYCUFVVelA/////+5pB0GqsuZA7mkHQaqy5kD/////j4MFQVUV6UCPgwVBVRXpQP/////kQANBcTDpQORAA0FxMOlA/////8jRAEFVVelAyNEAQVVV6UD/////Oo7/QFU15kA6jv9AVTXmQP////9DuwlBOP7nQEO7CUE4/udA/////6zC/0Bx3OVArML/QHHc5UD/////Oo7/QHGc30A6jv9AcZzfQA=="),
+"format": 34359742527,
+"index_count": 39,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACAAJAAoAAAACAAMAAwAFAAsABgAIAAoAAAADAAsABgAKAAwAAAALAAYAAAAGAAwADAANAA0ADQAAAAwA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 14,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwQgAAAMIAAAAAAADAQgAAwMEAAAAApPC+QgAAQMEAAAAAAADAQgAAYEEAAAAAAACcQgAAAEIAAAAAzcwPQlyPhkEAAAAAFK5HQOF69EEAAAAAj8IPwilc+UEAAAAAAACcwgAAAEIAAAAAAADAwgAAYEEAAAAAAACYQnE9wkEAAAAAw3W8wgAAQEEAAAAAAADAwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_rd6le"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_3efce")
+material = SubResource("ShaderMaterial_j66fr")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ma8lh"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_74shx"]
+_surfaces = [{
+"aabb": AABB(-88, -32, 0, 176, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+F9iI/AACAP4X2Ij8AAIA//////4X2Ij8AAAAAhfYiPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwwtDMTMAAAAAAAACwQtDMTMAAAAAAAACwQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_836bb"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_74shx")
+material = SubResource("ShaderMaterial_ma8lh")
+
+[sub_resource type="Resource" id="Resource_yb7xr"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_ma8lh")
+
+[sub_resource type="Resource" id="Resource_2u7gl"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_0e13x"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_yb7xr")
+normal_range = SubResource("Resource_2u7gl")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_jns4y"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_0e13x")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_j66fr")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p5ob6"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sn1r5"]
+_surfaces = [{
+"aabb": AABB(-112, -32, 0, 224, 64, 1e-05),
+"attribute_data": PackedByteArray("/////7SXDkAcx+NAtJcOQBzH40D/////oL0+QBzH40CgvT5AHMfjQP////+0l0BAqirlQLSXQECqKuVA/////xKKQEAAQOdAEopAQABA50D/////tJdAQI7D60C0l0BAjsPrQP////8JbTxAjuPuQAltPECO4+5A/////4T2O0CON+xAhPY7QI437ED/////JTQwQMdh7UAlNDBAx2HtQP////+E9idAVentQIT2J0BV6e1A/////0t4IUBVNexAS3ghQFU17ED/////hHYVQHGI7kCEdhVAcYjuQP////9L6BBAjuPuQEvoEECO4+5A/////6C9DECOw+tAoL0MQI7D60D/////HFcOQKpq60AcVw5AqmrrQP////+gvQxAqirlQKC9DECqKuVA"),
+"format": 34359742527,
+"index_count": 42,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsACwAMAA0AAAACAAMAAwAFAAYABgAIAAkACQALAA0AAAADAAYABgAJAA0AAAAGAA0ADQAOAA4ADgAAAA0A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 15,
+"vertex_data": PackedByteArray("AADQwgAAAMIAAAAAAADQQgAAAMIAAAAAAADgQgAAwMEAAAAAPYrfQgAAQMEAAAAAAADgQgAAYEEAAAAAAAC8QgAAAEIAAAAAAAC4QkjhhEEAAAAAzcwkQlyPukEAAAAAMzOzQMP10kEAAAAAmpmzweF6hEEAAAAA16OUwpqZ70EAAAAAAAC8wgAAAEIAAAAAAADgwgAAYEEAAAAAFC7SwgAAQEEAAAAAAADgwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+//////////7///////v//v//////+//+///////7//7///////v//v//////+//+/")
+}]
+
+[sub_resource type="Resource" id="Resource_abktf"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_sn1r5")
+material = SubResource("ShaderMaterial_p5ob6")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fq3xh"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_3b2sl"]
+_surfaces = [{
+"aabb": AABB(-104, -32, 0, 208, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+0l0A/AACAP7SXQD8AAIA//////7SXQD8AAAAAtJdAPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADQwgAAAMIAAAAAAADQwtDMTMAAAAAAAADQQtDMTMAAAAAAAADQQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_udcvl"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_3b2sl")
+material = SubResource("ShaderMaterial_fq3xh")
+
+[sub_resource type="Resource" id="Resource_dp3ba"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_fq3xh")
+
+[sub_resource type="Resource" id="Resource_vrq4v"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_w572x"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_dp3ba")
+normal_range = SubResource("Resource_vrq4v")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_tcv3r"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_w572x")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_p5ob6")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fykrc"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("17_kwrtr")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ohkq3"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////6K910BVVelAor3XQFVV6UD/////chzsQFVV6UByHOxAVVXpQP////98Ce1A47jqQHwJ7UDjuOpA/////0wA7UA5zuxATADtQDnO7ED/////fAntQMdR8UB8Ce1Ax1HxQP////8m9OpAx3H0QCb06kDHcfRA/////+S46kAAKPRA5LjqQAAo9ED/////or3kQMel80CiveRAx6XzQP////+iVeFA45zyQKJV4UDjnPJA/////5hg3ECOd/JAmGDcQI538kD/////7uXYQMdx9EDu5dhAx3H0QP////+Y0NZAx1HxQJjQ1kDHUfFA/////x1/10Dj+PBAHX/XQOP48ED/////mNDWQOO46kCY0NZA47jqQA=="),
+"format": 34359742527,
+"index_count": 39,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACQAKAAsAAAACAAMAAwAFAAYACAAJAAsAAAADAAYACAALAAwAAAAGAAgAAAAIAAwADAANAA0ADQAAAAwA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 14,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwQgAAAMIAAAAAAADAQgAAwMEAAAAASGG/QgAAQMEAAAAAAADAQgAAYEEAAAAAAACcQgAAAEIAAAAAAACYQlK48kEAAAAAXI/CQa5H20EAAAAAH4WjwJqZq0EAAAAAj8I/wkjhpEEAAAAAAACcwgAAAEIAAAAAAADAwgAAYEEAAAAAUji0wgAAQEEAAAAAAADAwgAAwMEAAAAA//////7//7//////////v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//v//////+//+///////7//7///////v//vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_litel"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("19_j5gdb")
+mesh = SubResource("ArrayMesh_ohkq3")
+material = SubResource("ShaderMaterial_fykrc")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_42wty"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("20_5kvp2")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_btrtt"]
+_surfaces = [{
+"aabb": AABB(-88, -32, 0, 176, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////+F9iI/AACAP4X2Ij8AAIA//////4X2Ij8AAAAAhfYiPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AACwwgAAAMIAAAAAAACwwtDMTMAAAAAAAACwQtDMTMAAAAAAAACwQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_gvv4u"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("21_71pkt")
+mesh = SubResource("ArrayMesh_btrtt")
+material = SubResource("ShaderMaterial_42wty")
+
+[sub_resource type="Resource" id="Resource_ugdu6"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("21_71pkt")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_42wty")
+
+[sub_resource type="Resource" id="Resource_h4245"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_k4btl"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_ugdu6")
+normal_range = SubResource("Resource_h4245")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_o8yxt"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_k4btl")])
+fill_textures = Array[Texture2D]([ExtResource("19_j5gdb")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_fykrc")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jtg82"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("19_j5gdb")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_apvr8"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////9pLxEByHAhB2kvEQHIcCEH/////2kvEQKqqDUHaS8RAqqoNQf/////2Eq5AqqoNQfYSrkCqqg1B//////YSrkByHAhB9hKuQHIcCEE="),
+"format": 34359742527,
+"index_count": 9,
+"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADAQgAAAMIAAAAAAADAQgAAAEIAAAAAAADAwgAAAEIAAAAAAADAwgAAAMIAAAAA/////////7//////////v/////////+//////////78=")
+}]
+
+[sub_resource type="Resource" id="Resource_romvc"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("17_kwrtr")
+mesh = SubResource("ArrayMesh_apvr8")
+material = SubResource("ShaderMaterial_jtg82")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mvvrt"]
+shader = ExtResource("16_ku0qd")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("18_a6w0i")
+shader_parameter/alt_tex = ExtResource("21_71pkt")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_n6omm"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 28.8, 1e-05),
+"attribute_data": PackedByteArray("/////wAAAAAAAAAAAAAAAAAAAAD/////AAAAAAAAgD8AAAAAAACAP/////8cxzE/AACAPxzHMT8AAIA//////xzHMT8AAAAAHMcxPwAAAAA="),
+"format": 34359742527,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAACAAMA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AADAwgAAAMIAAAAAAADAwtDMTMAAAAAAAADAQtDMTMAAAAAAAADAQgAAAMIAAAAA/3//f////z//f/9/////P/9//3////8//3//f////z8=")
+}]
+
+[sub_resource type="Resource" id="Resource_2jcr1"]
+script = ExtResource("15_eotcd")
+texture = ExtResource("20_5kvp2")
+mesh = SubResource("ArrayMesh_n6omm")
+material = SubResource("ShaderMaterial_mvvrt")
+
+[sub_resource type="Resource" id="Resource_38h8v"]
+script = ExtResource("23_oqx1q")
+textures = Array[Texture2D]([ExtResource("20_5kvp2")])
+use_corner_texture = false
+use_taper_texture = false
+fit_mode = 1
+texture_scale = 0.18
+uniform_width = true
+material = SubResource("ShaderMaterial_mvvrt")
+
+[sub_resource type="Resource" id="Resource_dlnyu"]
+script = ExtResource("24_ta5m0")
+begin = 80.0
+distance = 20.0
+
+[sub_resource type="Resource" id="Resource_q2jun"]
+script = ExtResource("22_3etju")
+edge_material = SubResource("Resource_38h8v")
+normal_range = SubResource("Resource_dlnyu")
+offset = -1.0
+
+[sub_resource type="Resource" id="Resource_erko1"]
+script = ExtResource("25_ut4lm")
+_edge_meta_materials = Array[ExtResource("22_3etju")]([SubResource("Resource_q2jun")])
+fill_textures = Array[Texture2D]([ExtResource("17_kwrtr")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.18
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_jtg82")
+
+[sub_resource type="Resource" id="P_B01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_B01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_B01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_B01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(7.33, 32)
+
+[sub_resource type="Resource" id="P_B01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-8.79, 26.14)
+
+[sub_resource type="Resource" id="P_B01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-33.52, 28.49)
+
+[sub_resource type="Resource" id="P_B01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-46.43, 32)
+
+[sub_resource type="Resource" id="P_B01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_B01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_B01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B01_0"),
+1: SubResource("P_B01_1"),
+2: SubResource("P_B01_2"),
+3: SubResource("P_B01_3"),
+4: SubResource("P_B01_4"),
+5: SubResource("P_B01_5"),
+6: SubResource("P_B01_6"),
+7: SubResource("P_B01_7"),
+8: SubResource("P_B01_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_B02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_B02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_B02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_B02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_B02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_B02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B02_0"),
+1: SubResource("P_B02_1"),
+2: SubResource("P_B02_2"),
+3: SubResource("P_B02_3"),
+4: SubResource("P_B02_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_B03_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="P_B03_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -32)
+
+[sub_resource type="Resource" id="P_B03_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 32)
+
+[sub_resource type="Resource" id="P_B03_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, 32)
+
+[sub_resource type="Resource" id="P_B03_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="PA_B03"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B03_0"),
+1: SubResource("P_B03_1"),
+2: SubResource("P_B03_2"),
+3: SubResource("P_B03_3"),
+4: SubResource("P_B03_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_W01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_W01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_W01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_W01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_W01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_W01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W01_0"),
+1: SubResource("P_W01_1"),
+2: SubResource("P_W01_2"),
+3: SubResource("P_W01_3"),
+4: SubResource("P_W01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_S02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-384, -64)
+
+[sub_resource type="Resource" id="P_S02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(384, -64)
+
+[sub_resource type="Resource" id="P_S02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(384, 64)
+
+[sub_resource type="Resource" id="P_S02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-384, 64)
+
+[sub_resource type="Resource" id="P_S02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-384, -64)
+
+[sub_resource type="Resource" id="PA_S02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S02_0"),
+1: SubResource("P_S02_1"),
+2: SubResource("P_S02_2"),
+3: SubResource("P_S02_3"),
+4: SubResource("P_S02_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_B04_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="P_B04_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -32)
+
+[sub_resource type="Resource" id="P_B04_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 32)
+
+[sub_resource type="Resource" id="P_B04_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(38.29, 32)
+
+[sub_resource type="Resource" id="P_B04_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(19.47, 24.37)
+
+[sub_resource type="Resource" id="P_B04_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-9.38, 27.42)
+
+[sub_resource type="Resource" id="P_B04_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-24.43, 32)
+
+[sub_resource type="Resource" id="P_B04_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 32)
+
+[sub_resource type="Resource" id="P_B04_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="PA_B04"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B04_0"),
+1: SubResource("P_B04_1"),
+2: SubResource("P_B04_2"),
+3: SubResource("P_B04_3"),
+4: SubResource("P_B04_4"),
+5: SubResource("P_B04_5"),
+6: SubResource("P_B04_6"),
+7: SubResource("P_B04_7"),
+8: SubResource("P_B04_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_G01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="P_G01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -32)
+
+[sub_resource type="Resource" id="P_G01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 32)
+
+[sub_resource type="Resource" id="P_G01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 32)
+
+[sub_resource type="Resource" id="P_G01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="PA_G01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_G01_0"),
+1: SubResource("P_G01_1"),
+2: SubResource("P_G01_2"),
+3: SubResource("P_G01_3"),
+4: SubResource("P_G01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_W02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_W02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_W02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_W02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_W02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_W02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W02_0"),
+1: SubResource("P_W02_1"),
+2: SubResource("P_W02_2"),
+3: SubResource("P_W02_3"),
+4: SubResource("P_W02_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_B05_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_B05_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_B05_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_B05_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(49.05, 32)
+
+[sub_resource type="Resource" id="P_B05_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(32.93, 24.59)
+
+[sub_resource type="Resource" id="P_B05_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(8.2, 27.55)
+
+[sub_resource type="Resource" id="P_B05_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-4.71, 32)
+
+[sub_resource type="Resource" id="P_B05_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_B05_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_B05"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B05_0"),
+1: SubResource("P_B05_1"),
+2: SubResource("P_B05_2"),
+3: SubResource("P_B05_3"),
+4: SubResource("P_B05_4"),
+5: SubResource("P_B05_5"),
+6: SubResource("P_B05_6"),
+7: SubResource("P_B05_7"),
+8: SubResource("P_B05_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_B06_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="P_B06_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -32)
+
+[sub_resource type="Resource" id="P_B06_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 32)
+
+[sub_resource type="Resource" id="P_B06_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(48.3, 32)
+
+[sub_resource type="Resource" id="P_B06_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(29.49, 22.19)
+
+[sub_resource type="Resource" id="P_B06_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0.64, 26.11)
+
+[sub_resource type="Resource" id="P_B06_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-14.42, 32)
+
+[sub_resource type="Resource" id="P_B06_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 32)
+
+[sub_resource type="Resource" id="P_B06_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="PA_B06"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B06_0"),
+1: SubResource("P_B06_1"),
+2: SubResource("P_B06_2"),
+3: SubResource("P_B06_3"),
+4: SubResource("P_B06_4"),
+5: SubResource("P_B06_5"),
+6: SubResource("P_B06_6"),
+7: SubResource("P_B06_7"),
+8: SubResource("P_B06_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_B07_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_B07_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_B07_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_B07_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(27.06, 32)
+
+[sub_resource type="Resource" id="P_B07_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(10.93, 26.48)
+
+[sub_resource type="Resource" id="P_B07_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-13.8, 28.69)
+
+[sub_resource type="Resource" id="P_B07_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-26.7, 32)
+
+[sub_resource type="Resource" id="P_B07_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_B07_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_B07"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B07_0"),
+1: SubResource("P_B07_1"),
+2: SubResource("P_B07_2"),
+3: SubResource("P_B07_3"),
+4: SubResource("P_B07_4"),
+5: SubResource("P_B07_5"),
+6: SubResource("P_B07_6"),
+7: SubResource("P_B07_7"),
+8: SubResource("P_B07_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_S01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2944, -1568)
+
+[sub_resource type="Resource" id="P_S01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1616, -1568)
+
+[sub_resource type="Resource" id="P_S01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1616, -736)
+
+[sub_resource type="Resource" id="P_S01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1632, -736)
+
+[sub_resource type="Resource" id="P_S01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1632, 32)
+
+[sub_resource type="Resource" id="P_S01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1376, 32)
+
+[sub_resource type="Resource" id="P_S01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1376, 160)
+
+[sub_resource type="Resource" id="P_S01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1632, 160)
+
+[sub_resource type="Resource" id="P_S01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1632, 544)
+
+[sub_resource type="Resource" id="P_S01_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1312, 544)
+
+[sub_resource type="Resource" id="P_S01_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1312, 672)
+
+[sub_resource type="Resource" id="P_S01_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-288, 672)
+
+[sub_resource type="Resource" id="P_S01_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-288, 736)
+
+[sub_resource type="Resource" id="P_S01_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 736)
+
+[sub_resource type="Resource" id="P_S01_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 672)
+
+[sub_resource type="Resource" id="P_S01_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(448, 672)
+
+[sub_resource type="Resource" id="P_S01_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(448, 768)
+
+[sub_resource type="Resource" id="P_S01_17"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(672, 768)
+
+[sub_resource type="Resource" id="P_S01_18"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(672, 672)
+
+[sub_resource type="Resource" id="P_S01_19"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(896, 672)
+
+[sub_resource type="Resource" id="P_S01_20"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(896, 576)
+
+[sub_resource type="Resource" id="P_S01_21"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1088, 576)
+
+[sub_resource type="Resource" id="P_S01_22"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1088, 672)
+
+[sub_resource type="Resource" id="P_S01_23"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1632, 672)
+
+[sub_resource type="Resource" id="P_S01_24"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1632, -64)
+
+[sub_resource type="Resource" id="P_S01_25"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(448, -64)
+
+[sub_resource type="Resource" id="P_S01_26"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(448, -192)
+
+[sub_resource type="Resource" id="P_S01_27"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(896, -192)
+
+[sub_resource type="Resource" id="P_S01_28"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(896, -320)
+
+[sub_resource type="Resource" id="P_S01_29"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1024, -320)
+
+[sub_resource type="Resource" id="P_S01_30"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1024, -192)
+
+[sub_resource type="Resource" id="P_S01_31"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2176, -192)
+
+[sub_resource type="Resource" id="P_S01_32"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2176, -352)
+
+[sub_resource type="Resource" id="P_S01_33"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1632, -352)
+
+[sub_resource type="Resource" id="P_S01_34"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1632, -736)
+
+[sub_resource type="Resource" id="P_S01_35"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1616, -736)
+
+[sub_resource type="Resource" id="P_S01_36"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1616, -1568)
+
+[sub_resource type="Resource" id="P_S01_37"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2944, -1568)
+
+[sub_resource type="Resource" id="P_S01_38"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2944, 1568)
+
+[sub_resource type="Resource" id="P_S01_39"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2944, 1568)
+
+[sub_resource type="Resource" id="P_S01_40"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2944, -1568)
+
+[sub_resource type="Resource" id="PA_S01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S01_0"),
+1: SubResource("P_S01_1"),
+2: SubResource("P_S01_2"),
+3: SubResource("P_S01_3"),
+4: SubResource("P_S01_4"),
+5: SubResource("P_S01_5"),
+6: SubResource("P_S01_6"),
+7: SubResource("P_S01_7"),
+8: SubResource("P_S01_8"),
+9: SubResource("P_S01_9"),
+10: SubResource("P_S01_10"),
+11: SubResource("P_S01_11"),
+12: SubResource("P_S01_12"),
+13: SubResource("P_S01_13"),
+14: SubResource("P_S01_14"),
+15: SubResource("P_S01_15"),
+16: SubResource("P_S01_16"),
+17: SubResource("P_S01_17"),
+18: SubResource("P_S01_18"),
+19: SubResource("P_S01_19"),
+20: SubResource("P_S01_20"),
+21: SubResource("P_S01_21"),
+22: SubResource("P_S01_22"),
+23: SubResource("P_S01_23"),
+24: SubResource("P_S01_24"),
+25: SubResource("P_S01_25"),
+26: SubResource("P_S01_26"),
+27: SubResource("P_S01_27"),
+28: SubResource("P_S01_28"),
+29: SubResource("P_S01_29"),
+30: SubResource("P_S01_30"),
+31: SubResource("P_S01_31"),
+32: SubResource("P_S01_32"),
+33: SubResource("P_S01_33"),
+34: SubResource("P_S01_34"),
+35: SubResource("P_S01_35"),
+36: SubResource("P_S01_36"),
+37: SubResource("P_S01_37"),
+38: SubResource("P_S01_38"),
+39: SubResource("P_S01_39"),
+40: SubResource("P_S01_40")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40)
+_constraints = {
+Vector2i(0, 40): 15
+}
+_next_key = 41
+
+[sub_resource type="Resource" id="P_W03_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_W03_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_W03_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_W03_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_W03_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_W03"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W03_0"),
+1: SubResource("P_W03_1"),
+2: SubResource("P_W03_2"),
+3: SubResource("P_W03_3"),
+4: SubResource("P_W03_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[node name="쳅터1_01_방_시작방" type="Node2D" unique_id=677029812]
+script = ExtResource("1_world")
+"스테이지_이름" = "01 · 2층 시작방 (접힌 U자)"
+"카메라_리밋" = Rect2(0, 0, 3584, 1792)
+"카메라_줌" = 1.0
+"시작_위치" = Vector2(3152, 1568)
+"낙사_y" = 2432
+"치명_낙하거리" = 1500
+metadata/blueprint = "res://scenes/쳅터1/도안/쳅터1_01_방_시작방.json"
+metadata/frame_only = false
+
+[node name="페인트코어" type="Node" parent="." unique_id=922644916 groups=["페인트코어"]]
+script = ExtResource("2_core")
+
+[node name="어둠" type="CanvasModulate" parent="." unique_id=671822183]
+color = Color(0.74, 0.74, 0.74, 1)
+
+[node name="배경" type="Node2D" parent="." unique_id=1021983026]
+position = Vector2(149, -13)
+script = ExtResource("12_bg")
+"배경_명도" = 0.64
+"프리셋" = ExtResource("13_preset")
+"바닥_y" = 1568.0
+"천장_y" = 160.0
+"낡음_덮어쓰기" = 3
+"씨앗" = 68168
+
+[node name="가구" type="Node2D" parent="배경" unique_id=682799228]
+modulate = Color(0.64, 0.64, 0.64, 1)
+z_index = -90
+
+[node name="침대1" type="Sprite2D" parent="배경/가구" unique_id=153781517]
+position = Vector2(2752, 1408)
+texture = ExtResource("20_furn6")
+centered = false
+
+[node name="옷장1" type="Sprite2D" parent="배경/가구" unique_id=285169119]
+position = Vector2(1414, 1245)
+texture = ExtResource("17_furn3")
+centered = false
+
+[node name="책상1" type="Sprite2D" parent="배경/가구" unique_id=639643617]
+position = Vector2(792, 1448)
+texture = ExtResource("19_furn5")
+centered = false
+
+[node name="창문1" type="Sprite2D" parent="배경/가구" unique_id=681047553]
+position = Vector2(265, 283)
+texture = ExtResource("18_furn4")
+centered = false
+
+[node name="액자_팔각1" type="Sprite2D" parent="배경/가구" unique_id=922913922]
+position = Vector2(1568, 320)
+texture = ExtResource("16_furn2")
+centered = false
+
+[node name="샹들리에1" type="Sprite2D" parent="배경/가구" unique_id=412917560]
+position = Vector2(2208, 160)
+texture = ExtResource("14_furn0")
+centered = false
+
+[node name="시계1" type="Sprite2D" parent="배경/가구" unique_id=1722165320]
+position = Vector2(2146, 465)
+texture = ExtResource("15_furn1")
+centered = false
+
+[node name="창문2" type="Sprite2D" parent="배경/가구" unique_id=1244087450]
+position = Vector2(2291, 890)
+texture = ExtResource("18_furn4")
+centered = false
+
+[node name="지형" type="Node2D" parent="." unique_id=229691880]
+
+[node name="구조01" parent="지형" unique_id=2142979042 instance=ExtResource("3_tpl_black")]
+position = Vector2(1792, 896)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S01")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_b22kv"), SubResource("Resource_vjchi"), SubResource("Resource_tufff"), SubResource("Resource_ly4yk"), SubResource("Resource_wkv7o"), SubResource("Resource_b6ty5"), SubResource("Resource_v3owh"), SubResource("Resource_wqbb7"), SubResource("Resource_4r6f5"), SubResource("Resource_jpw52"), SubResource("Resource_67f5u"), SubResource("Resource_cww4e"), SubResource("Resource_jpfyj"), SubResource("Resource_habmq"), SubResource("Resource_ku0qd")])
+shape_material = SubResource("Resource_e5uc1")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+"내부_무늬" = Array[Rect2]([Rect2(-320, 704, 32, 32), Rect2(-96, 704, 64, 32), Rect2(-352, 736, 288, 32), Rect2(-384, 768, 256, 32), Rect2(-320, 800, 160, 32), Rect2(-288, 832, 64, 32)])
+
+[node name="검정판01" parent="지형" unique_id=1547104682 instance=ExtResource("3_tpl_black")]
+position = Vector2(2656, 352)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B01")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_dajkj"), SubResource("Resource_6f53p")])
+shape_material = SubResource("Resource_uva7j")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판02" parent="지형" unique_id=1937620842 instance=ExtResource("3_tpl_black")]
+position = Vector2(3040, 480)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B02")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_nf6sy"), SubResource("Resource_b3tey")])
+shape_material = SubResource("Resource_55rl7")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판03" parent="지형" unique_id=190804347 instance=ExtResource("3_tpl_black")]
+position = Vector2(2080, 672)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B03")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_hsxnh"), SubResource("Resource_l7pbr")])
+shape_material = SubResource("Resource_yfhqc")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판01" parent="지형" unique_id=292619750 instance=ExtResource("4_tpl_white")]
+position = Vector2(992, 704)
+"위치별_판정" = true
+_points = SubResource("PA_W01")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_f6n4o"), SubResource("Resource_dtr2w")])
+shape_material = SubResource("Resource_585np")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="구조02" parent="지형" unique_id=2064177400 instance=ExtResource("3_tpl_black")]
+position = Vector2(1536, 768)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S02")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_toq17"), SubResource("Resource_ir1au")])
+shape_material = SubResource("Resource_fo5lm")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="검정판04" parent="지형" unique_id=1734128424 instance=ExtResource("3_tpl_black")]
+position = Vector2(720, 832)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B04")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_0q04m"), SubResource("Resource_r7cbb")])
+shape_material = SubResource("Resource_ypi3v")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="유령판01" parent="지형" unique_id=1304445727 instance=ExtResource("5_tpl_ghost")]
+position = Vector2(656, 1088)
+_points = SubResource("PA_G01")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_75kec"), SubResource("Resource_holsu")])
+shape_material = SubResource("Resource_s1cro")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
+[node name="흰판02" parent="지형" unique_id=946158544 instance=ExtResource("4_tpl_white")]
+position = Vector2(1024, 1216)
+"위치별_판정" = true
+_points = SubResource("PA_W02")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_qecpp"), SubResource("Resource_5s07v")])
+shape_material = SubResource("Resource_1fbg8")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="검정판05" parent="지형" unique_id=1024409352 instance=ExtResource("3_tpl_black")]
+position = Vector2(2304, 1312)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B05")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_rd6le"), SubResource("Resource_836bb")])
+shape_material = SubResource("Resource_jns4y")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판06" parent="지형" unique_id=1568919922 instance=ExtResource("3_tpl_black")]
+position = Vector2(720, 1344)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B06")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_abktf"), SubResource("Resource_udcvl")])
+shape_material = SubResource("Resource_tcv3r")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판07" parent="지형" unique_id=1274202021 instance=ExtResource("3_tpl_black")]
+position = Vector2(1952, 1376)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B07")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_litel"), SubResource("Resource_gvv4u")])
+shape_material = SubResource("Resource_o8yxt")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판03" parent="지형" unique_id=691481058 instance=ExtResource("4_tpl_white")]
+position = Vector2(1600, 1600)
+"위치별_판정" = true
+_points = SubResource("PA_W03")
+_meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_romvc"), SubResource("Resource_2jcr1")])
+shape_material = SubResource("Resource_erko1")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="연결" type="Node2D" parent="." unique_id=382015077]
+
+[node name="오른쪽" type="Node2D" parent="연결" unique_id=79138287]
+z_index = 60
+position = Vector2(3424, 704)
+script = ExtResource("11_link")
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_02_복도_A.tscn"
+
+[node name="체크포인트" type="Node2D" parent="." unique_id=776432466]
+
+[node name="체크01" parent="체크포인트" unique_id=38663098 instance=ExtResource("9_checkpoint")]
+position = Vector2(3152, 1568)
+collision_layer = 0
+
+[node name="체크02" parent="체크포인트" unique_id=1043402933 instance=ExtResource("9_checkpoint")]
+position = Vector2(1296, 1568)
+collision_layer = 0
+
+[node name="체크03" parent="체크포인트" unique_id=1902258981 instance=ExtResource("9_checkpoint")]
+position = Vector2(272, 928)
+collision_layer = 0
+
+[node name="체크04" parent="체크포인트" unique_id=1954394737 instance=ExtResource("9_checkpoint")]
+position = Vector2(2576, 704)
+collision_layer = 0
+
+[node name="체크05" parent="체크포인트" unique_id=155377815 instance=ExtResource("9_checkpoint")]
+position = Vector2(2640, 320)
+collision_layer = 0
+
+[node name="Player" parent="." unique_id=325407816 instance=ExtResource("8_player")]
+position = Vector2(3152, 1568)
+"점프_거리_칸" = 20.0

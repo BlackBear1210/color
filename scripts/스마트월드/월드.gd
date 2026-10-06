@@ -17,11 +17,21 @@ extends Node2D
 ## ============================================================================
 class_name 스마트월드
 
+## 통로·검사점과 완료를 분리하여 명시적인 목표만 기록을 확정한다.
+signal 사망함
+signal 클리어됨
+const 실행기록 := preload("res://scripts/ui/실행_기록.gd")
+
+func 스테이지_완료() -> void:
+	클리어됨.emit()
+
 const 카메라_스크립트 := preload("res://scripts/proto/proto_camera.gd")
 const 총_스크립트 := preload("res://scripts/스마트월드/총.gd")
 const 메뉴_스크립트 := preload("res://scripts/스마트월드/일시정지_메뉴.gd")
 ## [2026-08-06 추가] 낙하 거리 기반 즉사 판정기
 const 낙하감시_스크립트 := preload("res://scripts/스마트월드/낙하_감시.gd")
+## [2026-10-04] 쳅터1 연결구 전환(줌인·암전·교체·줌아웃). 진행 중엔 사망 판정을 멈춘다.
+const 전경전환_스크립트 := preload("res://scripts/쳅터1/전경전환.gd")
 ## Inspector `시작_위치_방식`의 두 번째 선택값. 숫자를 함수마다 반복하지 않는다.
 const 시작_위치_방식_에디터_플레이어: int = 1
 ## [2026-08-17 추가] 점(pip) 방식 페인트 HUD + 그 어댑터.
@@ -155,6 +165,15 @@ func _ready() -> void:
 	add_child(_낙하)
 	_낙하.연결(_플레이어)
 
+	var 기록 := 실행기록.new()
+	기록.name = "실행기록"
+	add_child(기록)
+	# 실제 목표문만 완료 이벤트에 연결한다. 끝도달_검사점 Marker2D는 건드리지 않는다.
+	for 목표 in get_tree().get_nodes_in_group("zone_exit"):
+		if 목표 is Area2D and is_ancestor_of(목표):
+			목표.body_entered.connect(func(body: Node2D):
+				if body == _플레이어:
+					스테이지_완료())
 	_HUD_만들기()
 	_메뉴_만들기()
 	# [2026-08-17] 탄약_변경 시그널 연결을 뺐다. 점 HUD 는 매 프레임 코어를 읽으므로
@@ -167,7 +186,7 @@ func _physics_process(delta: float) -> void:
 		return
 	# 통로를 지나 화면이 까매지는 동안에는 아무 판정도 하지 않는다.
 	# (암전 중에 죽으면 다음 스테이지에서 갑자기 리스폰 지점에 서 있게 된다)
-	if 장면전환.진행중인가():
+	if 장면전환.진행중인가() or 전경전환_스크립트.진행중인가():
 		return
 	_무적 = maxf(_무적 - delta, 0.0)
 
@@ -446,7 +465,25 @@ func _반대색_대상_찾기(맞은것: Object) -> Node:
 	return null
 
 
+## [2026-10-04] 쳅터1 연결구(스테이지 사이 길목)로 들어왔을 때 `scripts/쳅터1/전경전환.gd` 가 부른다.
+##   도착: 길목 굴 안(카메라 리밋 밖) · 안쪽: 방 안 2칸 = 자동 체크포인트. 리스폰과 같은 뒷정리를 한다.
+func 연결_도착(도착: Vector2, 안쪽: Vector2) -> void:
+	if _플레이어 == null:
+		return
+	_플레이어.set("velocity", Vector2.ZERO)
+	_플레이어.global_position = 도착
+	_안전점 = 안쪽
+	_무적 = 0.6
+	_안전_누적 = 0.0
+	if _카메라:
+		_카메라.setup(_플레이어)
+	if _낙하:
+		_낙하.초기화()
+
+
 func _리스폰() -> void:
+	# 모든 실제 사망 경로가 합류하는 곳에서 한 번만 집계한다.
+	사망함.emit()
 	# 같은 자리에서 재시작해도 입수 화면 효과가 남거나 다시 튀지 않도록 명시적으로 초기화한다.
 	get_tree().call_group("하수도_입수효과", "입수_초기화")
 	# [2026-10-05] 죽음(잉크 터짐) 소리. 순간이동 **전에** 불러야 효과음 노드가
@@ -704,8 +741,11 @@ func _HUD_만들기() -> void:
 	_hud_안내.name = "조작안내"
 	_hud_안내.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	_hud_안내.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hud_안내.offset_top = 18.0
-	_hud_안내.offset_bottom = 48.0
+	_hud_안내.offset_top = 82.0
+	_hud_안내.offset_bottom = 112.0
+	# 중앙 타이머 아래의 선택적 보조 안내로 두어 기본 HUD를 가리지 않는다.
+	_hud_안내.visible = 게임설정.조작안내_불러오기()
+	_hud_안내.add_to_group("조작안내")
 	_hud_안내.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hud_안내.add_theme_font_size_override("font_size", 17)
 	# 안내는 **보조 정보**다 — HUD 보다 어둡게 둬서 시선이 먼저 HUD 로 가게 한다.

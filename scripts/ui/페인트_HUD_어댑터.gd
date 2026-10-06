@@ -31,6 +31,11 @@ func 탄약() -> Dictionary:
 	return {}
 
 
+## 발사 가능 수는 비행 중·회수 대기 자원과 구분한다. 기존 탄약 API는 호환을 위해 유지한다.
+func 가용_탄약() -> Dictionary:
+	return 탄약()
+
+
 ## 회수 대기줄. 앞이 먼저 칠한 것(FIFO).
 ## 원소 = { "대상": Variant, "발수": int, "좌표": Vector2 }
 func 회수줄() -> Array:

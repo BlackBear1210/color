@@ -21,6 +21,12 @@ extends RefCounted
 ## ============================================================================
 
 const 규격 := preload("res://tools/생성기/규격.gd")
+
+## ★[2026-09-27] 얇은 지형용 재질 — 테두리 띠가 38 px → 19.6 px.
+##   이 값보다 짧은 변을 가진 칠할 수 있는 지형에만 쓴다. 근거는 `_폴리곤_노드()` 주석.
+const 얇은_기준: float = 256.0
+const 얇은재질_검 := "res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_black_발판띠.tres"
+const 얇은재질_흰 := "res://assets/textures/smartshape/wood_v2/tres/지형_나무v2_white_발판띠.tres"
 const 형태_S := preload("res://tools/생성기/형태.gd")
 
 const 월드_S := preload("res://scripts/스마트월드/월드.gd")
@@ -129,6 +135,32 @@ func 굽기(동굴: Dictionary, 윤: Dictionary, 배치: Dictionary, 설정: Ref
 	m.position = _칸_중심(동굴, 동굴["출구칸"])
 	루트.add_child(m)
 
+	# ── ★[2026-09-28] 연결통로 — `배치["통로들"]` 이 있을 때만 만든다 ──────────
+	#   `끝도달_검사점`(Marker2D)은 **검사용 표식일 뿐** 다음 스테이지로 넘겨 주지 않는다.
+	#   실제로 걸어 들어가 넘어가려면 `연결통로` 노드가 있어야 한다(작업지시 §4-6).
+	#   ⚠ 이 키가 없는 기존 생성기(동굴·계단·방)는 아무 영향도 받지 않는다.
+	var 통로씬 := load("res://scripts/스마트월드/연결통로.gd")
+	for t in (배치.get("통로들", []) as Array):
+		if 통로씬 == null:
+			break
+		var 통로 = 통로씬.new()
+		통로.name = String(t["이름"])
+		통로.position = t["위치"]
+		# 역할_ { 출구 = 0, 입구 = 1 }
+		통로.set("역할", 0 if String(t["역할"]) == "출구" else 1)
+		# 입구 기본은 -1, 출구 기본은 +1이다. 절대 방향만 보고 뒤집으면
+		# 왼쪽 입구가 오른쪽을 향해 방 안으로 파고들고 스폰도 반대로 배치된다.
+		var 기본방향: int = -1 if String(t["역할"]) == "입구" else 1
+		통로.set("반대방향", int(t["방향"]) != 기본방향)
+		# 층 간격384인 탐색방은 통로의 장식 암반을 크게 늘리면 윗층을 가린다.
+		for 속성 in ["높이", "깊이", "암반_위", "암반_아래"]:
+			if t.has(속성):
+				통로.set(속성, t[속성])
+		if String(t["역할"]) == "출구":
+			통로.set("다음_씬", String(t.get("다음_씬", "")))
+			통로.set("다음_진입점", String(t.get("다음_진입점", "입구통로")))
+		루트.add_child(통로)
+
 	루트.set_meta("gen_seed", int(배치.get("씨앗", 0)))
 	루트.set_meta("gen_config", String(설정.이름))
 	루트.set_meta("gen_algo", "v2_cave")
@@ -210,6 +242,22 @@ func _폴리곤_노드(이름: String, 점들: PackedVector2Array, 템플릿: St
 	# 콜리전 = 외곽선 그대로. 깎으면 조각 사이에 슬롯이 생겨 플레이어가 낀다.
 	n.set("collision_offset", 0.0)
 	n.set("collision_size", 0.0)
+
+	# ★★[2026-09-27] 얇은 지형은 **테두리 띠가 얇은 재질**로 갈아 끼운다.
+	# ------------------------------------------------------------------------
+	# SS2D 테두리는 지형 둘레에 **일정한 두께의 띠**로 붙는다. 기본 재질의 띠는
+	#   테두리 텍스처 세로 109 px × texture_scale 0.35 = **38 px** 다.
+	# 발판 두께가 112 px 이므로 위아래 띠가 76 px 를 먹고 **채우기가 36 px(32 %)만** 남는다.
+	# 화면에서는 "검은 테두리 + 얇은 심지" 로 보인다 — 도형님이 말한 **타일셋이 깨진다**가 이것이다
+	# (실측: `tools/진단_타일셋_깨짐.gd` 가 발판 42 개를 ✖ 로 잡았다).
+	#   → 얇은 것만 texture_scale 0.18(띠 19.6 px)짜리 재질로 바꾼다. 채우기가 65 % 로 늘어난다.
+	# ⚠ 껍데기·벽 같은 두꺼운 구조는 **그대로 둔다.** 거기서는 38 px 띠가 알맞은 마감이다.
+	var 짧은변 := minf(최대.x - 최소.x, 최대.y - 최소.y)
+	if 칠방식 != 2 and 짧은변 < 얇은_기준:
+		var 띠재질 := 얇은재질_흰 if 색 == 규격.흰색 else 얇은재질_검
+		var res := load(띠재질)
+		if res != null:
+			n.set("shape_material", res)
 
 	var 로컬 := PackedVector2Array()
 	for p in 점들:

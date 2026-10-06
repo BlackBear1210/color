@@ -28,6 +28,42 @@ const 밝기_최소 := 0.45
 const 밝기_최대 := 1.80
 const 밝기_기본 := 1.00
 
+const HUD_항목 := ["탄수", "사망수", "시간"]
+
+## 표시만 바꾼다. 숨겨도 실행 기록과 실제 탄약의 계산은 계속 유지한다.
+static func HUD_표시_불러오기(경로: String = 파일) -> Dictionary:
+	var cfg := ConfigFile.new()
+	cfg.load(경로)
+	var 결과 := {}
+	for 항목 in HUD_항목:
+		결과[항목] = bool(cfg.get_value("HUD", 항목, true))
+	return 결과
+
+static func HUD_표시_저장(항목: String, 켬: bool, 경로: String = 파일) -> Error:
+	if not 항목 in HUD_항목:
+		return ERR_INVALID_PARAMETER
+	var cfg := ConfigFile.new()
+	var 읽기 := cfg.load(경로)
+	if 읽기 != OK and 읽기 != ERR_FILE_NOT_FOUND:
+		return 읽기
+	cfg.set_value("HUD", 항목, 켬)
+	return cfg.save(경로)
+
+
+## 조작 안내는 기본으로 숨기며 기존 밝기 설정을 보존해 같은 파일에 저장한다.
+static func 조작안내_불러오기() -> bool:
+	var cfg := ConfigFile.new()
+	cfg.load(파일)
+	return bool(cfg.get_value("HUD", "조작안내", false))
+
+
+static func 조작안내_저장(켬: bool) -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(파일)
+	cfg.set_value("HUD", "조작안내", 켬)
+	if cfg.save(파일) != OK:
+		push_warning("조작 안내 설정을 저장하지 못했습니다.")
+
 
 static func 밝기_불러오기() -> float:
 	var cfg := ConfigFile.new()

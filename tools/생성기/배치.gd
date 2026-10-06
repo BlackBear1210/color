@@ -377,8 +377,14 @@ const 건넘칸: int = 3
 ## ⚠[2026-09-21 수정] 이제 **대부분의 연결은 `동굴.gd _통행_잇기()` 가 터널을 파서 해결**한다.
 ##   여기 남은 역할은 그 뒤에 남는 자잘한 자리(발판 위·1 칸 턱)뿐이다.
 ##   그래서 되풀이를 1 회로 줄이고 디딤 발판 수에 상한을 뒀다 — 안 그러면 141 개를 놓는다(실측).
+## ★[2026-09-28] `보호구역` — **관문을 우회하는 디딤을 못 놓게** 하는 계약.
+##   작업지시 2026-09-27 §1: "마지막 통행 보정이 관문을 우회하는 발판을 추가하지 못하도록
+##   계약을 강화한다." 여기 Rect2i(칸 단위) 목록을 넘기면 그 안에는 디딤을 놓지 않는다.
+##   ⚠ 안 넘기면 지금까지와 **완전히 같게** 동작한다(기존 호출부는 고칠 필요 없다).
+##   ⚠ 이 함수는 "못 닿는 칸" 을 보면 다리를 놓는 도구다. 관문은 **일부러 못 닿게 만든 것**
+##     이므로, 보호구역을 안 주면 관문 바로 옆에 우회로를 놓아 강제성을 지운다.
 static func 통행_보정(동굴: Dictionary, 배치: Dictionary, rng: RandomNumberGenerator,
-		되풀이: int = 1) -> Dictionary:
+		되풀이: int = 1, 보호구역: Array = []) -> Dictionary:
 	var 보고 := {"추가발판": 0, "못닿는칸": 0, "닿는칸": 0}
 	var 마지막_닿음 := {}
 	for _t in 되풀이:
@@ -393,7 +399,7 @@ static func 통행_보정(동굴: Dictionary, 배치: Dictionary, rng: RandomNum
 		보고["못닿는칸"] = 못닿음.size()
 		if 못닿음.is_empty():
 			break
-		var 추가 := _디딤_놓기(동굴, 배치, 닿음, 못닿음, rng)
+		var 추가 := _디딤_놓기(동굴, 배치, 닿음, 못닿음, rng, 보호구역)
 		보고["추가발판"] += 추가
 		if 추가 == 0:
 			break            # 더 이상 이을 수 없다 — 남은 구역은 보고만 한다
@@ -472,7 +478,7 @@ static func _격자_BFS(동굴: Dictionary, 설칸: Dictionary, 시작: Vector2i
 
 ## 못 닿는 덩어리를 가장 가까운 닿는 칸과 **디딤 발판**으로 잇는다. 놓은 개수를 돌려준다.
 static func _디딤_놓기(동굴: Dictionary, 배치: Dictionary, 닿음: Dictionary,
-		못닿음: Array, rng: RandomNumberGenerator) -> int:
+		못닿음: Array, rng: RandomNumberGenerator, 보호구역: Array = []) -> int:
 	var 칸크기: float = float(동굴["칸크기"])
 	var 놓음 := 0
 	var 처리 := {}
@@ -512,6 +518,8 @@ static func _디딤_놓기(동굴: Dictionary, 배치: Dictionary, 닿음: Dicti
 		for 자리 in 자리들:
 			if not _자리_비었나(동굴, 자리):
 				continue
+			if _보호구역_안인가(동굴, 보호구역, 자리):
+				continue          # ★관문 안에는 디딤을 놓지 않는다(우회로가 되어 버린다)
 			놓음 += 1
 			배치["플랫폼"].append(_발판("디딤%02d" % 놓음, 자리,
 				_색_at(동굴, {}, 자리.get_center()), true))
@@ -656,3 +664,16 @@ static func 진단_그리기(동굴: Dictionary, 배치: Dictionary, 중심: Vec
 				s += "."
 		줄들.append("%3d %s" % [y, s])
 	return 줄들
+
+
+## 자리(월드 사각)가 보호구역(칸 사각) 안에 걸치나.
+static func _보호구역_안인가(동굴: Dictionary, 보호구역: Array, 자리: Rect2) -> bool:
+	if 보호구역.is_empty():
+		return false
+	var a: Vector2i = 동굴_S.월드_칸(동굴, 자리.position)
+	var b: Vector2i = 동굴_S.월드_칸(동굴, 자리.end)
+	var 칸사각 := Rect2i(a, Vector2i(maxi(b.x - a.x, 1), maxi(b.y - a.y, 1)))
+	for r in 보호구역:
+		if (r as Rect2i).intersects(칸사각):
+			return true
+	return false
