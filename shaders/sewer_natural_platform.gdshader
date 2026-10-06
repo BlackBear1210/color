@@ -307,6 +307,11 @@ uniform float ghost_alpha = 0.55;
 
 uniform vec4 ghost_tint : source_color = vec4(0.78, 0.82, 0.88, 1.0);
 uniform float ghost_tint_amount = 0.30;
+// 2026-09-30 ghost v2: edge glow (top line strong, other borders faint) so the ghost
+// reads against the brick background; wobble/pulse is driven by anim_time from script (no TIME).
+uniform float ghost_edge = 0.0;
+uniform bool ghost_wobble = false;
+uniform float anim_time = 0.0;
 
 varying vec2 local_pos;
 varying vec2 ground_visual_pos;
@@ -612,8 +617,10 @@ void fragment() {
 		
 		vec2 uv_per_lp = fwidth(UV) / max(fwidth(local_pos), vec2(0.0001));
 		float grid = max(ghost_mosaic, 1.0);
+		float wob = ghost_wobble ? sin(anim_time * 1.3) * grid * 0.25 : 0.0;
+		float pulse = ghost_wobble ? 0.85 + 0.15 * sin(anim_time * 2.0) : 1.0;
 		vec2 lp_snapped = (floor(local_pos / grid) + 0.5) * grid;
-		vec2 uv_base = UV + (lp_snapped - local_pos) * uv_per_lp;
+		vec2 uv_base = UV + (lp_snapped - local_pos + vec2(wob, 0.0)) * uv_per_lp;
 
 		
 		float step_x = uv_per_lp.x * ghost_smear * 0.5;
@@ -626,7 +633,17 @@ void fragment() {
 
 		vec3 ghost_rgb = mix(blurred.rgb, ghost_tint.rgb, ghost_tint_amount);
 		col = mix(col, ghost_rgb, g);
-		alpha *= mix(1.0, ghost_alpha, g);
+		alpha *= mix(1.0, ghost_alpha * pulse, g);
+		if (ghost_edge > 0.001) {
+			vec2 lo = local_pos - surface_bounds.xy;
+			vec2 hi = surface_bounds.zw - local_pos;
+			float top_line = 1.0 - smoothstep(1.5, 4.0, lo.y);
+			float side = 1.0 - smoothstep(0.8, 2.2, min(min(lo.x, hi.x), hi.y));
+			float glow_top = (1.0 - smoothstep(0.0, 12.0, lo.y)) * 0.35;
+			float e = max(max(top_line, glow_top), side * 0.35) * ghost_edge * pulse * g;
+			col = mix(col, vec3(0.88, 0.91, 0.96), e);
+			alpha = max(alpha, e * base.a);
+		}
 	}
 	float rim = 0.0;
  if (sewer_strength > 0.0 && distance(sewer_world,sewer_light) <= sewer_radius + 2.0) {

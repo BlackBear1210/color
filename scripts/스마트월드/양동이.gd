@@ -29,10 +29,18 @@ extends CharacterBody2D
 ##   양동이가 그 안(`배출_거리`)에 있을 때만 비워진다. 2-7 의 양동이는 이 값을 안 써서 동작이 안 바뀐다.
 @export var 배출_지점: NodePath
 @export_range(40.0, 600.0, 1.0) var 배출_거리: float = 140.0
+## 가득 찼나. 씬·주행검사·압력버튼이 읽는 값이라 이름을 안 바꾼다.
+## ★[2026-09-30] 켜고 끄면 `수위` 도 1 / 0 으로 맞춘다(에디터에서 켜 두면 가득 찬 그림으로 보인다).
 @export var 물참: bool = false:
 	set(v):
 		물참 = v
+		수위 = 1.0 if v else 0.0
 		queue_redraw()
+## ★[2026-09-30 Claude] 빈 양동이가 가득 차기까지 걸리는 시간(초).
+##   왜: 도형님 "양동이 안에 물이 차는 걸 보고 싶다" — 예전엔 물에 닿는 순간 한 프레임에 가득 찼다.
+##   물을 받는 동안은 그 자리에 **붙잡혀** 안 밀린다(`밀기()`). 그래서 양동이가 서는 자리는 예전과 같고,
+##   2-6·2-7·2-8 맵은 그대로 둔 채 "채워지는 시간" 만 늘었다. 쏴서 채우기는 없다(도형님 결정 · 총알은 여전히 blocked).
+@export_range(0.1, 5.0, 0.05) var 채움_시간: float = 1.0
 @export_enum("검정", "흰색", "회색") var 물색: int = ColorDefs.GRAY:
 	set(v):
 		물색 = clampi(v, ColorDefs.BLACK, ColorDefs.GRAY)
@@ -45,6 +53,10 @@ const 마찰: float = 900.0
 const 상호작용_거리: float = 100.0
 
 var _리스폰_월드좌표: Vector2 = Vector2.ZERO
+## 0 = 빔 · 1 = 가득. 가득 차면 `물참` 이 켜진다. 물줄기가 도중에 꺼지면 그 높이에서 멈춘다.
+var 수위: float = 0.0
+## 이번 물리 프레임에 같은 색 물을 받고 있나 — 받는 동안은 안 밀린다.
+var _물받는중: bool = false
 @onready var _물감지: Area2D = get_node_or_null("물감지") as Area2D
 
 
@@ -69,7 +81,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 	velocity.x = move_toward(velocity.x, 0.0, 마찰 * delta)
 	move_and_slide()
-	_물_담기_검사()
+	_물_담기_검사(delta)
 	# 구멍에 빠진 양동이가 길을 영구히 막지 않도록, 자기 시작 위치로만 되돌린다.
 	if global_position.y > 낙사_y:
 		global_position = _리스폰_월드좌표
@@ -82,6 +94,10 @@ func 밀기(방향: float, 플레이어색: int) -> void:
 	if 방향 == 0.0 or not 밀_수_있나(플레이어색):
 		return
 	if 물참 and 채운뒤_밀수없음:
+		return
+	# ★[2026-09-30] 물을 받는 중에는 붙잡힌다 — 예전에 "닿자마자 가득" 이던 그 자리에 서서 차오른다.
+	#   안 붙잡으면 미는 속도(185)로 물줄기를 0.5 초 만에 지나쳐 반만 찬 채 벽까지 밀려 가, 맵의 굳는 자리가 어긋난다.
+	if _물받는중 and not 물참:
 		return
 	# 다음 프레임의 velocity만 바꾸면 충돌한 플레이어가 먼저 밀려나 "안 밀린다"고 느껴진다.
 	# 그래서 한 물리 프레임 거리만 즉시 이동하고, 충돌한 벽/다른 양동이 앞에서는 멈춘다.
@@ -131,16 +147,25 @@ func 비우기() -> bool:
 
 ## 양동이 물감지 영역에 닿은 켜진 물 중 **양동이와 같은 색**만 싣는다.
 ## 유체 자체는 소비하지 않는다. 반대색/회색 물은 양동이를 채우지 못한다.
-func _물_담기_검사() -> void:
-	if 물참 or _물감지 == null:
+func _물_담기_검사(delta: float) -> void:
+	var 받는중 := false
+	if not 물참 and _물감지 != null:
+		for 영역 in _물감지.get_overlapping_areas():
+			var 물 := 영역 as 유체
+			if 물 != null and 물.켜짐 and 물.종류 == 유체.종류_.물 and 물.색 == 색:
+				받는중 = true
+				물색 = 물.색
+				break
+	_물받는중 = 받는중
+	if not 받는중:
 		return
-	for 영역 in _물감지.get_overlapping_areas():
-		var 물 := 영역 as 유체
-		if 물 != null and 물.켜짐 and 물.종류 == 유체.종류_.물 and 물.색 == 색:
-			물참 = true
-			물색 = 물.색
-			queue_redraw()
-			return
+	# ★[2026-09-30] 한 번에 가득이 아니라 `채움_시간` 에 걸쳐 차오른다. 가득 차는 순간에만 물참을 켠다
+	#   (물참 setter 가 수위를 1 로 맞추므로 순서가 바뀌어도 값은 같다).
+	수위 = minf(1.0, 수위 + delta / maxf(채움_시간, 0.01))
+	if 수위 >= 1.0:
+		물참 = true
+		_물받는중 = false
+	queue_redraw()          # 차오르는 동안만 다시 그린다(가만히 있을 땐 안 그린다 — 프레임 드랍 재발 방지 규칙)
 
 
 ## 페인트 총의 대상이 되지 않는 기계 장치다. 색은 "밀기 조건"일 뿐 사망 판정용 색이 아니다.
@@ -160,7 +185,89 @@ func 반대색인가(_플레이어색: int) -> bool:
 	return false
 
 
+## ★[2026-09-30 Claude] 쇠살 유리 들통(시안 A 확정). 그림 = `tools/생성_양동이_유리.py` 가 굽는 아틀라스(손으로 그리지 말 것).
+##   아틀라스는 색마다 두 겹 — 뒤(유리) · 앞(쇠살·테·광택·손잡이). **물은 두 겹 사이에 코드로 그린다** — 수위가 실시간으로 변하니까.
+##   preload 가 아니라 load: PNG 가 아직 임포트 안 됐으면 preload 는 스크립트 전체를 파싱 실패시켜 양동이가 사라진다.
+const 유리_그림_경로 := "res://assets/textures/obstacles/bucket/glass_v1/bucket_atlas.png"
+const 칸_크기 := Vector2(150.0, 170.0)
+const 칸_원점 := Vector2(75.0, 160.0)           # 칸 안에서 노드 원점(바닥 중앙)
+const 몸_위 := -100.0                             # 몸통 위(입구) y · 반폭 47
+const 몸_아래 := -8.0                             # 몸통 아래 y · 반폭 39
+const 몸_위_반폭 := 47.0
+const 몸_아래_반폭 := 39.0
+static var _유리_그림: Texture2D = null
+
+## 켜면 예전 코드 그림(사각형 + 물 띠)으로 돌아간다 — 비교·문제 확인용.
+@export var 옛_그림: bool = false:
+	set(v):
+		옛_그림 = v
+		queue_redraw()
+
+
+func _물_색(c: int) -> Color:
+	if c == ColorDefs.BLACK:
+		return Color(0.05, 0.05, 0.06)
+	if c == ColorDefs.WHITE:
+		return Color(0.93, 0.95, 0.97)
+	return Color(0.50, 0.52, 0.55)
+
+
+func _반폭(y: float) -> float:
+	return 몸_위_반폭 + (몸_아래_반폭 - 몸_위_반폭) * (y - 몸_위) / (몸_아래 - 몸_위)
+
+
+## 얇은 타원 점들 — Godot 에 타원 그리기가 없어서 직접 만든다. 앞(아래) 반쪽만 원하면 `앞만`.
+func _타원점(cy: float, rx: float, ry: float, 앞만: bool) -> PackedVector2Array:
+	var 점 := PackedVector2Array()
+	var n := 24
+	for i in n + 1:
+		var t := (PI * float(i) / n) if 앞만 else (TAU * float(i) / n)
+		점.append(Vector2(rx * cos(t), cy + ry * sin(t)))
+	return 점
+
+
+func _유리_그리기() -> void:
+	var 열 := float(clampi(색, 0, 2)) * 칸_크기.x
+	var 자리 := Rect2(-칸_원점, 칸_크기)
+	draw_texture_rect_region(_유리_그림, 자리, Rect2(Vector2(열, 0.0), 칸_크기))            # 뒤 겹(유리)
+	var 물 := _물_색(물색)
+	var 밝은선 := Color(0.95, 0.96, 0.98, 0.85) if 물색 != ColorDefs.WHITE else Color(0.55, 0.57, 0.60, 0.85)
+	# 차오르는 동안 수면이 살짝 출렁인다(받는 중일 때만 — 가만히 있을 땐 안 움직인다)
+	var 출렁: float = sin(Time.get_ticks_msec() * 0.018) * 1.2 if _물받는중 else 0.0
+	if 수위 > 0.0 and 수위 < 1.0:
+		var 바닥 := 몸_아래 - 4.0
+		var 수면 := 바닥 - 수위 * (몸_아래 - 몸_위 - 10.0)
+		var 윗폭 := _반폭(수면) - 3.0
+		var 아랫폭 := 몸_아래_반폭 - 3.0
+		var 속 := Color(물.r * 0.75, 물.g * 0.75, 물.b * 0.75, 0.93)      # 깊을수록 조금 어둡다
+		var 위색 := Color(물.r, 물.g, 물.b, 0.93)
+		draw_polygon(PackedVector2Array([Vector2(-윗폭, 수면), Vector2(윗폭, 수면), Vector2(아랫폭, 바닥), Vector2(-아랫폭, 바닥)]),
+			PackedColorArray([위색, 위색, 속, 속]))
+		draw_colored_polygon(_타원점(수면, 윗폭, 3.2 + 출렁 * 0.5, false), Color(물.r * 0.85 + 0.06, 물.g * 0.85 + 0.06, 물.b * 0.85 + 0.06))
+		# 수면 앞 가장자리 밝은 선 — 검은 물도 높이가 읽히게(시안 A 의 핵심)
+		draw_polyline(_타원점(수면, 윗폭, 3.2 + 출렁 * 0.5, true), 밝은선, 1.3, true)
+	elif 물참:
+		var 바닥 := 몸_아래 - 4.0
+		var 아랫폭 := 몸_아래_반폭 - 3.0
+		var 윗폭 := 몸_위_반폭 - 3.0
+		draw_polygon(PackedVector2Array([Vector2(-윗폭, 몸_위 + 1.5), Vector2(윗폭, 몸_위 + 1.5), Vector2(아랫폭, 바닥), Vector2(-아랫폭, 바닥)]),
+			PackedColorArray([Color(물, 0.93), Color(물, 0.93), Color(물.r * 0.75, 물.g * 0.75, 물.b * 0.75, 0.93), Color(물.r * 0.75, 물.g * 0.75, 물.b * 0.75, 0.93)]))
+	draw_texture_rect_region(_유리_그림, 자리, Rect2(Vector2(열, 칸_크기.y), 칸_크기))      # 앞 겹(쇠살·테·손잡이)
+	if 물참:
+		# 가득 = 입구까지 찬 수면 + 앞으로 넘친 물 한 줄
+		draw_colored_polygon(_타원점(몸_위 + 1.5, 몸_위_반폭 - 4.0, 3.9, false), 물)
+		draw_polyline(_타원점(몸_위 + 1.5, 몸_위_반폭 - 4.0, 3.9, true), 밝은선, 1.3, true)
+		draw_polyline(PackedVector2Array([Vector2(20.0, 몸_위 + 4.0), Vector2(21.0, 몸_위 + 16.0), Vector2(20.5, 몸_위 + 22.0)]), 물, 2.4, true)
+		draw_circle(Vector2(20.5, 몸_위 + 23.0), 2.2, 물)
+
+
 func _draw() -> void:
+	if not 옛_그림:
+		if _유리_그림 == null and ResourceLoader.exists(유리_그림_경로):
+			_유리_그림 = load(유리_그림_경로) as Texture2D
+		if _유리_그림 != null:
+			_유리_그리기()
+			return
 	var 몸색 := Color(0.32, 0.33, 0.36)
 	if 색 == ColorDefs.BLACK:
 		몸색 = Color(0.12, 0.13, 0.15)

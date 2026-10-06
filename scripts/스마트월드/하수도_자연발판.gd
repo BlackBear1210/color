@@ -66,6 +66,28 @@ func 침수마감_설정(source_id: int, world_polygon: PackedVector2Array) -> v
 	set(value):
 		옆면마감 = value
 		_마감_요청()
+## ★[2026-09-30] 투명발판 v2 — 벽돌 배경 앞에서 "투명발판" 으로 읽히게(도형님 시안 확정값은 투명발판 프리팹에 박혀 있다).
+##   모자이크/번짐/반투명도는 부모(`지형.gd` 유령 발판 그룹) 값을 그대로 쓰고, 여기서는 구분용 세 가지만 더한다.
+##   기본값은 전부 "예전 그대로"(끔) — 이미 찍힌 기본지형 유령(2-11 등)의 모습이 몰래 바뀌지 않게.
+@export_group("유령 발판")
+## 윗면 선을 빛나게, 나머지 테두리는 옅게. 0 = 끔.
+@export_range(0.0, 1.0, 0.05) var 유령_가장자리빛: float = 0.0:
+	set(v): 유령_가장자리빛 = v; _유니폼_갱신()
+## 모자이크가 좌우로 살짝 흔들리고 밝기가 숨 쉬듯 변한다. 움직이지 않는 배경 벽돌과 갈라 보이게.
+@export var 유령_일렁임: bool = false:
+	set(v): 유령_일렁임 = v; _유니폼_갱신()
+## 차가운 푸른빛 섞는 양(셰이더 ghost_tint_amount). 배경 벽돌은 따뜻한 회색이라 이것만으로도 떠 보인다.
+@export_range(0.0, 1.0, 0.05) var 유령_푸른빛: float = 0.30:
+	set(v): 유령_푸른빛 = v; _유니폼_갱신()
+@export_group("")
+
+func _유니폼_갱신() -> void:
+	super._유니폼_갱신()
+	for mat in _셰이더들:
+		mat.set_shader_parameter("ghost_edge", 유령_가장자리빛)
+		mat.set_shader_parameter("ghost_wobble", 유령_일렁임)
+		mat.set_shader_parameter("ghost_tint_amount", 유령_푸른빛)
+
 var _마감_필요: bool = true
 var _접합_서명: int = 0
 var _마감_노드: Array[MeshInstance2D] = []
@@ -141,6 +163,12 @@ func _이웃_배치변경(보낸이: Node2D) -> void:
 
 func _process(delta: float) -> void:
 	super._process(delta)
+	# 일렁임 시간은 게임 중·아직 유령일 때만 민다(셰이더 TIME 금지 규칙 — 에디터가 쉬지 못한다).
+	#   칠해서 굳으면 _유령_세기값() 이 0 이 되어 더 이상 매 프레임 값을 보내지 않는다.
+	if 유령_일렁임 and not Engine.is_editor_hint() and _유령_세기값() > 0.0:
+		var 시각 := fmod(float(Time.get_ticks_msec()) * 0.001, 3600.0)
+		for mat in _셰이더들:
+			mat.set_shader_parameter("anim_time", 시각)
 	if _마감_필요 and 땅지형 and not 석조선반 and is_inside_tree():
 		_마감_필요 = false
 		_접합_갱신()

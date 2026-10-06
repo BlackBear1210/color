@@ -30,7 +30,10 @@ func _웅덩이_착수_맞추기(delta: float) -> void:
 		var surface := to_local(pool.to_global(Vector2(local.x, -size.y))).y
 		if surface > 0.0 and surface <= height:
 			height = surface
-	_white_visual.set("보이는_높이", height)
+	# ★[2026-10-02 실측] 같은 값이어도 넣으면 물 그림이 재질을 통째로 다시 만든다(한 번 1.3ms).
+	#   0.1 초마다 물 8 개가 같은 프레임에 몰려 2-3 에서 스크립트가 10ms 씩 튀었다 → 바뀐 때만 넣는다.
+	if not is_equal_approx(float(_white_visual.get("보이는_높이")), height):
+		_white_visual.set("보이는_높이", height)
 
 
 ## 호퍼 유입은 바닥 충돌이 아니므로 끝에서 물보라가 터지지 않게 한다.

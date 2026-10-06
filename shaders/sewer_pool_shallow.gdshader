@@ -4,6 +4,8 @@ render_mode unshaded;
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear;
 uniform vec2 extent = vec2(1408.0, 64.0);
 uniform float pool_right_inset = 0.0;
+// 2026-10-03: left slope too (trapezoid pools). 0 = vertical left wall as before.
+uniform float pool_left_inset = 0.0;
 uniform int pool_tone = 2;
 uniform float phase = 0.0;
 uniform bool animate = true;
@@ -14,7 +16,30 @@ uniform float anim_time = 0.0;
 uniform bool stage5_surface = false;
 uniform vec3 step_waves[6];
 uniform int step_wave_count = 0;
+// Mockup 2026-10-01 (water looked like a paper strip): integrate = lamp-shaded surface, a dark waterline
+// grime band on the wall just above the surface and wet walls at both ends. Off = the previous output.
+uniform bool integrate = false;
+uniform float stain_height = 14.0;
+uniform vec4 lights[6];
+uniform vec4 light_extra[6];
+uniform int light_count = 0;
 varying vec2 pixel;
+varying vec2 world;
+
+vec2 lamp_light(vec3 n, vec2 wp) {
+    vec2 acc = vec2(0.0);
+    for (int i = 0; i < 6; i++) {
+        if (i >= light_count) { break; }
+        vec4 l = lights[i];
+        vec2 d = l.xy - wp;
+        float att = pow(1.0 - clamp(length(d) / max(l.z, 1.0), 0.0, 1.0), 3.5) * l.w * light_extra[i].y / 3.0;
+        vec3 lv = normalize(vec3(d, max(light_extra[i].x, 1.0)));
+        vec3 hv = normalize(lv + vec3(0.0, 0.0, 1.0));
+        acc.x += att * max(dot(n, lv), 0.0);
+        acc.y += att * pow(max(dot(n, hv), 0.0), 28.0);
+    }
+    return acc;
+}
 
 // Low-contrast sediment and broken reflections.
 float hash21(vec2 p) {
@@ -41,7 +66,8 @@ vec4 pool(vec2 p, float t, vec2 screen_uv, vec2 pixel_size) {
     float h = max(extent.y, 8.0);
     float depth = p.y - surface_height(p.x, t);
     float right = extent.x - pool_right_inset * clamp(p.y / h, 0.0, 1.0);
-    float edge = min(p.x, right - p.x);
+    float left = pool_left_inset * clamp(p.y / h, 0.0, 1.0);
+    float edge = min(p.x - left, right - p.x);
     float wet_edge = 1.0 - smoothstep(0.0, 7.0, edge);
     float alpha = smoothstep(-0.65, 0.65, depth)
         * smoothstep(0.0, 1.5, edge);
@@ -122,12 +148,74 @@ vec4 pool(vec2 p, float t, vec2 screen_uv, vec2 pixel_size) {
             alpha *= mix(0.34, 0.84, clamp(reflected_alpha, 0.0, 1.0));
         }
     }
+    if (integrate) {
+        // Meniscus: the surface climbs ~2px where it meets the basin walls at both ends,
+        // so the strip does not end in a ruler-cut corner.
+        float climb = 2.2 * exp(-max(edge, 0.0) / 5.0);
+        float depth_m = depth + climb;
+        float alpha_m = smoothstep(-0.65, 0.65, depth_m) * smoothstep(0.0, 1.5, edge);
+        // Only ABOVE the surface (the climb itself). Below it keep the body alpha, or see-through
+        // gray water would turn opaque.
+        float climb_only = 1.0 - smoothstep(-0.65, 0.65, depth);
+        alpha = max(alpha, alpha_m * climb_only * (pool_tone == 2 && stage5_surface ? 0.6 : 1.0));
+        // Reflection: the wall right above the surface, mirrored and rippled, strongest at the top
+        // and fading with depth. A dark pool becomes a black mirror; a milky pool only dims slightly.
+        float mirror = max(depth, 0.0);
+        vec2 refl_off = vec2(sin(p.y * 0.9 + t * 2.2 + p.x * 0.02) * 1.6, -2.0 * mirror - 2.0);
+        float refl = texture(screen_tex, screen_uv + refl_off * pixel_size).r;
+        float fres = exp(-mirror / 12.0);
+        if (pool_tone == 0) {
+            value = mix(value, refl * 0.85 + 0.02, fres * 0.65);
+        } else if (pool_tone == 1) {
+            // Milky white keeps its body; the reflection only carves darker ripples into the top band.
+            value -= (0.30 - refl) * fres * 0.55;
+            // Thicker milk is a little darker: a real depth fall-off instead of one flat fill.
+            value -= pow(clamp(depth / h, 0.0, 1.0), 1.3) * 0.18;
+        } else {
+            value = mix(value, refl * 0.9 + 0.12, fres * 0.45);
+        }
+        // Bright broken surface line (light skimming the surface) instead of a ruler edge.
+        float skim = exp(-pow((depth - 0.8) / 0.9, 2.0)) * smoothstep(0.35, 0.7, soft_noise(vec2(drift.x / 31.0, 1.3)));
+        value += skim * (pool_tone == 1 ? 0.06 : (pool_tone == 0 ? 0.30 : 0.22));
+        // Contact shadow where the water sits on the floor.
+        value -= smoothstep(h - 6.0, h, p.y) * (pool_tone == 0 ? 0.0 : 0.12);
+        // Surface rim faces up toward the lamps; the body faces the camera.
+        float surface_k = 1.0 - smoothstep(0.0, 6.0, depth);
+        vec3 n = normalize(mix(vec3(0.0, 0.0, 1.0), vec3(0.0, -0.9, 0.45), surface_k));
+        vec2 lit = lamp_light(n, world);
+        float marks_i = rim * glint + ripple * broken * near_surface;
+        if (pool_tone == 0) {
+            value += lit.x * 0.03 + (lit.y + lit.x * marks_i) * 0.45;
+        } else if (pool_tone == 1) {
+            value = value * (0.88 + 0.14 * lit.x) + lit.y * 0.25;
+        } else {
+            value = value * (0.88 + 0.22 * lit.x) + (lit.y + lit.x * marks_i * 0.5) * 0.3;
+        }
+        vec4 body = vec4(vec3(clamp(value, 0.0, 0.96)), alpha);
+        // Waterline grime on the wall above the surface: irregular top edge, darkest at the water.
+        float above = -depth;
+        float top_edge = stain_height * (0.45 + 0.55 * soft_noise(vec2(p.x / 21.0, 5.0)));
+        float stain = (1.0 - smoothstep(top_edge * 0.35, top_edge, above)) * step(0.0, above);
+        stain *= 0.55 + 0.45 * soft_noise(vec2(p.x / 6.0, above / 3.0));
+        stain *= smoothstep(0.0, 1.5, edge);
+        float stain_a = pool_tone == 0 ? 0.40 : 0.26;
+        vec4 wall = vec4(vec3(0.02), stain * stain_a);
+        // Wet sheen line where the surface meets the wall, only where a lamp reaches.
+        vec2 wl = lamp_light(vec3(0.0, 0.0, 1.0), world);
+        float sheen = exp(-pow((above - 1.5) / 1.0, 2.0)) * clamp(wl.x, 0.0, 1.0) * step(0.0, above);
+        wall = vec4(mix(wall.rgb, vec3(0.9), sheen * 0.6), max(wall.a, sheen * 0.35));
+        // Composite body over wall stain.
+        float a = body.a + wall.a * (1.0 - body.a);
+        vec3 rgb = (body.rgb * body.a + wall.rgb * wall.a * (1.0 - body.a)) / max(a, 0.0001);
+        return vec4(rgb, a);
+    }
     return vec4(vec3(clamp(value, 0.0, 0.96)), alpha);
 
 }
 
 void vertex() {
     pixel = VERTEX + vec2(extent.x * 0.5, 0.0);
+    world = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
 }
 
 void fragment() {

@@ -9,6 +9,8 @@ uniform sampler2D flow_texture : filter_linear, repeat_enable;
 uniform sampler2D splash_sheet : filter_linear, repeat_disable;
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear;
 uniform bool impact = true;
+// Hopper inlet mockup: end the stream with a hard cut instead of the soft fade (default off).
+uniform bool hard_end = false;
 uniform bool colored_splash = false;
 uniform int water_tone = 1;
 uniform vec2 extent = vec2(64.0, 320.0);
@@ -26,6 +28,14 @@ uniform float refraction = 1.0;
 // flow_tail (top, moves down after the valve closes) and flow_head (front, falls down after it opens).
 uniform float flow_head = 100000.0;
 uniform float flow_tail = -100000.0;
+// Mockup 2026-10-01 (water looked like paper cut-outs): when integrate is on, the stream is shaded by
+// the nearby lamps (passed in by the owning script), its outer rim turns see-through, the wall beside it
+// gets wet and the floor under it gets a wet patch. Off = the exact previous output.
+uniform bool integrate = false;
+uniform float ambient = 0.95;
+uniform vec4 lights[6];
+uniform vec4 light_extra[6];
+uniform int light_count = 0;
 
 // Must match the baker constants.
 const float FRAMES = 16.0;
@@ -36,6 +46,24 @@ const float REF_W = 64.0;
 const float SPLASH_FPS = 20.0;
 
 varying vec2 pixel;
+varying vec2 world;
+
+// x = diffuse, y = specular from the nearby lamps for a normal n at world point wp.
+// Falloff follows the sewer wall lamp gradient (bright core, quick drop).
+vec2 lamp_light(vec3 n, vec2 wp) {
+    vec2 acc = vec2(0.0);
+    for (int i = 0; i < 6; i++) {
+        if (i >= light_count) { break; }
+        vec4 l = lights[i];
+        vec2 d = l.xy - wp;
+        float att = pow(1.0 - clamp(length(d) / max(l.z, 1.0), 0.0, 1.0), 3.5) * l.w * light_extra[i].y / 3.0;
+        vec3 lv = normalize(vec3(d, max(light_extra[i].x, 1.0)));
+        vec3 hv = normalize(lv + vec3(0.0, 0.0, 1.0));
+        acc.x += att * max(dot(n, lv), 0.0);
+        acc.y += att * pow(max(dot(n, hv), 0.0), 28.0);
+    }
+    return acc;
+}
 
 float rand1(float n) { return fract(sin(n * 127.1 + 31.7) * 43758.5453); }
 float flow_noise(vec2 p) {
@@ -163,14 +191,28 @@ vec4 stream(vec2 p, vec2 screen_uv, vec2 px_size, float t) {
     float neck = max(0.0, min(hit_inset - 1.0, w * 0.08));
     float yn = clamp(p.y / max(h, 1.0), 0.0, 1.0);
     float hw = w * 0.5 - neck * (1.0 - exp(-yn * 2.2)) + 2.5 * exp(-max(p.y, 0.0) / 6.0);
+    if (integrate) {
+        // Ruler-straight sides read as cut paper. Bulge OUTWARD only (0..2px), sliding down with the flow,
+        // so the drawn water never gets narrower than the hit box.
+        float side_id = p.x < w * 0.5 ? 3.0 : 9.0;
+        hw += 2.0 * flow_noise(vec2(side_id, (p.y - t * speed * 1.1) / 23.0));
+    }
     float c = w * 0.5 + wobble(p.y, t, h);
     float dx = p.x - c;
     float u = dx / hw;
     float au = clamp(abs(u), 0.0, 1.0);
     float cover = clamp(hw - abs(dx) + 0.5, 0.0, 1.0);
     cover *= smoothstep(0.0, 2.0, p.y);
+    if (integrate) {
+        // No hard horizontal cut where the water appears.
+        cover *= smoothstep(0.0, 5.0, p.y);
+    }
     if (impact) {
         cover *= 1.0 - smoothstep(h - 3.0, h + 1.0, p.y);
+    } else if (hard_end) {
+        // Enters a hopper pool: cut cleanly, the pool surface drawn in front hides the end.
+        // A faded end shows the metal behind through the refraction as a grey block.
+        cover *= 1.0 - step(h, p.y);
     } else {
         cover *= 1.0 - smoothstep(h - 9.0, h + 5.0, p.y);
     }
@@ -229,6 +271,20 @@ vec4 stream(vec2 p, vec2 screen_uv, vec2 px_size, float t) {
         float edge_line = exp(-pow((min(e_l, e_r) - 0.7) / 0.6, 2.0));
         float soft_edge = smoothstep(0.0, 1.0, hw - abs(dx));
         cover *= mix(0.8, 1.0, soft_edge);
+        vec2 lit = vec2(0.0);
+        float rim_band = 0.0;
+        if (integrate) {
+            // Flat sheet in the middle, curling away near both edges (a narrow stream is all curl = a
+            // cylinder). Lane and strand noise tilt the normal so lamp glints break into streaks.
+            float e = min(e_l, e_r);
+            float curl = 1.0 - clamp(e / min(hw, 22.0), 0.0, 1.0);
+            float tilt = (lane_n - 0.5) * 0.9 * wide_k + (strand - 0.3) * 0.35;
+            vec3 n = normalize(vec3(sign(dx) * curl * 1.7 + tilt, 0.0, 1.0));
+            lit = lamp_light(n, world);
+            // The symmetric bright edge lines read as a cut-out outline: keep them only where a lamp hits.
+            edge_line *= 0.2 + 0.8 * clamp(lit.x * 2.5, 0.0, 1.0);
+            rim_band = 1.0 - clamp(e / min(7.0, hw * 0.3), 0.0, 1.0);
+        }
         if (water_tone == 0) {
             col = 0.030 + strand * 0.34 + wide * 0.04 + lanes * 0.16 + edge_line * 0.52;
         } else if (water_tone == 1) {
@@ -238,7 +294,90 @@ vec4 stream(vec2 p, vec2 screen_uv, vec2 px_size, float t) {
             float water = 0.46 + strand * 0.30 + wide * 0.06 + lanes * 0.22;
             col = mix(r, water, 0.62) + edge_line * 0.45;
         }
+        if (integrate) {
+            // Value structure along the fall: glassy and shadowed where it leaves the opening,
+            // aerated (lighter streaks) in the last stretch before the floor.
+            float top_k = 1.0 - smoothstep(0.0, 48.0, p.y);
+            float foam_k = impact ? smoothstep(h - 80.0, h - 4.0, p.y) * (0.45 + 0.55 * wide) : 0.0;
+            if (water_tone == 1) {
+                col = col * (ambient + 0.16 * lit.x);
+                col = mix(col, 0.72, top_k * 0.65);
+                col = mix(col, 0.98, foam_k * 0.75);
+                col += lit.y * 0.30;
+            } else if (water_tone == 0) {
+                col *= 1.0 - top_k * 0.6;
+                col = mix(col, 0.16 + strand * 0.10, foam_k * 0.45);
+                col += lit.x * 0.035 + lit.y * 0.55;
+            } else {
+                col = col * (ambient + 0.24 * lit.x);
+                col = mix(col, col * 0.72, top_k * 0.6);
+                col = mix(col, 0.58, foam_k * 0.5);
+                col += lit.y * 0.35;
+            }
+            // Outer rim is thin water: the real wall shows through it, bent sideways.
+            if (water_tone != 2) {
+                col = mix(col, r, rim_band * 0.45);
+            }
+            cover *= mix(1.0, 0.72, rim_band);
+        }
         result = vec4(vec3(clamp(col, 0.0, 0.98)), cover);
+    }
+
+    if (integrate && cover < 1.0) {
+        // Wet wall beside the stream: dark drip streaks hugging the sides, heavier near the bottom,
+        // with lamp glints on the wet film; bright water also throws a faint mist.
+        float side = abs(dx) - hw;
+        float present = smoothstep(0.0, 12.0, p.y) * step(p.y, min(h, flow_head))
+            * smoothstep(flow_tail, flow_tail + 20.0, p.y);
+        if (side > -1.5 && present > 0.0) {
+            float drip = flow_noise(vec2(p.x / 2.5, p.y / 55.0 - t * 0.35));
+            float lower = mix(0.45, 1.0, smoothstep(0.0, max(h, 1.0), p.y));
+            float wet = exp(-max(side, 0.0) / 8.0) * (0.5 + 0.5 * drip) * lower * present;
+            float stain_a = water_tone == 0 ? 0.42 : (water_tone == 1 ? 0.20 : 0.28);
+            vec4 wall = vec4(vec3(0.0), stain_a * wet);
+            vec2 wl = lamp_light(vec3(0.0, 0.0, 1.0), world);
+            float glint = smoothstep(0.62, 0.82, drip) * exp(-max(side, 0.0) / 5.0) * clamp(wl.x, 0.0, 1.0) * present;
+            wall = over(wall, vec4(vec3(0.92), glint * 0.40));
+            if (water_tone != 0) {
+                // Mist only in the spray zone near the floor: a glow along the whole height reads as blur.
+                float mist = exp(-max(side, 0.0) / 18.0) * smoothstep(h - 140.0, h, p.y) * present;
+                wall = over(wall, vec4(vec3(0.86), mist * (water_tone == 1 ? 0.17 : 0.10)));
+            }
+            result = over(wall, result);
+        }
+        // Wet patch on the floor under the impact, with a thin lamp sheen on its top edge.
+        if (impact && flow_head >= h - 1.0 && p.y >= h && p.y < h + 12.0) {
+            float spread = exp(-pow(max(abs(dx) - hw, 0.0) / 46.0, 1.5));
+            float k = 1.0 - (p.y - h) / 12.0;
+            float blot = 0.7 + 0.3 * flow_noise(vec2(p.x / 9.0, 3.1));
+            vec4 floor_wet = vec4(vec3(0.0), (water_tone == 1 ? 0.30 : 0.40) * spread * k * blot);
+            vec2 fl_l = lamp_light(vec3(0.0, -0.8, 0.6), world);
+            float sheen = exp(-pow((p.y - h - 1.0) / 1.2, 2.0)) * spread * clamp(fl_l.x, 0.0, 1.0);
+            floor_wet = over(floor_wet, vec4(vec3(0.9), sheen * 0.5));
+            result = over(floor_wet, result);
+        }
+        // Runoff film: the water that landed spreads along the floor top and thins out, in its own tone.
+        // Purely visual (the hit box is unchanged) and kept thin so it never reads as a painted floor.
+        if (impact && flow_head >= h - 1.0 && flow_tail < h - 2.0) {
+            float out_d = abs(dx) - hw;
+            float reach = 130.0;
+            if (out_d > -2.0 && out_d < reach) {
+                float spread = clamp(out_d / reach, 0.0, 1.0);
+                // Covers the floor's lit top lip (back_depth) so even white runoff reads against it.
+                float thick = mix(6.0, 0.8, sqrt(spread));
+                float floor_y = extent.y;
+                float in_film = smoothstep(floor_y - thick - 0.8, floor_y - thick, p.y) * step(p.y, floor_y);
+                float travel = flow_noise(vec2((out_d - t * 45.0) / 11.0, 2.0));
+                float film_a = in_film * (1.0 - spread) * (0.45 + 0.35 * travel);
+                float film_v = water_tone == 1 ? 0.88 : (water_tone == 0 ? 0.04 : 0.50);
+                // Thin bright meniscus on the film top so even black runoff reads on a dark floor.
+                float top_line = exp(-pow((p.y - (floor_y - thick)) / 0.7, 2.0)) * (1.0 - spread);
+                float line_v = water_tone == 0 ? 0.42 : 0.97;
+                vec4 film = vec4(vec3(film_v), film_a * (water_tone == 2 ? 0.7 : 1.0));
+                film = over(film, vec4(vec3(line_v), top_line * (0.35 + 0.4 * travel)));
+                result = over(film, result);
+            }
+        }
     }
 
     // No splash until the falling front reaches the floor, and none after the tail has passed it.
@@ -283,6 +422,7 @@ vec4 stream(vec2 p, vec2 screen_uv, vec2 px_size, float t) {
 
 void vertex() {
     pixel = VERTEX + vec2(extent.x * 0.5, 0.0);
+    world = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
 }
 
 void fragment() {

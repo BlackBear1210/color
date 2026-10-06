@@ -49,8 +49,12 @@ func _physics_process(delta: float) -> void:
 		var local: Vector2 = pool.to_local(foot)
 		var extent: Vector2 = pool.get("크기")
 		var inset: float = float(pool.get("오른쪽_안쪽폭")) if "오른쪽_안쪽폭" in pool else 0.0
-		var right := extent.x * 0.5 - inset * clampf((local.y + extent.y) / extent.y, 0.0, 1.0)
-		if local.x >= -extent.x * 0.5 and local.x <= right and local.y >= -extent.y and local.y <= 2.0:
+		var left_inset: float = float(pool.get("왼쪽_안쪽폭")) if "왼쪽_안쪽폭" in pool else 0.0
+		var 깊이비 := clampf((local.y + extent.y) / extent.y, 0.0, 1.0)
+		var right := extent.x * 0.5 - inset * 깊이비
+		# 왼쪽 경사(2026-10-03 · 사다리꼴 웅덩이)
+		var left := -extent.x * 0.5 + left_inset * 깊이비
+		if local.x >= left and local.x <= right and local.y >= -extent.y and local.y <= 2.0:
 			inside = true
 			tone = int(pool.get("색"))
 			break

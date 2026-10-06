@@ -27,7 +27,9 @@ func run() -> void:
 	core.add_to_group("페인트코어")
 	world.add_child(core)
 	var terrains: Array[Node2D] = []
-	for name in ["A_바닥", "A_갤러리_슬래브", "A_샤프트_왼벽"]:
+	# ★[2026-10-03] 2-1 v3(uvtt 도면)로 다시 지어 옛 노드(A_바닥 · A_갤러리_슬래브 · A_샤프트_왼벽)가 없다 →
+	#   같은 역할(큰 검정 바닥 · 흰 바닥 · 흰 홈)의 새 노드로 본다.
+	for name in ["좌하_덩어리", "튜토리얼_흰바닥", "웅덩이_홈_흰"]:
 		var terrain_node := source.get_node("지형/" + name) as Node2D
 		terrain_node.get_parent().remove_child(terrain_node)
 		world.add_child(terrain_node)

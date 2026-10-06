@@ -29,8 +29,24 @@ func _상판_충돌_갱신() -> void:
 		return
 	var 올림 := _상판_올림()
 	var 모양 := get_node_or_null("밟는면/모양") as CollisionShape2D
-	if 모양 != null and 모양.shape is RectangleShape2D:
-		# 아래쪽은 고정하고 윗면만 4→0px 이동한다. 기존 폭과 바닥 높이를 유지한다.
+	if 모양 != null and not Engine.is_editor_hint():
+		# ★[2026-09-30 Claude] 도형님 제보(2-7): "박스가 발판 위로 안 올라간다 → 발판이 안 눌린다 → 지형이 안 변한다".
+		#   원인: 상판 충돌이 바닥보다 4px 솟은 **직각 턱**이었다. 사람은 걸어서 넘지만, 밀리는 박스(CharacterBody2D)는
+		#   턱 옆면에 막혀 버튼 왼끝에서 멈췄다(주행검사: 박스 x=1717 = 버튼 왼끝 − 박스 반폭, 교체 전 원본도 동일).
+		#   1차 수정(양끝 10px 경사)은 박스가 올라가긴 했지만 "한 번 턱에 걸려 천천히 밀리다 올라간다"(도형님 확인) —
+		#   상자 모서리가 짧은 경사에 닿으면 속도가 경사를 따라 꺾여 느려진다.
+		#   → 충돌 윗면은 **바닥과 같은 높이로 고정**하고, 솟은 4px 는 그림(_draw)에만 남긴다. 턱이 없으니 멈칫도 없다.
+		#     (사람이 안 눌린 판에 올라서는 순간 발이 그림상 4px 잠기지만, 올라서면 곧바로 눌려 판이 내려가므로 보이지 않는다)
+		#   에디터에서는 건드리지 않는다(저장된 모양이 바뀌어 씬 파일이 흔들리지 않게).
+		var 사각 := 모양.shape as RectangleShape2D
+		if 사각 == null:
+			사각 = RectangleShape2D.new()
+			모양.shape = 사각
+		if 사각.size != Vector2(폭, 높이):
+			사각.size = Vector2(폭, 높이)
+		모양.position = Vector2(0, -높이 * 0.5)
+	elif 모양 != null and 모양.shape is RectangleShape2D:
+		# 에디터: 예전처럼 사각형(아래쪽 고정, 윗면만 4→0px)
 		var 사각 := 모양.shape as RectangleShape2D
 		var 크기 := Vector2(폭, 높이 + 올림)
 		if 사각.size != 크기:

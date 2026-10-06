@@ -3,6 +3,8 @@ render_mode unshaded;
 
 uniform vec2 extent = vec2(1408.0, 64.0);
 uniform float pool_right_inset = 0.0;
+// 2026-10-03: left slope too (trapezoid pools). 0 = vertical left wall as before.
+uniform float pool_left_inset = 0.0;
 uniform int pool_tone = 2;
 uniform float phase = 0.0;
 uniform bool animate = true;
@@ -36,7 +38,8 @@ vec4 pool(vec2 p, float t) {
     float h = max(extent.y, 8.0);
     float depth = p.y - surface_height(p.x, t);
     float right = extent.x - pool_right_inset * clamp(p.y / h, 0.0, 1.0);
-    float edge = min(p.x, right - p.x);
+    float left = pool_left_inset * clamp(p.y / h, 0.0, 1.0);
+    float edge = min(p.x - left, right - p.x);
     float wet_edge = 1.0 - smoothstep(0.0, 7.0, edge);
     float alpha = smoothstep(-0.65, 0.65, depth)
         * smoothstep(0.0, 1.5, edge);
