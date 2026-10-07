@@ -18,6 +18,9 @@ var _구동: float = 0.0
 var _지난_속도 := Vector2.ZERO
 var _지난_착지: bool = true
 var _초기화됨: bool = false
+## 보행 위상은 실제 캐릭터 프레임을 우선하고, 시트 없는 검사/옛 캐릭터만 이동 거리로 계산한다.
+var _보행_위상: float = 0.0
+var _지난_보행파: float = 0.0
 var 파동 := preload("res://scripts/ui/페인트_파동.gd").new()
 
 func 초기화(속도 := Vector2.ZERO, 착지: bool = true) -> void:
@@ -33,12 +36,14 @@ func 초기화(속도 := Vector2.ZERO, 착지: bool = true) -> void:
 	_지난_속도 = 속도
 	_지난_착지 = 착지
 	_초기화됨 = true
+	_보행_위상 = 0.0
+	_지난_보행파 = 0.0
 
 func 충격_추가(세기: float) -> void:
 	충격 = minf(1.0, 충격 + 세기)
 	파동.충격(세기)
 
-func 갱신(delta: float, 속도: Vector2, 착지: bool) -> void:
+func 갱신(delta: float, 속도: Vector2, 착지: bool, 보행위상: float = -1.0) -> void:
 	if delta <= 0.0:
 		return
 	if not _초기화됨:
@@ -49,13 +54,21 @@ func 갱신(delta: float, 속도: Vector2, 착지: bool) -> void:
 	var 가속 := clampf((속도.x - _지난_속도.x) / maxf(delta, 0.001), -2600.0, 2600.0)
 	var 달리기 := clampf(속도.x / 390.0, -1.0, 1.0)
 	파동.갱신(delta, 가속, 종류)
+	var 이동중 := absf(속도.x) > 15.0
+	var 보행파 := 0.0
+	if 착지 and 이동중:
+		# 좌우 어느 쪽으로 걸어도 발이 디딜 때 통 안의 페인트가 움직인다. 멈추거나 공중이면 새 힘을 주지 않는다.
+		_보행_위상 = 보행위상 if 보행위상 >= 0.0 else fmod(_보행_위상 + absf(속도.x) * dt * TAU / 140.0, TAU)
+		보행파 = sin(_보행_위상) * absf(달리기)
+		# 변화량의 충량을 써 프레임률에 따라 충격 횟수가 늘지 않게 한다. 평균 수위는 파동 모델이 보존한다.
+		파동.충격(absf(보행파 - _지난_보행파) * 0.22)
+	_지난_보행파 = 보행파
 	# 가속 관성이 중심이고 지속 달리기의 작은 편향은 보행 중 흔들리는 통을 나타내는 연출이다.
-	var 목표 := clampf(달리기 * 0.48 + 가속 / 1800.0 * 0.50, -0.98, 0.98)
+	var 목표 := clampf(달리기 * 0.48 + 가속 / 1800.0 * 0.50 + 보행파 * 0.12, -0.98, 0.98)
 	if 착지 != _지난_착지:
 		충격_추가(clampf(absf(속도.y - _지난_속도.y) / 1250.0, 0.20, 0.65))
 	_지난_속도 = 속도
 	_지난_착지 = 착지
-	var 이동중 := absf(속도.x) > 15.0
 	var 추종시간: float = 0.10 if 이동중 else float(p["복귀"])
 	var 주파수: float = p["주파수"]
 	# 정지하면서 감쇠를 늘려 물처럼 계속 출렁이거나 젤리처럼 튕기지 않게 한다.

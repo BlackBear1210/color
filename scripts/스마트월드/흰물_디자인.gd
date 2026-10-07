@@ -111,6 +111,27 @@ const STREAM_V3_SPLASH_PATH = "res://assets/textures/obstacles/liquid/stream_v3/
 		자연물 = value
 		_갱신()
 const NATURAL_SHADER_PATH = "res://shaders/water_stream_natural.gdshader"
+## 힉스필드가 만든 흰색 유체 영상의 실제 48프레임(12fps·4초 반복).
+## 손으로 움직인 물살 리그 대신 낙수 본체·착수부를 함께 읽고, 바닥 물막은 물줄기 폭에 맞춘다.
+const IMPACT_A_PATH = "res://assets/textures/obstacles/liquid/white_fluid_higgsfield_v1/white_fluid_f48_256x512_g8x6_fps12_loop.png"
+var _착수_프레임: Texture2D
+var _착수_프레임_경로: String = ""
+
+func _착수_프레임_읽기() -> Texture2D:
+	# 새 PNG의 에디터 임포트 전에도 새 착수 그림을 읽어 기존 왕관으로 되돌아가는 일을 막는다.
+	# 물색/크기가 바뀔 때마다 파일을 다시 읽지 않도록 이 노드의 텍스처를 보관한다.
+	# 시트 경로가 바뀌었으면 기존 인스턴스의 캐시도 교체한다. 예전 흔들림 시트가 남지 않게 한다.
+	if _착수_프레임 != null and _착수_프레임_경로 == IMPACT_A_PATH:
+		return _착수_프레임
+	_착수_프레임 = null
+	_착수_프레임_경로 = IMPACT_A_PATH
+	if ResourceLoader.exists(IMPACT_A_PATH, "Texture2D"):
+		_착수_프레임 = load(IMPACT_A_PATH) as Texture2D
+	elif FileAccess.file_exists(IMPACT_A_PATH):
+		var 원본 := Image.load_from_file(IMPACT_A_PATH)
+		if 원본 != null and not 원본.is_empty():
+			_착수_프레임 = ImageTexture.create_from_image(원본)
+	return _착수_프레임
 
 ## 웅덩이 물때 띠 높이(px). 입체감이 켜졌을 때만 그린다.
 const 물때_높이 := 14.0
@@ -226,6 +247,21 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 		return
 	if mat.shader != shader:
 		mat.shader = shader
+	# 2026-10-07: 1번 시안은 2-1~2-4의 흰 물에만 시험 적용한다.
+	# 흰색은 생성 영상으로, 혼합된 검정/회색은 기존 재질로 그린다. 바닥 번짐 폭은 모두 본체에 맞춘다.
+	if 자연물 and sewer:
+		var 착수_프레임 := _착수_프레임_읽기()
+		# 생성 영상의 물줄기 본체와 착수부를 통째로 재생한다. 검정/회색 및 다른 스테이지는 기존 그림이다.
+		if 착수_프레임 != null:
+			mat.set_shader_parameter("impact_frames", 착수_프레임)
+		var 힉스필드_적용 := 착수_프레임 != null and stage.scene_file_path in [
+			"res://scenes/world_2_클로드/stage_2-1.tscn",
+			"res://scenes/world_2_클로드/stage_2-2.tscn",
+			"res://scenes/world_2_클로드/stage_2-3.tscn",
+			"res://scenes/world_2_클로드/stage_2-4.tscn",
+		]
+		mat.set_shader_parameter("low_floor_impact", 힉스필드_적용)
+		mat.set_shader_parameter("higgsfield_fluid", 힉스필드_적용)
 	mat.set_shader_parameter("flow_texture", flow)
 	mat.set_shader_parameter("splash_sheet", sheet)
 	# 하수도에서만 새 낙수 색 규칙을 적용한다. 다른 챕터의 기존 외관은 유지한다.
@@ -254,5 +290,8 @@ func _draw() -> void:
 	if _v3_쓰나():
 		# v3 착수 프레임은 기준 폭에서 좌우 192px, 배율만큼 커진다(바닥 물막·잔물결이 잘리지 않게).
 		margin = maxf(margin, 192.0 * _v3_착수_배율() - 크기.x * 0.5 + 4.0)
+		# 새 유체 시트는 본체 폭에 맞춰 배율이 달라진다. 넓은 물막의 공중 방울도 자르지 않게 한다.
+		if 자연물 and 물색 == 1 and _착수_프레임 != null:
+			margin = maxf(margin, 크기.x * 2.0)
 	var bottom := 32.0 if 형태 in [0, 1, 2] else 0.0
 	draw_rect(Rect2(Vector2(-크기.x * 0.5 - margin, -back), 크기 + Vector2(margin * 2.0, back + bottom)), Color.WHITE)

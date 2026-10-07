@@ -89,6 +89,11 @@ var _에디터_플레이어_위치: Vector2 = Vector2.ZERO
 ## 통로로 들어왔을 때 `장면전환` 이 넘겨준 정보의 복사본. (진입_소비() 뒤에도 남아 있어야 한다)
 var _진입정보: Dictionary = {}
 var _안전_누적: float = 0.0            ## 그 자리에서 안전하게 버틴 시간
+## 사망 모션 중에는 판정·입력·체크포인트 갱신을 막아 같은 죽음이 중복 실행되지 않게 한다.
+var _사망중: bool = false
+var _체크포인트_저장됨: bool = false
+var _체크포인트_위치: Vector2 = Vector2.ZERO
+var _체크포인트_색: int = ColorDefs.BLACK
 
 
 func _ready() -> void:
@@ -175,6 +180,10 @@ func _ready() -> void:
 				if body == _플레이어:
 					스테이지_완료())
 	_HUD_만들기()
+	# 배치된 성수반은 불만 켜던 상태였으므로 실제 부활 위치도 이 월드에 저장한다.
+	for 지점 in get_tree().get_nodes_in_group("checkpoint"):
+		if 지점 is Area2D and is_ancestor_of(지점):
+			지점.body_entered.connect(_체크포인트_접촉.bind(지점))
 	_메뉴_만들기()
 	# [2026-08-17] 탄약_변경 시그널 연결을 뺐다. 점 HUD 는 매 프레임 코어를 읽으므로
 	# 시그널이 필요 없고, 시그널만 믿으면 **회수줄이 바뀌었는데 탄약 수는 그대로인 순간**
@@ -182,7 +191,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _플레이어 == null:
+	if _플레이어 == null or _사망중:
 		return
 	# 통로를 지나 화면이 까매지는 동안에는 아무 판정도 하지 않는다.
 	# (암전 중에 죽으면 다음 스테이지에서 갑자기 리스폰 지점에 서 있게 된다)
@@ -235,6 +244,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _사망중:
+		return
 	if not event.is_action_pressed("interact"):
 		return
 	# ── E 중재 ── 레버가 손에 닿으면 레버가 우선 (기획: "가까이 다가가서 상호작용")
@@ -482,6 +493,20 @@ func 연결_도착(도착: Vector2, 안쪽: Vector2) -> void:
 
 
 func _리스폰() -> void:
+	if _사망중 or _플레이어 == null:
+		return
+	_사망중 = true
+	# 본체를 사망 위치에 멈춰 두고, 모션이 끝나기 전에는 총이나 연결구를 조작하지 못한다.
+	var 원래_레이어 := _플레이어.collision_layer
+	var 원래_물리 := _플레이어.is_physics_processing()
+	_플레이어.velocity = Vector2.ZERO
+	_플레이어.set_physics_process(false)
+	_플레이어.collision_layer = 0
+	var 총_입력 := _총.is_processing_unhandled_input() if _총 != null else false
+	var 총_표시 := _총.visible if _총 != null else false
+	if _총 != null:
+		_총.set_process_unhandled_input(false)
+		_총.visible = false
 	# 모든 실제 사망 경로가 합류하는 곳에서 한 번만 집계한다.
 	사망함.emit()
 	# 같은 자리에서 재시작해도 입수 화면 효과가 남거나 다시 튀지 않도록 명시적으로 초기화한다.
@@ -493,9 +518,19 @@ func _리스폰() -> void:
 		효과음.죽음()
 	if _카메라:
 		_카메라.add_trauma(0.55)
+	var 캐릭터 := _플레이어.get_node_or_null("CharacterSprite")
+	if 캐릭터 != null and 캐릭터.has_method("사망_재생"):
+		await 캐릭터.call("사망_재생")
+	else:
+		# 새 모션 컴포넌트가 없는 옛 씬도 사망 위치를 잠깐 보여 준 뒤 부활한다.
+		await get_tree().create_timer(0.8, false).timeout
+	# 부활 바닥 색을 읽는 레이는 물리 시점에서 검사해 렌더 프레임의 공간 잠금을 피한다.
+	await get_tree().physics_frame
+	if not is_instance_valid(_플레이어):
+		return
 	_플레이어.set("velocity", Vector2.ZERO)
-	# [2026-08-06] 자동 체크포인트가 켜져 있으면 마지막 안전지점으로, 아니면 처음으로.
-	_플레이어.global_position = _안전점 if 안전지점_자동저장 else _직접실행_시작위치()
+	# 닿은 체크포인트를 우선하고, 아직 없을 때만 기존 자동 안전지점/시작 위치를 쓴다.
+	_플레이어.global_position = _체크포인트_위치 if _체크포인트_저장됨 else (_안전점 if 안전지점_자동저장 else _직접실행_시작위치())
 	_무적 = 0.6
 	_안전_누적 = 0.0
 	if _카메라:
@@ -513,6 +548,45 @@ func _리스폰() -> void:
 	# 사망은 "스테이지 재시도" 다 → 규칙대로 모든 페인트를 회수한다.
 	if _코어:
 		_코어.리셋()
+	if _체크포인트_저장됨:
+		_플레이어.set("player_color", _체크포인트_복원색())
+	_부활_후처리()
+	_플레이어.collision_layer = 원래_레이어
+	_플레이어.set_physics_process(원래_물리)
+	if _총 != null:
+		_총.set_process_unhandled_input(총_입력)
+		_총.visible = 총_표시
+	_사망중 = false
+
+
+func _부활_후처리() -> void:
+	# 특수 스테이지의 색 보정도 비동기 사망 모션 뒤, 조작을 풀기 직전에 실행한다.
+	pass
+
+
+func _체크포인트_접촉(body: Node2D, 지점: Area2D) -> void:
+	if body != _플레이어 or _사망중:
+		return
+	_체크포인트_저장됨 = true
+	_체크포인트_위치 = 지점.global_position + Vector2(0, -2)
+	_체크포인트_색 = int(_플레이어.call("선택색"))
+	if 지점.has_method("켜기"):
+		지점.call("켜기")
+
+
+func _체크포인트_복원색() -> int:
+	# 죽으면 칠한 바닥이 초기화된다. 원래 바닥색으로 맞춰 흰 몸의 검정 바닥 반복 사망을 막는다.
+	var 점 := _체크포인트_위치
+	var 질의 := PhysicsRayQueryParameters2D.create(점 + Vector2(0, -8), 점 + Vector2(0, 16), 1)
+	질의.exclude = [_플레이어.get_rid()]
+	var 결과 := get_world_2d().direct_space_state.intersect_ray(질의)
+	if not 결과.is_empty():
+		var 지형 := _반대색_대상_찾기(결과["collider"])
+		if 지형 != null and 지형.has_method("기본_아트색"):
+			var 색: int = 지형.call("기본_아트색")
+			if 색 == ColorDefs.BLACK or 색 == ColorDefs.WHITE:
+				return 색
+	return _체크포인트_색
 
 
 # ── 챕터 · 등장 연출 ───────────────────────────────────────────────────────

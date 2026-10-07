@@ -1,0 +1,81 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_자연발판.gd" id="shape"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="array"]
+[ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v02/땅_black.tres" id="material"]
+
+[sub_resource type="Resource" id="p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(188, 0)
+
+[sub_resource type="Resource" id="p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, 4)
+
+[sub_resource type="Resource" id="p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, 64)
+
+[sub_resource type="Resource" id="p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 64)
+
+[sub_resource type="Resource" id="p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 5)
+
+[sub_resource type="Resource" id="p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="points"]
+resource_local_to_scene = true
+script = ExtResource("array")
+_points = {
+0: SubResource("p0"),
+1: SubResource("p1"),
+2: SubResource("p2"),
+3: SubResource("p3"),
+4: SubResource("p4"),
+5: SubResource("p5"),
+6: SubResource("p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {Vector2i(0, 6): 15}
+_next_key = 7
+
+[node name="하수도_투명발판_기본지형_검정" type="Node2D"]
+editor_description = "[2026-09-30] 기본지형 디자인 투명(유령)발판 192x64. 칠하기 전엔 못 밟는다(모자이크+번짐+반투명+푸른빛+윗면 빛+일렁임). 칠하면 기본지형 공중발판 그대로 굳는다. 크기는 SS2D 점으로, Scale 1 유지."
+script = ExtResource("shape")
+texture_repeat = 2
+texture_filter = 2
+"땅지형" = true
+"옆면마감" = true
+"시작상태" = 0
+"무색일때_통과" = true
+"유령_블록" = 14.0
+"유령_번짐" = 8.0
+"유령_반투명도" = 0.55
+"유령_가장자리빛" = 0.7
+"유령_일렁임" = true
+"유령_푸른빛" = 0.35
+"위치별_판정" = true
+_points = SubResource("points")
+shape_material = ExtResource("material")
+collision_update_mode = 2
+collision_size = 0.0
+collision_polygon_node_path = NodePath("StaticBody2D/CollisionPolygon2D")
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(4, 0, 188, 0, 192, 4, 192, 64, 0, 64, 0, 5)

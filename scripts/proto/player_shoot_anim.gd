@@ -29,6 +29,11 @@ var _본체: AnimatedSprite2D            ## 팀의 CharacterSprite (발사 중 �
 var _반대색_발사시트: AnimatedSprite2D  ## 흑/백 발사 시트를 겹쳐 경계선으로 자른다.
 
 func setup(player: CharacterBody2D, gun: Node) -> void:
+	# 새 캐릭터는 본체 시트에 발사 모션이 있어 구 시트가 본체를 숨기지 않게 한다.
+	var 새_본체 := player.get_node_or_null("CharacterSprite")
+	if 새_본체 != null and 새_본체.has_method("연결_총"):
+		queue_free()
+		return
 	_player = player
 	_gun = gun
 	if gun and gun.has_signal("fired"):

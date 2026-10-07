@@ -26,6 +26,9 @@ extends Node2D
 ## ============================================================================
 class_name 페인트총
 
+# 실제 소모에 성공한 발사만 새 캐릭터 반동을 재생하도록 알린다.
+signal fired
+
 const 총알_스크립트 := preload("res://scripts/스마트월드/총알.gd")
 
 ## 총구를 떠나는 속력(px/s). 낮출수록 탄낙차가 커진다.
@@ -73,6 +76,9 @@ var _흐름: float = 0.0
 func 연결(p_player: Node2D, p_코어: 페인트코어) -> void:
 	플레이어 = p_player
 	코어 = p_코어
+	var 캐릭터 := 플레이어.get_node_or_null("CharacterSprite")
+	if 캐릭터 != null and 캐릭터.has_method("연결_총"):
+		캐릭터.call("연결_총", self, 코어)
 	# [2026-08-23] Gun 이 GunRig(역스케일 노드) 아래로 내려갔다 — `총_받침.gd` 참고.
 	#   예전 씬도 열리게 옛 경로를 대비책으로 남긴다.
 	_gun = 플레이어.get_node_or_null("GunRig/Gun") as Node2D
@@ -119,7 +125,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func 발사() -> void:
 	if _쿨 > 0.0 or 플레이어 == null or 코어 == null:
 		return
-	var 시작 := _muzzle.global_position if _muzzle else 플레이어.global_position
+	var 시작 := _발사_원점()
 	var 커서 := get_global_mouse_position()
 	# 발사 순간의 얼굴색을 직접 읽는다. 대표색은 물리 프레임마다 갱신되므로,
 	# 여기서는 이전 프레임 값이 아니라 현재 조준 쪽 입의 색을 써야 한다.
@@ -134,6 +140,7 @@ func 발사() -> void:
 		_쿨 = 발사간격
 		코어.발사_소모()
 		코어.명중_처리(덤불, 색, 커서)
+		fired.emit()
 		return
 
 	# ── 평범한 발사 ──
@@ -150,6 +157,7 @@ func 발사() -> void:
 	get_parent().add_child(총알)
 	# 물감은 총구가 아니라 실제 명중 지점에서 튀어야 하므로, 효과 노드를 총알에 넘긴다.
 	총알.시작(시작, 방향, 탄속, 색, 코어, 플레이어.get_node_or_null("ActionFX"))
+	fired.emit()
 
 
 ## 총구가 어느 덤불 안에 있는지. 없으면 null.
@@ -167,6 +175,10 @@ func _총구가_속한_덤불(총구: Vector2) -> 식물B:
 
 ## 발사 원점. 발사()와 **같은 식**을 써야 조준선과 실탄이 어긋나지 않는다.
 func _발사_원점() -> Vector2:
+	# 새 스프라이트의 총구와 실탄·조준선을 일치시키되 얼굴 색 판정은 바꾸지 않는다.
+	var 캐릭터 := 플레이어.get_node_or_null("CharacterSprite") if 플레이어 else null
+	if 캐릭터 != null and 캐릭터.has_method("총구_월드좌표"):
+		return 캐릭터.call("총구_월드좌표")
 	if _muzzle and is_instance_valid(_muzzle):
 		return _muzzle.global_position
 	return 플레이어.global_position if 플레이어 else global_position

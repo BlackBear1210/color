@@ -148,6 +148,9 @@ func _재구성() -> void:
 
 
 func _몸_들어옴(몸: Node2D) -> void:
+	# 사망 모션으로 멈춘 본체가 길목에 걸쳐 있어도 다음 스테이지로 넘어가지 않는다.
+	if 몸 is CharacterBody2D and not 몸.is_physics_processing():
+		return
 	if _무시중 or not 몸.is_in_group("player") or not 열림():
 		return
 	if 전경전환_스크립트.진행중인가():

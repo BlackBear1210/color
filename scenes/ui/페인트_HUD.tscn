@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://3ea58bgvhfqa" path="res://scripts/ui/페인트_HUD.gd" id="1_ctrl"]
 [ext_resource type="Shader" uid="uid://bbd50an67ltaf" path="res://shaders/HUD_구.gdshader" id="2_gu"]
 [ext_resource type="Shader" uid="uid://bvrnusoy6n163" path="res://shaders/HUD_액체.gdshader" id="3_liquid"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/paint_gauge/frame.png" id="4_frame"]
 
 [sub_resource type="ShaderMaterial" id="degkk"]
 shader = ExtResource("2_gu")
@@ -85,12 +86,15 @@ material = SubResource("27n3w")
 position = Vector2(4, 4)
 antialiased = true
 
-[node name="게이지_앞" type="ColorRect" parent="루트/본체/게이지" unique_id=1218095872]
-material = SubResource("r4w6k")
+[node name="게이지_앞" type="TextureRect" parent="루트/본체/게이지" unique_id=1218095872]
+texture_filter = 2
 layout_mode = 0
-offset_right = 80.0
-offset_bottom = 80.0
+offset_left = -26.0
+offset_top = -25.0
+offset_right = 105.0
+offset_bottom = 106.0
 mouse_filter = 2
+texture = ExtResource("4_frame")
 
 [node name="눈금" type="Control" parent="루트/본체/게이지" unique_id=270183001]
 anchors_preset = 0
