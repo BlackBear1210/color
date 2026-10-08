@@ -194,6 +194,7 @@ func setup(p_target: CharacterBody2D) -> void:
 	global_position = _desired_center(공간s)
 	if _has_limits or 공간s > 0.0:
 		global_position = _clamp_to_limits(global_position, _유효_리밋(공간s))
+	global_position = _통로_가림_적용(global_position)
 
 ## 리밋 사각형 지정. animate=true 면 이전 리밋에서 새 리밋으로 트윈(구역 전환 팬)
 func set_limit_rect(rect: Rect2, animate: bool = false) -> void:
@@ -360,6 +361,7 @@ func _physics_process(delta: float) -> void:
 	# ── 4) 구역 리밋으로 클램프 (리밋 자체가 트윈되므로 전환도 부드러움) ─
 	if _has_limits or 공간s > 0.0:
 		pos = _clamp_to_limits(pos, _유효_리밋(공간s))
+	pos = _통로_가림_적용(pos)
 	global_position = pos
 
 	# ── 5) [2026-07-22 도형] 화면 흔들림: 리밋과 무관한 offset 으로만 튕긴다 ─
@@ -522,6 +524,40 @@ func 전환_빨림(정도: float, 시간: float) -> void:
 ## ★리밋이 화면보다 작으면 **중앙 고정** — 이 한 줄이 "굴뚝 벽 바깥을 절대 안 비춘다"의 정체다.
 ##   굴뚝 안쪽 폭(320px)은 화면 폭보다 훨씬 좁으므로 카메라 x 가 굴뚝 중심에 못박히고,
 ##   플레이어가 좌우 선반을 오가도 화면은 조금도 흐르지 않는다.
+# ============================================================================
+# [2026-10-08 Claude] 통로 가림 — 하수도(쳅터2) 통로 굴 속을 화면에 안 보이게
+# ----------------------------------------------------------------------------
+# 도형님: "쳅터1 은 카메라가 통로를 전부 보여 주지 않게 설계했는데 쳅터2 에서는 통로가 끝까지 보인다."
+#   쳅터1 은 스테이지 리밋의 끝 = 연결구 벽 바깥 면이라 굴이 리밋 밖에 있다.
+#   하수도는 통로가 리밋 **안쪽**(벽돌 지형에 판 구멍)에 있어서 굴 끝 뒷벽까지 다 보였다.
+#   씬의 `카메라_리밋` 을 줄이면 같은 x 너머 다른 층의 맵까지 가려지므로,
+#   **플레이어가 그 통로 높이 근처에 있을 때만** 통로 쪽 화면 끝을 '입구 + 여유' 에 묶는다.
+#   띠 밖으로 360px 에 걸쳐 서서히 풀려 위아래로 오갈 때 화면이 튀지 않는다.
+# ============================================================================
+var _통로_가림: Array[Dictionary] = []
+
+## x = 화면이 넘지 않을 세로선(월드) · 방향 = 통로가 뻗는 쪽(+1 오른쪽) · y위/y아래 = 통로 높이 띠.
+func 통로_가림_추가(x: float, 방향: float, y위: float, y아래: float) -> void:
+	_통로_가림.append({"x": x, "d": 방향, "y0": y위, "y1": y아래})
+
+
+func _통로_가림_적용(pos: Vector2) -> Vector2:
+	if _통로_가림.is_empty() or target == null or not is_instance_valid(target):
+		return pos
+	var half := get_viewport_rect().size * 0.5 / zoom
+	var ty := target.global_position.y
+	for g in _통로_가림:
+		var 벗어남: float = maxf(float(g["y0"]) - ty, ty - float(g["y1"]))
+		var w := 1.0 - smoothstep(0.0, 360.0, 벗어남)
+		if w <= 0.0:
+			continue
+		var d: float = g["d"]
+		var 한계: float = float(g["x"]) - d * half.x
+		var 막힘 := minf(pos.x, 한계) if d > 0.0 else maxf(pos.x, 한계)
+		pos.x = lerpf(pos.x, 막힘, w)
+	return pos
+
+
 func _clamp_to_limits(pos: Vector2, 리밋: Rect2) -> Vector2:
 	var half := get_viewport_rect().size * 0.5 / zoom
 	if 리밋.size.x > half.x * 2.0:

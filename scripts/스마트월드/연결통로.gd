@@ -79,9 +79,39 @@ enum 역할_ { 출구, 입구 }
 @export_range(0, 1200) var 암반_위: float = 340.0
 @export_range(0, 1200) var 암반_아래: float = 420.0
 
+## ★[2026-10-08 Claude] 쳅터1 연결구 방식으로 넘어간다(도형님 "쳅터2 도 쳅터1 스테이지 전환 방식으로 전부").
+##   켬 = 걸어 들어가며 줌인 → 짧은 암전 → 다음 스테이지 **입구 통로 안에서 걸어 나오며** 천천히 줌아웃(`전경전환.gd`).
+##   끔 = 옛 방식(`장면전환` 의 1.4초 암전 · 통로 밖 스폰).
+##   하수도 씬 파일은 한 줄도 안 고쳤다 — 기본값이 켬이라 모든 하수도 통로가 새 방식을 탄다.
+@export_group("쳅터1 방식 전환")
+@export var 쳅터1_전환: bool = true
+## 쳅터1 연결구와 같은 **가까운 전경 띠**(타일보다 앞 z 60) — 통로 입구 쪽은 옅고 안쪽으로 갈수록 진하다.
+@export var 전경띠: bool = true:
+	set(v): 전경띠 = v; _재구성()
+@export_range(0.0, 1.0) var 전경_진하기: float = 0.85:
+	set(v): 전경_진하기 = v; _재구성()
+## 출구 통로 앞에서 길을 알려 주는 반딧불이(쳅터1 `반딧불이.gd` 그대로).
+@export var 반딧불이: bool = true:
+	set(v): 반딧불이 = v; _재구성()
+
+const 전경전환_스크립트 := preload("res://scripts/쳅터1/전경전환.gd")
+const 반딧불이_스크립트 := preload("res://scripts/쳅터1/반딧불이.gd")
+const 전경색 := Color(0.03, 0.028, 0.026, 1.0)   ## 쳅터1 연결구 전경색과 같은 값
+const 전경_번짐 := 96.0                          ## 통로 입구에서 방 안쪽으로 번지는 폭(px)
+
 var _t: float = 0.0
+var _띠: Node2D = null
+var _빛: Node2D = null
 var _광원: PointLight2D = null
 var _발동함: bool = false          ## 한 번만 넘어가게 (프레임마다 여러 번 겹칠 수 있다)
+## ★[2026-10-08] 되돌아가기(쳅터1 연결구와 같은 왕복) — 도형님 "반대로 갔을 때 돌아갈 수 있어야 한다.
+##   쳅터1 15 에서 하수도 2-1 로 넘어갔다가 다시 돌아가는 게 안 된다."
+##   입구 통로는 씬에 "어디서 왔는지"가 없다(하수도 씬 무수정) → 전환이 도착할 때 **떠나온 씬·길목 이름**을 적어 준다.
+var _되돌아갈_씬: String = ""
+var _되돌아갈_진입점: String = ""
+var _무시중: bool = false          ## 방금 이 통로로 도착 — 몸이 판정 밖으로 나갈 때까지 무시(왕복 튕김 방지)
+## 화면이 통로 쪽으로 넘지 않을 선 = 입구에서 굴 쪽으로 이만큼(px). 쳅터1 연결구 벽 두께(160)와 같다.
+const 화면_끝_여유 := 160.0
 
 
 ## 출구는 +1(오른쪽), 입구는 −1(왼쪽). 통로 몸통이 뻗어나가는 방향.
@@ -96,11 +126,17 @@ func _ready() -> void:
 		return
 	add_to_group("연결통로")
 	# 판정은 출구만. 입구는 순수한 배경 겸 스폰 지점이다.
-	monitoring = 역할 == 역할_.출구
+	# [2026-10-08] 쳅터1 방식이면 입구도 판정한다 — 되돌아갈 곳이 적힌 때만 넘어간다(`열림()`).
+	monitoring = 역할 == 역할_.출구 or 쳅터1_전환
 	collision_layer = 0        # 아무도 이걸 감지할 필요 없다
 	collision_mask = 1         # 플레이어(레이어 1)만 본다
-	if 역할 == 역할_.출구 and not body_entered.is_connected(_몸_들어옴):
+	if (역할 == 역할_.출구 or 쳅터1_전환) and not body_entered.is_connected(_몸_들어옴):
 		body_entered.connect(_몸_들어옴)
+	if 쳅터1_전환:
+		if not body_exited.is_connected(_몸_나감):
+			body_exited.connect(_몸_나감)
+		# 카메라는 스테이지 루트(월드)가 _ready 끝에 만든다 → 한 박자 뒤에 등록.
+		_카메라_가림_등록.call_deferred()
 	set_process(true)
 
 
@@ -108,6 +144,70 @@ func _ready() -> void:
 ## 통로 **가장 깊은 안쪽**에 세워야 "걸어 나오는" 그림이 된다.
 func 걸어나올_위치() -> Vector2:
 	return global_position + Vector2(방향() * 깊이 * 0.62, 0.0)
+
+
+# ── 전경전환(쳅터1 연결구) 계약 ── `scripts/쳅터1/전경전환.gd` 가 도착 길목에 묻는 세 가지.
+## 다른 스테이지에서 이 통로로 들어올 때 서는 자리 = 통로 안쪽(카메라 줌인된 채 어둠 속).
+func 도착_위치() -> Vector2:
+	return 걸어나올_위치()
+
+
+## 걸어 나와 조작을 돌려받는 자리 = 통로 입구에서 방 안쪽 2칸. 자동 안전점도 여기.
+func 안쪽_위치() -> Vector2:
+	return global_position + Vector2(-방향() * 64.0, 0.0)
+
+
+## 이 통로로 도착했다 — 플레이어가 판정 밖으로 걸어 나갈 때까지 넘어가지 않는다.
+##   (보관했다 되살린 스테이지면 떠날 때 켜 둔 `_발동함` 도 여기서 푼다)
+func 도착시킴() -> void:
+	_무시중 = true
+	_발동함 = false
+
+
+## 지금 이 통로로 넘어갈 수 있나. 출구 = 다음_씬 이 있으면 · 입구 = 되돌아갈 곳이 적혀 있으면.
+func 열림() -> bool:
+	if 역할 == 역할_.출구:
+		return not 다음_씬.is_empty()
+	return not _되돌아갈_씬.is_empty()
+
+
+## 입구 통로가 "뒤로 가는 길" 인가 — 지도 모드 클리어 가로채기를 하지 않는다.
+func 되돌아가는_길인가() -> bool:
+	return 역할 == 역할_.입구
+
+
+## 전환이 묻는 목적지(출구 = 다음_씬 · 입구 = 떠나온 씬).
+func 전환_씬() -> String:
+	return 다음_씬 if 역할 == 역할_.출구 else _되돌아갈_씬
+
+
+func 전환_진입점() -> String:
+	return 다음_진입점 if 역할 == 역할_.출구 else _되돌아갈_진입점
+
+
+## 전경전환이 도착 직후 부른다. 입구만 받아 적는다(출구는 씬에 적힌 다음_씬 이 있다).
+func 되돌아갈_곳(씬: String, 진입점: String) -> void:
+	if 역할 != 역할_.입구:
+		return
+	_되돌아갈_씬 = 씬
+	_되돌아갈_진입점 = 진입점
+	_전경_갱신()
+
+
+func _몸_나감(몸: Node2D) -> void:
+	if 몸.is_in_group("player"):
+		_무시중 = false
+
+
+## [2026-10-08] 이 통로 높이 근처에서는 화면이 굴 속을 비추지 않게 카메라에 알린다(`ProtoCamera.통로_가림_추가`).
+func _카메라_가림_등록() -> void:
+	var n := get_parent()
+	while n != null and n.get_node_or_null("카메라") == null:
+		n = n.get_parent()
+	var 캠 := n.get_node_or_null("카메라") if n else null
+	if 캠 and 캠.has_method("통로_가림_추가"):
+		var d := 방향()
+		캠.call("통로_가림_추가", global_position.x + d * 화면_끝_여유, d, global_position.y - 높이, global_position.y)
 
 
 # ── 통로 짓기 ───────────────────────────────────────────────────────────────
@@ -146,7 +246,61 @@ func _재구성() -> void:
 	#   기본값 0 이었고, 그래서 지형 노멀맵이 이 빛에 전혀 반응하지 않았다.
 	조명표준.적용(_광원, 0.85)
 	_속빛_갱신()
+	_전경_갱신()
 	queue_redraw()
+
+
+## [2026-10-08] 쳅터1 연결구의 가까운 전경 띠 + 반딧불이. ⚠ owner 를 주지 않는다 —
+##   에디터에서 미리 보이되 **하수도 씬 파일에 저장되지 않게**(씬 무수정 원칙).
+func _전경_갱신() -> void:
+	if 전경띠:
+		if _띠 == null:
+			_띠 = Node2D.new()
+			_띠.name = "전경띠"
+			_띠.z_as_relative = false
+			_띠.z_index = 60                     # 타일·플레이어보다 앞(쳅터1 연결구와 같은 층)
+			_띠.draw.connect(_띠_그리기)
+			add_child(_띠)
+		_띠.queue_redraw()
+	elif _띠:
+		_띠.queue_free()
+		_띠 = null
+	var 길잡이 := 반딧불이 and 열림()
+	if 길잡이:
+		if _빛 == null:
+			_빛 = Node2D.new()
+			_빛.set_script(반딧불이_스크립트)
+			_빛.name = "반딧불이"
+			add_child(_빛)
+		var d := 방향()
+		_빛.position = Vector2(-d * 150.0, -높이 * 0.7)
+		_빛.z_index = 2
+		_빛.set("범위", Vector2(150, maxf(90.0, 높이 * 0.6)))
+		_빛.set("씨앗", int(abs(global_position.x + global_position.y)) % 997 + 1)
+	elif _빛:
+		_빛.queue_free()
+		_빛 = null
+
+
+## 연결구 `_draw` 와 같은 모양: 가로 = 방 안쪽 번짐 → 입구 → 통로 깊은 곳으로 갈수록 진해짐,
+## 세로 = 구멍 높이까지는 그대로, 그 위로는 옅어지며 사라진다(각진 상자 금지).
+func _띠_그리기() -> void:
+	var d := 방향()
+	var 위 := -높이 * 1.9
+	var 허리 := -높이
+	var 아래 := 두께
+	var xs := [-d * 전경_번짐, 0.0, d * 깊이 * 0.35, d * (깊이 + 두께)]
+	var 알파 := [0.0, 전경_진하기 * 0.55, 전경_진하기, 1.0]
+	for i in xs.size() - 1:
+		var xa: float = xs[i]
+		var xb: float = xs[i + 1]
+		var ca := Color(전경색.r, 전경색.g, 전경색.b, 알파[i])
+		var cb := Color(전경색.r, 전경색.g, 전경색.b, 알파[i + 1])
+		var 투명 := Color(전경색.r, 전경색.g, 전경색.b, 0.0)
+		_띠.draw_polygon(PackedVector2Array([Vector2(xa, 허리), Vector2(xb, 허리), Vector2(xb, 아래), Vector2(xa, 아래)]),
+			PackedColorArray([ca, cb, cb, ca]))
+		_띠.draw_polygon(PackedVector2Array([Vector2(xa, 위), Vector2(xb, 위), Vector2(xb, 허리), Vector2(xa, 허리)]),
+			PackedColorArray([투명, 투명, cb, ca]))
 
 
 ## 이름으로 자식을 찾고, 없으면 만들어서 붙인다.
@@ -214,6 +368,15 @@ func _몸_들어옴(몸: Node2D) -> void:
 		return
 	if not (몸 is CharacterBody2D):
 		return
+	if 쳅터1_전환:
+		# 사망 모션으로 멈춘 본체가 통로에 걸쳐 있어도 넘어가지 않는다(연결구와 같은 규칙).
+		if _무시중 or not 열림() or not 몸.is_in_group("player") or not 몸.is_physics_processing():
+			return
+		if 전경전환_스크립트.진행중인가():
+			return
+		전경전환_스크립트.연결로_이동(self, 몸 as CharacterBody2D)
+		_발동함 = 전경전환_스크립트.진행중인가()
+		return
 	if 다음_씬.is_empty():
 		push_warning("연결통로(%s): 다음_씬 이 비어 있다" % name)
 		return
@@ -265,6 +428,14 @@ func _draw() -> void:
 	var 암반 := Color(0.055, 0.055, 0.062)
 	var 중심x := d * L * 0.5 + d * 12.0
 	var 몸길이 := L + 48.0
+	# ★[2026-10-08 Claude] 쳅터1 방식에서는 암반을 **각진 상자로 그리지 않는다.**
+	#   화면 확인(tools/_진단/쳅터2_전환/01) 결과, 하수도 벽돌 위에 가장자리가 딱 떨어진 검은 사각형 + 얇은 테두리선이
+	#   "유리관 · 포탈" 처럼 읽혔다. 쳅터1 연결구는 얇은 벽 + 전경 그라데이션이라 상자가 없다.
+	#   → 천장·바닥 암반은 통로에 붙은 쪽만 진하고 바깥으로 옅어지게, 테두리선·아치선은 생략(전경 띠가 어둠을 맡는다).
+	if 쳅터1_전환:
+		_부드러운_암반(d, h, t, 중심x, 몸길이, 암반)
+		_통로_속(d, h, L)
+		return
 	# 바닥 — 콜리전은 두께 t 지만, 그림은 아래로 더 내려 지형에 파묻는다
 	draw_rect(Rect2(중심x - 몸길이 * 0.5, 0.0, 몸길이, t + 암반_아래), 암반)
 	# 천장 — 위로 더 올려 천장 매스와 이어 붙인다
@@ -329,3 +500,35 @@ func _draw() -> void:
 	# ── 5) 바닥에 깔린 빛 반사 ── 통로 안쪽 빛이 젖은 바닥에 비친다
 	draw_line(Vector2(d * L * 0.25, -4), Vector2(d * L * 0.92, -4),
 		Color(속빛.r, 속빛.g, 속빛.b, 0.30), 7.0)
+
+
+## [2026-10-08] 쳅터1 방식 암반 — 통로 천장/바닥 면에서 멀어질수록 투명해지는 띠(위·아래 각 `두께 × 2.2`).
+##   콜리전(천장·바닥 두께 t)이 있는 자리는 진하게 남겨 "막혀 있다" 는 읽히되, 바깥 가장자리 선이 생기지 않는다.
+func _부드러운_암반(d: float, h: float, t: float, 중심x: float, 몸길이: float, 암반: Color) -> void:
+	var x0 := 중심x - 몸길이 * 0.5
+	var x1 := 중심x + 몸길이 * 0.5
+	var 번짐 := t * 2.2
+	var 진 := Color(암반.r, 암반.g, 암반.b, 0.92)
+	var 옅 := Color(암반.r, 암반.g, 암반.b, 0.0)
+	# 천장: 통로 윗면(-h) → 위로 번짐
+	draw_polygon(PackedVector2Array([Vector2(x0, -h - 번짐), Vector2(x1, -h - 번짐), Vector2(x1, -h), Vector2(x0, -h)]),
+		PackedColorArray([옅, 옅, 진, 진]))
+	# 바닥: 통로 바닥(0) → 아래로 번짐
+	draw_polygon(PackedVector2Array([Vector2(x0, 0.0), Vector2(x1, 0.0), Vector2(x1, 번짐), Vector2(x0, 번짐)]),
+		PackedColorArray([진, 진, 옅, 옅]))
+
+
+## [2026-10-08] 쳅터1 방식 통로 속 — 안쪽으로 갈수록 어두워지는 띠 + 저 끝 속빛(다음 지역의 기운)만. 선은 긋지 않는다.
+func _통로_속(d: float, h: float, L: float) -> void:
+	var 띠수 := 12
+	for i in 띠수:
+		var t0 := float(i) / float(띠수)
+		var t1 := float(i + 1) / float(띠수)
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(d * L * t0, -h), Vector2(d * L * t1, -h), Vector2(d * L * t1, 0), Vector2(d * L * t0, 0),
+		]), Color(0.03, 0.03, 0.035, lerpf(0.35, 어둠, t0)))
+	var 맥동 := 0.86 + 0.14 * sin(_t * 0.9)
+	var 빛중심 := Vector2(d * L * 0.80, -h * 0.48)
+	for i in range(7, 0, -1):
+		var r := h * 0.55 * float(i) / 7.0
+		draw_circle(빛중심, r, Color(속빛.r, 속빛.g, 속빛.b, 0.10 * 맥동 * (1.0 - float(i) / 8.0)))

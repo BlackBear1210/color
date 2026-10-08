@@ -43,20 +43,65 @@ static func 진행중인가() -> bool:
 	return _진행중
 
 
-## 연결구가 부른다.
+## 연결구(쳅터1)와 연결통로(쳅터2 하수도)가 부른다.
+## ★[2026-10-08 Claude] 도형님 "쳅터2(world_2_클로드)도 쳅터1 스테이지 전환 방식으로 전부 전환".
+##   하수도 씬 파일은 그대로 두고, 하수도 통로(`연결통로.gd`)가 옛 암전(`장면전환`) 대신 이 함수를 부른다.
+##   두 노드는 이름이 조금 다르다 — 방향(연결구 = 변수 / 연결통로 = 함수) · 도착 이름(다음_연결 / 다음_진입점).
+##   ⚠ 하수도 통로는 되돌아가는 길이 없으므로 떠나는 스테이지를 보관하지 않고 버린다(메모리 · 낡은 상태 방지).
 static func 연결로_이동(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 	if _진행중 or 플레이어 == null:
 		return
 	if not is_instance_valid(_마지막씬) or _마지막씬 != 연결.get_tree().current_scene:
 		보관_비우기()
-	var 경로: String = 연결.get("다음_씬")
+	# 하수도 입구 통로는 목적지가 씬에 없고 도착 때 적힌다 → `전환_씬()` 으로 묻는다.
+	var 경로: String = String(연결.call("전환_씬")) if 연결.has_method("전환_씬") else String(연결.get("다음_씬"))
+	var 도착이름: String = String(연결.call("전환_진입점")) if 연결.has_method("전환_진입점") else _도착이름(연결)
+	var 지금 := 연결.get_tree().current_scene
+	var 지금경로 := 지금.scene_file_path if 지금 else ""
+	# 쳅터2 지도에서 들어온 하수도 스테이지면 출구 = 클리어 → 지도로(장면전환 이 하던 가로채기를 여기서도).
+	#   ⚠ 뒤로 가는 길(입구 통로)은 클리어가 아니다 — 가로채지 않는다.
+	var 뒤로: bool = 연결.has_method("되돌아가는_길인가") and bool(연결.call("되돌아가는_길인가"))
+	if not 뒤로:
+		var 가로챈 := 게임진행.통로_가로채기(지금경로, 경로)
+		if 가로챈 != 경로:
+			경로 = 가로챈
+			도착이름 = ""
 	if not _보관.has(경로) and not ResourceLoader.exists(경로):
 		push_error("전경전환: 다음 씬이 없다 → %s" % 경로)
 		return
 	_진행중 = true
 	var 판: CanvasLayer = load("res://scripts/쳅터1/전경전환.gd").new()
 	연결.get_tree().root.add_child(판)
-	판.call("_진행", 연결, 플레이어)
+	# 떠나는 스테이지를 보관해야 되돌아왔을 때 떠날 때 그대로다(칠한 페인트·체크포인트).
+	#   연결구는 되돌아가기 켠 것만 · 하수도 통로는 언제나 · 지도로 갈 때만 버린다(지도에서 다시 들어오면 새로 시작).
+	var 보관함: bool = 경로 != 게임진행.지도_씬 and (연결.get("되돌아가기") == true or 연결.has_method("전환_씬"))
+	판.call("_진행", 연결, 플레이어, 경로, 도착이름, 보관함, 지금경로, String(연결.name))
+
+
+## [2026-10-08] 걸어 들어가는 연결 없이 다른 화면(쳅터2 지도)에서 스테이지로 들어갈 때.
+##   짧게 어두워졌다가 → 도착 통로 안에서 걸어 나오며 천천히 줌아웃(연결구로 도착한 것과 같은 그림).
+static func 씬으로_들어가기(from: Node, 경로: String, 도착이름: String) -> void:
+	if _진행중 or not ResourceLoader.exists(경로):
+		return
+	보관_비우기()
+	_진행중 = true
+	var 판: CanvasLayer = load("res://scripts/쳅터1/전경전환.gd").new()
+	from.get_tree().root.add_child(판)
+	var 떠난 := from.get_tree().current_scene
+	판.call("_들어가기", 경로, 도착이름, 떠난.scene_file_path if 떠난 else "")
+
+
+## 연결구는 `방향` 변수, 연결통로는 `방향()` 함수다.
+static func _방향값(연결: Node) -> float:
+	return float(연결.call("방향")) if 연결.has_method("방향") else float(연결.get("방향"))
+
+
+## 연결구는 `다음_연결`, 연결통로는 `다음_진입점`.
+static func _도착이름(연결: Node) -> String:
+	var v: Variant = 연결.get("다음_연결")
+	if v == null:
+		v = 연결.get("다음_진입점")
+	return String(v) if v != null else ""
 
 
 ## 보관한 스테이지를 모두 버린다.
@@ -84,11 +129,10 @@ static func _카메라(씬: Node) -> Node:
 	return 씬.get_node_or_null("카메라") if 씬 else null
 
 
-func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
+func _진행(연결: Node2D, 플레이어: CharacterBody2D, 경로: String, 다음_연결: String, 보관함: bool,
+		떠난씬: String, 떠난길목: String) -> void:
 	var 트리 := get_tree()
-	var 방향: float = float(연결.get("방향"))
-	var 경로: String = 연결.get("다음_씬")
-	var 다음_연결: String = 연결.get("다음_연결")
+	var 방향: float = _방향값(연결)
 	var 옛씬 := 트리.current_scene
 
 	# ① 들어감 — 걷기 · 줌인 · 비네트 · 끝 무렵 짧은 암전
@@ -111,6 +155,15 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 		캠.set("연출_줌배수", 1.0)               # 보관했다 돌아왔을 때 줌인된 채로 남지 않게
 		if 캠.has_method("비네트_강도") and 캠.has_method("비네트_기본값"):
 			캠.call("비네트_강도", 캠.call("비네트_기본값"), 0.0)
+	await _교체와_나옴(경로, 다음_연결, 방향, 보관함, 떠난씬, 떠난길목)
+
+
+## 화면이 다 어두워진 뒤 — 스테이지를 바꾸고 도착 길목에서 걸어 나온다(연결구 · 연결통로 · 지도 입장 공통).
+##   떠난씬·떠난길목 = 도착한 하수도 입구 통로에 "되돌아갈 곳" 으로 적어 준다(왕복).
+func _교체와_나옴(경로: String, 다음_연결: String, 방향: float, 보관함: bool,
+		떠난씬: String = "", 떠난길목: String = "") -> void:
+	var 트리 := get_tree()
+	var 옛씬 := 트리.current_scene
 	var 새씬: Node = null
 	if _보관.has(경로) and is_instance_valid(_보관[경로]):
 		새씬 = _보관[경로]
@@ -119,8 +172,11 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 	else:
 		새씬 = (load(경로) as PackedScene).instantiate()
 	if 옛씬:
-		_보관하기(옛씬.scene_file_path, 옛씬)
 		트리.root.remove_child(옛씬)
+		if 보관함:
+			_보관하기(옛씬.scene_file_path, 옛씬)
+		else:
+			옛씬.queue_free()
 	트리.root.add_child(새씬)
 	트리.current_scene = 새씬
 	_마지막씬 = 새씬
@@ -129,11 +185,19 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 
 	# 하수도처럼 연결구 계약이 없는 씬은 빈 이름으로 검색하지 않고 기본 시작점을 쓴다.
 	var 도착 := 새씬.find_child(다음_연결, true, false) as Node2D if not 다음_연결.is_empty() else null
+	# [2026-10-08] 도착 이름이 비어 있어도(쳅터1 15 → 하수도 2-1 처럼 연결구에 이름을 안 적은 경우)
+	#   하수도 스테이지면 입구 통로로 들어온다 — 그래야 걸어 나오고 되돌아갈 수 있다.
+	if 도착 == null and 다음_연결.is_empty():
+		var 입구 := 새씬.find_child("입구통로", true, false) as Node2D
+		if 입구 and 입구.has_method("되돌아갈_곳"):
+			도착 = 입구
+	if 도착 and 도착.has_method("되돌아갈_곳") and not 떠난씬.is_empty():
+		도착.call("되돌아갈_곳", 떠난씬, 떠난길목)
 	var 새플레이어 := 새씬.get_node_or_null("Player") as CharacterBody2D
 	var 안쪽 := Vector2.ZERO
 	var 안쪽방향 := -방향
 	if 도착 and 새플레이어:
-		안쪽방향 = -float(도착.get("방향"))
+		안쪽방향 = -_방향값(도착)
 		안쪽 = 도착.call("안쪽_위치")
 		도착.call("도착시킴")
 		if 새씬.has_method("연결_도착"):
@@ -141,7 +205,8 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 		else:
 			새플레이어.global_position = 도착.call("도착_위치")
 		새플레이어.set("자동_걷기", 안쪽방향)
-	elif not 다음_연결.is_empty():
+	elif not 다음_연결.is_empty() and not 트리.get_nodes_in_group("연결구").is_empty():
+		# 하수도 2-9~2-11 처럼 입구 통로가 없는 스테이지는 조용히 기본 시작 위치(경고는 쳅터1 연결구 실수만).
 		push_warning("전경전환: 도착 연결구 '%s' 또는 Player 를 못 찾음 — 씬 기본 시작 위치" % 다음_연결)
 
 	# ③ 나옴 — 줌인된 채 밝아지고, 걸어 나오며 천천히 줌아웃
@@ -158,7 +223,8 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 	var tb := create_tween()
 	tb.tween_property(_판, "color:a", 0.0, 밝아짐_시간).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	var 남은 := 걸어나오기_최대
-	while 새플레이어 and 남은 > 0.0:
+	# 도착 길목이 없으면(입구 통로 없는 하수도 2-9~2-11 · 지도 화면) 걸어 나올 곳이 없으니 기다리지 않는다.
+	while 새플레이어 and 도착 and 남은 > 0.0:
 		if (새플레이어.global_position.x - 안쪽.x) * 안쪽방향 >= 0.0:
 			break
 		await 트리.physics_frame
@@ -169,6 +235,15 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 		await tb.finished
 	_진행중 = false          # 조작은 돌려주고, 줌아웃 트윈은 카메라 쪽에서 계속 흐른다
 	queue_free()
+
+
+## 지도 → 스테이지: 들어감 단계(걷기·줌인)는 없고 짧은 암전만.
+func _들어가기(경로: String, 도착이름: String, 떠난씬: String) -> void:
+	var ta := create_tween()
+	ta.tween_property(_판, "color:a", 1.0, 암전_길이 + 0.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	await ta.finished
+	# 지도에서 들어왔으면 입구 통로로 되돌아 나가면 지도로 간다(클리어 기록 없이).
+	await _교체와_나옴(경로, 도착이름, 1.0, false, 떠난씬, "")
 
 
 func _보관하기(경로: String, 씬: Node) -> void:
