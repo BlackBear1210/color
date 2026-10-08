@@ -177,12 +177,15 @@ static func x나누기(parts: Array[PackedVector2Array], cuts: Array[float]) -> 
 ##   도형님: "윗면 이미지의 나무판자 타일 크기에 맞추어 끝나는 지점을 맞춰야" — 월드 좌표 64px 반복을 쓰면
 ##   32px 격자 발판(예: 5칸 = 160px)의 끝에서 판자가 반 장씩 잘린다. 그래서 구간마다 판자 수 n = round(길이/64) 로
 ##   폭을 살짝 늘이거나 줄여 **왼쪽 끝 사선과 오른쪽 끝이 정확히 이음새**가 되게 한다.
-static func 면추가(data: Dictionary, poly: PackedVector2Array, own: PackedVector2Array, others: Array[PackedVector2Array], a: Vector2, b: Vector2, kind: int, inside: bool = true, run_l: float = 0.0, run_w: float = 64.0, contacts: Array = [], run_shift: float = 18.0) -> void:
+static func 면추가(data: Dictionary, poly: PackedVector2Array, own: PackedVector2Array, others: Array[PackedVector2Array], a: Vector2, b: Vector2, kind: int, inside: bool = true, run_l: float = 0.0, run_w: float = 64.0, contacts: Array = [], run_shift: float = 18.0, clip: bool = true) -> void:
 	if Geometry2D.is_polygon_clockwise(poly):
 		poly = poly.duplicate()
 		poly.reverse()
 	var parts: Array[PackedVector2Array] = []
-	if inside:
+	if not clip:
+		# [2026-10-07] 이웃 지형 위로 넘어가는 이음새 쐐기 — 자기·이웃 다각형으로 자르지 않는다(아래 생성() 참고).
+		parts.append(poly)
+	elif inside:
 		for clipped in Geometry2D.intersect_polygons(poly, own):
 			if not Geometry2D.is_polygon_clockwise(clipped):
 				parts.append(clipped)
@@ -191,8 +194,9 @@ static func 면추가(data: Dictionary, poly: PackedVector2Array, own: PackedVec
 		for clipped in Geometry2D.clip_polygons(poly, own):
 			if not Geometry2D.is_polygon_clockwise(clipped):
 				parts.append(clipped)
-	parts = 가림(parts, others)
-	parts = 가림(parts, data["corner_cuts"])
+	if clip:
+		parts = 가림(parts, others)
+		parts = 가림(parts, data["corner_cuts"])
 	if not contacts.is_empty():
 		var cuts: Array[float] = []
 		for c in contacts:
@@ -232,6 +236,14 @@ static func 면추가(data: Dictionary, poly: PackedVector2Array, own: PackedVec
 			data["uvs"].append(uv)
 		for index in triangles:
 			data["indices"].append(offset + index)
+
+## [2026-10-07] 이 점(끝 바로 옆·충돌선 바로 아래)이 이웃 지형 안인가 — 같은 높이로 붙은 이웃.
+static func _옆이웃(점: Vector2, others: Array[PackedVector2Array]) -> bool:
+	for other in others:
+		if Geometry2D.is_point_in_polygon(점, other):
+			return true
+	return false
+
 
 static func 생성(points: PackedVector2Array, others: Array[PackedVector2Array], origin: Vector2 = Vector2.ZERO) -> ArrayMesh:
 	var p := 정리(points)
@@ -295,8 +307,19 @@ static func 생성(points: PackedVector2Array, others: Array[PackedVector2Array]
 			# 오목한 계단 밑동에서는 낮은 상판이 옆벽 앞모서리까지 사선으로 물린다.
 			# 여기서 수직으로 끊으면 사용자가 표시한 네모 막음 조각이 다시 생긴다.
 			var meet := shift if concave_r and interval.y > 0.9999 else 0.0
-			var run_n := maxi(1, roundi((r.x-l.x-ri)/64.0))
-			var run_w := (r.x-l.x-ri)/float(run_n)
+			# ★[2026-10-07 Claude] 같은 높이 이웃과 붙는 끝(흰·검정 맞물림 등) — 도형님: "윗면이 타일 이미지에 맞게
+			#   나뉘지 않고 직선으로 뚝 잘렸다. 윗면 이미지 틈새에 맞게". 윗면 판자 틈은 뒤(−4)에서 앞(18)으로
+			#   18px 오른쪽으로 기우는 사선이다 → 경계도 그 사선 = (끝 −18, −4) → (끝, 18).
+			#   · 오른쪽에 이웃: 내 상판의 오른 뒤 꼭짓점을 18px 당긴다(사선 왼쪽만 내 것).
+			#   · 왼쪽에 이웃: 사선과 세로선 사이 쐐기를 내가 이웃 위에 덮어 그린다(자르지 않음) — 이웃은 그 쐐기를 비워 두었다.
+			#   두 지형이 각자 같은 규칙으로 계산하므로 겹치거나 틈이 생기지 않고, 경계 = 내 판자의 첫/마지막 이음새가 된다.
+			#   앞 단면(18…26)은 원래대로 세로 경계(앞에서 보면 판자 끝이 세로다).
+			var 이음_l := 투영폭 if (not left_end) and interval.x < 0.0001 and _옆이웃(a+Vector2(-0.5,0.5),others) and shift >= 투영폭 else 0.0
+			var 이음_r := 투영폭 if (not right_end) and interval.y > 0.9999 and _옆이웃(b+Vector2(0.5,0.5),others) and shift >= 투영폭 else 0.0
+			ri += 이음_r
+			var run_l := l.x - 이음_l
+			var run_n := maxi(1, roundi((r.x-l.x-ri+이음_l)/64.0))
+			var run_w := (r.x-l.x-ri+이음_l)/float(run_n)
 			# 22px 윗면 + 8px 앞 단면. 볼록 끝은 사다리꼴 상판과 작은 나무 단면으로 닫는다.
 			if li > 0.0:
 				# [2026-10-05 Claude] 끝 단면을 옆면(kind 4)과 같은 좌표로 그린다 — 사선 윗변이 상판 첫 이음새와 겹치고,
@@ -307,11 +330,14 @@ static func 생성(points: PackedVector2Array, others: Array[PackedVector2Array]
 				면추가(data,end,p,others,ea,eb,4,true,0.0,64.0,[],shift)
 				면추가(data,end,p,others,ea,eb,4,false,0.0,64.0,[],shift)
 			var top := PackedVector2Array([l+Vector2(0,-4),r+Vector2(-ri,-4),r+Vector2(meet,18),l+Vector2(li,18)])
-			면추가(data,top,p,others,a,b,0,true,l.x,run_w,contacts,shift)
-			면추가(data,top,p,others,a,b,0,false,l.x,run_w,contacts,shift)
+			면추가(data,top,p,others,a,b,0,true,run_l,run_w,contacts,shift)
+			면추가(data,top,p,others,a,b,0,false,run_l,run_w,contacts,shift)
+			if 이음_l > 0.0:
+				var 쐐기 := PackedVector2Array([l+Vector2(-이음_l,-4),l+Vector2(0,-4),l+Vector2(0,18)])
+				면추가(data,쐐기,p,others,a,b,0,true,run_l,run_w,[],shift,false)
 			var front := PackedVector2Array([l+Vector2(li,18),r+Vector2(meet,18),r+Vector2(meet,26),l+Vector2(li,26)])
-			면추가(data,front,p,others,a,b,0,true,l.x,run_w,contacts,shift)
-			if ri > 0.0:
+			면추가(data,front,p,others,a,b,0,true,run_l,run_w,contacts,shift)
+			if ri > 0.0 and 이음_r == 0.0:
 				# 사선 마감은 상판 끝과 평행하고, 앞 단면부터 아래는 수직으로 꺾인다.
 				var cap := PackedVector2Array([r+Vector2(-ri-마감폭,-4),r+Vector2(-ri,-4),r+Vector2(0,18),r+Vector2(0,26),r+Vector2(-마감폭,26),r+Vector2(-마감폭,18)])
 				면추가(data,cap,p,others,r,r+Vector2(0,40),7)

@@ -81,6 +81,9 @@ def main():
             print(f"  · {씬}/{문}: 닫힌 길목")
             continue
         목표 = os.path.basename(다음)[:-5]
+        # 다른 챕터의 기본 시작점 진입은 쳅터1 연결구 목록에 없어도 실제 파일이 있으면 유효하다.
+        if not 다음문 and 다음.startswith("res://") and os.path.isfile(os.path.join(저장소, 다음[6:])):
+            continue
         if 목표 not in 씬들:
             print(f"  × {씬}/{문} → {다음} 파일 없음")
             합 += 1

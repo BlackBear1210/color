@@ -89,6 +89,9 @@ var _에디터_플레이어_위치: Vector2 = Vector2.ZERO
 ## 통로로 들어왔을 때 `장면전환` 이 넘겨준 정보의 복사본. (진입_소비() 뒤에도 남아 있어야 한다)
 var _진입정보: Dictionary = {}
 var _안전_누적: float = 0.0            ## 그 자리에서 안전하게 버틴 시간
+## [2026-10-06 도형] 촛불은 실제 저장 지점이다. 자동 안전점이 촛불 저장을 덮어쓰면 표시와 부활 위치가 달라진다.
+var _체크목록: Array[Area2D] = []
+var _저장체크: Area2D = null          ## 착지 확인으로 저장한 촛불등(성수반 접촉 저장이면 null)
 ## 사망 모션 중에는 판정·입력·체크포인트 갱신을 막아 같은 죽음이 중복 실행되지 않게 한다.
 var _사망중: bool = false
 var _체크포인트_저장됨: bool = false
@@ -181,10 +184,14 @@ func _ready() -> void:
 					스테이지_완료())
 	_HUD_만들기()
 	# 배치된 성수반은 불만 켜던 상태였으므로 실제 부활 위치도 이 월드에 저장한다.
+	#   쳅터1 촛불등은 빼고 — 촛불등은 안전 착지를 확인한 뒤 `_체크포인트_갱신` 이 저장한다(공중 스침 저장 방지).
 	for 지점 in get_tree().get_nodes_in_group("checkpoint"):
-		if 지점 is Area2D and is_ancestor_of(지점):
+		if 지점 is Area2D and is_ancestor_of(지점) and not bool(지점.get("_촛불형")):
 			지점.body_entered.connect(_체크포인트_접촉.bind(지점))
 	_메뉴_만들기()
+	for n in get_tree().get_nodes_in_group("checkpoint"):
+		if n is Area2D and is_ancestor_of(n) and bool(n.get("_촛불형")):
+			_체크목록.append(n)
 	# [2026-08-17] 탄약_변경 시그널 연결을 뺐다. 점 HUD 는 매 프레임 코어를 읽으므로
 	# 시그널이 필요 없고, 시그널만 믿으면 **회수줄이 바뀌었는데 탄약 수는 그대로인 순간**
 	# (예: 회색화 직후)에 화면이 안 따라오는 구멍이 생긴다.
@@ -241,6 +248,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_안전점_갱신(delta, 죽는가)
+	_체크포인트_갱신(죽는가)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -549,7 +557,8 @@ func _리스폰() -> void:
 	if _코어:
 		_코어.리셋()
 	if _체크포인트_저장됨:
-		_플레이어.set("player_color", _체크포인트_복원색())
+		# 촛불등은 저장할 때 원래 발판색까지 확인했다(_체크포인트_갱신). 성수반은 부활 자리 바닥색을 다시 읽는다.
+		_플레이어.set("player_color", _체크포인트_색 if is_instance_valid(_저장체크) else _체크포인트_복원색())
 	_부활_후처리()
 	_플레이어.collision_layer = 원래_레이어
 	_플레이어.set_physics_process(원래_물리)
@@ -568,6 +577,7 @@ func _체크포인트_접촉(body: Node2D, 지점: Area2D) -> void:
 	if body != _플레이어 or _사망중:
 		return
 	_체크포인트_저장됨 = true
+	_저장체크 = null
 	_체크포인트_위치 = 지점.global_position + Vector2(0, -2)
 	_체크포인트_색 = int(_플레이어.call("선택색"))
 	if 지점.has_method("켜기"):
@@ -587,6 +597,38 @@ func _체크포인트_복원색() -> int:
 			if 색 == ColorDefs.BLACK or 색 == ColorDefs.WHITE:
 				return 색
 	return _체크포인트_색
+
+
+func _체크포인트_갱신(죽는가: bool) -> void:
+	# 접촉 신호만 쓰면 공중으로 스쳐 지나간 순간까지 저장한다. 실제 안전 착지 후 켠다.
+	if 죽는가 or not _플레이어.is_on_floor() or not _발밑에_땅있나():
+		return
+	for 지점 in _체크목록:
+		if not is_instance_valid(지점) or 지점 == _저장체크 or not 지점.overlaps_body(_플레이어):
+			continue
+		var q := PhysicsRayQueryParameters2D.create(지점.global_position + Vector2(0, -8), 지점.global_position + Vector2(0, 16), 1, [_플레이어.get_rid()])
+		var hit := get_world_2d().direct_space_state.intersect_ray(q)
+		if hit.is_empty():
+			continue
+		var 바닥 := hit["collider"] as Node
+		while 바닥 and 바닥 != self and 바닥.get("시작상태") == null:
+			바닥 = 바닥.get_parent()
+		# 이동판이나 칠해야 생기는 유령판 위에는 고정 부활점을 만들 수 없다.
+		if 바닥 == null or 바닥 == self:
+			continue
+		var 초기: int = int(바닥.get("시작상태"))
+		if 초기 == 0 and bool(바닥.get("칠하기_허용")):
+			continue
+		_체크포인트_색 = int(_플레이어.get("자유색"))
+		if 초기 == 1:
+			_체크포인트_색 = ColorDefs.BLACK
+		elif 초기 == 2:
+			_체크포인트_색 = ColorDefs.WHITE
+		_저장체크 = 지점
+		_체크포인트_저장됨 = true
+		_체크포인트_위치 = Vector2(지점.global_position.x, (hit["position"] as Vector2).y - 1.0)
+		지점.call("켜기")
+		return
 
 
 # ── 챕터 · 등장 연출 ───────────────────────────────────────────────────────

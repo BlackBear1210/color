@@ -43,6 +43,47 @@ def 도약속도(오름칸):
 
 근원번호 = {"창문": 0, "천장틈": 1, "그을음": 2}
 
+# [2026-10-07] 창문 빛 부피 — scripts/쳅터1/창문빛.gd 의 같은 이름 상수와 맞출 것
+창문_유리 = (86.0, 61.0, 171.0, 319.0)   # 창문 그림(256×384) 안 유리 바깥틀 l,t,r,b (px)
+창문_원점 = (128.0, 192.0)               # 빛 원점 = 창문 그림 이 점
+창문_최대 = 2400.0
+
+
+def _볼록껍질(점):
+    """모노톤 체인 볼록 껍질(시계/반시계 상관없이 닫히지 않은 목록)."""
+    p = sorted(set(점))
+    if len(p) < 3:
+        return p
+    def 외적(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    아래, 위 = [], []
+    for q in p:
+        while len(아래) >= 2 and 외적(아래[-2], 아래[-1], q) <= 0:
+            아래.pop()
+        아래.append(q)
+    for q in reversed(p):
+        while len(위) >= 2 and 외적(위[-2], 위[-1], q) <= 0:
+            위.pop()
+        위.append(q)
+    return 아래[:-1] + 위[:-1]
+
+
+def _볼록_사각_겹침(다각형, l, t, r, b):
+    """볼록 다각형 ↔ 축정렬 사각형 분리축 검사. 맞닿기만 하면 겹침 아님(엔진 Area2D 와 같은 쪽으로)."""
+    사각 = [(l, t), (r, t), (r, b), (l, b)]
+    축들 = [(1.0, 0.0), (0.0, 1.0)]
+    n = len(다각형)
+    for i in range(n):
+        x1, y1 = 다각형[i]
+        x2, y2 = 다각형[(i + 1) % n]
+        축들.append((y1 - y2, x2 - x1))
+    for ax, ay in 축들:
+        a = [x * ax + y * ay for x, y in 다각형]
+        c = [x * ax + y * ay for x, y in 사각]
+        if max(a) <= min(c) or max(c) <= min(a):
+            return False
+    return True
+
 
 class 빛줄기:
     """[2026-10-05 2차] 창문 달빛 · 천장 틈 빛 기둥 · 그을음 기둥 — 비스듬한 빛도 된다.
@@ -64,6 +105,10 @@ class 빛줄기:
             self.원점 = (g["x"] * C, g["y"] * C)
             self.각도 = float(g.get("각도", 90))
             self.길이 = g["길이"] * C if "길이" in g else self._자동길이(dn)
+            # ★[2026-10-07 Claude] 창문 빛 = 창유리 전체가 빛 방향으로 쓸고 간 부피(엔진 scripts/쳅터1/창문빛.gd 와 같은 계산).
+            #   도형님 "빛이 기둥으로 보인다 — 창문 레이어에 맞게, 창틀에서 새어 나오게" → 판정도 그 부피다.
+            #   창문 그림(256×384)은 만들기.py 창문_가구 가 원점 = 그림 (128,192) 이 되게 건다.
+            self.빛면 = self._창문_부피(dn) if self.근원 == "창문" and dn is not None else None
         else:
             # 옛 형식: x,y = 빛 사각형 왼쪽 위 칸
             self.근원 = "천장틈"
@@ -75,6 +120,36 @@ class 빛줄기:
             self.원점, self.각도 = {"아래": (((l + r) / 2, t), 90), "위": (((l + r) / 2, b), 270),
                                  "오른": ((l, (t + b) / 2), 0)}.get(방향, ((r, (t + b) / 2), 180))
             self.길이 = g["길이"] * C
+            self.빛면 = None
+
+    # ── [2026-10-07] 창문 빛 부피 ────────────────────────────────────────────
+    def _창문_부피(self, dn):
+        """유리 바깥틀 네 꼭짓점 + (빛에 수직인 방향으로 가장 바깥) 두 꼭짓점에서 쏜 광선의 착지점 → 볼록 껍질(px)."""
+        ox, oy = self.원점
+        l, t = ox - 창문_원점[0] + 창문_유리[0], oy - 창문_원점[1] + 창문_유리[1]
+        r, b = ox - 창문_원점[0] + 창문_유리[2], oy - 창문_원점[1] + 창문_유리[3]
+        구석 = [(l, t), (r, t), (r, b), (l, b)]
+        (ux, uy), (vx, vy) = self._축()
+        최소 = min(구석, key=lambda p: p[0] * vx + p[1] * vy)
+        최대 = max(구석, key=lambda p: p[0] * vx + p[1] * vy)
+        점 = list(구석)
+        for sx, sy in (최소, 최대):
+            d = self._광선길이(dn, sx, sy, ux, uy)
+            점.append((sx + ux * d, sy + uy * d))
+        return _볼록껍질(점)
+
+    @staticmethod
+    def _광선길이(dn, sx, sy, ux, uy):
+        """(sx,sy) 에서 (ux,uy) 로 지형(구조·검정·흰 — 유령판은 통과)까지(px). 엔진 창문_최대 2400px 와 같은 상한."""
+        d = 2.0
+        단단 = lambda dd: dn.칸(math.floor((sx + ux * dd) / C), math.floor((sy + uy * dd) / C)) in (1, 2, 3)
+        while d < 창문_최대 and 단단(d):        # 창틀 모서리가 천장 속이면 빠져나올 때까지 건너뛴다
+            d += 2.0
+        while d < 창문_최대:
+            if 단단(d):
+                return d
+            d += 2.0
+        return 창문_최대
 
     def _축(self):
         a = math.radians(self.각도)
@@ -97,6 +172,8 @@ class 빛줄기:
         return self.주기 <= 0 and not self.점멸
 
     def 꼭짓점(self):
+        if self.빛면:
+            return list(self.빛면)          # [2026-10-07] 창문 빛 = 유리가 쓸고 간 부피
         (ux, uy), (vx, vy) = self._축()
         ox, oy = self.원점
         h = self.두께 * C / 2
@@ -114,6 +191,8 @@ class 빛줄기:
         L0, T0, R0, B0 = self.사각()
         if r <= L0 or l >= R0 or b <= T0 or t >= B0:
             return False
+        if self.빛면:
+            return _볼록_사각_겹침(self.빛면, l, t, r, b)
         (ux, uy), (vx, vy) = self._축()
         ox, oy = self.원점
         h = self.두께 * C / 2
@@ -128,6 +207,8 @@ class 빛줄기:
 
     def 지나는_칸(self, 끝여유=20.0):
         """빛 가운데·양 가장자리가 지나는 칸(끝 20px 제외) — 벽을 뚫는지 검증용."""
+        if self.빛면:
+            return set()   # [2026-10-07] 창문 빛은 광선이 지형에서 멈추도록 계산되어 뚫지 않는다(창문 그림 자리는 배경)
         (ux, uy), (vx, vy) = self._축()
         ox, oy = self.원점
         h = self.두께 * C / 2 - 2

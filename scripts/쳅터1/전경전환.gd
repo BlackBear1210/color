@@ -127,7 +127,8 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 	await 트리.process_frame
 	await 트리.physics_frame
 
-	var 도착 := 새씬.find_child(다음_연결, true, false) as Node2D
+	# 하수도처럼 연결구 계약이 없는 씬은 빈 이름으로 검색하지 않고 기본 시작점을 쓴다.
+	var 도착 := 새씬.find_child(다음_연결, true, false) as Node2D if not 다음_연결.is_empty() else null
 	var 새플레이어 := 새씬.get_node_or_null("Player") as CharacterBody2D
 	var 안쪽 := Vector2.ZERO
 	var 안쪽방향 := -방향
@@ -140,7 +141,7 @@ func _진행(연결: Node2D, 플레이어: CharacterBody2D) -> void:
 		else:
 			새플레이어.global_position = 도착.call("도착_위치")
 		새플레이어.set("자동_걷기", 안쪽방향)
-	else:
+	elif not 다음_연결.is_empty():
 		push_warning("전경전환: 도착 연결구 '%s' 또는 Player 를 못 찾음 — 씬 기본 시작 위치" % 다음_연결)
 
 	# ③ 나옴 — 줌인된 채 밝아지고, 걸어 나오며 천천히 줌아웃

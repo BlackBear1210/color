@@ -150,6 +150,10 @@ func _재구성() -> void:
 
 func _움직임_등록(노드: Node2D, 비율: Vector2, 매달림: bool = false) -> void:
 	_움직일것.append({"노드": 노드, "원점": 노드.position, "각도": 노드.rotation, "비율": 비율, "매달림": 매달림})
+	# [2026-10-07 Claude] 시차로 움직이기 전 자리 — 창문빛.gd 가 빛 판정을 이 자리에 고정한다(메타 이름은 영문 식별자만 된다)
+	#   (창문 그림은 깊이감 때문에 카메라 따라 ±56px 움직이지만, 죽는 범위까지 움직이면 시뮬과 어긋나고 억울하다).
+	if not 노드.has_meta("parallax_rest"):
+		노드.set_meta("parallax_rest", 노드.position)
 
 
 func _process(delta: float) -> void:

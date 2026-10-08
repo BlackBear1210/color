@@ -95,6 +95,12 @@ func _다음_스테이지() -> void:
 	root.add_child(_씬)
 	current_scene = _씬
 	_p = _씬.get_node("Player") as CharacterBody2D
+	# [2026-10-07 Claude] 15 집 밖: 도안 검사(검사.py)는 반사빛길을 '풀린 상태'로 경로를 짠다 →
+	#   여기서도 거울을 정답 각도(−45°, 아래로 오는 빛을 오른쪽 수광판으로)로 돌려 흰 빛 다리를 연다.
+	#   여는 과정 자체는 tools/시험_반사와외부.gd 가 검사한다.
+	var 반사 := _씬.get_node_or_null("반사빛길")
+	if 반사 and 반사.get("거울"):
+		반사.거울.법선각 = -45.0
 	if _씬.has_signal("사망함"):
 		# 사망함 은 리스폰 이동 **전에** 울린다 → 이 순간의 위치가 실제로 죽은 자리
 		_씬.connect("사망함", func():
