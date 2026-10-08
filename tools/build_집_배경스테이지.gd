@@ -167,7 +167,8 @@ func _뼈대(이름: String, 표시이름: String, 리밋: Rect2, 줌: float, �
 
 	var 코어 := 코어_S.new()
 	코어.name = "페인트코어"
-	코어.set("최대_탄약", 12)
+	# 다시 생성해도 정식 플레이어의 7발 용량으로 유지한다.
+	코어.set("최대_탄약", 7)
 	코어.add_to_group("페인트코어", true)
 	루트.add_child(코어)
 

@@ -14,7 +14,6 @@
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/제어레버.tscn" id="lever"]
 [ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="mesh"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="moving"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="pipe"]
 [ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="player"]
 [ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
 [ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
@@ -26,6 +25,8 @@
 
 [ext_resource type="Script" path="res://scripts/스마트월드/웅덩이_하수도29.gd" id="latest_pool_art"]
 [ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_주철배관.gd" id="cast_pipe"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_투명발판_기본지형_검정.tscn" id="ghost_v2_black"]
 
 [sub_resource type="Resource" id="terrain0p0"]
 resource_local_to_scene = true
@@ -2546,13 +2547,12 @@ _meshes = Array[ExtResource("mesh")]([SubResource("Resource_npcge"), SubResource
 collision_size = 0.0
 metadata/role = "platform"
 
-[node name="구역1_투명_상부지름길" parent="지형" unique_id=1212604774 instance=ExtResource("black")]
+[node name="구역1_투명_상부지름길" parent="지형" unique_id=1212604774 instance=ExtResource("ghost_v2_black")]
 position = Vector2(1552, 904)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
 "전체_색칠_최대긴변" = 1024.0
 _points = SubResource("Resource_encnc")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_1ir07"), SubResource("Resource_800gx")])
 collision_size = 0.0
 metadata/role = "ghost"
 
@@ -2601,23 +2601,21 @@ _meshes = Array[ExtResource("mesh")]([SubResource("Resource_qtbth"), SubResource
 collision_size = 0.0
 metadata/role = "ceiling"
 
-[node name="구역3_투명발판1" parent="지형" unique_id=1879879365 instance=ExtResource("black")]
+[node name="구역3_투명발판1" parent="지형" unique_id=1879879365 instance=ExtResource("ghost_v2_black")]
 position = Vector2(8064, 4168)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
 "전체_색칠_최대긴변" = 1024.0
 _points = SubResource("Resource_8esu8")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_eo6o1"), SubResource("Resource_0kep4")])
 collision_size = 0.0
 metadata/role = "ghost"
 
-[node name="구역3_투명발판2" parent="지형" unique_id=1836883193 instance=ExtResource("black")]
+[node name="구역3_투명발판2" parent="지형" unique_id=1836883193 instance=ExtResource("ghost_v2_black")]
 position = Vector2(8448, 4168)
 "무색일때_통과" = true
 "필요횟수_수동" = 1
 "전체_색칠_최대긴변" = 1024.0
 _points = SubResource("Resource_sg5up")
-_meshes = Array[ExtResource("mesh")]([SubResource("Resource_b1xm2"), SubResource("Resource_5u0s3")])
 collision_size = 0.0
 metadata/role = "ghost"
 
@@ -3274,29 +3272,41 @@ position = Vector2(15008, 6864)
 "색_번갈아" = true
 "색_전환주기" = 8.0
 
-[node name="구역1_폭포1_급수관" parent="장치" unique_id=1635883316 instance=ExtResource("pipe")]
-z_index = 3
-position = Vector2(1344, 512)
+[node name="구역1_폭포1_급수관" type="Node2D" parent="장치" unique_id=1635883316]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(1344, 512, 2240, 512)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="구역1_폭포2_급수관" parent="장치" unique_id=1656636913 instance=ExtResource("pipe")]
-z_index = 3
-position = Vector2(1792, 512)
+[node name="구역1_폭포2_급수관" type="Node2D" parent="장치" unique_id=1656636913]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(1792, 512, 2688, 512)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="구역4_폭포1_급수관" parent="장치" unique_id=945990415 instance=ExtResource("pipe")]
-z_index = 3
-position = Vector2(11328, 5120)
+[node name="구역4_폭포1_급수관" type="Node2D" parent="장치" unique_id=945990415]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(11328, 5120, 12224, 5120)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="구역4_폭포2_급수관" parent="장치" unique_id=546211552 instance=ExtResource("pipe")]
-z_index = 3
-position = Vector2(11776, 5120)
+[node name="구역4_폭포2_급수관" type="Node2D" parent="장치" unique_id=546211552]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(11776, 5120, 12672, 5120)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="구역5_폭포1_급수관" parent="장치" unique_id=745730583 instance=ExtResource("pipe")]
-z_index = 3
-position = Vector2(14656, 6656)
+[node name="구역5_폭포1_급수관" type="Node2D" parent="장치" unique_id=745730583]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(14656, 6656, 15552, 6656)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="구역5_폭포2_급수관" parent="장치" unique_id=2146273954 instance=ExtResource("pipe")]
-z_index = 3
-position = Vector2(15104, 6656)
+[node name="구역5_폭포2_급수관" type="Node2D" parent="장치" unique_id=2146273954]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(15104, 6656, 16000, 6656)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="체크포인트" type="Node2D" parent="." unique_id=1851452730]
 

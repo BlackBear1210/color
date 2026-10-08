@@ -44,8 +44,11 @@ func _process(delta: float) -> void:
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	if player != null:
 		var foot := to_local(player.global_position)
-		var right := 크기.x * 0.5 - 오른쪽_안쪽폭 * clampf((foot.y + 크기.y) / 크기.y, 0.0, 1.0)
-		var inside := 켜짐 and foot.x >= -크기.x * 0.5 and foot.x <= right and foot.y >= -크기.y and foot.y <= 8.0
+		var 깊이비 := clampf((foot.y + 크기.y) / 크기.y, 0.0, 1.0)
+		var right := 크기.x * 0.5 - 오른쪽_안쪽폭 * 깊이비
+		# 왼쪽 경사도 같은 식으로(2026-10-03 · 사다리꼴 웅덩이)
+		var left := -크기.x * 0.5 + 왼쪽_안쪽폭 * 깊이비
+		var inside := 켜짐 and foot.x >= left and foot.x <= right and foot.y >= -크기.y and foot.y <= 8.0
 		var travel := foot.distance_to(_마지막발)
 		if inside and (not _물속 or travel >= 22.0):
 			if travel > 180.0:
@@ -82,9 +85,11 @@ func _draw() -> void:
 	# 매립 수로의 양쪽 벽과 밑바닥에만 그린다. 수면 위와 판정 공간은 늘리지 않는다.
 	var half := 크기.x * 0.5
 	var inset := minf(오른쪽_안쪽폭, 크기.x * 0.75)
-	_젖은_띠(Vector2(-half, -크기.y), Vector2(-half, 0.0), Vector2.LEFT, 0.0)
+	var left_inset := minf(왼쪽_안쪽폭, 크기.x * 0.75 - inset)
+	# 왼쪽 벽도 경사를 따라 그린다(2026-10-03 · 사다리꼴 웅덩이).
+	_젖은_띠(Vector2(-half, -크기.y), Vector2(-half + left_inset, 0.0), Vector2.LEFT, 0.0)
 	_젖은_띠(Vector2(half, -크기.y), Vector2(half - inset, 0.0), Vector2.RIGHT, 1.7)
-	_젖은_띠(Vector2(-half, 0.0), Vector2(half - inset, 0.0), Vector2.DOWN, 3.1)
+	_젖은_띠(Vector2(-half + left_inset, 0.0), Vector2(half - inset, 0.0), Vector2.DOWN, 3.1)
 
 func _젖은_띠(start: Vector2, end: Vector2, outward: Vector2, seed: float) -> void:
 	# 경계로부터 2~6px 안에서만 불규칙하게 번져 직선 테두리나 검은 프레임을 피한다.

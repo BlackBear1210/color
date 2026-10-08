@@ -58,8 +58,8 @@ func run() -> void:
 	await shot("02_점화")
 	check(cp.활성, "실제 착지로 점화")
 	check(scene._저장체크 == cp, "실제 월드 저장 연결")
-	var saved: Vector2 = scene._체크위치
-	var saved_color: int = scene._체크색
+	var saved: Vector2 = scene._체크포인트_위치
+	var saved_color: int = scene._체크포인트_색
 	await frames(80)
 	await shot("03_켜짐")
 	check(cp._펄스 == 0.0, "확산 효과 소멸")
@@ -70,7 +70,8 @@ func run() -> void:
 	check(cp._펄스 == 0.0, "재진입 효과 중복 없음")
 	p.global_position += Vector2(400, -100)
 	p.set("player_color", 1 - saved_color)
-	scene._리스폰()
+	# 리스폰은 사망 모션을 기다린 뒤 옮긴다(2026-10 원격 병합) → 끝날 때까지 기다린다.
+	await scene._리스폰()
 	check(p.global_position.distance_to(saved) < 0.01, "리스폰 위치 복원")
 	check(p.get("자유색") == saved_color, "리스폰 색 복원")
 	await frames(50)

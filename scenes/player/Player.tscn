@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://6h6viwi1sfak" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Script" uid="uid://cxyp00fit7cdr" path="res://scripts/gun.gd" id="2"]
-[ext_resource type="Script" uid="uid://djtq07snku0ad" path="res://scripts/player_anim.gd" id="3"]
-[ext_resource type="SpriteFrames" uid="uid://ce7va4l5j1ei0" path="res://assets/p/player_frames.tres" id="4"]
+[ext_resource type="Script" path="res://scripts/paint_head_anim.gd" id="3"]
+[ext_resource type="SpriteFrames" path="res://assets/characters/paint_head_a/player_frames.tres" id="4"]
 [ext_resource type="Script" uid="uid://26v64gmyh1e7" path="res://scripts/총_받침.gd" id="5"]
 [ext_resource type="Script" uid="uid://l8bmveg5y7ny" path="res://scripts/색겹침.gd" id="6"]
 [ext_resource type="Script" uid="uid://wv15vx0gcktx" path="res://scripts/player_action_fx.gd" id="7"]
 [ext_resource type="Script" path="res://scripts/플레이어_보조광.gd" id="8"]
+[ext_resource type="Script" path="res://scripts/플레이어_효과음.gd" id="9"]
 
 [node name="Player" type="CharacterBody2D" unique_id=1147093704]
 scale = Vector2(0.7949601, 0.36771855)
@@ -46,6 +47,9 @@ script = ExtResource("7")
 
 [node name="플레이어_보조광" type="Node2D" parent="."]
 script = ExtResource("8")
+
+[node name="효과음" type="Node" parent="."]
+script = ExtResource("9")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=614551773]
 visible = false

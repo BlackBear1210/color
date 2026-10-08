@@ -4,6 +4,8 @@ uniform sampler2D flow_texture : filter_linear, repeat_disable;
 uniform sampler2D splash_texture : filter_linear, repeat_disable;
 uniform bool impact = true;
 uniform float pool_right_inset = 0.0;
+// 2026-10-03: left slope too (trapezoid pools).
+uniform float pool_left_inset = 0.0;
 uniform int pool_tone = 1;
 uniform int water_tone = 1;
 uniform vec2 extent = vec2(64.0, 320.0);
@@ -111,7 +113,8 @@ vec4 water(vec2 p, float t) {
     } else if (kind == 3) {
         float inset = corner_inset * clamp(-p.y / max(back_depth, 0.1), 0.0, 1.0);
         float slope = min(pool_right_inset,w*0.75) * clamp(p.y / h,0.0,1.0);
-        float contact = min(p.x-inset,w-inset-p.x-slope);
+        float lslope = pool_left_inset * clamp(p.y / h,0.0,1.0);
+        float contact = min(p.x-inset-lslope,w-inset-p.x-slope);
         float small_wave = sin(p.x*0.07-t*2.4)*0.65+sin(p.x*0.19+t*1.7)*0.25;
         opacity = band(contact) * band(h - p.y);
         if (p.y < 0.0) {

@@ -1,6 +1,5 @@
 [gd_scene format=4 uid="uid://bq7xusqsgrdo8"]
 
-[ext_resource type="PackedScene" path="res://scenes/배경/하수도_화면효과_v2.tscn" id="sewer_fx_v2"]
 [ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="7_dc7m8"]
 [ext_resource type="Shader" uid="uid://bmi2yr8fa5o3v" path="res://shaders/sewer_natural_platform.gdshader" id="8_21o82"]
 [ext_resource type="Texture2D" uid="uid://chmcpo3v1px2p" path="res://assets/textures/smartshape/sewer_masonry_v02/white/fill.png" id="9_e6a57"]
@@ -15,6 +14,9 @@
 [ext_resource type="Script" uid="uid://bfbp4by0y6mlv" path="res://scripts/스마트월드/통과플랫폼.gd" id="grate"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/호퍼_주철_직하.tscn" id="hopper"]
 [ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중선반_검정.tscn" id="ledge"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중발판_기본지형_검정.tscn" id="floating_ground"]
+[ext_resource type="PackedScene" path="res://scenes/장식/하수도_지지구조/체인고정구.tscn" id="chain_anchor"]
+[ext_resource type="PackedScene" path="res://scenes/장식/하수도_지지구조/쇠사슬.tscn" id="chain"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="lift"]
 [ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="player"]
 [ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
@@ -22,11 +24,13 @@
 [ext_resource type="PackedScene" uid="uid://bjtaeb3l04dnr" path="res://scenes/집/스마트월드_장애물/웅덩이.tscn" id="pool"]
 [ext_resource type="Script" uid="uid://bpeqh8omavjgu" path="res://scripts/스마트월드/웅덩이_하수도29.gd" id="pool_art"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/회전톱.tscn" id="saw"]
+[ext_resource type="PackedScene" path="res://scenes/배경/하수도_화면효과_v2.tscn" id="sewer_fx_v2"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/제어레버.tscn" id="valve"]
 [ext_resource type="PackedScene" uid="uid://xopxff8t4a3b" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="water"]
 [ext_resource type="Script" uid="uid://dwlghxm338tmb" path="res://scripts/스마트월드/유체_흰물v2.gd" id="water_art"]
 [ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_기본지형_흰색.tscn" id="white"]
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="world"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중발판_기본지형_검정.tscn" id="air_v2_black"]
 
 [sub_resource type="Resource" id="t0_0"]
 resource_local_to_scene = true
@@ -51,7 +55,7 @@ position = Vector2(0, 96)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_ebnwl"]
+[sub_resource type="Resource" id="Resource_21o82"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -69,6 +73,8 @@ _next_key = 5
 
 [sub_resource type="ShaderMaterial" id="preview"]
 shader = ExtResource("8_21o82")
+shader_parameter/reference_tone = false
+shader_parameter/front_depth = false
 shader_parameter/inlay_count = 0
 shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(0, 0, 340, 288)
@@ -118,23 +124,23 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_r8ko8"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_e6a57"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 512, 96, 1e-05),
-"attribute_data": PackedByteArray("/////3sJ7T8AAAAAewntPwAAAAD/////ewntP1VVBT97Ce0/VVUFP/////8AAAAAVVUFPwAAAABVVQU//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQU/AAAAAFVVBT//////AAAAAAAAAAAAAAAAAAAAAP////97Ce0/AAAAAHsJ7T8AAAAA/////3sJ7T9VVQU/ewntP1VVBT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAARAAAAAAAAAAAAAAARAAAwEIAAAAAAAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAARAAAwEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_odfvu"]
+[sub_resource type="Resource" id="Resource_yf40d"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_r8ko8")
+mesh = SubResource("ArrayMesh_e6a57")
 material = SubResource("preview")
 z_index = -1
 
@@ -161,7 +167,7 @@ position = Vector2(0, 64)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_ffhlx"]
+[sub_resource type="Resource" id="Resource_6ioux"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -177,8 +183,10 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5i0ve"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ebnwl"]
 shader = ExtResource("8_21o82")
+shader_parameter/reference_tone = false
+shader_parameter/front_depth = false
 shader_parameter/inlay_count = 0
 shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(0, 0, 340, 288)
@@ -228,24 +236,24 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_1nuq2"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_r8ko8"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 256, 64, 1e-05),
-"attribute_data": PackedByteArray("/////3sJbT8AAAAAewltPwAAAAD/////ewltPxzHsT57CW0/HMexPv////8AAAAAHMexPgAAAAAcx7E+/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAcx7E+AAAAABzHsT7/////AAAAAAAAAAAAAAAAAAAAAP////97CW0/AAAAAHsJbT8AAAAA/////3sJbT8cx7E+ewltPxzHsT4="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AACAQwAAAAAAAAAAAACAQwAAgEIAAAAAAAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAAAACAQwAAAAAAAAAAAACAQwAAgEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_o7h17"]
+[sub_resource type="Resource" id="Resource_odfvu"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("9_e6a57")
-mesh = SubResource("ArrayMesh_1nuq2")
-material = SubResource("ShaderMaterial_5i0ve")
+mesh = SubResource("ArrayMesh_r8ko8")
+material = SubResource("ShaderMaterial_ebnwl")
 z_index = -1
 
 [sub_resource type="Resource" id="t2_0"]
@@ -271,7 +279,7 @@ position = Vector2(0, 96)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_0d7al"]
+[sub_resource type="Resource" id="Resource_ffhlx"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -287,23 +295,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_2gxff"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_5i0ve"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 832, 96, 1e-05),
-"attribute_data": PackedByteArray("/////7SXQEAAAAAAtJdAQAAAAAD/////tJdAQFVVBT+0l0BAVVUFP/////8AAAAAVVUFPwAAAABVVQU//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQU/AAAAAFVVBT//////AAAAAAAAAAAAAAAAAAAAAP////+0l0BAAAAAALSXQEAAAAAA/////7SXQEBVVQU/tJdAQFVVBT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AABQRAAAAAAAAAAAAABQRAAAwEIAAAAAAAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAAAABQRAAAAAAAAAAAAABQRAAAwEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_ktqpq"]
+[sub_resource type="Resource" id="Resource_1nuq2"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_2gxff")
+mesh = SubResource("ArrayMesh_5i0ve")
 material = SubResource("preview")
 z_index = -1
 
@@ -351,7 +359,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(-64, -64)
 
-[sub_resource type="Resource" id="Resource_g23ok"]
+[sub_resource type="Resource" id="Resource_o7h17"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -371,23 +379,23 @@ Vector2i(0, 8): 15
 }
 _next_key = 9
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_xtvhj"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_0d7al"]
 _surfaces = [{
 "aabb": AABB(-64, -64, 0, 1984, 224, 1e-05),
-"attribute_data": PackedByteArray("/////4X2okAAAAAAhfaiQAAAAAD/////hfaiQBzHsb6F9qJAHMexvv/////jON5AHMexvuM43kAcx7G+/////+M43kDjOF4/4zjeQOM4Xj//////AAAAAAAAAAAAAAAAAAAAAP////97CW2+4zheP3sJbb7jOF4//////wAAAAAcx7G+AAAAABzHsb7/////ewltvhzHsb57CW2+HMexvg=="),
+"attribute_data": PackedByteArray("/////3sJbb7jOF4/ewltvuM4Xj//////ewltvhzHsb57CW2+HMexvv////8AAAAAHMexvgAAAAAcx7G+/////4X2okAAAAAAhfaiQAAAAAD/////hfaiQBzHsb6F9qJAHMexvv/////jON5AHMexvuM43kAcx7G+/////wAAAAAAAAAAAAAAAAAAAAD/////4zjeQOM4Xj/jON5A4zhePw=="),
 "format": 34359742527,
-"index_count": 21,
-"index_data": PackedByteArray("AAABAAIAAAACAAMABAAAAAMABAADAAUABgAEAAUABQAHAAcABwAGAAUA"),
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUAAAACAAYAAwAFAAcABwAAAAYABgADAAcA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 8,
-"vertex_data": PackedByteArray("AACwRAAAAAAAAAAAAACwRAAAgMIAAAAAAADwRAAAgMIAAAAAAADwRAAAIEMAAAAAAAAAAAAAAAAAAAAAAACAwgAAIEMAAAAAAAAAAAAAgMIAAAAAAACAwgAAgMIAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////vw==")
+"vertex_data": PackedByteArray("AACAwgAAIEMAAAAAAACAwgAAgMIAAAAAAAAAAAAAgMIAAAAAAACwRAAAAAAAAAAAAACwRAAAgMIAAAAAAADwRAAAgMIAAAAAAAAAAAAAAAAAAAAAAADwRAAAIEMAAAAA/////////7//////////v//////+//+//////////7//////////v/////////+///////7//7//////////vw==")
 }]
 
-[sub_resource type="Resource" id="Resource_gspif"]
+[sub_resource type="Resource" id="Resource_2gxff"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_xtvhj")
+mesh = SubResource("ArrayMesh_0d7al")
 material = SubResource("preview")
 z_index = -1
 
@@ -414,7 +422,7 @@ position = Vector2(0, 96)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_fggxx"]
+[sub_resource type="Resource" id="Resource_ktqpq"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -430,23 +438,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_2bx1m"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_g23ok"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 512, 96, 1e-05),
-"attribute_data": PackedByteArray("/////3sJ7T8AAAAAewntPwAAAAD/////ewntP1VVBT97Ce0/VVUFP/////8AAAAAVVUFPwAAAABVVQU//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQU/AAAAAFVVBT//////AAAAAAAAAAAAAAAAAAAAAP////97Ce0/AAAAAHsJ7T8AAAAA/////3sJ7T9VVQU/ewntP1VVBT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAARAAAAAAAAAAAAAAARAAAwEIAAAAAAAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAARAAAwEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_p3ggc"]
+[sub_resource type="Resource" id="Resource_xtvhj"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_2bx1m")
+mesh = SubResource("ArrayMesh_g23ok")
 material = SubResource("preview")
 z_index = -1
 
@@ -473,7 +481,7 @@ position = Vector2(0, 96)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_osx6l"]
+[sub_resource type="Resource" id="Resource_gspif"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -489,23 +497,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_goyk3"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_fggxx"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 608, 96, 1e-05),
-"attribute_data": PackedByteArray("/////6G9DEAAAAAAob0MQAAAAAD/////ob0MQFVVBT+hvQxAVVUFP/////8AAAAAVVUFPwAAAABVVQU//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQU/AAAAAFVVBT//////AAAAAAAAAAAAAAAAAAAAAP////+hvQxAAAAAAKG9DEAAAAAA/////6G9DEBVVQU/ob0MQFVVBT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAYRAAAAAAAAAAAAAAYRAAAwEIAAAAAAAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAAAAAYRAAAAAAAAAAAAAAYRAAAwEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_l71t3"]
+[sub_resource type="Resource" id="Resource_2bx1m"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_goyk3")
+mesh = SubResource("ArrayMesh_fggxx")
 material = SubResource("preview")
 z_index = -1
 
@@ -532,7 +540,7 @@ position = Vector2(0, 128)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_81x01"]
+[sub_resource type="Resource" id="Resource_p3ggc"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -548,23 +556,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_h4hb0"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_osx6l"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 1920, 128, 1e-05),
-"attribute_data": PackedByteArray("/////+M43kAAAAAA4zjeQAAAAAD/////4zjeQBzHMT/jON5AHMcxP/////8AAAAAHMcxPwAAAAAcxzE//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAcxzE/AAAAABzHMT//////AAAAAAAAAAAAAAAAAAAAAP/////jON5AAAAAAOM43kAAAAAA/////+M43kAcxzE/4zjeQBzHMT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AADwRAAAAAAAAAAAAADwRAAAAEMAAAAAAAAAAAAAAEMAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAAEMAAAAAAAAAAAAAAAAAAAAAAADwRAAAAAAAAAAAAADwRAAAAEMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_u1bm2"]
+[sub_resource type="Resource" id="Resource_goyk3"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_h4hb0")
+mesh = SubResource("ArrayMesh_osx6l")
 material = SubResource("preview")
 z_index = -1
 
@@ -591,7 +599,7 @@ position = Vector2(0, 64)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_qaooe"]
+[sub_resource type="Resource" id="Resource_l71t3"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -607,23 +615,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_akn0x"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_81x01"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 1696, 64, 1e-05),
-"attribute_data": PackedByteArray("/////9pLxEAAAAAA2kvEQAAAAAD/////2kvEQBzHsT7aS8RAHMexPv////8AAAAAHMexPgAAAAAcx7E+/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAcx7E+AAAAABzHsT7/////AAAAAAAAAAAAAAAAAAAAAP/////aS8RAAAAAANpLxEAAAAAA/////9pLxEAcx7E+2kvEQBzHsT4="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AADURAAAAAAAAAAAAADURAAAgEIAAAAAAAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAAAADURAAAAAAAAAAAAADURAAAgEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_h5kxy"]
+[sub_resource type="Resource" id="Resource_h4hb0"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_akn0x")
+mesh = SubResource("ArrayMesh_81x01")
 material = SubResource("preview")
 z_index = -1
 
@@ -650,7 +658,7 @@ position = Vector2(0, 512)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_4h6fp"]
+[sub_resource type="Resource" id="Resource_u1bm2"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -666,23 +674,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4q3k6"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_qaooe"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 128, 512, 1e-05),
-"attribute_data": PackedByteArray("/////3sJ7T4AAAAAewntPgAAAAD/////ewntPhzHMUB7Ce0+HMcxQP////8AAAAAHMcxQAAAAAAcxzFA/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAcxzFAAAAAABzHMUD/////AAAAAAAAAAAAAAAAAAAAAP////97Ce0+AAAAAHsJ7T4AAAAA/////3sJ7T4cxzFAewntPhzHMUA="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAAQwAAAAAAAAAAAAAAQwAAAEQAAAAAAAAAAAAAAEQAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAAEQAAAAAAAAAAAAAAAAAAAAAAAAAQwAAAAAAAAAAAAAAQwAAAEQAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_neafr"]
+[sub_resource type="Resource" id="Resource_akn0x"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_4q3k6")
+mesh = SubResource("ArrayMesh_qaooe")
 material = SubResource("preview")
 z_index = -1
 
@@ -709,7 +717,7 @@ position = Vector2(0, 768)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_v85jg"]
+[sub_resource type="Resource" id="Resource_h5kxy"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -725,23 +733,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4wi67"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_4h6fp"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 128, 768, 1e-05),
-"attribute_data": PackedByteArray("/////3sJ7T4AAAAAewntPgAAAAD/////ewntPlVVhUB7Ce0+VVWFQP////8AAAAAVVWFQAAAAABVVYVA/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVYVAAAAAAFVVhUD/////AAAAAAAAAAAAAAAAAAAAAP////97Ce0+AAAAAHsJ7T4AAAAA/////3sJ7T5VVYVAewntPlVVhUA="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAAQwAAAAAAAAAAAAAAQwAAQEQAAAAAAAAAAAAAQEQAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAQEQAAAAAAAAAAAAAAAAAAAAAAAAAQwAAAAAAAAAAAAAAQwAAQEQAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_y8wtr"]
+[sub_resource type="Resource" id="Resource_4q3k6"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_4wi67")
+mesh = SubResource("ArrayMesh_4h6fp")
 material = SubResource("preview")
 z_index = -1
 
@@ -768,7 +776,7 @@ position = Vector2(0, 1152)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_sq7ru"]
+[sub_resource type="Resource" id="Resource_neafr"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -784,23 +792,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_2y2ab"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_v85jg"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 128, 1152, 1e-05),
-"attribute_data": PackedByteArray("/////3sJ7T4AAAAAewntPgAAAAD/////ewntPgAAyEB7Ce0+AADIQP////8AAAAAAADIQAAAAAAAAMhA/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAAAMhAAAAAAAAAyED/////AAAAAAAAAAAAAAAAAAAAAP////97Ce0+AAAAAHsJ7T4AAAAA/////3sJ7T4AAMhAewntPgAAyEA="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAAQwAAAAAAAAAAAAAAQwAAkEQAAAAAAAAAAAAAkEQAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAkEQAAAAAAAAAAAAAAAAAAAAAAAAAQwAAAAAAAAAAAAAAQwAAkEQAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_oa6e2"]
+[sub_resource type="Resource" id="Resource_4wi67"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_2y2ab")
+mesh = SubResource("ArrayMesh_v85jg")
 material = SubResource("preview")
 z_index = -1
 
@@ -827,7 +835,7 @@ position = Vector2(0, 160)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_irdnv"]
+[sub_resource type="Resource" id="Resource_y8wtr"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -843,23 +851,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_kt26a"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_sq7ru"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 1088, 160, 1e-05),
-"attribute_data": PackedByteArray("/////xPae0AAAAAAE9p7QAAAAAD/////E9p7QOM4Xj8T2ntA4zheP/////8AAAAA4zhePwAAAADjOF4//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAADjOF4/AAAAAOM4Xj//////AAAAAAAAAAAAAAAAAAAAAP////8T2ntAAAAAABPae0AAAAAA/////xPae0DjOF4/E9p7QOM4Xj8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AACIRAAAAAAAAAAAAACIRAAAIEMAAAAAAAAAAAAAIEMAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAIEMAAAAAAAAAAAAAAAAAAAAAAACIRAAAAAAAAAAAAACIRAAAIEMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_a3kst"]
+[sub_resource type="Resource" id="Resource_2y2ab"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_kt26a")
+mesh = SubResource("ArrayMesh_sq7ru")
 material = SubResource("preview")
 z_index = -1
 
@@ -886,7 +894,7 @@ position = Vector2(0, 160)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_na3ec"]
+[sub_resource type="Resource" id="Resource_oa6e2"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -902,23 +910,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_q6ce2"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_irdnv"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 1408, 160, 1e-05),
-"attribute_data": PackedByteArray("/////4X2okAAAAAAhfaiQAAAAAD/////hfaiQOM4Xj+F9qJA4zheP/////8AAAAA4zhePwAAAADjOF4//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAADjOF4/AAAAAOM4Xj//////AAAAAAAAAAAAAAAAAAAAAP////+F9qJAAAAAAIX2okAAAAAA/////4X2okDjOF4/hfaiQOM4Xj8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AACwRAAAAAAAAAAAAACwRAAAIEMAAAAAAAAAAAAAIEMAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAIEMAAAAAAAAAAAAAAAAAAAAAAACwRAAAAAAAAAAAAACwRAAAIEMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_x28va"]
+[sub_resource type="Resource" id="Resource_kt26a"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_q6ce2")
+mesh = SubResource("ArrayMesh_irdnv")
 material = SubResource("preview")
 z_index = -1
 
@@ -960,7 +968,7 @@ position = Vector2(0, 16)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_h34gy"]
+[sub_resource type="Resource" id="Resource_a3kst"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -979,8 +987,10 @@ Vector2i(0, 7): 15
 }
 _next_key = 8
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_c4kf7"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_na3ec"]
 shader = ExtResource("8_21o82")
+shader_parameter/reference_tone = false
+shader_parameter/front_depth = false
 shader_parameter/inlay_count = 0
 shader_parameter/inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/surface_bounds = Vector4(0, 0, 340, 60)
@@ -1029,7 +1039,7 @@ shader_parameter/sewer_edge_count = 0
 shader_parameter/sewer_edges = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/sewer_visible = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_ldpkw"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_q6ce2"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 192, 56, 1e-05),
 "attribute_data": PackedByteArray("/////xzHMT8AAAAAHMcxPwAAAAD/////HMcxPxzHsT0cxzE/HMexPf////85jhs/VVWFPjmOGz9VVYU+/////xzHsT7jOF4+HMexPuM4Xj7/////HMexPTiOmz4cx7E9OI6bPv////8AAAAAHMexPQAAAAAcx7E9/////wAAAAAAAAAAAAAAAAAAAAA="),
@@ -1042,11 +1052,11 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABAQwAAAAAAAAAAAABAQwAAgEEAAAAAAAAoQwAAQEIAAAAAAADAQgAAIEIAAAAAAADAQQAAYEIAAAAAAAAAAAAAgEEAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_347j6"]
+[sub_resource type="Resource" id="Resource_x28va"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_ldpkw")
-material = SubResource("ShaderMaterial_c4kf7")
+mesh = SubResource("ArrayMesh_q6ce2")
+material = SubResource("ShaderMaterial_na3ec")
 z_index = -1
 
 [sub_resource type="Resource" id="t14_0"]
@@ -1094,7 +1104,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(0, -64)
 
-[sub_resource type="Resource" id="Resource_7lqe5"]
+[sub_resource type="Resource" id="Resource_h34gy"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1114,23 +1124,23 @@ Vector2i(0, 8): 15
 }
 _next_key = 9
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4skhb"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_c4kf7"]
 _surfaces = [{
 "aabb": AABB(0, -64, 0, 1792, 288, 1e-05),
-"attribute_data": PackedByteArray("/////wAAyEAAAAAAAADIQAAAAAD/////AADIQBzHsb4AAMhAHMexvv////9MaM9AHMexvkxoz0Acx7G+/////0xoz0A4jps/TGjPQDiOmz//////VVWFQAAAAABVVYVAAAAAAP////8AAAAAOI6bPwAAAAA4jps//////1VVhUAcx7G+VVWFQBzHsb7/////AAAAABzHsb4AAAAAHMexvg=="),
+"attribute_data": PackedByteArray("/////wAAAAA4jps/AAAAADiOmz//////AAAAABzHsb4AAAAAHMexvv////9VVYVAHMexvlVVhUAcx7G+/////wAAyEAAAAAAAADIQAAAAAD/////AADIQBzHsb4AAMhAHMexvv////9MaM9AHMexvkxoz0Acx7G+/////1VVhUAAAAAAVVWFQAAAAAD/////TGjPQDiOmz9MaM9AOI6bPw=="),
 "format": 34359742527,
-"index_count": 21,
-"index_data": PackedByteArray("AAABAAIAAAACAAMABAAAAAMABAADAAUABgAEAAUABQAHAAcABwAGAAUA"),
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUAAAACAAYAAwAFAAcABwAAAAYABgADAAcA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 8,
-"vertex_data": PackedByteArray("AADYRAAAAAAAAAAAAADYRAAAgMIAAAAAAADgRAAAgMIAAAAAAADgRAAAYEMAAAAAAACQRAAAAAAAAAAAAAAAAAAAYEMAAAAAAACQRAAAgMIAAAAAAAAAAAAAgMIAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////vw==")
+"vertex_data": PackedByteArray("AAAAAAAAYEMAAAAAAAAAAAAAgMIAAAAAAACQRAAAgMIAAAAAAADYRAAAAAAAAAAAAADYRAAAgMIAAAAAAADgRAAAgMIAAAAAAACQRAAAAAAAAAAAAADgRAAAYEMAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////vw==")
 }]
 
-[sub_resource type="Resource" id="Resource_q4amn"]
+[sub_resource type="Resource" id="Resource_ldpkw"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_4skhb")
+mesh = SubResource("ArrayMesh_c4kf7")
 material = SubResource("preview")
 z_index = -1
 
@@ -1172,7 +1182,7 @@ position = Vector2(0, 16)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_m6q8y"]
+[sub_resource type="Resource" id="Resource_347j6"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1191,7 +1201,7 @@ Vector2i(0, 7): 15
 }
 _next_key = 8
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_kntpx"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_7lqe5"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 192, 56, 1e-05),
 "attribute_data": PackedByteArray("/////xzHMT8AAAAAHMcxPwAAAAD/////HMcxPxzHsT0cxzE/HMexPf////85jhs/VVWFPjmOGz9VVYU+/////xzHsT7jOF4+HMexPuM4Xj7/////HMexPTiOmz4cx7E9OI6bPv////8AAAAAHMexPQAAAAAcx7E9/////wAAAAAAAAAAAAAAAAAAAAA="),
@@ -1204,11 +1214,11 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AABAQwAAAAAAAAAAAABAQwAAgEEAAAAAAAAoQwAAQEIAAAAAAADAQgAAIEIAAAAAAADAQQAAYEIAAAAAAAAAAAAAgEEAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_mxrbl"]
+[sub_resource type="Resource" id="Resource_4skhb"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_kntpx")
-material = SubResource("ShaderMaterial_c4kf7")
+mesh = SubResource("ArrayMesh_7lqe5")
+material = SubResource("ShaderMaterial_na3ec")
 z_index = -1
 
 [sub_resource type="Resource" id="t16_0"]
@@ -1234,7 +1244,7 @@ position = Vector2(0, 64)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_unse5"]
+[sub_resource type="Resource" id="Resource_q4amn"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1250,23 +1260,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4ccu5"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_m6q8y"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 960, 64, 1e-05),
-"attribute_data": PackedByteArray("/////+M4XkAAAAAA4zheQAAAAAD/////4zheQBzHsT7jOF5AHMexPv////8AAAAAHMexPgAAAAAcx7E+/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAcx7E+AAAAABzHsT7/////AAAAAAAAAAAAAAAAAAAAAP/////jOF5AAAAAAOM4XkAAAAAA/////+M4XkAcx7E+4zheQBzHsT4="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AABwRAAAAAAAAAAAAABwRAAAgEIAAAAAAAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAAAABwRAAAAAAAAAAAAABwRAAAgEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_r45dt"]
+[sub_resource type="Resource" id="Resource_kntpx"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_4ccu5")
+mesh = SubResource("ArrayMesh_m6q8y")
 material = SubResource("preview")
 z_index = -1
 
@@ -1293,7 +1303,7 @@ position = Vector2(0, 96)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_2kyoh"]
+[sub_resource type="Resource" id="Resource_mxrbl"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1309,23 +1319,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_ovncf"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_unse5"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 512, 96, 1e-05),
-"attribute_data": PackedByteArray("/////3sJ7T8AAAAAewntPwAAAAD/////ewntP1VVBT97Ce0/VVUFP/////8AAAAAVVUFPwAAAABVVQU//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQU/AAAAAFVVBT//////AAAAAAAAAAAAAAAAAAAAAP////97Ce0/AAAAAHsJ7T8AAAAA/////3sJ7T9VVQU/ewntP1VVBT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAARAAAAAAAAAAAAAAARAAAwEIAAAAAAAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAARAAAwEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_7b77x"]
+[sub_resource type="Resource" id="Resource_4ccu5"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_ovncf")
+mesh = SubResource("ArrayMesh_unse5")
 material = SubResource("preview")
 z_index = -1
 
@@ -1352,7 +1362,7 @@ position = Vector2(0, 64)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_cyes6"]
+[sub_resource type="Resource" id="Resource_r45dt"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1368,24 +1378,24 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_tmons"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_2kyoh"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 320, 64, 1e-05),
-"attribute_data": PackedByteArray("/////+0llD8AAAAA7SWUPwAAAAD/////7SWUPxzHsT7tJZQ/HMexPv////8AAAAAHMexPgAAAAAcx7E+/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAcx7E+AAAAABzHsT7/////AAAAAAAAAAAAAAAAAAAAAP/////tJZQ/AAAAAO0llD8AAAAA/////+0llD8cx7E+7SWUPxzHsT4="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AACgQwAAAAAAAAAAAACgQwAAgEIAAAAAAAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAgEIAAAAAAAAAAAAAAAAAAAAAAACgQwAAAAAAAAAAAACgQwAAgEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_g5i8q"]
+[sub_resource type="Resource" id="Resource_ovncf"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("9_e6a57")
-mesh = SubResource("ArrayMesh_tmons")
-material = SubResource("ShaderMaterial_5i0ve")
+mesh = SubResource("ArrayMesh_2kyoh")
+material = SubResource("ShaderMaterial_ebnwl")
 z_index = -1
 
 [sub_resource type="Resource" id="t19_0"]
@@ -1426,7 +1436,7 @@ position = Vector2(0, 16)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_x4mai"]
+[sub_resource type="Resource" id="Resource_7b77x"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1445,7 +1455,7 @@ Vector2i(0, 7): 15
 }
 _next_key = 8
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_fgu8e"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_cyes6"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 256, 56, 1e-05),
 "attribute_data": PackedByteArray("/////3sJbT8AAAAAewltPwAAAAD/////ewltPxzHsT17CW0/HMexPf////+X0FY/VVWFPpfQVj9VVYU+/////3sJ7T7jOF4+ewntPuM4Xj7/////HMexPTiOmz4cx7E9OI6bPv////8AAAAAHMexPQAAAAAcx7E9/////wAAAAAAAAAAAAAAAAAAAAA="),
@@ -1458,11 +1468,11 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AACAQwAAAAAAAAAAAACAQwAAgEEAAAAAAABoQwAAQEIAAAAAAAAAQwAAIEIAAAAAAADAQQAAYEIAAAAAAAAAAAAAgEEAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_vk2i8"]
+[sub_resource type="Resource" id="Resource_tmons"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_fgu8e")
-material = SubResource("ShaderMaterial_c4kf7")
+mesh = SubResource("ArrayMesh_cyes6")
+material = SubResource("ShaderMaterial_na3ec")
 z_index = -1
 
 [sub_resource type="Resource" id="t20_0"]
@@ -1488,7 +1498,7 @@ position = Vector2(0, 96)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_o3w2t"]
+[sub_resource type="Resource" id="Resource_g5i8q"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1504,23 +1514,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_qtfwn"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_x4mai"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 1664, 96, 1e-05),
-"attribute_data": PackedByteArray("/////7SXwEAAAAAAtJfAQAAAAAD/////tJfAQFVVBT+0l8BAVVUFP/////8AAAAAVVUFPwAAAABVVQU//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQU/AAAAAFVVBT//////AAAAAAAAAAAAAAAAAAAAAP////+0l8BAAAAAALSXwEAAAAAA/////7SXwEBVVQU/tJfAQFVVBT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AADQRAAAAAAAAAAAAADQRAAAwEIAAAAAAAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEIAAAAAAAAAAAAAAAAAAAAAAADQRAAAAAAAAAAAAADQRAAAwEIAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_sbbaf"]
+[sub_resource type="Resource" id="Resource_fgu8e"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_qtfwn")
+mesh = SubResource("ArrayMesh_x4mai")
 material = SubResource("preview")
 z_index = -1
 
@@ -1569,7 +1579,7 @@ resource_local_to_scene = true
 script = ExtResource("point")
 position = Vector2(0, -64)
 
-[sub_resource type="Resource" id="Resource_yaylj"]
+[sub_resource type="Resource" id="Resource_vk2i8"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1589,23 +1599,23 @@ Vector2i(0, 8): 15
 }
 _next_key = 9
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_xbx17"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_o3w2t"]
 _surfaces = [{
 "aabb": AABB(0, -64, 0, 3232, 192, 1e-05),
-"attribute_data": PackedByteArray("/////1VVN0EAAAAAVVU3QQAAAAD/////VVU3QRzHsb5VVTdBHMexvv////97CTtBHMexvnsJO0Ecx7G+/////3sJO0EcxzE/ewk7QRzHMT//////VVUFQAAAAABVVQVAAAAAAP////8AAAAAHMcxPwAAAAAcxzE//////1VVBUAcx7G+VVUFQBzHsb7/////AAAAABzHsb4AAAAAHMexvg=="),
+"attribute_data": PackedByteArray("/////wAAAAAcxzE/AAAAABzHMT//////AAAAABzHsb4AAAAAHMexvv////9VVQVAHMexvlVVBUAcx7G+/////1VVN0EAAAAAVVU3QQAAAAD/////VVU3QRzHsb5VVTdBHMexvv////97CTtBHMexvnsJO0Ecx7G+/////1VVBUAAAAAAVVUFQAAAAAD/////ewk7QRzHMT97CTtBHMcxPw=="),
 "format": 34359742527,
-"index_count": 21,
-"index_data": PackedByteArray("AAABAAIAAAACAAMABAAAAAMABAADAAUABgAEAAUABQAHAAcABwAGAAUA"),
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUAAAACAAYAAwAFAAcABwAAAAYABgADAAcA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 8,
-"vertex_data": PackedByteArray("AABGRQAAAAAAAAAAAABGRQAAgMIAAAAAAABKRQAAgMIAAAAAAABKRQAAAEMAAAAAAAAQRAAAAAAAAAAAAAAAAAAAAEMAAAAAAAAQRAAAgMIAAAAAAAAAAAAAgMIAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////vw==")
+"vertex_data": PackedByteArray("AAAAAAAAAEMAAAAAAAAAAAAAgMIAAAAAAAAQRAAAgMIAAAAAAABGRQAAAAAAAAAAAABGRQAAgMIAAAAAAABKRQAAgMIAAAAAAAAQRAAAAAAAAAAAAABKRQAAAEMAAAAA/////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////vw==")
 }]
 
-[sub_resource type="Resource" id="Resource_5lm7n"]
+[sub_resource type="Resource" id="Resource_qtfwn"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_xbx17")
+mesh = SubResource("ArrayMesh_o3w2t")
 material = SubResource("preview")
 z_index = -1
 
@@ -1632,7 +1642,7 @@ position = Vector2(0, 128)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_5wu0e"]
+[sub_resource type="Resource" id="Resource_sbbaf"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1648,23 +1658,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_k6rbo"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_yaylj"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 3712, 128, 1e-05),
-"attribute_data": PackedByteArray("/////5fQVkEAAAAAl9BWQQAAAAD/////l9BWQRzHMT+X0FZBHMcxP/////8AAAAAHMcxPwAAAAAcxzE//////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAAAcxzE/AAAAABzHMT//////AAAAAAAAAAAAAAAAAAAAAP////+X0FZBAAAAAJfQVkEAAAAA/////5fQVkEcxzE/l9BWQRzHMT8="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AABoRQAAAAAAAAAAAABoRQAAAEMAAAAAAAAAAAAAAEMAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAAEMAAAAAAAAAAAAAAAAAAAAAAABoRQAAAAAAAAAAAABoRQAAAEMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_8hxlb"]
+[sub_resource type="Resource" id="Resource_xbx17"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_k6rbo")
+mesh = SubResource("ArrayMesh_yaylj")
 material = SubResource("preview")
 z_index = -1
 
@@ -1691,7 +1701,7 @@ position = Vector2(0, 1920)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_4kf7p"]
+[sub_resource type="Resource" id="Resource_5lm7n"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1707,23 +1717,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_oll75"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_5wu0e"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 512, 1920, 1e-05),
-"attribute_data": PackedByteArray("/////3sJ7T8AAAAAewntPwAAAAD/////ewntP6qqJkF7Ce0/qqomQf////8AAAAAqqomQQAAAACqqiZB/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAACqqiZBAAAAAKqqJkH/////AAAAAAAAAAAAAAAAAAAAAP////97Ce0/AAAAAHsJ7T8AAAAA/////3sJ7T+qqiZBewntP6qqJkE="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAARAAAAAAAAAAAAAAARAAA8EQAAAAAAAAAAAAA8EQAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAA8EQAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAARAAA8EQAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_ke0nr"]
+[sub_resource type="Resource" id="Resource_k6rbo"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_oll75")
+mesh = SubResource("ArrayMesh_5wu0e")
 material = SubResource("preview")
 z_index = -1
 
@@ -1750,7 +1760,7 @@ position = Vector2(0, 384)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_osfcq"]
+[sub_resource type="Resource" id="Resource_8hxlb"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1766,23 +1776,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_qpbuq"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_4kf7p"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 640, 384, 1e-05),
-"attribute_data": PackedByteArray("/////+0lFEAAAAAA7SUUQAAAAAD/////7SUUQFVVBUDtJRRAVVUFQP////8AAAAAVVUFQAAAAABVVQVA/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQVAAAAAAFVVBUD/////AAAAAAAAAAAAAAAAAAAAAP/////tJRRAAAAAAO0lFEAAAAAA/////+0lFEBVVQVA7SUUQFVVBUA="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAgRAAAAAAAAAAAAAAgRAAAwEMAAAAAAAAAAAAAwEMAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEMAAAAAAAAAAAAAAAAAAAAAAAAgRAAAAAAAAAAAAAAgRAAAwEMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_v5gid"]
+[sub_resource type="Resource" id="Resource_oll75"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_qpbuq")
+mesh = SubResource("ArrayMesh_4kf7p")
 material = SubResource("preview")
 z_index = -1
 
@@ -1809,7 +1819,7 @@ position = Vector2(0, 2240)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_djai3"]
+[sub_resource type="Resource" id="Resource_ke0nr"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1825,23 +1835,23 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_8pe06"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_osfcq"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 640, 2240, 1e-05),
-"attribute_data": PackedByteArray("/////+0lFEAAAAAA7SUUQAAAAAD/////7SUUQMdxQkHtJRRAx3FCQf////8AAAAAx3FCQQAAAADHcUJB/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAADHcUJBAAAAAMdxQkH/////AAAAAAAAAAAAAAAAAAAAAP/////tJRRAAAAAAO0lFEAAAAAA/////+0lFEDHcUJB7SUUQMdxQkE="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AAAgRAAAAAAAAAAAAAAgRAAADEUAAAAAAAAAAAAADEUAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAADEUAAAAAAAAAAAAAAAAAAAAAAAAgRAAAAAAAAAAAAAAgRAAADEUAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_s8idy"]
+[sub_resource type="Resource" id="Resource_qpbuq"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_8pe06")
+mesh = SubResource("ArrayMesh_osfcq")
 material = SubResource("preview")
 z_index = -1
 
@@ -1868,7 +1878,7 @@ position = Vector2(0, 384)
 resource_local_to_scene = true
 script = ExtResource("point")
 
-[sub_resource type="Resource" id="Resource_s4n6f"]
+[sub_resource type="Resource" id="Resource_v5gid"]
 resource_local_to_scene = true
 script = ExtResource("points")
 _points = {
@@ -1884,79 +1894,79 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_ike1q"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_djai3"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 7040, 384, 1e-05),
-"attribute_data": PackedByteArray("/////ya0y0EAAAAAJrTLQQAAAAD/////JrTLQVVVBUAmtMtBVVUFQP////8AAAAAVVUFQAAAAABVVQVA/////wAAAAAAAAAAAAAAAAAAAAA="),
+"attribute_data": PackedByteArray("/////wAAAABVVQVAAAAAAFVVBUD/////AAAAAAAAAAAAAAAAAAAAAP////8mtMtBAAAAACa0y0EAAAAA/////ya0y0FVVQVAJrTLQVVVBUA="),
 "format": 34359742527,
-"index_count": 9,
-"index_data": PackedByteArray("AAABAAIAAgADAAMAAwAAAAIA"),
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAgADAAAA"),
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
 "vertex_count": 4,
-"vertex_data": PackedByteArray("AADcRQAAAAAAAAAAAADcRQAAwEMAAAAAAAAAAAAAwEMAAAAAAAAAAAAAAAAAAAAA/////////7//////////v/////////+//////////78=")
+"vertex_data": PackedByteArray("AAAAAAAAwEMAAAAAAAAAAAAAAAAAAAAAAADcRQAAAAAAAAAAAADcRQAAwEMAAAAA/////////7//////////v/////////+//////////78=")
 }]
 
-[sub_resource type="Resource" id="Resource_78jkd"]
+[sub_resource type="Resource" id="Resource_8pe06"]
 script = ExtResource("7_dc7m8")
 texture = ExtResource("11_6ioux")
-mesh = SubResource("ArrayMesh_ike1q")
+mesh = SubResource("ArrayMesh_djai3")
 material = SubResource("preview")
 z_index = -1
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_cxn62"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_s8idy"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g24"]
 size = Vector2(128, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ujfjw"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_s4n6f"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g25"]
 size = Vector2(128, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_vr7vj"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ike1q"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g26"]
-size = Vector2(192, 16)
+size = Vector2(160, 16)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_78jkd"]
+light_mode = 1
+
+[sub_resource type="RectangleShape2D" id="g27"]
+size = Vector2(160, 16)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_cxn62"]
+light_mode = 1
+
+[sub_resource type="RectangleShape2D" id="g28"]
+size = Vector2(160, 16)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ujfjw"]
+light_mode = 1
+
+[sub_resource type="RectangleShape2D" id="g29"]
+size = Vector2(160, 16)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_vr7vj"]
+light_mode = 1
+
+[sub_resource type="RectangleShape2D" id="g30"]
+size = Vector2(160, 16)
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pdlvl"]
 light_mode = 1
 
-[sub_resource type="RectangleShape2D" id="g27"]
-size = Vector2(192, 16)
+[sub_resource type="RectangleShape2D" id="g31"]
+size = Vector2(160, 16)
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ahsjs"]
 light_mode = 1
 
-[sub_resource type="RectangleShape2D" id="g28"]
-size = Vector2(192, 16)
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_c3yku"]
-light_mode = 1
-
-[sub_resource type="RectangleShape2D" id="g29"]
-size = Vector2(192, 16)
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_0t3bu"]
-light_mode = 1
-
-[sub_resource type="RectangleShape2D" id="g30"]
-size = Vector2(192, 16)
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_2vtex"]
-light_mode = 1
-
-[sub_resource type="RectangleShape2D" id="g31"]
-size = Vector2(192, 16)
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_us5h8"]
-light_mode = 1
-
 [sub_resource type="RectangleShape2D" id="g32"]
-size = Vector2(192, 16)
+size = Vector2(160, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gggqn"]
 size = Vector2(120.66461, 44)
@@ -1973,79 +1983,79 @@ size = Vector2(141.91304, 28)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q0ll8"]
 size = Vector2(192, 32)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7txcf"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_c3yku"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g111"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_4kql6"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_0t3bu"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g112"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mf2kv"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_2vtex"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g113"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_x53y6"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_us5h8"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g114"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_s7gw3"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_gggqn"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g121"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_dbk6h"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_226tk"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g122"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_5yfjk"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_uau1h"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g123"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_aquk7"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_aqiup"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g124"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_x2tu5"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_q0ll8"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g125"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mro6o"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7txcf"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g126"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_rxa8y"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_4kql6"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g160"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_a3b7b"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mf2kv"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g161"]
 size = Vector2(192, 16)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_aoot7"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_x53y6"]
 light_mode = 1
 
 [sub_resource type="RectangleShape2D" id="g162"]
@@ -2074,6 +2084,112 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
+
+[sub_resource type="Resource" id="air_v2_0_p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="air_v2_0_p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(188, 0)
+
+[sub_resource type="Resource" id="air_v2_0_p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, 4)
+
+[sub_resource type="Resource" id="air_v2_0_p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(192, 56)
+
+[sub_resource type="Resource" id="air_v2_0_p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 56)
+
+[sub_resource type="Resource" id="air_v2_0_p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 5)
+
+[sub_resource type="Resource" id="air_v2_0_p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="air_v2_0_pts"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("air_v2_0_p0"),
+1: SubResource("air_v2_0_p1"),
+2: SubResource("air_v2_0_p2"),
+3: SubResource("air_v2_0_p3"),
+4: SubResource("air_v2_0_p4"),
+5: SubResource("air_v2_0_p5"),
+6: SubResource("air_v2_0_p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
+
+[sub_resource type="Resource" id="air_v2_1_p0"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="air_v2_1_p1"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(252, 0)
+
+[sub_resource type="Resource" id="air_v2_1_p2"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(256, 4)
+
+[sub_resource type="Resource" id="air_v2_1_p3"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(256, 56)
+
+[sub_resource type="Resource" id="air_v2_1_p4"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 56)
+
+[sub_resource type="Resource" id="air_v2_1_p5"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(0, 5)
+
+[sub_resource type="Resource" id="air_v2_1_p6"]
+resource_local_to_scene = true
+script = ExtResource("point")
+position = Vector2(4, 0)
+
+[sub_resource type="Resource" id="air_v2_1_pts"]
+resource_local_to_scene = true
+script = ExtResource("points")
+_points = {
+0: SubResource("air_v2_1_p0"),
+1: SubResource("air_v2_1_p1"),
+2: SubResource("air_v2_1_p2"),
+3: SubResource("air_v2_1_p3"),
+4: SubResource("air_v2_1_p4"),
+5: SubResource("air_v2_1_p5"),
+6: SubResource("air_v2_1_p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
 [node name="stage_2-9" type="Node2D" unique_id=1225718629]
 script = ExtResource("world")
 "스테이지_이름" = "2-9 · 엇갈린 배수실"
@@ -2091,436 +2207,266 @@ script = ExtResource("core")
 [node name="지형" type="Node2D" parent="." unique_id=1039186145]
 
 [node name="A_출발" parent="지형" unique_id=194325439 instance=ExtResource("black")]
+position = Vector2(512, 4096)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(512, 4096)
-_points = SubResource("Resource_ebnwl")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_odfvu")])
-
-[node name="@ColorRect@19662" parent="지형/A_출발" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 512.0
-offset_bottom = 96.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_21o82")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_yf40d")])
 
 [node name="CollisionPolygon2D" parent="지형/A_출발/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 512, 0, 512, 96, 0, 96)
 
 [node name="A_징검" parent="지형" unique_id=918559941 instance=ExtResource("white")]
+position = Vector2(1184, 4096)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(1184, 4096)
-_points = SubResource("Resource_ffhlx")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_o7h17")])
-
-[node name="@ColorRect@19663" parent="지형/A_징검" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 256.0
-offset_bottom = 64.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_6ioux")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_odfvu")])
 
 [node name="CollisionPolygon2D" parent="지형/A_징검/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 256, 0, 256, 64, 0, 64)
 
 [node name="A_갱도접근" parent="지형" unique_id=1978702253 instance=ExtResource("black")]
+position = Vector2(1600, 4096)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(1600, 4096)
-_points = SubResource("Resource_0d7al")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_ktqpq")])
-
-[node name="@ColorRect@19664" parent="지형/A_갱도접근" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 832.0
-offset_bottom = 96.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_ffhlx")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_1nuq2")])
 
 [node name="CollisionPolygon2D" parent="지형/A_갱도접근/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 832, 0, 832, 96, 0, 96)
 
 [node name="A_물받이바닥" parent="지형" unique_id=1820877669 instance=ExtResource("black")]
-"시안_명도조율" = true
-"앞지형_깊이" = true
 editor_description = "물의 옆면이 노출되지 않도록 수면 높이까지 양옆을 올린 매립 수로. 홈 바닥과 물 수심은 기존 값을 유지한다."
 position = Vector2(512, 4320)
-_points = SubResource("Resource_g23ok")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_gspif")])
-
-[node name="@ColorRect@19665" parent="지형/A_물받이바닥" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 1920.0
-offset_bottom = 160.0
-metadata/__ss2d_click_rect__ = true
+"시안_명도조율" = true
+"앞지형_깊이" = true
+_points = SubResource("Resource_o7h17")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_2gxff")])
 
 [node name="CollisionPolygon2D" parent="지형/A_물받이바닥/StaticBody2D" index="0"]
 polygon = PackedVector2Array(-64, -64, 0, -64, 0, 0, 1408, 0, 1408, -64, 1920, -64, 1920, 160, -64, 160)
 
 [node name="C_배관실오른쪽" parent="지형" unique_id=1619577264 instance=ExtResource("black")]
+position = Vector2(1696, 3200)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(1696, 3200)
-_points = SubResource("Resource_fggxx")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_p3ggc")])
-
-[node name="@ColorRect@19666" parent="지형/C_배관실오른쪽" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 512.0
-offset_bottom = 96.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_ktqpq")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_xtvhj")])
 
 [node name="CollisionPolygon2D" parent="지형/C_배관실오른쪽/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 512, 0, 512, 96, 0, 96)
 
 [node name="C_배관실왼쪽" parent="지형" unique_id=628127641 instance=ExtResource("black")]
+position = Vector2(768, 3200)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(768, 3200)
-_points = SubResource("Resource_osx6l")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_l71t3")])
-
-[node name="@ColorRect@19667" parent="지형/C_배관실왼쪽" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 608.0
-offset_bottom = 96.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_gspif")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_2bx1m")])
 
 [node name="CollisionPolygon2D" parent="지형/C_배관실왼쪽/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 608, 0, 608, 96, 0, 96)
 
 [node name="C_천장" parent="지형" unique_id=232529354 instance=ExtResource("black")]
+position = Vector2(512, 2560)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(512, 2560)
-_points = SubResource("Resource_81x01")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_u1bm2")])
-
-[node name="@ColorRect@19668" parent="지형/C_천장" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 1920.0
-offset_bottom = 128.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_p3ggc")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_goyk3")])
 
 [node name="CollisionPolygon2D" parent="지형/C_천장/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 1920, 0, 1920, 128, 0, 128)
 
 [node name="D_배수로" parent="지형" unique_id=515698498 instance=ExtResource("black")]
+position = Vector2(512, 3712)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(512, 3712)
-_points = SubResource("Resource_qaooe")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_h5kxy")])
-
-[node name="@ColorRect@19669" parent="지형/D_배수로" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 1696.0
-offset_bottom = 64.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_l71t3")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_h4hb0")])
 
 [node name="CollisionPolygon2D" parent="지형/D_배수로/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 1696, 0, 1696, 64, 0, 64)
 
 [node name="E_진입수문" parent="지형" unique_id=1985386649 instance=ExtResource("black")]
+position = Vector2(2432, 3200)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(2432, 3200)
-_points = SubResource("Resource_4h6fp")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_neafr")])
+_points = SubResource("Resource_u1bm2")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_akn0x")])
 metadata/pressure_button_origin = Vector2(2432, 3200)
-
-[node name="@ColorRect@19670" parent="지형/E_진입수문" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 128.0
-offset_bottom = 512.0
-metadata/__ss2d_click_rect__ = true
 
 [node name="CollisionPolygon2D" parent="지형/E_진입수문/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 128, 0, 128, 512, 0, 512)
 
 [node name="E_수문아래벽" parent="지형" unique_id=1007205395 instance=ExtResource("black")]
+position = Vector2(2432, 3712)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(2432, 3712)
-_points = SubResource("Resource_v85jg")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_y8wtr")])
-
-[node name="@ColorRect@19671" parent="지형/E_수문아래벽" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 128.0
-offset_bottom = 768.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_h5kxy")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_4q3k6")])
 
 [node name="CollisionPolygon2D" parent="지형/E_수문아래벽/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 128, 0, 128, 768, 0, 768)
 
 [node name="E_수문위벽" parent="지형" unique_id=1892489324 instance=ExtResource("black")]
+position = Vector2(2432, 2048)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(2432, 2048)
-_points = SubResource("Resource_sq7ru")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_oa6e2")])
-
-[node name="@ColorRect@19672" parent="지형/E_수문위벽" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 128.0
-offset_bottom = 1152.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_neafr")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_4wi67")])
 
 [node name="CollisionPolygon2D" parent="지형/E_수문위벽/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 128, 0, 128, 1152, 0, 1152)
 
 [node name="E_기계실" parent="지형" unique_id=1110049851 instance=ExtResource("black")]
+position = Vector2(2560, 3712)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(2560, 3712)
-_points = SubResource("Resource_irdnv")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_a3kst")])
-
-[node name="@ColorRect@19673" parent="지형/E_기계실" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 1088.0
-offset_bottom = 160.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_y8wtr")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_2y2ab")])
 
 [node name="CollisionPolygon2D" parent="지형/E_기계실/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 1088, 0, 1088, 160, 0, 160)
 
 [node name="E_천장" parent="지형" unique_id=995314380 instance=ExtResource("black")]
+position = Vector2(2560, 3040)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(2560, 3040)
-_points = SubResource("Resource_na3ec")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_x28va")])
-
-[node name="@ColorRect@19674" parent="지형/E_천장" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 1408.0
-offset_bottom = 160.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_oa6e2")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_kt26a")])
 
 [node name="CollisionPolygon2D" parent="지형/E_천장/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 1408, 0, 1408, 160, 0, 160)
 
-[node name="E_연결발판" parent="지형" unique_id=2087532574 instance=ExtResource("ledge")]
+[node name="E_연결발판" parent="지형" unique_id=2087532574 instance=ExtResource("floating_ground")]
+editor_description = "[2026-09-30] 기본지형 디자인 공중발판(192x64). E_연결버튼이 256 올려 기계실 윗면(3712)에 맞춘다."
 position = Vector2(3776, 3968)
-_points = SubResource("Resource_h34gy")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_347j6")])
-metadata/pressure_button_origin = Vector2(3776, 3968)
-
-[node name="@ColorRect@19675" parent="지형/E_연결발판" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 192.0
-offset_bottom = 56.0
-metadata/__ss2d_click_rect__ = true
-
-[node name="CollisionPolygon2D" parent="지형/E_연결발판/StaticBody2D" index="0"]
-polygon = PackedVector2Array(0, 0, 192, 0, 192, 16, 168, 48, 96, 40, 24, 56, 0, 16)
-
-[node name="E_물받이바닥" parent="지형" unique_id=775302596 instance=ExtResource("black")]
 "시안_명도조율" = true
 "앞지형_깊이" = true
+metadata/pressure_button_origin = Vector2(3776, 3968)
+
+[node name="E_물받이바닥" parent="지형" unique_id=775302596 instance=ExtResource("black")]
 editor_description = "물의 옆면이 노출되지 않도록 수면 높이까지 양옆을 올린 매립 수로. 홈 바닥과 물 수심은 기존 값을 유지한다."
 position = Vector2(2560, 4256)
-_points = SubResource("Resource_7lqe5")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_q4amn")])
-
-[node name="@ColorRect@19676" parent="지형/E_물받이바닥" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_top = -64.0
-offset_right = 1792.0
-offset_bottom = 224.0
-metadata/__ss2d_click_rect__ = true
+"시안_명도조율" = true
+"앞지형_깊이" = true
+_points = SubResource("Resource_h34gy")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_ldpkw")])
 
 [node name="CollisionPolygon2D" parent="지형/E_물받이바닥/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, -64, 1152, -64, 1152, 0, 1728, 0, 1728, -64, 1792, -64, 1792, 224, 0, 224)
 
-[node name="E_외곽복귀발판" parent="지형" unique_id=144889171 instance=ExtResource("ledge")]
+[node name="E_외곽복귀발판" parent="지형" unique_id=144889171 instance=ExtResource("air_v2_black")]
 position = Vector2(4416, 4368)
-_points = SubResource("Resource_m6q8y")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_mxrbl")])
-
-[node name="@ColorRect@19677" parent="지형/E_외곽복귀발판" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 192.0
-offset_bottom = 56.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("air_v2_0_pts")
 
 [node name="CollisionPolygon2D" parent="지형/E_외곽복귀발판/StaticBody2D" index="0"]
-polygon = PackedVector2Array(0, 0, 192, 0, 192, 16, 168, 48, 96, 40, 24, 56, 0, 16)
+polygon = PackedVector2Array(4, 0, 188, 0, 192, 4, 192, 56, 0, 56, 0, 5)
 
 [node name="F_역방향통로" parent="지형" unique_id=2128635188 instance=ExtResource("black")]
+position = Vector2(3008, 2944)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(3008, 2944)
-_points = SubResource("Resource_unse5")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_r45dt")])
-
-[node name="@ColorRect@19678" parent="지형/F_역방향통로" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 960.0
-offset_bottom = 64.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_q4amn")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_kntpx")])
 
 [node name="CollisionPolygon2D" parent="지형/F_역방향통로/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 960, 0, 960, 64, 0, 64)
 
 [node name="G_출발" parent="지형" unique_id=1942230970 instance=ExtResource("black")]
+position = Vector2(2912, 2048)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(2912, 2048)
-_points = SubResource("Resource_2kyoh")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_7b77x")])
-
-[node name="@ColorRect@19679" parent="지형/G_출발" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 512.0
-offset_bottom = 96.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_mxrbl")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_4ccu5")])
 
 [node name="CollisionPolygon2D" parent="지형/G_출발/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 512, 0, 512, 96, 0, 96)
 
 [node name="G_흰발판" parent="지형" unique_id=422951543 instance=ExtResource("white")]
+position = Vector2(3584, 2048)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(3584, 2048)
-_points = SubResource("Resource_cyes6")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_g5i8q")])
-
-[node name="@ColorRect@19680" parent="지형/G_흰발판" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 320.0
-offset_bottom = 64.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_r45dt")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_ovncf")])
 
 [node name="CollisionPolygon2D" parent="지형/G_흰발판/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 320, 0, 320, 64, 0, 64)
 
-[node name="G_검정높은발판" parent="지형" unique_id=1980075136 instance=ExtResource("ledge")]
+[node name="G_검정높은발판" parent="지형" unique_id=1980075136 instance=ExtResource("air_v2_black")]
 position = Vector2(4064, 1968)
-_points = SubResource("Resource_x4mai")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_vk2i8")])
-
-[node name="@ColorRect@19681" parent="지형/G_검정높은발판" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 256.0
-offset_bottom = 56.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("air_v2_1_pts")
 
 [node name="CollisionPolygon2D" parent="지형/G_검정높은발판/StaticBody2D" index="0"]
-polygon = PackedVector2Array(0, 0, 256, 0, 256, 16, 232, 48, 128, 40, 24, 56, 0, 16)
+polygon = PackedVector2Array(4, 0, 252, 0, 256, 4, 256, 56, 0, 56, 0, 5)
 
 [node name="G_출구길" parent="지형" unique_id=2083582654 instance=ExtResource("black")]
+position = Vector2(4480, 2048)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(4480, 2048)
-_points = SubResource("Resource_o3w2t")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_sbbaf")])
-
-[node name="@ColorRect@19682" parent="지형/G_출구길" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 1664.0
-offset_bottom = 96.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_g5i8q")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_fgu8e")])
 
 [node name="CollisionPolygon2D" parent="지형/G_출구길/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 1664, 0, 1664, 96, 0, 96)
 
 [node name="G_수조바닥" parent="지형" unique_id=535549293 instance=ExtResource("black")]
-"시안_명도조율" = true
-"앞지형_깊이" = true
 editor_description = "물의 옆면이 노출되지 않도록 수면 높이까지 양옆을 올린 매립 수로. 홈 바닥과 물 수심은 기존 값을 유지한다."
 position = Vector2(2912, 2496)
-_points = SubResource("Resource_yaylj")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_5lm7n")])
-
-[node name="@ColorRect@19683" parent="지형/G_수조바닥" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_top = -64.0
-offset_right = 3232.0
-offset_bottom = 128.0
-metadata/__ss2d_click_rect__ = true
+"시안_명도조율" = true
+"앞지형_깊이" = true
+_points = SubResource("Resource_vk2i8")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_qtfwn")])
 
 [node name="CollisionPolygon2D" parent="지형/G_수조바닥/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, -64, 576, -64, 576, 0, 3168, 0, 3168, -64, 3232, -64, 3232, 128, 0, 128)
 
 [node name="G_천장" parent="지형" unique_id=1445090637 instance=ExtResource("black")]
+position = Vector2(2688, 1408)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(2688, 1408)
-_points = SubResource("Resource_5wu0e")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_8hxlb")])
-
-[node name="@ColorRect@19684" parent="지형/G_천장" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 3712.0
-offset_bottom = 128.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_sbbaf")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_xbx17")])
 
 [node name="CollisionPolygon2D" parent="지형/G_천장/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 3712, 0, 3712, 128, 0, 128)
 
 [node name="외벽_왼쪽" parent="지형" unique_id=813812805 instance=ExtResource("black")]
+position = Vector2(0, 2560)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(0, 2560)
-_points = SubResource("Resource_4kf7p")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_ke0nr")])
-
-[node name="@ColorRect@19685" parent="지형/외벽_왼쪽" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 512.0
-offset_bottom = 1920.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_5lm7n")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_k6rbo")])
 
 [node name="CollisionPolygon2D" parent="지형/외벽_왼쪽/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 512, 0, 512, 1920, 0, 1920)
 
 [node name="외벽_오른쪽위" parent="지형" unique_id=1387118899 instance=ExtResource("black")]
+position = Vector2(6400, 1408)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(6400, 1408)
-_points = SubResource("Resource_osfcq")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_v5gid")])
-
-[node name="@ColorRect@19686" parent="지형/외벽_오른쪽위" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 640.0
-offset_bottom = 384.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_8hxlb")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_oll75")])
 
 [node name="CollisionPolygon2D" parent="지형/외벽_오른쪽위/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 640, 0, 640, 384, 0, 384)
 
 [node name="외벽_오른쪽아래" parent="지형" unique_id=1706984261 instance=ExtResource("black")]
+position = Vector2(6400, 2240)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(6400, 2240)
-_points = SubResource("Resource_djai3")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_s8idy")])
-
-[node name="@ColorRect@19687" parent="지형/외벽_오른쪽아래" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 640.0
-offset_bottom = 2240.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_ke0nr")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_qpbuq")])
 
 [node name="CollisionPolygon2D" parent="지형/외벽_오른쪽아래/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 640, 0, 640, 2240, 0, 2240)
 
 [node name="바닥_전체" parent="지형" unique_id=903237509 instance=ExtResource("black")]
+position = Vector2(0, 4480)
 "시안_명도조율" = true
 "앞지형_깊이" = true
-position = Vector2(0, 4480)
-_points = SubResource("Resource_s4n6f")
-_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_78jkd")])
-
-[node name="@ColorRect@19688" parent="지형/바닥_전체" index="0"]
-modulate = Color(1, 1, 1, 0)
-offset_right = 7040.0
-offset_bottom = 384.0
-metadata/__ss2d_click_rect__ = true
+_points = SubResource("Resource_v5gid")
+_meshes = Array[ExtResource("7_dc7m8")]([SubResource("Resource_8pe06")])
 
 [node name="CollisionPolygon2D" parent="지형/바닥_전체/StaticBody2D" index="0"]
 polygon = PackedVector2Array(0, 0, 7040, 0, 7040, 384, 0, 384)
@@ -2536,7 +2482,7 @@ script = ExtResource("pool_art")
 
 [node name="A_복귀1104" type="StaticBody2D" parent="장치" unique_id=970502284]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_cxn62")
+material = SubResource("CanvasItemMaterial_s8idy")
 position = Vector2(1104, 4216)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2549,7 +2495,7 @@ one_way_collision = true
 
 [node name="A_복귀1520" type="StaticBody2D" parent="장치" unique_id=1428299507]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_ujfjw")
+material = SubResource("CanvasItemMaterial_s4n6f")
 position = Vector2(1520, 4216)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2562,11 +2508,11 @@ one_way_collision = true
 
 [node name="B_상승1" type="StaticBody2D" parent="장치" unique_id=122209105]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_vr7vj")
+material = SubResource("CanvasItemMaterial_ike1q")
 position = Vector2(2272, 3976)
 collision_mask = 0
 script = ExtResource("grate")
-"크기" = Vector2(192, 16)
+"크기" = Vector2(160, 16)
 "필요횟수" = 1
 
 [node name="충돌" type="CollisionShape2D" parent="장치/B_상승1" unique_id=1473335848]
@@ -2575,11 +2521,11 @@ one_way_collision = true
 
 [node name="B_상승2" type="StaticBody2D" parent="장치" unique_id=399212967]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_pdlvl")
+material = SubResource("CanvasItemMaterial_78jkd")
 position = Vector2(2336, 3848)
 collision_mask = 0
 script = ExtResource("grate")
-"크기" = Vector2(192, 16)
+"크기" = Vector2(160, 16)
 "필요횟수" = 1
 
 [node name="충돌" type="CollisionShape2D" parent="장치/B_상승2" unique_id=63048335]
@@ -2588,11 +2534,11 @@ one_way_collision = true
 
 [node name="B_상승3" type="StaticBody2D" parent="장치" unique_id=1928847634]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_ahsjs")
+material = SubResource("CanvasItemMaterial_cxn62")
 position = Vector2(2272, 3720)
 collision_mask = 0
 script = ExtResource("grate")
-"크기" = Vector2(192, 16)
+"크기" = Vector2(160, 16)
 "필요횟수" = 1
 
 [node name="충돌" type="CollisionShape2D" parent="장치/B_상승3" unique_id=1050777280]
@@ -2601,11 +2547,11 @@ one_way_collision = true
 
 [node name="B_상승4" type="StaticBody2D" parent="장치" unique_id=593474120]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_c3yku")
+material = SubResource("CanvasItemMaterial_ujfjw")
 position = Vector2(2336, 3592)
 collision_mask = 0
 script = ExtResource("grate")
-"크기" = Vector2(192, 16)
+"크기" = Vector2(160, 16)
 "필요횟수" = 1
 
 [node name="충돌" type="CollisionShape2D" parent="장치/B_상승4" unique_id=362014960]
@@ -2614,11 +2560,11 @@ one_way_collision = true
 
 [node name="B_상승5" type="StaticBody2D" parent="장치" unique_id=1655209600]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_0t3bu")
+material = SubResource("CanvasItemMaterial_vr7vj")
 position = Vector2(2272, 3464)
 collision_mask = 0
 script = ExtResource("grate")
-"크기" = Vector2(192, 16)
+"크기" = Vector2(160, 16)
 "필요횟수" = 1
 
 [node name="충돌" type="CollisionShape2D" parent="장치/B_상승5" unique_id=1608743485]
@@ -2627,11 +2573,11 @@ one_way_collision = true
 
 [node name="B_상승6" type="StaticBody2D" parent="장치" unique_id=1984256257]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_2vtex")
+material = SubResource("CanvasItemMaterial_pdlvl")
 position = Vector2(2336, 3336)
 collision_mask = 0
 script = ExtResource("grate")
-"크기" = Vector2(192, 16)
+"크기" = Vector2(160, 16)
 "필요횟수" = 1
 
 [node name="충돌" type="CollisionShape2D" parent="장치/B_상승6" unique_id=3045205]
@@ -2640,11 +2586,11 @@ one_way_collision = true
 
 [node name="B_상승7" type="StaticBody2D" parent="장치" unique_id=1210503448]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_us5h8")
+material = SubResource("CanvasItemMaterial_ahsjs")
 position = Vector2(2272, 3208)
 collision_mask = 0
 script = ExtResource("grate")
-"크기" = Vector2(192, 16)
+"크기" = Vector2(160, 16)
 "필요횟수" = 1
 
 [node name="충돌" type="CollisionShape2D" parent="장치/B_상승7" unique_id=1955947836]
@@ -2655,6 +2601,7 @@ one_way_collision = true
 position = Vector2(1472, 2688)
 script = ExtResource("water_art")
 "호퍼_유입" = true
+"물줄기_v3" = true
 "색" = 0
 "크기" = Vector2(64, 524)
 "흐름속도" = 250.0
@@ -2663,15 +2610,17 @@ script = ExtResource("water_art")
 position = Vector2(1600, 2688)
 script = ExtResource("water_art")
 "호퍼_유입" = true
+"물줄기_v3" = true
 "색" = 1
 "크기" = Vector2(64, 524)
 "흐름속도" = 250.0
 
 [node name="C_혼합호퍼" parent="장치" unique_id=708800294 instance=ExtResource("hopper")]
-"주철_명도" = 0.88
 z_index = 3
 position = Vector2(1536, 3364)
 collision_mask = 0
+"입구_시안_사용" = true
+"주철_명도" = 0.88
 "폭" = 320.0
 "높이" = 164.0
 "출구_유체" = NodePath("../D_호퍼출력")
@@ -2682,7 +2631,8 @@ collision_mask = 0
 position = Vector2(1536, 3420)
 script = ExtResource("water_art")
 "호퍼_유입" = false
-"크기" = Vector2(128, 292)
+"물줄기_v3" = true
+"크기" = Vector2(64, 292)
 "흐름속도" = 250.0
 
 [node name="C_흰공급밸브" parent="장치" unique_id=298286713 instance=ExtResource("valve")]
@@ -2751,9 +2701,18 @@ position = Vector2(4064, 2960)
 "이동방향" = 1
 "왕복시간" = 5.0
 "필요횟수" = 1
+"칠하기_가능" = false
 
 [node name="충돌" type="CollisionShape2D" parent="장치/E_승강발판" unique_id=1691574030]
 shape = SubResource("RectangleShape2D_q0ll8")
+
+[node name="연결구_L" parent="장치/E_승강발판" instance=ExtResource("chain_anchor")]
+position = Vector2(-72, -16)
+"방향" = 1
+
+[node name="연결구_R" parent="장치/E_승강발판" instance=ExtResource("chain_anchor")]
+position = Vector2(72, -16)
+"방향" = 1
 
 [node name="E_낙하물받이" parent="장치" unique_id=31657527 instance=ExtResource("pool")]
 position = Vector2(4000, 4256)
@@ -2764,7 +2723,7 @@ script = ExtResource("pool_art")
 
 [node name="E_복귀1" type="StaticBody2D" parent="장치" unique_id=1126168229]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_7txcf")
+material = SubResource("CanvasItemMaterial_c3yku")
 position = Vector2(4064, 4152)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2777,7 +2736,7 @@ one_way_collision = true
 
 [node name="E_복귀2" type="StaticBody2D" parent="장치" unique_id=1663126779]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_4kql6")
+material = SubResource("CanvasItemMaterial_0t3bu")
 position = Vector2(4064, 4040)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2790,7 +2749,7 @@ one_way_collision = true
 
 [node name="E_복귀3" type="StaticBody2D" parent="장치" unique_id=150576872]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_mf2kv")
+material = SubResource("CanvasItemMaterial_2vtex")
 position = Vector2(4064, 3928)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2803,7 +2762,7 @@ one_way_collision = true
 
 [node name="E_복귀4" type="StaticBody2D" parent="장치" unique_id=1700382441]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_x53y6")
+material = SubResource("CanvasItemMaterial_us5h8")
 position = Vector2(4064, 3816)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2830,7 +2789,7 @@ collision_layer = 0
 
 [node name="F_상승1" type="StaticBody2D" parent="장치" unique_id=780943135]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_s7gw3")
+material = SubResource("CanvasItemMaterial_gggqn")
 position = Vector2(2784, 2824)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2843,7 +2802,7 @@ one_way_collision = true
 
 [node name="F_상승2" type="StaticBody2D" parent="장치" unique_id=1255177060]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_dbk6h")
+material = SubResource("CanvasItemMaterial_226tk")
 position = Vector2(2848, 2696)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2856,7 +2815,7 @@ one_way_collision = true
 
 [node name="F_상승3" type="StaticBody2D" parent="장치" unique_id=41173645]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_5yfjk")
+material = SubResource("CanvasItemMaterial_uau1h")
 position = Vector2(2784, 2568)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2869,7 +2828,7 @@ one_way_collision = true
 
 [node name="F_상승4" type="StaticBody2D" parent="장치" unique_id=1851348520]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_aquk7")
+material = SubResource("CanvasItemMaterial_aqiup")
 position = Vector2(2848, 2440)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2882,7 +2841,7 @@ one_way_collision = true
 
 [node name="F_상승5" type="StaticBody2D" parent="장치" unique_id=395588366]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_x2tu5")
+material = SubResource("CanvasItemMaterial_q0ll8")
 position = Vector2(2784, 2312)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2895,7 +2854,7 @@ one_way_collision = true
 
 [node name="F_상승6" type="StaticBody2D" parent="장치" unique_id=1605157689]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_mro6o")
+material = SubResource("CanvasItemMaterial_7txcf")
 position = Vector2(2848, 2184)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2915,7 +2874,7 @@ script = ExtResource("pool_art")
 
 [node name="G_복귀1" type="StaticBody2D" parent="장치" unique_id=2008832441]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_rxa8y")
+material = SubResource("CanvasItemMaterial_4kql6")
 position = Vector2(5952, 2392)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2928,7 +2887,7 @@ one_way_collision = true
 
 [node name="G_복귀2" type="StaticBody2D" parent="장치" unique_id=270876928]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_a3b7b")
+material = SubResource("CanvasItemMaterial_mf2kv")
 position = Vector2(5952, 2280)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2941,7 +2900,7 @@ one_way_collision = true
 
 [node name="G_복귀3" type="StaticBody2D" parent="장치" unique_id=539722472]
 texture_filter = 4
-material = SubResource("CanvasItemMaterial_aoot7")
+material = SubResource("CanvasItemMaterial_x53y6")
 position = Vector2(5952, 2168)
 collision_mask = 0
 script = ExtResource("grate")
@@ -2956,6 +2915,7 @@ one_way_collision = true
 position = Vector2(5520, 1536)
 script = ExtResource("water_art")
 "호퍼_유입" = false
+"물줄기_v3" = true
 "색" = 1
 "크기" = Vector2(64, 512)
 "흐름속도" = 250.0
@@ -2983,6 +2943,24 @@ collision_layer = 0
 [node name="체크포인트_출구구간" parent="장치" unique_id=1146351883 instance=ExtResource("checkpoint")]
 position = Vector2(3104, 2048)
 collision_layer = 0
+
+[node name="장식" type="Node2D" parent="."]
+
+[node name="E_승강기_천장고정구_L" parent="장식" instance=ExtResource("chain_anchor")]
+position = Vector2(3992, 2624)
+
+[node name="E_승강기_천장고정구_R" parent="장식" instance=ExtResource("chain_anchor")]
+position = Vector2(4136, 2624)
+
+[node name="E_승강기_쇠사슬_L" parent="장식" instance=ExtResource("chain")]
+position = Vector2(3992, 2624)
+"시작점_경로" = NodePath("../E_승강기_천장고정구_L/연결점")
+"끝점_경로" = NodePath("../../장치/E_승강발판/연결구_L/연결점")
+
+[node name="E_승강기_쇠사슬_R" parent="장식" instance=ExtResource("chain")]
+position = Vector2(4136, 2624)
+"시작점_경로" = NodePath("../E_승강기_천장고정구_R/연결점")
+"끝점_경로" = NodePath("../../장치/E_승강발판/연결구_R/연결점")
 
 [node name="출구통로" parent="." unique_id=328543082 instance=ExtResource("exit")]
 position = Vector2(6144, 2048)
@@ -3030,6 +3008,8 @@ height = 128.0
 position = Vector2(768, 4096)
 "점프_거리_칸" = 20.0
 
+[node name="하수도화면효과" parent="." unique_id=1985824636 instance=ExtResource("sewer_fx_v2")]
+
 [editable path="지형/A_출발"]
 [editable path="지형/A_징검"]
 [editable path="지형/A_갱도접근"]
@@ -3057,5 +3037,3 @@ position = Vector2(768, 4096)
 [editable path="지형/외벽_오른쪽위"]
 [editable path="지형/외벽_오른쪽아래"]
 [editable path="지형/바닥_전체"]
-
-[node name="하수도화면효과" parent="." instance=ExtResource("sewer_fx_v2")]

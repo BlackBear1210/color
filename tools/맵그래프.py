@@ -64,12 +64,18 @@ def points_of(props, subs):
     arr = subs.get(m[1])
     if not arr:
         return None
-    pts = []
-    for rid in re.findall(r'\d+: SubResource\("([^"]+)"\)', arr):
-        p = re.search(r'position = Vector2\(([^)]+)\)', subs[rid])
-        if p:
-            pts.append(vec(p[1]))
-    return pts
+    # ★[2026-10-01 Claude] 기본값 (0, 0) 인 점은 Godot 가 `position` 줄을 **안 적는다** — 예전엔 그런 점을 버려서
+    #   원점에서 시작하는 사각형이 삼각형으로 읽혔다(2-9 지형 전부 · 도안에서 드러남). 없으면 (0, 0) 으로 친다.
+    #   점 순서도 사전 순서가 아니라 `_point_order` 를 따른다(에디터에서 점을 끼워 넣으면 둘이 달라진다).
+    점 = {}
+    for key, rid in re.findall(r'(\d+): SubResource\("([^"]+)"\)', arr):
+        p = re.search(r'position = Vector2\(([^)]+)\)', subs.get(rid, ''))
+        점[int(key)] = vec(p[1]) if p else [0.0, 0.0]
+    순서 = re.search(r'_point_order = PackedInt32Array\(([^)]*)\)', arr)
+    if 순서 and 순서[1].strip():
+        keys = [int(v) for v in 순서[1].split(',') if v.strip()]
+        return [점[k] for k in keys if k in 점]
+    return list(점.values())
 
 
 def bbox(pts, pos):

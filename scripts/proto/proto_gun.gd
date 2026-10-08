@@ -61,6 +61,10 @@ func setup(ps: Node, layer: TileMapLayer, p: Node) -> void:
 	paint_system = ps
 	terrain      = layer
 	player       = p
+	# 프로토 스테이지도 같은 머리 잔량·반동을 사용하도록 실제 탄약 공급원을 넘긴다.
+	var 캐릭터 := player.get_node_or_null("CharacterSprite")
+	if 캐릭터 != null and 캐릭터.has_method("연결_총"):
+		캐릭터.call("연결_총", self, paint_system)
 
 func _process(delta: float) -> void:
 	_입_원점_맞추기()
@@ -126,6 +130,11 @@ func _shoot() -> void:
 ## ProtoGun은 회전하지 않으므로 왼쪽 조준 때도 오른쪽 입에 고정되면 뒤통수에서 쏜다.
 ## Player가 계산한 실제 얼굴 좌표를 매 프레임 받아 좌·우 입을 따라간다.
 func _입_원점_맞추기() -> void:
+	# 새 캐릭터의 총 그림에서 쏘되 구 캐릭터는 기존 입 원점을 그대로 쓴다.
+	var 캐릭터 := player.get_node_or_null("CharacterSprite") if player else null
+	if 캐릭터 != null and 캐릭터.has_method("총구_월드좌표"):
+		global_position = 캐릭터.call("총구_월드좌표")
+		return
 	if player == null or not player.has_method("입_월드좌표"):
 		return
 	var 방향x: float = get_global_mouse_position().x - player.global_position.x

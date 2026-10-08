@@ -26,7 +26,6 @@
 [ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="20_1ronw"]
 [ext_resource type="PackedScene" uid="uid://bjtaeb3l04dnr" path="res://scenes/집/스마트월드_장애물/웅덩이.tscn" id="21_j0ye5"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/통과플랫폼.tscn" id="22_0ebhl"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="23_8mv13"]
 [ext_resource type="PackedScene" uid="uid://xopxff8t4a3b" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="24_0edfy"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/제어레버.tscn" id="25_hox3u"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/움직이는발판.tscn" id="26_c2b2x"]
@@ -43,6 +42,10 @@
 [ext_resource type="Script" uid="uid://kmlbynbi8o20" path="res://scripts/스마트월드/호퍼_주철_기존배치.gd" id="latest_hopper_art"]
 [ext_resource type="Script" path="res://scripts/스마트월드/웅덩이_하수도29.gd" id="latest_pool_art"]
 [ext_resource type="Script" uid="uid://dwlghxm338tmb" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_투명발판_기본지형_검정.tscn" id="ghost_v2_black"]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_주철배관.gd" id="cast_pipe"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중발판_기본지형_검정.tscn" id="air_v2_black"]
+[ext_resource type="PackedScene" path="res://scenes/지형/하수도/하수도_공중발판_기본지형_흰색.tscn" id="air_v2_white"]
 
 [sub_resource type="Resource" id="Resource_glfw8"]
 script = ExtResource("5_ph3fb")
@@ -4195,6 +4198,271 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
+
+[sub_resource type="Resource" id="air_v2_0_p0"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-132, -48)
+
+[sub_resource type="Resource" id="air_v2_0_p1"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(132, -48)
+
+[sub_resource type="Resource" id="air_v2_0_p2"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(136, -44)
+
+[sub_resource type="Resource" id="air_v2_0_p3"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(136, 12)
+
+[sub_resource type="Resource" id="air_v2_0_p4"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-136, 12)
+
+[sub_resource type="Resource" id="air_v2_0_p5"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-136, -43)
+
+[sub_resource type="Resource" id="air_v2_0_p6"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-132, -48)
+
+[sub_resource type="Resource" id="air_v2_0_pts"]
+resource_local_to_scene = true
+script = ExtResource("6_ewd8w")
+_points = {
+0: SubResource("air_v2_0_p0"),
+1: SubResource("air_v2_0_p1"),
+2: SubResource("air_v2_0_p2"),
+3: SubResource("air_v2_0_p3"),
+4: SubResource("air_v2_0_p4"),
+5: SubResource("air_v2_0_p5"),
+6: SubResource("air_v2_0_p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
+
+[sub_resource type="Resource" id="air_v2_1_p0"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-132, -48)
+
+[sub_resource type="Resource" id="air_v2_1_p1"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(132, -48)
+
+[sub_resource type="Resource" id="air_v2_1_p2"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(136, -44)
+
+[sub_resource type="Resource" id="air_v2_1_p3"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(136, 12)
+
+[sub_resource type="Resource" id="air_v2_1_p4"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-136, 12)
+
+[sub_resource type="Resource" id="air_v2_1_p5"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-136, -43)
+
+[sub_resource type="Resource" id="air_v2_1_p6"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-132, -48)
+
+[sub_resource type="Resource" id="air_v2_1_pts"]
+resource_local_to_scene = true
+script = ExtResource("6_ewd8w")
+_points = {
+0: SubResource("air_v2_1_p0"),
+1: SubResource("air_v2_1_p1"),
+2: SubResource("air_v2_1_p2"),
+3: SubResource("air_v2_1_p3"),
+4: SubResource("air_v2_1_p4"),
+5: SubResource("air_v2_1_p5"),
+6: SubResource("air_v2_1_p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
+
+[sub_resource type="Resource" id="air_v2_2_p0"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-132, -48)
+
+[sub_resource type="Resource" id="air_v2_2_p1"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(132, -48)
+
+[sub_resource type="Resource" id="air_v2_2_p2"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(136, -44)
+
+[sub_resource type="Resource" id="air_v2_2_p3"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(136, 12)
+
+[sub_resource type="Resource" id="air_v2_2_p4"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-136, 12)
+
+[sub_resource type="Resource" id="air_v2_2_p5"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-136, -43)
+
+[sub_resource type="Resource" id="air_v2_2_p6"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-132, -48)
+
+[sub_resource type="Resource" id="air_v2_2_pts"]
+resource_local_to_scene = true
+script = ExtResource("6_ewd8w")
+_points = {
+0: SubResource("air_v2_2_p0"),
+1: SubResource("air_v2_2_p1"),
+2: SubResource("air_v2_2_p2"),
+3: SubResource("air_v2_2_p3"),
+4: SubResource("air_v2_2_p4"),
+5: SubResource("air_v2_2_p5"),
+6: SubResource("air_v2_2_p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
+
+[sub_resource type="Resource" id="air_v2_3_p0"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-92, -48)
+
+[sub_resource type="Resource" id="air_v2_3_p1"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(92, -48)
+
+[sub_resource type="Resource" id="air_v2_3_p2"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(96, -44)
+
+[sub_resource type="Resource" id="air_v2_3_p3"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(96, 12)
+
+[sub_resource type="Resource" id="air_v2_3_p4"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-96, 12)
+
+[sub_resource type="Resource" id="air_v2_3_p5"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-96, -43)
+
+[sub_resource type="Resource" id="air_v2_3_p6"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-92, -48)
+
+[sub_resource type="Resource" id="air_v2_3_pts"]
+resource_local_to_scene = true
+script = ExtResource("6_ewd8w")
+_points = {
+0: SubResource("air_v2_3_p0"),
+1: SubResource("air_v2_3_p1"),
+2: SubResource("air_v2_3_p2"),
+3: SubResource("air_v2_3_p3"),
+4: SubResource("air_v2_3_p4"),
+5: SubResource("air_v2_3_p5"),
+6: SubResource("air_v2_3_p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
+
+[sub_resource type="Resource" id="air_v2_4_p0"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-92, -48)
+
+[sub_resource type="Resource" id="air_v2_4_p1"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(92, -48)
+
+[sub_resource type="Resource" id="air_v2_4_p2"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(96, -44)
+
+[sub_resource type="Resource" id="air_v2_4_p3"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(96, 12)
+
+[sub_resource type="Resource" id="air_v2_4_p4"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-96, 12)
+
+[sub_resource type="Resource" id="air_v2_4_p5"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-96, -43)
+
+[sub_resource type="Resource" id="air_v2_4_p6"]
+resource_local_to_scene = true
+script = ExtResource("5_ph3fb")
+position = Vector2(-92, -48)
+
+[sub_resource type="Resource" id="air_v2_4_pts"]
+resource_local_to_scene = true
+script = ExtResource("6_ewd8w")
+_points = {
+0: SubResource("air_v2_4_p0"),
+1: SubResource("air_v2_4_p1"),
+2: SubResource("air_v2_4_p2"),
+3: SubResource("air_v2_4_p3"),
+4: SubResource("air_v2_4_p4"),
+5: SubResource("air_v2_4_p5"),
+6: SubResource("air_v2_4_p6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
 [node name="stage_2-8" type="Node2D" unique_id=1155536177]
 script = ExtResource("1_gl37p")
 "스테이지_이름" = "2-8 · 갈래"
@@ -4400,42 +4668,36 @@ _meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_wr5dt")])
 shape_material = ExtResource("7_sveag")
 metadata/role = "채움"
 
-[node name="L3_w1" parent="지형" unique_id=1275695811 instance=ExtResource("10_bl6rf")]
+[node name="L3_w1" parent="지형" unique_id=1275695811 instance=ExtResource("air_v2_white")]
 position = Vector2(6936, 1200)
-_points = SubResource("Resource_isbt2")
-_meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_yagpk")])
-shape_material = ExtResource("11_n7h01")
+_points = SubResource("air_v2_0_pts")
 metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
 
 [node name="CollisionPolygon2D" parent="지형/L3_w1/StaticBody2D" index="0"]
-polygon = PackedVector2Array(-136, -48, 136, -48, 136, -36, 113.33, 11.3, 90.67, -5.6, 68, -1.4, 45.33, 4, 22.67, 1.2, 0, 5.2, -22.67, 1.4, -45.33, -4.2, -68, 11.8, -90.67, 10.8, -113.33, -1.9, -136, -36)
+polygon = PackedVector2Array(-132, -48, 132, -48, 136, -44, 136, 12, -136, 12, -136, -43)
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="L3_w2" parent="지형" unique_id=1005342055 instance=ExtResource("10_bl6rf")]
+[node name="L3_w2" parent="지형" unique_id=1005342055 instance=ExtResource("air_v2_white")]
 position = Vector2(7240, 1072)
-_points = SubResource("Resource_pbapj")
-_meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_28gvh")])
-shape_material = ExtResource("11_n7h01")
+_points = SubResource("air_v2_1_pts")
 metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
 
 [node name="CollisionPolygon2D" parent="지형/L3_w2/StaticBody2D" index="0"]
-polygon = PackedVector2Array(-136, -48, 136, -48, 136, -36, 113.33, -5.6, 90.67, -1.4, 68, 4, 45.33, 1.2, 22.67, 5.2, 0, 1.4, -22.67, -4.2, -45.33, 11.8, -68, 10.8, -90.67, -1.9, -113.33, 11.3, -136, -36)
+polygon = PackedVector2Array(-132, -48, 132, -48, 136, -44, 136, 12, -136, 12, -136, -43)
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="L3_w3" parent="지형" unique_id=1253219390 instance=ExtResource("10_bl6rf")]
+[node name="L3_w3" parent="지형" unique_id=1253219390 instance=ExtResource("air_v2_white")]
 position = Vector2(6936, 944)
-_points = SubResource("Resource_453t4")
-_meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_255p4")])
-shape_material = ExtResource("11_n7h01")
+_points = SubResource("air_v2_2_pts")
 metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
 
 [node name="CollisionPolygon2D" parent="지형/L3_w3/StaticBody2D" index="0"]
-polygon = PackedVector2Array(-136, -48, 136, -48, 136, -36, 113.33, -1.4, 90.67, 4, 68, 1.2, 45.33, 5.2, 22.67, 1.4, 0, -4.2, -22.67, 11.8, -45.33, 10.8, -68, -1.9, -90.67, 11.3, -113.33, -5.6, -136, -36)
+polygon = PackedVector2Array(-132, -48, 132, -48, 136, -44, 136, 12, -136, 12, -136, -43)
 one_way_collision = true
 one_way_collision_margin = 4.0
 
@@ -4475,29 +4737,25 @@ _meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_wlqkp")])
 shape_material = ExtResource("7_sveag")
 metadata/role = "플랫폼"
 
-[node name="L3_s1" parent="지형" unique_id=105736758 instance=ExtResource("12_ypsrq")]
+[node name="L3_s1" parent="지형" unique_id=105736758 instance=ExtResource("air_v2_black")]
 position = Vector2(8240, 1232)
-_points = SubResource("Resource_omtg7")
-_meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_3cqjq")])
-shape_material = ExtResource("13_ur8cw")
+_points = SubResource("air_v2_3_pts")
 metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
 
 [node name="CollisionPolygon2D" parent="지형/L3_s1/StaticBody2D" index="0"]
-polygon = PackedVector2Array(-96, -48, 96, -48, 96, -36, 80, 4, 64, 1.2, 48, 5.2, 32, 1.4, 16, -4.2, 0, 11.8, -16, 10.8, -32, -1.9, -48, 11.3, -64, -5.6, -80, -1.4, -96, -36)
+polygon = PackedVector2Array(-92, -48, 92, -48, 96, -44, 96, 12, -96, 12, -96, -43)
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="L3_s2" parent="지형" unique_id=1527626102 instance=ExtResource("12_ypsrq")]
+[node name="L3_s2" parent="지형" unique_id=1527626102 instance=ExtResource("air_v2_black")]
 position = Vector2(8560, 1136)
-_points = SubResource("Resource_o5326")
-_meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_klgpc")])
-shape_material = ExtResource("13_ur8cw")
+_points = SubResource("air_v2_4_pts")
 metadata/terrain_style = "공중"
 metadata/role = "플랫폼"
 
 [node name="CollisionPolygon2D" parent="지형/L3_s2/StaticBody2D" index="0"]
-polygon = PackedVector2Array(-96, -48, 96, -48, 96, -36, 80, 1.2, 64, 5.2, 48, 1.4, 32, -4.2, 16, 11.8, 0, 10.8, -16, -1.9, -32, 11.3, -48, -5.6, -64, -1.4, -80, 4, -96, -36)
+polygon = PackedVector2Array(-92, -48, 92, -48, 96, -44, 96, 12, -96, 12, -96, -43)
 one_way_collision = true
 one_way_collision_margin = 4.0
 
@@ -4555,7 +4813,7 @@ _meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_q5nlu")])
 shape_material = ExtResource("7_sveag")
 metadata/role = "플랫폼"
 
-[node name="유령_L2" parent="지형" unique_id=447292429 instance=ExtResource("4_c7b55")]
+[node name="유령_L2" parent="지형" unique_id=447292429 instance=ExtResource("ghost_v2_black")]
 "시안_명도조율" = true
 "앞지형_깊이" = true
 position = Vector2(2880, 2160)
@@ -4690,7 +4948,7 @@ _meshes = Array[ExtResource("7_xspf7")]([SubResource("Resource_3u7hm")])
 shape_material = ExtResource("7_sveag")
 metadata/role = "플랫폼"
 
-[node name="유령_끝" parent="지형" unique_id=675583094 instance=ExtResource("4_c7b55")]
+[node name="유령_끝" parent="지형" unique_id=675583094 instance=ExtResource("ghost_v2_black")]
 "시안_명도조율" = true
 "앞지형_깊이" = true
 position = Vector2(10128, 2160)
@@ -4833,8 +5091,11 @@ shape = SubResource("RectangleShape2D_bw7mr")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="관_커튼_L3" parent="장치" unique_id=1723744207 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_커튼_L3" type="Node2D" parent="장치" unique_id=1723744207]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(6400, 504, 6400, 720)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="커튼_L3" parent="장치" unique_id=1622344719 instance=ExtResource("24_0edfy")]
 position = Vector2(6400, 720)
@@ -4848,8 +5109,11 @@ position = Vector2(5800, 1216)
 collision_layer = 0
 "대상_유체" = NodePath("../커튼_L3")
 
-[node name="관_L3미끼" parent="장치" unique_id=1464854540 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_L3미끼" type="Node2D" parent="장치" unique_id=1464854540]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(6936, 896, 6936, 704)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="승강기" parent="장치" unique_id=478900533 instance=ExtResource("26_c2b2x")]
 position = Vector2(1728, 1286)
@@ -4916,11 +5180,17 @@ collision_mask = 0
 "공급_유체" = NodePath("../HB_저장고공급")
 "자동_공급_연결" = false
 
-[node name="관_T_B" parent="장치" unique_id=1115007921 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_T_B" type="Node2D" parent="장치" unique_id=1115007921]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(4000, 2000, 4000, 1500, 4472, 1500, 4472, 1568)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="관_HB고정" parent="장치" unique_id=2030091332 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_HB고정" type="Node2D" parent="장치" unique_id=2030091332]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(4328, 1472, 4328, 1568)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="웅덩이_L2" parent="장치" unique_id=1748419998 instance=ExtResource("21_j0ye5")]
 position = Vector2(6200, 2208)
@@ -4938,8 +5208,11 @@ position = Vector2(5510, 2118)
 [node name="충돌" type="CollisionShape2D" parent="장치/발판_L2" unique_id=1027769790]
 shape = SubResource("RectangleShape2D_rht87")
 
-[node name="관_W_L2" parent="장치" unique_id=689592495 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_W_L2" type="Node2D" parent="장치" unique_id=689592495]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(8000, 1272, 8000, 1488)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="W_L2" parent="장치" unique_id=1743468649 instance=ExtResource("24_0edfy")]
 position = Vector2(8000, 1488)
@@ -5128,8 +5401,11 @@ shape = SubResource("RectangleShape2D_ydb8p")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="관_물A_L1" parent="장치" unique_id=314952276 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_물A_L1" type="Node2D" parent="장치" unique_id=314952276]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(6400, 2104, 6400, 2320)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="물A_L1" parent="장치" unique_id=1099102565 instance=ExtResource("24_0edfy")]
 position = Vector2(6400, 2320)
@@ -5138,8 +5414,11 @@ script = ExtResource("latest_water_art")
 "색" = 1
 "크기" = Vector2(64, 584)
 
-[node name="관_물B_L1" parent="장치" unique_id=818522454 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_물B_L1" type="Node2D" parent="장치" unique_id=818522454]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(6992, 2104, 6992, 2320)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="물B_L1" parent="장치" unique_id=547649867 instance=ExtResource("24_0edfy")]
 visible = false
@@ -5209,14 +5488,23 @@ script = ExtResource("latest_water_art")
 [node name="배출구_L1" type="Marker2D" parent="장치" unique_id=1751737500]
 position = Vector2(8800, 2896)
 
-[node name="관_배출_L1" parent="장치" unique_id=813164543 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_배출_L1" type="Node2D" parent="장치" unique_id=813164543]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(8800, 2824, 8800, 2400, 9384, 2400, 9384, 2128)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="관_H1고정" parent="장치" unique_id=2099594348 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_H1고정" type="Node2D" parent="장치" unique_id=2099594348]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(9240, 1900, 9240, 2128)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
-[node name="관_W_L1" parent="장치" unique_id=1869690904 instance=ExtResource("23_8mv13")]
-z_index = 3
+[node name="관_W_L1" type="Node2D" parent="장치" unique_id=1869690904]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(8300, 2104, 8300, 2320)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="W_L1" parent="장치" unique_id=2043683696 instance=ExtResource("24_0edfy")]
 position = Vector2(8300, 2320)

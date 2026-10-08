@@ -27,6 +27,11 @@ const STREAM_V3_SPLASH_PATH = "res://assets/textures/obstacles/liquid/stream_v3/
 	set(value):
 		웅덩이_오른쪽_안쪽폭 = maxf(0.0, value)
 		_갱신()
+## ★[2026-10-03] 왼쪽 경사 — 도형님 2-1 흰 웅덩이 = 양쪽이 비스듬한 사다리꼴. 예전엔 오른쪽만 알아 왼쪽이 늘 수직이었다.
+@export var 웅덩이_왼쪽_안쪽폭: float = 0.0:
+	set(value):
+		웅덩이_왼쪽_안쪽폭 = maxf(0.0, value)
+		_갱신()
 @export_enum("검정:0", "흰색:1", "회색:2") var 웅덩이_색: int = 1:
 	set(value):
 		웅덩이_색 = value
@@ -79,8 +84,59 @@ const STREAM_V3_SPLASH_PATH = "res://assets/textures/obstacles/liquid/stream_v3/
 ## 유체_흰물v2 가 실행 중에 바닥 윗면을 찾아 넣어 준다. 판정은 건드리지 않는다.
 @export var 보이는_높이: float = 0.0:
 	set(value):
-		보이는_높이 = maxf(0.0, value)
+		# ★[2026-10-02] 같은 값이면 아무것도 안 한다 — _갱신() 은 재질을 통째로 다시 만들어 한 번 ~1.3ms 다.
+		#   여러 곳(물 바닥 맞추기 · 호퍼 입구)이 주기적으로 넣으므로 여기서 막아 두어야 프레임이 안 튄다.
+		var 새값 := maxf(0.0, value)
+		if is_equal_approx(새값, 보이는_높이):
+			return
+		보이는_높이 = 새값
 		_갱신()
+## ★[2026-10-01 시안 · 도형님 "물이 종이를 잘라 얹은 느낌"] 켜면 물이 주변과 한 공간에 있게 그린다.
+##   ① 근처 광원(벽등·보조광)으로 음영·하이라이트 — 등 쪽 가장자리만 빛나고 반대쪽은 가라앉는다
+##   ② 물줄기 옆 벽이 젖고(흐르는 얼룩·물보라 안개) 떨어지는 바닥에 젖은 자국 · 웅덩이 위 벽에 물때
+##   ③ 물줄기 바깥 몇 px 가 비쳐 뒤 벽이 굴절돼 보인다
+##   판정·색은 그대로(그림만). 기본 꺼짐 — 시안 확정 전엔 게임 외관이 바뀌지 않는다.
+##   촬영: tools/촬영_물_입체감_시안.gd · 기록: docs/작업기록_2026-10-01_Claude_물_입체감_시안.md
+@export var 입체감: bool = false:
+	set(value):
+		입체감 = value
+		_갱신()
+## ★[2026-10-01 도형님 "현실 물은 묽어서 자연스럽게 흐르는데 우리 물은 진한 액체 같다" → 나노바나나 기준 그림으로 확정]
+##   하수도의 떨어지는 물(형태 0·1)을 **묽은 물** 로 그린다 — shaders/water_stream_natural.gdshader (검정·흰·회색).
+##   유리관처럼 밝은 가장자리 + 비치는 가운데 · 떨어지며 가속 · 가장자리에 매달려 흐르는 물방울 · 벽에 진 그림자(2.5D)
+##   · 바닥의 왕관 물보라 · 넓은 물막은 이어진 커튼에 작은 틈만. 판정은 그대로(그림이 판정보다 안쪽으로 안 들어간다).
+##   기본 켬(도형님 "적용시켜"). 하수도 밖 챕터는 예전 v3 그대로. 옛 외관이 필요한 노드만 끈다.
+@export var 자연물: bool = true:
+	set(value):
+		자연물 = value
+		_갱신()
+const NATURAL_SHADER_PATH = "res://shaders/water_stream_natural.gdshader"
+## 힉스필드가 만든 흰색 유체 영상의 실제 48프레임(12fps·4초 반복).
+## 손으로 움직인 물살 리그 대신 낙수 본체·착수부를 함께 읽고, 바닥 물막은 물줄기 폭에 맞춘다.
+const IMPACT_A_PATH = "res://assets/textures/obstacles/liquid/white_fluid_higgsfield_v1/white_fluid_f48_256x512_g8x6_fps12_loop.png"
+var _착수_프레임: Texture2D
+var _착수_프레임_경로: String = ""
+
+func _착수_프레임_읽기() -> Texture2D:
+	# 새 PNG의 에디터 임포트 전에도 새 착수 그림을 읽어 기존 왕관으로 되돌아가는 일을 막는다.
+	# 물색/크기가 바뀔 때마다 파일을 다시 읽지 않도록 이 노드의 텍스처를 보관한다.
+	# 시트 경로가 바뀌었으면 기존 인스턴스의 캐시도 교체한다. 예전 흔들림 시트가 남지 않게 한다.
+	if _착수_프레임 != null and _착수_프레임_경로 == IMPACT_A_PATH:
+		return _착수_프레임
+	_착수_프레임 = null
+	_착수_프레임_경로 = IMPACT_A_PATH
+	if ResourceLoader.exists(IMPACT_A_PATH, "Texture2D"):
+		_착수_프레임 = load(IMPACT_A_PATH) as Texture2D
+	elif FileAccess.file_exists(IMPACT_A_PATH):
+		var 원본 := Image.load_from_file(IMPACT_A_PATH)
+		if 원본 != null and not 원본.is_empty():
+			_착수_프레임 = ImageTexture.create_from_image(원본)
+	return _착수_프레임
+
+## 웅덩이 물때 띠 높이(px). 입체감이 켜졌을 때만 그린다.
+const 물때_높이 := 14.0
+var _조명_대기 := 0.0
+
 @export var 애니메이션: bool = true:
 	set(value):
 		애니메이션 = value
@@ -104,10 +160,27 @@ func _ready() -> void:
 ##   가만히 둔 에디터가 내장 GPU 를 41% 쓰고, F5 로 켠 게임은 GPU 를 나눠 30ms(33FPS)까지 떨어졌다.
 ##   → 셰이더는 anim_time 유니폼을 읽고, 시간은 여기서 게임 중에만 넣는다. 에디터에서는 물이 멈춰 보인다.
 ##   TIME 과 같은 시계(엔진 시작 후 초 · 3600 초에서 되돌림)라 모든 물의 위상 관계는 예전과 같다.
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var mat := material as ShaderMaterial
 	if mat != null:
 		mat.set_shader_parameter("anim_time", fmod(float(Time.get_ticks_msec()) * 0.001, 3600.0))
+		if 입체감 or (자연물 and _v3_쓰나()):
+			_조명_넘기기(mat, delta)
+
+## 근처 광원을 셰이더에 넘긴다. 벽등은 카메라를 따라 생겼다 없어지고 보조광은 플레이어를 따라가므로
+## 계속 갱신해야 하지만, 매 프레임은 필요 없다 — 0.1 초마다(아래 주석).
+func _조명_넘기기(mat: ShaderMaterial, delta: float) -> void:
+	_조명_대기 -= delta
+	if _조명_대기 > 0.0:
+		return
+	# 0.1 초마다 · 물마다 시작을 흩어 같은 프레임에 몰리지 않게(2-1 측정에서 스크립트 튐).
+	_조명_대기 = 0.1 + float(get_instance_id() % 7) * 0.003
+	var 왼쪽위 := global_position + Vector2(-크기.x * 0.5, -물때_높이)
+	var 영역 := Rect2(왼쪽위, 크기 + Vector2(0.0, 물때_높이 + 32.0)).grow(40.0)
+	var 결과: Array = preload("res://scripts/스마트월드/물_조명.gd").근처(get_tree(), 영역)
+	mat.set_shader_parameter("lights", 결과[0])
+	mat.set_shader_parameter("light_extra", 결과[1])
+	mat.set_shader_parameter("light_count", 결과[2])
 
 func _v3_쓰나() -> bool:
 	return 물줄기_v3 and 형태 in [0, 1]
@@ -136,6 +209,7 @@ func _갱신() -> void:
 	mat.set_shader_parameter("splash_texture", SPLASH_TEXTURE)
 	mat.set_shader_parameter("impact", 착수_물보라)
 	mat.set_shader_parameter("pool_right_inset", minf(웅덩이_오른쪽_안쪽폭, 크기.x * 0.75))
+	mat.set_shader_parameter("pool_left_inset", minf(웅덩이_왼쪽_안쪽폭, 크기.x * 0.75 - minf(웅덩이_오른쪽_안쪽폭, 크기.x * 0.75)))
 	mat.set_shader_parameter("pool_tone", 웅덩이_색)
 	mat.set_shader_parameter("water_tone", 물색)
 	mat.set_shader_parameter("extent", 크기)
@@ -146,6 +220,9 @@ func _갱신() -> void:
 	mat.set_shader_parameter("corner_inset", minf(3.0, 크기.x * 0.2))
 	mat.set_shader_parameter("animate", 애니메이션)
 	mat.set_shader_parameter("phase", 위상)
+	# 웅덩이 셰이더(sewer_pool_shallow)만 이 값을 안다. 다른 셰이더에선 무시된다.
+	mat.set_shader_parameter("integrate", 입체감)
+	mat.set_shader_parameter("stain_height", 물때_높이)
 	queue_redraw()
 
 func _v3_갱신(mat: ShaderMaterial) -> void:
@@ -158,6 +235,9 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 			break
 		stage = stage.get_parent()
 	var shader := load("res://shaders/water_stream_reference.gdshader" if sewer else STREAM_V3_SHADER_PATH) as Shader
+	# 하수도만 자연물 셰이더로(세 색 공용). 다른 챕터의 외관은 유지한다.
+	if 자연물 and sewer:
+		shader = load(NATURAL_SHADER_PATH) as Shader
 	var flow := load(STREAM_V3_FLOW_PATH) as Texture2D
 	var sheet := load(STREAM_V3_SPLASH_PATH) as Texture2D
 	if shader == null or flow == null or sheet == null:
@@ -167,6 +247,21 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 		return
 	if mat.shader != shader:
 		mat.shader = shader
+	# 2026-10-07: 1번 시안은 2-1~2-4의 흰 물에만 시험 적용한다.
+	# 흰색은 생성 영상으로, 혼합된 검정/회색은 기존 재질로 그린다. 바닥 번짐 폭은 모두 본체에 맞춘다.
+	if 자연물 and sewer:
+		var 착수_프레임 := _착수_프레임_읽기()
+		# 생성 영상의 물줄기 본체와 착수부를 통째로 재생한다. 검정/회색 및 다른 스테이지는 기존 그림이다.
+		if 착수_프레임 != null:
+			mat.set_shader_parameter("impact_frames", 착수_프레임)
+		var 힉스필드_적용 := 착수_프레임 != null and stage.scene_file_path in [
+			"res://scenes/world_2_클로드/stage_2-1.tscn",
+			"res://scenes/world_2_클로드/stage_2-2.tscn",
+			"res://scenes/world_2_클로드/stage_2-3.tscn",
+			"res://scenes/world_2_클로드/stage_2-4.tscn",
+		]
+		mat.set_shader_parameter("low_floor_impact", 힉스필드_적용)
+		mat.set_shader_parameter("higgsfield_fluid", 힉스필드_적용)
 	mat.set_shader_parameter("flow_texture", flow)
 	mat.set_shader_parameter("splash_sheet", sheet)
 	# 하수도에서만 새 낙수 색 규칙을 적용한다. 다른 챕터의 기존 외관은 유지한다.
@@ -181,15 +276,22 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 	mat.set_shader_parameter("hit_inset", _판정_안쪽())
 	mat.set_shader_parameter("animate", 애니메이션)
 	mat.set_shader_parameter("phase", 위상)
+	mat.set_shader_parameter("integrate", 입체감)
 	queue_redraw()
 
 func _draw() -> void:
 	# 셰이더 TIME으로 흐르므로 CPU에서 매 프레임 메시나 판정을 다시 만들지 않는다.
 	var back := 수면_뒤깊이 if 형태 == 3 else 0.0
+	# 입체감: 웅덩이 수면 위 벽에 물때 띠를 그릴 자리를 위로 더 연다.
+	if 입체감 and 형태 == 3:
+		back = maxf(back, 물때_높이 + 2.0)
 	# 가장자리 분무와 착수 물보라는 디자인 크기 밖에도 보여야 종이처럼 잘리지 않는다.
 	var margin := 150.0 if 형태 in [0, 1, 2] else 0.0
 	if _v3_쓰나():
 		# v3 착수 프레임은 기준 폭에서 좌우 192px, 배율만큼 커진다(바닥 물막·잔물결이 잘리지 않게).
 		margin = maxf(margin, 192.0 * _v3_착수_배율() - 크기.x * 0.5 + 4.0)
+		# 새 유체 시트는 본체 폭에 맞춰 배율이 달라진다. 넓은 물막의 공중 방울도 자르지 않게 한다.
+		if 자연물 and 물색 == 1 and _착수_프레임 != null:
+			margin = maxf(margin, 크기.x * 2.0)
 	var bottom := 32.0 if 형태 in [0, 1, 2] else 0.0
 	draw_rect(Rect2(Vector2(-크기.x * 0.5 - margin, -back), 크기 + Vector2(margin * 2.0, back + bottom)), Color.WHITE)

@@ -20,7 +20,6 @@
 [ext_resource type="Script" path="res://scripts/스마트월드/압력버튼_매립.gd" id="17_nbup3"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/박스.tscn" id="18_1kclj"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/통과플랫폼.tscn" id="19_3da6y"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="20_ebdst"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="21_skip6"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/양동이.tscn" id="22_o0jva"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/가시.tscn" id="23_5yyf2"]
@@ -29,6 +28,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="26_gvy3i"]
 
 [ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_주철배관.gd" id="cast_pipe"]
 
 [sub_resource type="Resource" id="Resource_ur8dc"]
 script = ExtResource("5_ec05e")
@@ -1535,7 +1535,11 @@ shape = SubResource("RectangleShape2D_ebgx1")
 one_way_collision = true
 one_way_collision_margin = 4.0
 
-[node name="관_W" parent="장치" unique_id=1157664149 instance=ExtResource("20_ebdst")]
+[node name="관_W" type="Node2D" parent="장치" unique_id=1157664149]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(4800, 1784, 4800, 2000)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="W_검정물" parent="장치" unique_id=1622344719 instance=ExtResource("21_skip6")]
 script = ExtResource("latest_water_art")
@@ -1568,7 +1572,11 @@ script = ExtResource("17_nbup3")
 "대상_이동량들" = Array[Vector2]([Vector2(-1200, 0)])
 "이동속도" = 420.0
 
-[node name="관_다리" parent="장치" unique_id=1618819306 instance=ExtResource("20_ebdst")]
+[node name="관_다리" type="Node2D" parent="장치" unique_id=1618819306]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(5264, 2440, 5264, 1832)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="문_4" type="Node2D" parent="장치" unique_id=1697089664]
 position = Vector2(6784, 1216)

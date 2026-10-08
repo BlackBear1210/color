@@ -13,6 +13,13 @@ var _침수대상: Array[Node] = []
 		if is_node_ready():
 			_모양_갱신()
 
+## ★[2026-10-03] 왼쪽 경사 — 도형님 2-1 흰 웅덩이 = 양쪽이 비스듬한 사다리꼴. 예전엔 오른쪽만 알아 왼쪽이 늘 수직이었다.
+@export var 왼쪽_안쪽폭: float = 0.0:
+	set(value):
+		왼쪽_안쪽폭 = maxf(0.0, value)
+		if is_node_ready():
+			_모양_갱신()
+
 func _모양_갱신() -> void:
 	super._모양_갱신()
 	var rectangle := get_node_or_null("모양") as CollisionShape2D
@@ -25,7 +32,9 @@ func _모양_갱신() -> void:
 		add_child(shape)
 	var half := 크기.x * 0.5
 	var inset := minf(오른쪽_안쪽폭, 크기.x * 0.75)
-	var polygon := PackedVector2Array([Vector2(-half,-크기.y), Vector2(half,-크기.y), Vector2(half-inset,0), Vector2(-half,0)])
+	# 왼쪽 경사는 오른쪽과 합쳐 바닥 폭이 남게(전체의 0.75 를 넘지 않게) 자른다.
+	var left_inset := minf(왼쪽_안쪽폭, 크기.x * 0.75 - inset)
+	var polygon := PackedVector2Array([Vector2(-half,-크기.y), Vector2(half,-크기.y), Vector2(half-inset,0), Vector2(-half+left_inset,0)])
 	if shape.polygon != polygon:
 		shape.polygon = polygon
 
@@ -82,13 +91,14 @@ func _exit_tree() -> void:
 func _외관_맞추기() -> void:
 	if not is_instance_valid(_white_visual):
 		return
-	var state: Array = [크기, 색, 켜짐, global_transform, 오른쪽_안쪽폭]
+	var state: Array = [크기, 색, 켜짐, global_transform, 오른쪽_안쪽폭, 왼쪽_안쪽폭]
 	if state == _visual_state:
 		return
 	_visual_state = state
 	_white_visual.visible = 켜짐
 	_white_visual.set("크기", 크기)
 	_white_visual.set("웅덩이_오른쪽_안쪽폭", 오른쪽_안쪽폭)
+	_white_visual.set("웅덩이_왼쪽_안쪽폭", 왼쪽_안쪽폭)
 	_white_visual.set("웅덩이_색", 색)
 	# 웅덩이는 바닥 원점, 새 수면은 윗면 원점이므로 수심만큼 올린다.
 	_white_visual.position = Vector2(0.0, -크기.y)

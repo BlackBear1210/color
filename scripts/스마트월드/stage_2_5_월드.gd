@@ -27,8 +27,9 @@ func _안전점_갱신(_delta: float, 죽는가: bool) -> void:
 		return
 
 
-func _리스폰() -> void:
-	super._리스폰()
+func _부활_후처리() -> void:
+	# 공통 사망이 비동기가 되었으므로 실제 부활 직후에 준비대 색을 복원한다.
+	super._부활_후처리()
 	# 흰 몸으로 죽고 검정 준비대에 돌아와 반복 사망하는 경우를 막는다.
 	if _플레이어 != null:
 		_플레이어.set("player_color", _재시작색)

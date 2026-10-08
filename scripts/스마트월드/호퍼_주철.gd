@@ -8,6 +8,12 @@ const 주철_아틀라스 = preload("res://assets/textures/obstacles/hopper/cast
 ## 노즐 안지름 = 호퍼 폭 × 0.2 (원화 400 폭 기준 관 안지름 80 — 도구 머리말의 실측값과 같아야 한다).
 const 노즐_안지름_비율 := 0.2
 const 입구_수면_스크립트 = preload("res://scripts/스마트월드/호퍼_입구수면.gd")
+## [2026-09-30] 입구 수면 v4(사다리꼴 구멍에 담긴 물 · 물줄기가 입구 가운데에서 수면 속으로 · 입구색 = 받은색).
+## 도형님 승인(2026-09-30 "지금 만든 시안 좋다 · world_2_클로드 모든 스테이지에 적용") → **기본 켬**.
+## 하수도 스테이지(world_2_클로드/stage_*) 호퍼에만 붙는다(아래 _하수도_입구연출). 끄면 예전 입구 수면.
+## 사진 비교: docs/visual_review/hopper_inlet_20260930/v4_* · 코드: 호퍼_입구수면_시안.gd
+const 입구_수면_시안_스크립트 = preload("res://scripts/스마트월드/호퍼_입구수면_시안.gd")
+@export var 입구_시안_사용: bool = true
 ## 밝은 금속면만 조율한다. 자식의 입구 수면/물색에는 modulate를 전파하지 않는다.
 @export_range(0.5, 1.0, 0.01) var 주철_명도: float = 1.0
 var _하수도_입구연출: bool = false
@@ -23,7 +29,7 @@ func _ready() -> void:
 		조상 = 조상.get_parent()
 	if not _하수도_입구연출 or Engine.is_editor_hint():
 		return
-	var 수면 := 입구_수면_스크립트.new()
+	var 수면 = (입구_수면_시안_스크립트 if 입구_시안_사용 else 입구_수면_스크립트).new()
 	수면.name = "InletWaterSurface"
 	add_child(수면)  # 실행 전용: owner를 주어 씬에 중복 저장하지 않는다.
 	입구_상태_갱신.connect(수면.상태_받기)

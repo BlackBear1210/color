@@ -60,7 +60,28 @@ func 반대색인가(_플레이어색: int) -> bool:
 	return false
 
 
+## ★[2026-09-30 Claude] 주철 무게 궤짝 그림(시안 1 확정). 굽는 곳 = `tools/생성_박스_주철.py`(손으로 그리지 말 것).
+##   preload 가 아니라 load 인 이유: PNG 가 에디터에서 아직 임포트 안 됐으면 preload 는 **스크립트 전체가 파싱 실패**해
+##   박스가 통째로 사라진다. load 는 null 을 주고 아래 옛 그림으로 넘어간다.
+const 주철_그림_경로 := "res://assets/textures/obstacles/box/cast_iron_v1/box.png"
+## 그림(104x102) 안에서 노드 원점(바닥 중앙)이 놓인 자리. 판정 96x96 = 그림 (4,4)~(100,100). 굽는 도구의 OX·OY 와 같아야 한다.
+const 그림_원점 := Vector2(52.0, 100.0)
+static var _주철_그림: Texture2D = null
+
+## 켜면 예전 코드 그림(회색 사각형 + X)으로 돌아간다 — 비교·문제 확인용.
+@export var 옛_그림: bool = false:
+	set(v):
+		옛_그림 = v
+		queue_redraw()
+
+
 func _draw() -> void:
+	if not 옛_그림:
+		if _주철_그림 == null and ResourceLoader.exists(주철_그림_경로):
+			_주철_그림 = load(주철_그림_경로) as Texture2D
+		if _주철_그림 != null:
+			draw_texture(_주철_그림, -그림_원점)
+			return
 	draw_rect(Rect2(-48, -96, 96, 96), Color(0.28, 0.27, 0.25), true)
 	draw_rect(Rect2(-48, -96, 96, 96), Color(0.68, 0.66, 0.60), false, 3.0)
 	draw_line(Vector2(-42, -88), Vector2(42, -8), Color(0.14, 0.13, 0.12), 4.0)

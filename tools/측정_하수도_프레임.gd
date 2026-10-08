@@ -25,6 +25,7 @@ const 기본대상 := [
 	"res://scenes/world_2_클로드/stage_2-11.tscn",
 ]
 const 예산_ms := 1000.0 / 60.0
+var _실패수 := 0
 
 var _칸프레임 := 60
 var _끔: Array = []
@@ -67,7 +68,8 @@ func _실행() -> void:
 		RenderingServer.get_video_adapter_name(), str(_끔), str(_숨김)])
 	for 경로 in 대상:
 		await _한판(String(경로))
-	quit(0)
+	print("PERF 합계: 실패 %d / %d 스테이지" % [_실패수, 대상.size()])
+	quit(1 if _실패수 > 0 else 0)
 
 
 func _한판(경로: String) -> void:
@@ -77,6 +79,14 @@ func _한판(경로: String) -> void:
 		return
 	var t0 := Time.get_ticks_usec()
 	var 씬 := ps.instantiate()
+	# --시안끔 : 호퍼 입구 v4(입구_시안_사용)를 끈 대조. 재질·자식이 ready 때 정해지므로 트리에 넣기 전에 끈다.
+	if OS.get_cmdline_user_args().has("--시안끔"):
+		var 쌓기0: Array[Node] = [씬]
+		while not 쌓기0.is_empty():
+			var n0: Node = 쌓기0.pop_back()
+			쌓기0.append_array(n0.get_children())
+			if "입구_시안_사용" in n0:
+				n0.set("입구_시안_사용", false)
 	root.add_child(씬)
 	var 로드_ms := float(Time.get_ticks_usec() - t0) / 1000.0
 	for i in 30:
@@ -92,6 +102,42 @@ func _한판(경로: String) -> void:
 	if 플레이어:
 		플레이어.process_mode = Node.PROCESS_MODE_DISABLED
 	_대조_적용(씬)
+	# --시안물줄기끔 : 입구 v4 는 두되 들어오는 물줄기 손질(길이·z·끝 자르기)만 원래대로.
+	if OS.get_cmdline_user_args().has("--시안물줄기끔"):
+		for 입구 in 씬.find_children("InletWaterSurface", "", true, false):
+			입구.set("물줄기_늘리기", false)
+	# --입구제거 : 호퍼 입구 수면 노드를 통째로 뺀다(호퍼가 visible 을 매 틱 다시 켜서 숨김 대조가 안 된다).
+	if OS.get_cmdline_user_args().has("--입구제거"):
+		for 입구 in 씬.find_children("InletWaterSurface", "", true, false):
+			입구.get_parent().disconnect("입구_상태_갱신", Callable(입구, "상태_받기"))
+			입구.queue_free()
+	# --물리끔 : 물리 서버를 멈춘 대조(충돌 계산 비용을 가른다)
+	# --트리끔=노드경로 : 그 노드 아래 전체를 멈추고(처리·물리·그리기) 숨긴다. 범인 묶음을 반씩 좁힐 때 쓴다.
+	for 인자 in OS.get_cmdline_user_args():
+		if String(인자).begins_with("--트리끔="):
+			var 대상 := 씬.get_node_or_null(String(인자).trim_prefix("--트리끔="))
+			if 대상:
+				대상.process_mode = Node.PROCESS_MODE_DISABLED
+				if 대상 is CanvasItem: (대상 as CanvasItem).visible = false
+				print("    트리끔: ", 대상.name, " 자식 ", 대상.get_child_count())
+	# --묶음끔=조각 : 씬 전체에서 스크립트 경로/이름에 조각이 든 노드를 그 아래까지 통째로 멈추고 숨긴다.
+	for 인자 in OS.get_cmdline_user_args():
+		if String(인자).begins_with("--묶음끔="):
+			var 조각 := String(인자).trim_prefix("--묶음끔=")
+			var 수 := 0
+			var 쌓기2: Array[Node] = [씬]
+			while not 쌓기2.is_empty():
+				var n: Node = 쌓기2.pop_back()
+				var sc: Script = n.get_script()
+				if (sc and sc.resource_path.contains(조각)) or String(n.name).contains(조각):
+					n.process_mode = Node.PROCESS_MODE_DISABLED
+					if n is CanvasItem: (n as CanvasItem).visible = false
+					수 += 1
+					continue
+				쌓기2.append_array(n.get_children())
+			print("    묶음끔: ", 조각, " ", 수, "개")
+	if OS.get_cmdline_user_args().has("--물리끔"):
+		PhysicsServer2D.set_active(false)
 	# 스크립트 시간 탐침 — 처음/끝 우선순위 노드 두 개로 이 프레임의 _process·_physics_process 합을 잰다.
 	var 탐침: Node = load("res://tools/측정_프레임_탐침.gd").new()
 	var 탐침끝: Node = load("res://tools/측정_프레임_탐침.gd").new()
@@ -161,11 +207,23 @@ func _한판(경로: String) -> void:
 		전체[n / 2], 전체[int(n * 0.95)], 전체[int(n * 0.99)], 전체[n - 1], 넘음, n])
 	print("    평균: gpu %5.2f · 렌더 cpu %5.2f · 스크립트(process+physics) %5.2f 최대 %5.2f ms" % [
 		합["gpu"] / n, 합["렌더cpu"] / n, 합["스크립트"] / n, 합["스크립트최대"]])
+	# ★[2026-10-02] 판정 — 외관을 바꾼 뒤 이 판정을 안 봐서 2-3 이 41FPS 로 떨어진 걸 놓쳤다(호퍼 입구 v4).
+	#   기준: 중앙 ≤ 12ms(예산의 70% · 다른 프로그램이 같이 돌아도 60 을 지킬 여유) · p99 ≤ 16.7ms ·
+	#   스크립트 최대 ≤ 6ms · 로드 ≤ 500ms. 하나라도 넘으면 실패 → 종료코드 1.
+	var 이유: Array = []
+	if 전체[n / 2] > 12.0: 이유.append("중앙 %.1f > 12" % 전체[n / 2])
+	if 전체[int(n * 0.99)] > 예산_ms: 이유.append("p99 %.1f > 16.7" % 전체[int(n * 0.99)])
+	if 합["스크립트최대"] > 6.0: 이유.append("스크립트 최대 %.1f > 6" % 합["스크립트최대"])
+	if 로드_ms > 500.0: 이유.append("로드 %.0f > 500" % 로드_ms)
+	print("    PERF %s %s" % ["✔ 통과" if 이유.is_empty() else "✖ 실패", " · ".join(이유)])
+	if not 이유.is_empty():
+		_실패수 += 1
 	칸들.sort_custom(func(a, b): return a["최대"] > b["최대"])
 	for i in mini(5, 칸들.size()):
 		var k: Dictionary = 칸들[i]
 		print("    (%5.0f,%5.0f) 중앙 %5.2f 최대 %6.2f | process %5.2f physics %5.2f | 렌더 cpu %5.2f gpu %5.2f | draw %4.0f" % [
 			k["중심"].x, k["중심"].y, k["중앙"], k["최대"], k["처리"], k["물리"], k["렌더cpu"], k["gpu"], k["그리기"]])
+	PhysicsServer2D.set_active(true)
 	씬.queue_free()
 	탐침.queue_free()
 	탐침끝.queue_free()

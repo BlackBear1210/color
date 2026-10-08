@@ -52,6 +52,17 @@ class_name 움직이는발판
 
 @export_group("색칠")
 @export_range(1, 8) var 필요횟수: int = 2
+## ★[2026-09-30] 끄면 쇠사슬 승강기 = 주철 고정색 발판이 된다(도형님: "플레이어가 칠할 수 없게").
+##   규칙은 격자(`통과플랫폼.gd`)와 똑같이 맞췄다 — 고정색으로 판정하고, 총알은 "blocked", E 회수 불가.
+##   기본은 켬: 2-8 등 기존 발판은 그대로 칠하는 퍼즐로 남는다.
+@export var 칠하기_가능: bool = true:
+	set(v): 칠하기_가능 = v; queue_redraw()
+## 칠하기_가능 을 끈 발판의 색. 외관(주철 격자 검정/흰색 원본)과 접촉 판정이 같은 값을 쓴다.
+@export_enum("검정:0", "흰색:1") var 고정색: int = ColorDefs.BLACK:
+	set(v): 고정색 = clampi(v, 0, 1); queue_redraw()
+
+## 칠할 수 없는 발판은 격자와 같은 주철 원본 그림을 쓴다(새 그림을 만들지 않는다).
+const 격자_아틀라스 = preload("res://assets/textures/obstacles/grate/cast_iron_v1/grate_atlas.png")
 
 var _상태색: int = -1
 var _맞은횟수: int = 0
@@ -73,6 +84,12 @@ func _ready() -> void:
 	#   그 상태로 씬을 저장하면 밀린 좌표가 파일에 박힌다. 반드시 둘 다 막아야 한다.
 	_시작위치 = position
 	_t = -시작지연
+	if not 칠하기_가능 and material == null:
+		# 격자와 같은 이유: 얇은 철망 선이 이동 광원에 번쩍이지 않게 명도를 고정하고, 밉맵으로 반짝임을 줄인다.
+		var 주철재질 := CanvasItemMaterial.new()
+		주철재질.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		material = 주철재질
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	if Engine.is_editor_hint():
 		set_physics_process(false)   # ★에디터에서는 한 픽셀도 움직이지 않는다
 		queue_redraw()
@@ -127,15 +144,24 @@ func 위상_초기화() -> void:
 
 # ── 페인트코어와의 약속 (통과플랫폼과 동일) ─────────────────────────────────
 func 현재색() -> int:
-	return _상태색
+	# 칠할 수 없는 발판은 인스펙터 고정색이 곧 판정색이다(격자와 같은 계약).
+	return _상태색 if 칠하기_가능 else 고정색
 
 
 func 반대색인가(플레이어색: int) -> bool:
 	# 안 칠한 상태(-1)도 화면에는 검정이다 → 규칙은 `색규칙.gd` 한 곳에만 있다.
-	return 색규칙.위험한가(_상태색, 플레이어색)
+	return 색규칙.위험한가(현재색(), 플레이어색)
+
+
+## 고정색 발판은 물이 지나가도 색이 안 지워진다(유체.gd 가 이걸 보고 건너뛴다).
+func 물에_안지워짐() -> bool:
+	return not 칠하기_가능
 
 
 func 명중(색: int, _월드좌표: Vector2) -> String:
+	# 칠할 수 없는 승강기 — 총알은 막히고 색은 그대로("blocked" 연출만).
+	if not 칠하기_가능:
+		return "blocked"
 	if _상태색 == ColorDefs.GRAY:
 		return "blocked"
 	if _상태색 >= 0:
@@ -156,6 +182,9 @@ func 명중(색: int, _월드좌표: Vector2) -> String:
 
 
 func 되돌리기() -> bool:
+	# 내 물감이 묻은 적이 없으니 E 로 회수할 것도 없다.
+	if not 칠하기_가능:
+		return false
 	if _상태색 == ColorDefs.GRAY:
 		return false
 	_상태색 = -1
@@ -173,6 +202,11 @@ func 강제_초기화() -> void:
 # ── 그리기 ──────────────────────────────────────────────────────────────────
 func _draw() -> void:
 	if 아트슬롯.그림_있나(self):
+		return
+
+	if not 칠하기_가능:
+		_주철판_그리기()
+		_구간_그리기()
 		return
 
 	var 본체 := Color(0.22, 0.23, 0.26)
@@ -205,6 +239,30 @@ func _draw() -> void:
 			draw_line(끝, 끝 - 축 * 6.0 * s + 옆, 화살, 2.0)
 			draw_line(끝, 끝 - 축 * 6.0 * s - 옆, 화살, 2.0)
 
+	_구간_그리기()
+
+
+## 칠할 수 없는 승강기 = 주철 판. `통과플랫폼._draw()` 와 같은 원본 영역·같은 늘리기 방식
+## (양끝 볼트는 비율 유지, 가운데만 늘림)이라 격자와 한 벌로 읽힌다.
+## 방향 화살표는 그리지 않는다 — "움직인다"는 매달린 쇠사슬(장식 키트)이 알려 준다.
+func _주철판_그리기() -> void:
+	var 원본 := Rect2(90, 810, 1075, 116) if 고정색 == ColorDefs.WHITE else Rect2(90, 326, 1074, 114)
+	var 배율 := 크기.y / 원본.size.y
+	var 끝폭 := minf(48.0 * 배율, 크기.x * 0.25)
+	var 원본끝 := 끝폭 / 배율
+	var 시작 := -크기 * 0.5
+	draw_texture_rect_region(격자_아틀라스, Rect2(시작, Vector2(끝폭, 크기.y)),
+		Rect2(원본.position, Vector2(원본끝, 원본.size.y)))
+	draw_texture_rect_region(격자_아틀라스,
+		Rect2(시작 + Vector2(끝폭, 0), Vector2(크기.x - 끝폭 * 2, 크기.y)),
+		Rect2(원본.position + Vector2(원본끝, 0), Vector2(원본.size.x - 원본끝 * 2, 원본.size.y)))
+	draw_texture_rect_region(격자_아틀라스,
+		Rect2(시작 + Vector2(크기.x - 끝폭, 0), Vector2(끝폭, 크기.y)),
+		Rect2(원본.position + Vector2(원본.size.x - 원본끝, 0), Vector2(원본끝, 원본.size.y)))
+
+
+func _구간_그리기() -> void:
+	var 반 := 크기 * 0.5
 	# 에디터에서만: 왕복 구간을 점선으로 보여준다 (배치할 때 실행 없이 확인)
 	if Engine.is_editor_hint() and 이동거리 > 0.0:
 		var 축2 := Vector2(0.0, 1.0) if 이동방향 == 1 else Vector2(1.0, 0.0)

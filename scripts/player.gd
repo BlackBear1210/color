@@ -173,6 +173,10 @@ func _physics_process(delta: float) -> void:
 		var 행동효과 := get_node_or_null("ActionFX")
 		if 행동효과 and 행동효과.has_method("점프"):
 			행동효과.점프(얼굴색())
+		# [2026-10-05] 점프 소리도 먼지와 같은 이유로 "성립한 프레임"에만 낸다.
+		var 효과음 := get_node_or_null("효과음")
+		if 효과음:
+			효과음.점프()
 
 	_jump_buffer_timer = max(_jump_buffer_timer - delta, 0.0)
 
@@ -200,6 +204,10 @@ func _physics_process(delta: float) -> void:
 		var 행동효과 := get_node_or_null("ActionFX")
 		if 행동효과 and 행동효과.has_method("착지"):
 			행동효과.착지(얼굴색(), maxf(착지_직전속도, 0.0))
+		# [2026-10-05] 착지 소리 — 일반/높은 곳은 효과음 노드가 떨어진 높이로 고른다.
+		var 효과음 := get_node_or_null("효과음")
+		if 효과음:
+			효과음.착지()
 	_지난_바닥 = 바닥
 	_착지_감시_시작 = true
 

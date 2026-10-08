@@ -153,7 +153,7 @@ func _게이지_갱신(탄약: Dictionary, 맥동: float) -> void:
 	if 재질 == null:
 		return
 
-	# ⚠ 최대값을 여기서 만들지 않는다. 탄약 시스템이 둘(12발/14발)이라
+	# ⚠ 최대값을 여기서 만들지 않는다. 정식·프로토 모두 기본 7발이지만 무제한/검사 설정도
 	#   어느 쪽인지는 어댑터만 안다. 탄약()이 빈 사전이면 그 시스템엔 탄약이 없다.
 	var 최대 := float(탄약.get("최대", 0))
 	var 남은 := float(탄약.get("남은", 0))
@@ -226,7 +226,13 @@ func _액체_동역학(delta: float, 탄약: Dictionary) -> void:
 		if _플레이어 is CharacterBody2D:
 			착지 = _플레이어.is_on_floor()
 	_관성.종류 = 점성_종류
-	_관성.갱신(delta, 속도, 착지)
+	# 실제 걷기 시트의 두 발 주기로 수면을 구동해 고정 속도로 걸을 때도 내부 페인트가 움직인다.
+	var 보행위상 := -1.0
+	var 시트 := _플레이어.get_node_or_null("CharacterSprite") as AnimatedSprite2D if is_instance_valid(_플레이어) else null
+	if 시트 != null and String(시트.animation).ends_with("_walk"):
+		var 개수 := 시트.sprite_frames.get_frame_count(시트.animation)
+		보행위상 = (시트.frame + 시트.frame_progress) * TAU * 2.0 / maxf(1.0, float(개수))
+	_관성.갱신(delta, 속도, 착지, 보행위상)
 	var 남은 := int(탄약.get("남은", -1))
 	if 남은 >= 0 and _지난_남은 >= 0 and 남은 != _지난_남은:
 		_관성.충격_추가(0.65 if 남은 < _지난_남은 else 0.36)
@@ -253,6 +259,9 @@ func _그릇_색(뒤: CanvasItem, 앞: CanvasItem, 흰색차례: bool, 맥동: f
 		var m2 := 앞.material as ShaderMaterial
 		m2.set_shader_parameter("rim_color", Color(테_금속.r, 테_금속.g, 테_금속.b, 맥동))
 		m2.set_shader_parameter("rim_dark", 테_그늘)
+	elif 앞 is TextureRect:
+		# 힉스필드 금속 테는 움직이지 않고, 빈 탄창의 맥동만 기존 HUD와 함께 받는다.
+		앞.modulate = Color(1, 1, 1, 맥동)
 
 
 # ============================================================================

@@ -68,11 +68,20 @@ func _발소리(플: CharacterBody2D, delta: float) -> void:
 		return
 	_걸음 = 걸음_간격
 	var 물속 := _발이_물속(플.global_position)
+	# [2026-10-05] 마른 바닥 발소리는 이제 플레이어의 `효과음` 노드(플레이어_효과음.gd · ElevenLabs 음원)가 낸다.
+	#   여기서도 돌 발소리를 내면 한 걸음에 두 번 울린다 → 웅덩이 속 찰박만 맡는다.
+	#   (효과음 노드가 없는 옛 플레이어 씬이면 예전처럼 돌 발소리도 낸다)
+	if not 물속 and 플.get_node_or_null("효과음") != null:
+		return
 	var 목록 := _물발 if 물속 else _돌
 	_발.stream = 목록[_난수.randi_range(0, 목록.size() - 1)]
 	_발.pitch_scale = _난수.randf_range(0.9, 1.1)
 	_발.volume_db = (-10.0 if 물속 else -14.0) + linear_to_db(발소리_배율)
 	_발.play()
+
+## [2026-10-05] 플레이어_효과음.gd 가 묻는다 — 물속이면 그쪽은 발소리를 쉬고 여기서 찰박을 낸다.
+func 발이_물속(발: Vector2) -> bool:
+	return _발이_물속(발)
 
 func _발이_물속(발: Vector2) -> bool:
 	for pool in get_tree().get_nodes_in_group("웅덩이"):

@@ -14,7 +14,6 @@
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/연결통로.tscn" id="exit"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/통과플랫폼.tscn" id="grate"]
 [ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="mesh"]
-[ext_resource type="PackedScene" path="res://scenes/집/스마트 매쉬 assets/PIPE_배관/TEMPLATE_PIPE_OPEN_GRAY.tscn" id="pipe"]
 [ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="player"]
 [ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="point"]
 [ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="points"]
@@ -27,6 +26,7 @@
 [ext_resource type="Script" path="res://scripts/스마트월드/stage_2_10_반환격자.gd" id="return_grate"]
 
 [ext_resource type="Script" path="res://scripts/스마트월드/유체_흰물v2.gd" id="latest_water_art"]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_주철배관.gd" id="cast_pipe"]
 
 [sub_resource type="Resource" id="terrain0p0"]
 resource_local_to_scene = true
@@ -6008,9 +6008,11 @@ collision_layer = 0
 "칸수" = 2
 "가시높이" = 20.0
 
-[node name="급수배관" parent="장치" unique_id=1734868841 instance=ExtResource("pipe")]
-z_index = 3
-position = Vector2(4128, 8176)
+[node name="급수배관" type="Node2D" parent="장치" unique_id=1734868841]
+z_index = -1
+script = ExtResource("cast_pipe")
+"점들" = PackedVector2Array(4128, 8176, 5024, 8176)
+editor_description = "2026-09-30: 회색 배관 키트 → 주철 배관. 경로는 빌더 원래 좌표(키트는 저장 때 경로를 잃어 원점에 뭉쳐 있었다)."
 
 [node name="중앙계단" type="Node2D" parent="." unique_id=943330887]
 
