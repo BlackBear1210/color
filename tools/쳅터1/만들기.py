@@ -191,6 +191,11 @@ def _안에(pt, 다각형):
 def 씬_글(dn):
     d = dn.d
     ext = list(EXT)
+    # 외부 연결 구간은 실내 벽지 대신 도형님 요청의 연속 파노라마를 쓴다.
+    if d.get("외부경관"):
+        ext.append(("외부경관", "Texture2D", None, d["외부경관"]))
+    if d.get("반사빛길"):
+        ext.append(("반사빛길", "PackedScene", None, "res://scenes/쳅터1/기믹/반사빛길.tscn"))
     for k in sorted({type(g).__name__ for g in 기믹모듈.목록(dn)}):
         ext.append((f"기믹:{k}", "PackedScene", None, 기믹_장면[k][1]))
     프리셋 = d.get("배경", {}).get("프리셋", "방_판자")      # [2차] 도형님 선택 D = 판자·폐허
@@ -205,6 +210,8 @@ def 씬_글(dn):
             ids[k] = f"{i + 1}_{_ASCII[k]}"
         elif k == "프리셋":
             ids[k] = f"{i + 1}_preset"
+        elif k in ("외부경관", "반사빛길"):
+            ids[k] = f"{i + 1}_extra"
         elif k.startswith("기믹:"):
             ids[k] = f"{i + 1}_{기믹_장면[k.split(':', 1)[1]][0]}"
         else:
@@ -281,6 +288,13 @@ def 씬_글(dn):
         '"레이어_움직임" = true',
     ]) + "\n")
     줄.append('[node name="가구" type="Node2D" parent="배경"]\nz_index = -90\n')
+    if d.get("외부경관"):
+        # 생성된 배경 노드의 벽지를 숨기고 같은 좌표계에 파노라마를 놓는다.
+        줄[-2] += "visible = false\n"
+        줄.append(f'[node name="외부경관" type="Sprite2D" parent="."]\nz_index = -100\ntexture = ExtResource("{ids["외부경관"]}")\ncentered = false\nscale = Vector2(2.846, 2.813)\n')
+    if d.get("반사빛길"):
+        x, y = d["반사빛길"]
+        줄.append(f'[node name="반사빛길" parent="." instance=ExtResource("{ids["반사빛길"]}")]\nposition = {V(x*C, y*C)}\n')
     세기 = {}
     for 이름, x, y, *_ in 가구들:
         x0, y0, w, h = 규격.가구_사각(이름, x, y)
@@ -296,7 +310,7 @@ def 씬_글(dn):
     for 문 in dn.문:
         i = dn.문_정보(문)
         연결 = 문.get("연결") or []
-        다음 = f"res://scenes/쳅터1/스테이지/{연결[0]}.tscn" if 연결 else ""
+        다음 = (연결[0] if 연결[0].startswith("res://") else f"res://scenes/쳅터1/스테이지/{연결[0]}.tscn") if 연결 else ""
         줄.append("\n".join([
             f'[node name="{문["이름"]}" type="Node2D" parent="연결"]',
             f"position = {V(i['안쪽면x'], i['바닥y'])}",

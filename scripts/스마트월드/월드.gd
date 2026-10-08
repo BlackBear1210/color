@@ -89,6 +89,11 @@ var _에디터_플레이어_위치: Vector2 = Vector2.ZERO
 ## 통로로 들어왔을 때 `장면전환` 이 넘겨준 정보의 복사본. (진입_소비() 뒤에도 남아 있어야 한다)
 var _진입정보: Dictionary = {}
 var _안전_누적: float = 0.0            ## 그 자리에서 안전하게 버틴 시간
+## [2026-10-06 도형] 촛불은 실제 저장 지점이다. 자동 안전점이 촛불 저장을 덮어쓰면 표시와 부활 위치가 달라진다.
+var _체크목록: Array[Area2D] = []
+var _저장체크: Area2D = null
+var _체크위치 := Vector2.ZERO
+var _체크색: int = ColorDefs.BLACK
 
 
 func _ready() -> void:
@@ -176,6 +181,9 @@ func _ready() -> void:
 					스테이지_완료())
 	_HUD_만들기()
 	_메뉴_만들기()
+	for n in get_tree().get_nodes_in_group("checkpoint"):
+		if n is Area2D and is_ancestor_of(n):
+			_체크목록.append(n)
 	# [2026-08-17] 탄약_변경 시그널 연결을 뺐다. 점 HUD 는 매 프레임 코어를 읽으므로
 	# 시그널이 필요 없고, 시그널만 믿으면 **회수줄이 바뀌었는데 탄약 수는 그대로인 순간**
 	# (예: 회색화 직후)에 화면이 안 따라오는 구멍이 생긴다.
@@ -232,6 +240,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_안전점_갱신(delta, 죽는가)
+	_체크포인트_갱신(죽는가)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -508,6 +517,43 @@ func _리스폰() -> void:
 	# 사망은 "스테이지 재시도" 다 → 규칙대로 모든 페인트를 회수한다.
 	if _코어:
 		_코어.리셋()
+	if is_instance_valid(_저장체크):
+		# 사망 시 페인트가 회수되므로 원래 발판색까지 확인한 좌표·색을 함께 복원한다.
+		_플레이어.global_position = _체크위치
+		_플레이어.set("player_color", _체크색)
+		if _카메라:
+			_카메라.setup(_플레이어)
+
+
+func _체크포인트_갱신(죽는가: bool) -> void:
+	# 접촉 신호만 쓰면 공중으로 스쳐 지나간 순간까지 저장한다. 실제 안전 착지 후 켠다.
+	if 죽는가 or not _플레이어.is_on_floor() or not _발밑에_땅있나():
+		return
+	for 지점 in _체크목록:
+		if not is_instance_valid(지점) or 지점 == _저장체크 or not 지점.overlaps_body(_플레이어):
+			continue
+		var q := PhysicsRayQueryParameters2D.create(지점.global_position + Vector2(0, -8), 지점.global_position + Vector2(0, 16), 1, [_플레이어.get_rid()])
+		var hit := get_world_2d().direct_space_state.intersect_ray(q)
+		if hit.is_empty():
+			continue
+		var 바닥 := hit["collider"] as Node
+		while 바닥 and 바닥 != self and 바닥.get("시작상태") == null:
+			바닥 = 바닥.get_parent()
+		# 이동판이나 칠해야 생기는 유령판 위에는 고정 부활점을 만들 수 없다.
+		if 바닥 == null or 바닥 == self:
+			continue
+		var 초기: int = int(바닥.get("시작상태"))
+		if 초기 == 0 and bool(바닥.get("칠하기_허용")):
+			continue
+		_체크색 = int(_플레이어.get("자유색"))
+		if 초기 == 1:
+			_체크색 = ColorDefs.BLACK
+		elif 초기 == 2:
+			_체크색 = ColorDefs.WHITE
+		_저장체크 = 지점
+		_체크위치 = Vector2(지점.global_position.x, (hit["position"] as Vector2).y - 1.0)
+		지점.call("켜기")
+		return
 
 
 # ── 챕터 · 등장 연출 ───────────────────────────────────────────────────────

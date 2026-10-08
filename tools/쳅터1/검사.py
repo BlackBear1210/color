@@ -113,6 +113,10 @@ class _색기록:
         return True
 
 
+반사빛길_발판_x = (120.0, 350.0, 570.0)   # scripts/쳅터1/반사빛길.gd _ready() 의 발판 x(노드 기준 px)
+반사빛길_발판_y = 25.0                    # 같은 곳의 발판 y(가운데) — 두께 18 이라 윗면 = y − 9
+
+
 class 지도:
     def __init__(self, dn, 유령_밟힘=True):
         import numpy as np
@@ -121,6 +125,16 @@ class 지도:
         self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
         self.W, self.H = x1 - x0, y1 - y0
         k = np.array([[dn.칸(x, y) for x in range(x0, x1)] for y in range(y0, y1)], dtype=np.int8)
+        # [2026-10-07 Claude] 반사빛길(15 집 밖 — Codex 10-06): 거울로 반사광을 수광판에 맞히면 생기는
+        #   '굳은 흰 빛' 발판 3장을 **풀린 상태**로 본다. 안 넣으면 다리로만 건너는 구덩이 때문에
+        #   "시작 → 오른쪽 도달 못 함" 이 나온다. 여는 과정(거울 회전·가림·소멸)은 엔진 시험
+        #   tools/시험_반사와외부.gd 가 따로 검사한다. 숫자 = scripts/쳅터1/반사빛길.gd 의 발판(가운데 x · y 25 · 170×18).
+        for bx, by, ox in [(d[0], d[1], o) for d in [dn.d.get("반사빛길")] if d for o in 반사빛길_발판_x]:
+            윗면 = by * C + 반사빛길_발판_y - 9
+            줄 = round(윗면 / C)
+            for cx in range(math.ceil((bx * C + ox - 85) / C), math.floor((bx * C + ox + 85) / C)):
+                if 0 <= 줄 - y0 < k.shape[0] and 0 <= cx - x0 < k.shape[1] and k[줄 - y0, cx - x0] == 0:
+                    k[줄 - y0, cx - x0] = 3          # 흰 빛 = 흰 몸만 설 수 있다(반사빛길.반대색인가)
         self.k = k
         self.유령 = 유령_밟힘
         self.최소틈 = 색전환_최소_프레임       # 검사() 가 '편한 길(15)' → '빠듯한 길(8)' 순으로 바꿔 가며 쓴다

@@ -31,6 +31,17 @@ import sys
     "tools/쳅터1/목재_v07_검토",
     "tools/_진단",
     "docs/작업기록_2026-10-05_Codex_목재평행마감.md",
+    # [10-07 추가] Codex 10-06 밤 실행 로그 9 개 · Codex→Claude 지시문(작업기록 §10 에 합침)
+    "tools/checkpoint_capture_after.log",
+    "tools/checkpoint_capture_before.log",
+    "tools/checkpoint_import_20261006.log",
+    "tools/checkpoint_test_20261006.log",
+    "tools/exterior_capture.log",
+    "tools/exterior_import.log",
+    "tools/exterior_static.log",
+    "tools/exterior_test.log",
+    "tools/gimmick_regression.log",
+    "docs/프롬프트_2026-10-06_도형_Claude_공동작업.md",
 ]
 
 
@@ -73,7 +84,16 @@ def main():
     for rel in 목록:
         src, dst = os.path.join(저장소, rel), os.path.join(백업, rel)
         os.makedirs(os.path.dirname(dst), exist_ok=True)
-        shutil.move(src, dst)
+        if os.path.isdir(dst):
+            # [10-07] 같은 폴더(예: tools/_진단)를 두 번째로 옮기면 안에 겹쳐 들어갔다 → 내용만 하나씩 합친다
+            for 이름 in os.listdir(src):
+                대상 = os.path.join(dst, 이름)
+                if os.path.exists(대상):
+                    대상 += "_2"
+                shutil.move(os.path.join(src, 이름), 대상)
+            os.rmdir(src)
+        else:
+            shutil.move(src, dst)
         옮김.append(rel)
     이전 = json.load(open(목록파일, encoding="utf-8"))["옮김"] if os.path.exists(목록파일) else []
     json.dump({"옮김": sorted(set(이전 + 옮김)), "설명": __doc__}, open(목록파일, "w", encoding="utf-8"), ensure_ascii=False, indent=1)

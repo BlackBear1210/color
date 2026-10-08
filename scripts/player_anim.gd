@@ -267,6 +267,8 @@ func _절차적_갱신(delta: float, on_floor: bool) -> void:
 	if on_floor:
 		var 접촉 := _발밑_접촉()
 		if not 접촉.is_empty():
+			# 2.5D 목재의 서는 면 중심을 사용한다. 물리 몸은 움직이지 않아 점프/색 접촉 판정은 보존된다.
+			목표발오프셋 += float(접촉.get("그림깊이", 0.0)) / maxf(absf(_player.scale.y), 0.0001)
 			if 지면정렬_사용:
 				# 법선(0,-1)=평지일 때 회전 0. rotation = normal.angle() + PI/2.
 				var n: Vector2 = 접촉["normal"]
@@ -307,7 +309,11 @@ func _발밑_접촉() -> Dictionary:
 	var r := 공간.intersect_ray(q)
 	if r.is_empty():
 		return {}
-	return {"point": r["position"], "normal": r["normal"]}
+	var surface := r["collider"] as Node
+	while surface and not surface.has_method("발_그림_깊이"):
+		surface = surface.get_parent()
+	var depth := float(surface.call("발_그림_깊이")) if surface else 0.0
+	return {"point": r["position"], "normal": r["normal"], "그림깊이": depth}
 
 
 ## 현재 재생 중과 다른 애니면 새로 재생 (같은 애니 반복 호출 시 프레임 리셋 방지)
