@@ -625,7 +625,8 @@ func 호퍼(부모: Node, 이름: String, x: float, 밟는면: float, 폭: float
 	return h
 
 
-## ★[2026-09-17] 회전톱(타이밍 장애물). 원점 = 톱 중심(왕복 시작점). 프롬프트 B-3: 반지름 8~96 · 왕복 ≥ 2.0s ·
+## ★[2026-10-08 정정] 원점은 왕복 **가운데**다 — 회전톱.gd 는 원점 ± 이동거리/2 를 사인으로 오간다(예전 주석 "왕복 시작점" 은 틀렸다).
+## ★[2026-09-17] 회전톱(타이밍 장애물). 원점 = 톱 중심(왕복 가운데). 프롬프트 B-3: 반지름 8~96 · 왕복 ≥ 2.0s ·
 ##   검정 구간이나 F2 빙 도는 길에만(톱 = 타이밍, 색칠 = 판단 — 한 자리에서 둘을 같이 요구하지 않는다).
 func 회전톱(부모: Node, 이름: String, 위치: Vector2, 반지름: float, 이동거리: float, 왕복시간: float, 세로: bool = false) -> Node2D:
 	var t := (load(S_회전톱) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node2D
