@@ -88,16 +88,22 @@ enum 역할_ { 출구, 입구 }
 ## 쳅터1 연결구와 같은 **가까운 전경 띠**(타일보다 앞 z 60) — 통로 입구 쪽은 옅고 안쪽으로 갈수록 진하다.
 @export var 전경띠: bool = true:
 	set(v): 전경띠 = v; _재구성()
-@export_range(0.0, 1.0) var 전경_진하기: float = 0.85:
+## [2026-10-08 밤] 도형님 "전경 그라데이션을 더 어둡게 해서 안쪽 지형이 보이지 않게" → 0.85 → 1.0 · 입구에서 이미 0.8.
+@export_range(0.0, 1.0) var 전경_진하기: float = 1.0:
 	set(v): 전경_진하기 = v; _재구성()
 ## 출구 통로 앞에서 길을 알려 주는 반딧불이(쳅터1 `반딧불이.gd` 그대로).
 @export var 반딧불이: bool = true:
 	set(v): 반딧불이 = v; _재구성()
+## 통로 둘레의 직사각형 구멍을 이웃 벽 지형으로 메워 쳅터1 처럼 얇은 벽만 보이게(아래 `_얇은벽_만들기`).
+@export var 통로_구멍_메움: bool = true
+## [2026-10-08] 벽 뚫기 — 통로 자리에 이미 벽 지형이 있으면(입구 통로가 없던 2-9·2-11 에 새로 넣은 입구)
+##   실행 때 그 벽 지형에서 **통로 길만큼만 잘라 낸다**(Geometry2D.clip_polygons). 씬의 지형은 그대로 두고 실행 때만 판다.
+@export var 벽_뚫기: bool = false
 
 const 전경전환_스크립트 := preload("res://scripts/쳅터1/전경전환.gd")
 const 반딧불이_스크립트 := preload("res://scripts/쳅터1/반딧불이.gd")
 const 전경색 := Color(0.03, 0.028, 0.026, 1.0)   ## 쳅터1 연결구 전경색과 같은 값
-const 전경_번짐 := 96.0                          ## 통로 입구에서 방 안쪽으로 번지는 폭(px)
+const 전경_번짐 := 160.0                         ## 통로 입구에서 방 안쪽으로 번지는 폭(px) — 짙어진 만큼 넓게 번져야 경계가 안 생긴다
 
 var _t: float = 0.0
 var _띠: Node2D = null
@@ -110,6 +116,10 @@ var _발동함: bool = false          ## 한 번만 넘어가게 (프레임마�
 var _되돌아갈_씬: String = ""
 var _되돌아갈_진입점: String = ""
 var _무시중: bool = false          ## 방금 이 통로로 도착 — 몸이 판정 밖으로 나갈 때까지 무시(왕복 튕김 방지)
+var _얇은벽: Node2D = null         ## 실행 때 만든 통로 구멍 메움 지형(없으면 null)
+var _메움_위: bool = false
+var _메움_아래: bool = false
+var 얇은벽_정보: Dictionary = {}    ## 시험·진단용: 잰 구멍 크기와 복제한 지형 이름
 ## 화면이 통로 쪽으로 넘지 않을 선 = 입구에서 굴 쪽으로 이만큼(px). 쳅터1 연결구 벽 두께(160)와 같다.
 const 화면_끝_여유 := 160.0
 
@@ -137,6 +147,11 @@ func _ready() -> void:
 			body_exited.connect(_몸_나감)
 		# 카메라는 스테이지 루트(월드)가 _ready 끝에 만든다 → 한 박자 뒤에 등록.
 		_카메라_가림_등록.call_deferred()
+		# 벽 뚫기는 **플레이어가 통로 안에 놓이기 전**에 끝나야 한다(늦으면 벽 속에 끼어 죽는다 — 2-11 에서 겪음).
+		#   물리 질의 대신 지형 점 배열을 직접 비교하므로 콜리전이 공간에 올라오기를 기다리지 않는다.
+		if 벽_뚫기:
+			_벽_뚫기.call_deferred()
+		_얇은벽_만들기.call_deferred()
 	set_process(true)
 
 
@@ -289,8 +304,9 @@ func _띠_그리기() -> void:
 	var 위 := -높이 * 1.9
 	var 허리 := -높이
 	var 아래 := 두께
-	var xs := [-d * 전경_번짐, 0.0, d * 깊이 * 0.35, d * (깊이 + 두께)]
-	var 알파 := [0.0, 전경_진하기 * 0.55, 전경_진하기, 1.0]
+	# 방 안쪽 번짐 → 입구(이미 0.8) → 입구에서 1/4 지점부터 완전한 어둠 → 굴 끝.
+	var xs := [-d * 전경_번짐, 0.0, d * 깊이 * 0.25, d * (깊이 + 두께)]
+	var 알파 := [0.0, 전경_진하기 * 0.8, 전경_진하기, 1.0]
 	for i in xs.size() - 1:
 		var xa: float = xs[i]
 		var xb: float = xs[i + 1]
@@ -433,7 +449,8 @@ func _draw() -> void:
 	#   "유리관 · 포탈" 처럼 읽혔다. 쳅터1 연결구는 얇은 벽 + 전경 그라데이션이라 상자가 없다.
 	#   → 천장·바닥 암반은 통로에 붙은 쪽만 진하고 바깥으로 옅어지게, 테두리선·아치선은 생략(전경 띠가 어둠을 맡는다).
 	if 쳅터1_전환:
-		_부드러운_암반(d, h, t, 중심x, 몸길이, 암반)
+		# 지형으로 메운 면은 암반 그림이 필요 없다(벽은 진짜 벽돌 지형이 맡는다). 안 메운 면만 그린다.
+		_부드러운_암반(d, h, t, 중심x, 몸길이, 암반, not _메움_위, not _메움_아래)
 		_통로_속(d, h, L)
 		return
 	# 바닥 — 콜리전은 두께 t 지만, 그림은 아래로 더 내려 지형에 파묻는다
@@ -504,18 +521,21 @@ func _draw() -> void:
 
 ## [2026-10-08] 쳅터1 방식 암반 — 통로 천장/바닥 면에서 멀어질수록 투명해지는 띠(위·아래 각 `두께 × 2.2`).
 ##   콜리전(천장·바닥 두께 t)이 있는 자리는 진하게 남겨 "막혀 있다" 는 읽히되, 바깥 가장자리 선이 생기지 않는다.
-func _부드러운_암반(d: float, h: float, t: float, 중심x: float, 몸길이: float, 암반: Color) -> void:
+func _부드러운_암반(d: float, h: float, t: float, 중심x: float, 몸길이: float, 암반: Color,
+		천장: bool = true, 바닥: bool = true) -> void:
 	var x0 := 중심x - 몸길이 * 0.5
 	var x1 := 중심x + 몸길이 * 0.5
 	var 번짐 := t * 2.2
 	var 진 := Color(암반.r, 암반.g, 암반.b, 0.92)
 	var 옅 := Color(암반.r, 암반.g, 암반.b, 0.0)
 	# 천장: 통로 윗면(-h) → 위로 번짐
-	draw_polygon(PackedVector2Array([Vector2(x0, -h - 번짐), Vector2(x1, -h - 번짐), Vector2(x1, -h), Vector2(x0, -h)]),
-		PackedColorArray([옅, 옅, 진, 진]))
+	if 천장:
+		draw_polygon(PackedVector2Array([Vector2(x0, -h - 번짐), Vector2(x1, -h - 번짐), Vector2(x1, -h), Vector2(x0, -h)]),
+			PackedColorArray([옅, 옅, 진, 진]))
 	# 바닥: 통로 바닥(0) → 아래로 번짐
-	draw_polygon(PackedVector2Array([Vector2(x0, 0.0), Vector2(x1, 0.0), Vector2(x1, 번짐), Vector2(x0, 번짐)]),
-		PackedColorArray([진, 진, 옅, 옅]))
+	if 바닥:
+		draw_polygon(PackedVector2Array([Vector2(x0, 0.0), Vector2(x1, 0.0), Vector2(x1, 번짐), Vector2(x0, 번짐)]),
+			PackedColorArray([진, 진, 옅, 옅]))
 
 
 ## [2026-10-08] 쳅터1 방식 통로 속 — 안쪽으로 갈수록 어두워지는 띠 + 저 끝 속빛(다음 지역의 기운)만. 선은 긋지 않는다.
@@ -532,3 +552,247 @@ func _통로_속(d: float, h: float, L: float) -> void:
 	for i in range(7, 0, -1):
 		var r := h * 0.55 * float(i) / 7.0
 		draw_circle(빛중심, r, Color(속빛.r, 속빛.g, 속빛.b, 0.10 * 맥동 * (1.0 - float(i) / 8.0)))
+
+
+# ============================================================================
+# [2026-10-08 Claude] 얇은 벽 — 하수도 통로 둘레의 직사각형 구멍을 메운다
+# ----------------------------------------------------------------------------
+# 도형님(v3): "하수도 지형의 직사각형 통로 구멍을 쳅터1 처럼 얇은 벽으로 다듬어."
+#   하수도 빌더는 통로 자리를 지형 없이 비워 두고(예: 2-1 입구 544×400), 옛 통로 그림이 그 구멍을 검은 암반으로 덮었다.
+#   쳅터1 방식에서는 그 구멍이 각진 상자로 보였다 → **통로 구멍 = 통로 높이의 길만 남기고 이웃 벽돌 지형으로 메운다.**
+#
+# ▣ 왜 씬 파일이 아니라 실행 때 메우나
+#   하수도 씬은 다른 작업자가 손으로 고친 값이 많다. 스크립트로 씬을 다시 저장하면 편집 불가 인스턴스 안쪽의
+#   덮어쓰기가 사라진 적이 있다(작업기록 2026-09-17 · `[editable]`). 씬을 열지 않고 같은 결과를 내려고
+#   **구멍 크기를 물리로 재서**(통로 안에서 위·아래·안쪽으로 레이) 맞닿은 벽 지형을 복제해 ㄷ자 모양으로 채운다.
+#   → 11 스테이지 전부, 앞으로 새로 짓는 하수도 스테이지에도 같은 규칙이 저절로 붙는다.
+# ▣ 안전장치: 구멍이 아니라 탁 트인 공간이면(레이가 900px 안에 지형을 못 만나면) 그쪽은 메우지 않는다.
+# ============================================================================
+const 얇은벽_최대 := 900.0
+
+func _얇은벽_만들기() -> void:
+	if Engine.is_editor_hint() or not 쳅터1_전환 or not 통로_구멍_메움 or not is_inside_tree():
+		return
+	# SS2D 지형 콜리전은 씬이 뜬 뒤 몇 물리 프레임 지나야 공간에 올라온다 → 잴 때까지 몇 번 더 본다.
+	for 시도 in 12:
+		await get_tree().physics_frame
+		if not is_inside_tree():
+			return
+		if _얇은벽_재고_메우기():
+			return
+
+
+## 한 번 재 보고 메웠으면(또는 메울 구멍이 없다고 확정되면) true.
+func _얇은벽_재고_메우기() -> bool:
+	var 공간 := get_world_2d().direct_space_state
+	var 제외: Array[RID] = []
+	for 이름 in ["바닥", "천장", "뒷벽"]:
+		var 몸 := get_node_or_null(이름) as CollisionObject2D
+		if 몸:
+			제외.append(몸.get_rid())
+	for p in get_tree().get_nodes_in_group("player"):
+		if p is CollisionObject2D:
+			제외.append((p as CollisionObject2D).get_rid())
+	var d := 방향()
+	var O := global_position
+	var h := 높이
+	var L := 깊이
+	# 위·아래: 입구 쪽·가운데·안쪽 세 곳에서 재어 가장 가까운 값(구멍이 계단져 있어도 지형을 넘지 않게).
+	var 위 := INF
+	var 아래 := INF
+	var 원본: Node2D = null
+	for f in [0.2, 0.5, 0.85]:
+		var x: float = O.x + d * L * float(f)
+		var r위 := _레이(공간, Vector2(x, O.y - h - 2.0), Vector2(x, O.y - h - 얇은벽_최대), 제외)
+		if not r위.is_empty():
+			위 = minf(위, O.y - (r위["position"] as Vector2).y)
+			if 원본 == null:
+				원본 = _복제할_지형(r위["collider"])
+		var r아래 := _레이(공간, Vector2(x, O.y + 2.0), Vector2(x, O.y + 얇은벽_최대), 제외)
+		if not r아래.is_empty():
+			아래 = minf(아래, (r아래["position"] as Vector2).y - O.y)
+			if 원본 == null:
+				원본 = _복제할_지형(r아래["collider"])
+	var r안 := _레이(공간, Vector2(O.x + d * L * 0.5, O.y - h * 0.5), Vector2(O.x + d * (L + 얇은벽_최대), O.y - h * 0.5), 제외)
+	var 안 := absf((r안["position"] as Vector2).x - O.x) if not r안.is_empty() else INF
+	if 원본 == null or 안 == INF:
+		얇은벽_정보 = {"메움": false, "이유": "구멍 경계를 못 찾음"}
+		return false
+	# ★메우는 것은 **빌더가 통로 때문에 판 자리만**: 위·아래 = 벽 두께(두께) 한 장, 안쪽 = 뒷벽 한 장 (+여유 32).
+	#   그보다 크게 재지면 그건 통로 구멍이 아니라 **사람이 다니는 방·수직 수로**다(2-6~2-8 입구 위 = 방, 2-10 출구 = 수로)
+	#   → 그쪽은 메우지 않고 통로 높이 그대로 둔다(그 면은 아래 `_부드러운_암반` 이 그린다).
+	var 여유 := 두께 + 32.0
+	if 위 == INF or 위 > h + 여유:
+		위 = h
+	if 아래 == INF or 아래 > 여유:
+		아래 = 0.0
+	if 안 > L + 여유:
+		안 = L
+	위 = maxf(위, h)
+	안 = maxf(안, L)
+	_메움_위 = 위 > h + 4.0
+	_메움_아래 = 아래 > 4.0
+	if not _메움_위 and not _메움_아래 and 안 <= L + 4.0:
+		얇은벽_정보 = {"메움": false, "이유": "구멍 없음"}
+		return true
+	var 점 := _메움_외곽(d, h, L, 위, 아래, 안)
+	_얇은벽 = _지형_복제(원본, 점)
+	얇은벽_정보 = {"메움": _얇은벽 != null, "위": 위, "아래": 아래, "안": 안, "원본": String(원본.name)}
+	queue_redraw()
+	return true
+
+
+## 통로 길(입구 바깥 2px ~ 뒷벽 끝, 통로 높이)과 겹치는 지형에서 그 길을 잘라 낸다. 겹친 지형을 찾았으면 true.
+##   스테이지 루트 아래 SS2D 지형의 **점 배열**과 길 사각형을 직접 겹쳐 본다(물리 공간을 쓰지 않는다).
+func _벽_뚫기() -> bool:
+	if not is_inside_tree():
+		return false
+	var d := 방향()
+	var O := global_position
+	var x0 := O.x - d * 2.0
+	var x1 := O.x + d * (깊이 + 두께)
+	var 길 := PackedVector2Array([
+		Vector2(minf(x0, x1), O.y - 높이), Vector2(maxf(x0, x1), O.y - 높이),
+		Vector2(maxf(x0, x1), O.y), Vector2(minf(x0, x1), O.y),
+	])
+	var 루트: Node = get_parent()
+	while 루트 != null and 루트.get_node_or_null("Player") == null and 루트.get_parent() != get_tree().root:
+		루트 = 루트.get_parent()
+	if 루트 == null:
+		return false
+	var 지형들: Array[Node2D] = []
+	for n in 루트.find_children("*", "", true, false):
+		if not n.has_method("set_point_array") or not n.has_method("get_point_array") or not (n is Node2D):
+			continue
+		var 배열: Variant = n.call("get_point_array")
+		if 배열 == null:
+			continue
+		var 전역 := (n as Node2D).global_transform * (배열 as SS2D_Point_Array).get_vertices()
+		if 전역.size() >= 3 and not Geometry2D.intersect_polygons(전역, 길).is_empty():
+			지형들.append(n as Node2D)
+	for 지 in 지형들:
+		_지형에서_잘라내기(지, 길)
+	벽뚫기_정보 = {"잘라낸_지형": 지형들.map(func(n): return String(n.name))}
+	return not 지형들.is_empty()
+
+
+var 벽뚫기_정보: Dictionary = {}
+
+func _지형에서_잘라내기(지: Node2D, 길_전역: PackedVector2Array) -> void:
+	var 배열: Variant = 지.call("get_point_array")
+	if 배열 == null:
+		return
+	var 로컬 := (배열 as SS2D_Point_Array).get_vertices()
+	if 로컬.size() > 2 and 로컬[0].is_equal_approx(로컬[로컬.size() - 1]):
+		로컬.remove_at(로컬.size() - 1)
+	var 변환 := 지.global_transform
+	var 길 := PackedVector2Array()
+	for p in 길_전역:
+		길.append(변환.affine_inverse() * p)
+	var 조각들 := Geometry2D.clip_polygons(로컬, 길)
+	# 구멍(시계 반대 방향 조각)이 생기면 길이 벽 한가운데에 떠 있다는 뜻 — 통로 입구가 벽 면에 붙어 있지 않다.
+	var 바깥: Array[PackedVector2Array] = []
+	for 조각 in 조각들:
+		if Geometry2D.is_polygon_clockwise(조각) == Geometry2D.is_polygon_clockwise(로컬):
+			바깥.append(조각)
+	if 바깥.is_empty() or 바깥.size() != 조각들.size():
+		push_warning("연결통로(%s): %s 를 깔끔하게 뚫지 못했다(조각 %d)" % [name, 지.name, 조각들.size()])
+		return
+	for i in 바깥.size():
+		var 대상: Node2D = 지 if i == 0 else 지.duplicate() as Node2D
+		if i > 0:
+			대상.name = String(지.name) + "_뚫림%d" % i
+			지.get_parent().add_child(대상)
+			대상.global_transform = 변환
+		var 새배열 := SS2D_Point_Array.new()
+		새배열.add_points(바깥[i])
+		새배열.close_shape()
+		대상.call("set_point_array", 새배열)
+		var 폴리 := 대상.get_node_or_null("StaticBody2D/CollisionPolygon2D") as CollisionPolygon2D
+		if 폴리:
+			폴리.polygon = 바깥[i]
+
+
+## 통로 길만 비운 메움 외곽(통로 원점 기준 로컬, 한 방향으로 도는 단순 다각형).
+##   위·아래 둘 다 = ㄷ자 · 한쪽만 = ㄱ자 · 뒤만 = 사각. 겹치는 변(두께 0)이 생기면 SS2D 삼각분할이 깨지므로 경우를 나눈다.
+func _메움_외곽(d: float, h: float, L: float, 위: float, 아래: float, 안: float) -> PackedVector2Array:
+	var 상 := 위 > h + 4.0
+	var 하 := 아래 > 4.0
+	var 뒤 := 안 > L + 4.0
+	var 점: Array[Vector2] = []
+	if 상 and 하:
+		점 = [Vector2(0, -위), Vector2(안, -위), Vector2(안, 아래), Vector2(0, 아래), Vector2(0, 0), Vector2(L, 0), Vector2(L, -h), Vector2(0, -h)]
+	elif 상:
+		점 = [Vector2(0, -위), Vector2(안, -위), Vector2(안, 0), Vector2(L, 0), Vector2(L, -h), Vector2(0, -h)]
+	elif 하:
+		점 = [Vector2(0, 0), Vector2(L, 0), Vector2(L, -h), Vector2(안, -h), Vector2(안, 아래), Vector2(0, 아래)]
+	elif 뒤:
+		점 = [Vector2(L, -h), Vector2(안, -h), Vector2(안, 0), Vector2(L, 0)]
+	var 결과 := PackedVector2Array()
+	for p in 점:
+		var q := Vector2(p.x * d, p.y)
+		if 결과.is_empty() or not 결과[결과.size() - 1].is_equal_approx(q):
+			결과.append(q)
+	# 뒤 메움이 없으면(안 == L) 같은 x 의 점이 일직선으로 겹친다 — 가운데 점을 지운다.
+	var 정리 := PackedVector2Array()
+	var n := 결과.size()
+	for i in n:
+		var a := 결과[(i - 1 + n) % n]
+		var b := 결과[i]
+		var c := 결과[(i + 1) % n]
+		if absf((b - a).cross(c - b)) > 0.01:
+			정리.append(b)
+	if d < 0.0:
+		정리.reverse()
+	return 정리
+
+
+func _레이(공간: PhysicsDirectSpaceState2D, a: Vector2, b: Vector2, 제외: Array[RID]) -> Dictionary:
+	var q := PhysicsRayQueryParameters2D.create(a, b, 1, 제외)
+	q.collide_with_areas = false
+	return 공간.intersect_ray(q)
+
+
+## 맞은 콜리전에서 SS2D 지형 노드로 거슬러 올라간다. 내부 무늬(하수도_내부벽돌)·유령 지형은 복제하지 않는다
+##   (무늬 사각형이 원본 자리 기준이라 옮기면 엉뚱한 곳에 흰 벽돌이 생긴다) → 같은 부모의 평범한 검정 지형을 대신 쓴다.
+func _복제할_지형(맞은것: Object) -> Node2D:
+	var n := 맞은것 as Node
+	while n != null and not n.has_method("set_point_array"):
+		n = n.get_parent()
+	if n == null:
+		return null
+	if _복제_가능(n):
+		return n as Node2D
+	for 형제 in n.get_parent().get_children():
+		if 형제.has_method("set_point_array") and _복제_가능(형제):
+			return 형제 as Node2D
+	return null
+
+
+func _복제_가능(n: Node) -> bool:
+	if n.get("내부_벽돌영역") != null or bool(n.get("무색일때_통과")):
+		return false
+	# ⚠ 지형의 `시작상태` 는 자기 enum(무색 0 · 검정 1 · 흰색 2 · 회색 3)이다 — ColorDefs.BLACK(0)과 다르다.
+	var 상태: Variant = n.get("시작상태")
+	return 상태 == null or int(상태) == 1
+
+
+func _지형_복제(원본: Node2D, 로컬점: PackedVector2Array) -> Node2D:
+	var 새 := 원본.duplicate() as Node2D
+	if 새 == null:
+		return null
+	새.name = "얇은벽_" + String(name)
+	원본.get_parent().add_child(새)
+	새.global_position = global_position
+	var 배열 := SS2D_Point_Array.new()
+	배열.add_points(로컬점)
+	배열.close_shape()
+	새.call("set_point_array", 배열)
+	var 폴리 := 새.get_node_or_null("StaticBody2D/CollisionPolygon2D") as CollisionPolygon2D
+	if 폴리:
+		폴리.polygon = 로컬점
+	# 화면을 채우는 벽이다 — 칠하기 대상이 아니다(맵 칠 비율·탄약 계산에 끼지 않게).
+	if 새.get("칠하기_허용") != null:
+		새.set("칠하기_허용", false)
+	새.set_meta("role", "채움")
+	return 새

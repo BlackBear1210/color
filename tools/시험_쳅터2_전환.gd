@@ -166,10 +166,26 @@ func run() -> void:
 	var 지도2 := await 넘어가기(s23, 통로(s23, "입구통로"))
 	check(지도2.scene_file_path == 게임진행.지도_씬, "2-3 입구로 되돌아가면 지도")
 	check(게임진행.클리어함("2-3") == 이전_2_3, "되돌아가기는 클리어로 치지 않음")
-	전경전환.씬으로_들어가기(지도2, 게임진행.씬경로(게임진행.칸_찾기("2-9")), "입구통로")
-	await 씬_바뀔때까지(지도2, 120)
+	# ── ⑤ [밤] 새로 넣은 입구 통로(2-9 · 2-11) — 벽을 뚫고 걸어 나오고, 다시 들어가면 지도 ──
+	var 지도_ := 지도2
+	for 칸 in ["2-9", "2-11"]:
+		전경전환.씬으로_들어가기(지도_, 게임진행.씬경로(게임진행.칸_찾기(칸)), "입구통로")
+		await 씬_바뀔때까지(지도_, 120)
+		await 전환_끝날때까지(240)
+		var 씬 := current_scene
+		check(씬.scene_file_path.ends_with("stage_%s.tscn" % 칸), "지도 → %s" % 칸)
+		var 입구 := 통로(씬, "입구통로")
+		check(입구 != null and not (입구.get("벽뚫기_정보") as Dictionary).is_empty(), "%s 입구 통로 벽 뚫림 %s" % [칸, 입구.get("벽뚫기_정보") if 입구 else ""])
+		걸어나옴_확인(씬, "입구통로", "%s 새 입구 통로에서 걸어 나옴" % 칸)
+		check(not bool(씬.call("_사망_판정")), "%s 도착 후 생존" % 칸)
+		await wait(60)
+		await shot("08_%s_새입구" % 칸)
+		지도_ = await 넘어가기(씬, 입구)
+		check(지도_.scene_file_path == 게임진행.지도_씬, "%s 입구로 되돌아가면 지도" % 칸)
+	전경전환.씬으로_들어가기(지도_, 게임진행.씬경로(게임진행.칸_찾기("2-10")), "입구통로")
+	await 씬_바뀔때까지(지도_, 120)
 	await 전환_끝날때까지(150)
-	check(current_scene.scene_file_path.ends_with("stage_2-9.tscn") and not 전경전환.진행중인가(), "입구 없는 2-9 도 전환이 멈추지 않음")
+	check(current_scene.scene_file_path.ends_with("stage_2-10.tscn") and not 전경전환.진행중인가(), "입구 없는 2-10 도 전환이 멈추지 않음")
 
 	print("CHAPTER2 TRANSITION FAILURES ", failures)
 	게임진행.지도_모드 = 0
