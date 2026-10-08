@@ -45,6 +45,10 @@ const 주철_부품 = preload("res://assets/textures/obstacles/switch/cast_iron_
 ## 예: Vector2(0, 800)은 아래 800px, Vector2(320, 0)은 오른쪽 320px 이동이다.
 @export var 대상_이동량들: Array[Vector2] = []
 @export_range(40.0, 1200.0) var 이동속도: float = 360.0
+## ★[2026-10-08 Claude · 2-5] 대상마다 "켜진 뒤 몇 초 있다가 움직이기 시작하나". 비워 두면 전부 0(예전처럼 한꺼번에).
+##   왜: 2-5 도면 "발판_1 이 홀드가 되면 맨 아래 검은지형_1 부터 _5 까지 하나씩 튀어나와 큰 계단을 이룬다".
+##   꺼질 때는 거꾸로(지연이 큰 것부터) 들어간다 — 맨 위 계단이 먼저 들어가야 아래 계단이 위 계단을 뚫고 지나가 보이지 않는다.
+@export var 대상_지연들: Array[float] = []
 
 var _감지: Area2D
 var _대상_노드들: Array[Node2D] = []
@@ -52,6 +56,10 @@ var _대상_시작위치들: Array[Vector2] = []
 var _기억된_눌림 := false
 var _활성 := false
 var _눌림_표현 := 0.0
+## 대상마다 지금 "나가 있어야 하나" — `대상_지연들` 이 있을 때만 활성과 달라진다.
+var _대상_켜짐: Array[bool] = []
+## 활성이 마지막으로 바뀐 뒤 흐른 시간(초). 지연 판정에 쓴다.
+var _전환_경과 := 0.0
 
 
 func _ready() -> void:
@@ -71,7 +79,9 @@ func _physics_process(delta: float) -> void:
 		새_활성 = false
 	if 새_활성 != _활성:
 		_활성 = 새_활성
+		_전환_경과 = 0.0
 		queue_redraw()
+	_전환_경과 += delta
 	# 활성 전환 한 번만 다시 그리면 눌림/복귀 중간 프레임이 멎으므로 이동 중에도 갱신한다.
 	var 이전_표현 := _눌림_표현
 	_눌림_표현 = move_toward(_눌림_표현, 1.0 if 지금_눌림 else 0.0, delta * 8.0)
@@ -83,6 +93,7 @@ func _physics_process(delta: float) -> void:
 func _대상_연결_갱신() -> void:
 	_대상_노드들.clear()
 	_대상_시작위치들.clear()
+	_대상_켜짐.clear()
 	for 경로 in 대상들:
 		var 대상 := get_node_or_null(경로) as Node2D
 		if 대상 == null:
@@ -96,6 +107,22 @@ func _대상_연결_갱신() -> void:
 		대상.set_meta("pressure_button_origin", 대상.position)
 		_대상_노드들.append(대상)
 		_대상_시작위치들.append(대상.position)
+		_대상_켜짐.append(false)
+
+
+## i 번째 대상이 지금 나가 있어야 하나. 지연이 없으면 활성 그대로다(예전 동작).
+func _대상_나감(i: int) -> bool:
+	if 대상_지연들.is_empty():
+		return _활성
+	var 지연 := 대상_지연들[i] if i < 대상_지연들.size() else 0.0
+	var 최대 := 0.0
+	for v in 대상_지연들:
+		최대 = maxf(최대, v)
+	if _활성 and _전환_경과 >= 지연:
+		_대상_켜짐[i] = true
+	elif not _활성 and _전환_경과 >= 최대 - 지연:
+		_대상_켜짐[i] = false
+	return _대상_켜짐[i]
 
 
 func _대상_이동(delta: float) -> void:
@@ -104,7 +131,7 @@ func _대상_이동(delta: float) -> void:
 		if not is_instance_valid(대상):
 			continue
 		var 이동량 := 대상_이동량들[i] if i < 대상_이동량들.size() else Vector2.ZERO
-		var 목표 := _대상_시작위치들[i] + (이동량 if _활성 else Vector2.ZERO)
+		var 목표 := _대상_시작위치들[i] + (이동량 if _대상_나감(i) else Vector2.ZERO)
 		# 물리 프레임에서 Node2D를 움직여 SS2D 자식 충돌도 그림과 같은 위치로 갱신한다.
 		# ★[2026-09-30 Claude 실측] 이미 목표에 있으면 **대입하지 않는다.** 같은 값을 넣어도 Godot 는
 		#   TRANSFORM_CHANGED 를 보내고, 하수도 지형은 그걸 받아 이웃 지형 전부에 마감 재계산을 퍼뜨렸다

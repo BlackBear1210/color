@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>2-5 · 잠그거나 돌리거나 도안</title>
+<title>2-5 · 계단을 꺼내라 도안</title>
 <style>
 :root{--bg:#16181c;--panel:#1f2228;--fg:#e9e9e6;--dim:#9aa0a8;--air:#3a3f47;--line:#2c3037;--haz:#ff5d5d;--acc:#ff9d2e}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 "Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
@@ -40,150 +40,272 @@ nav{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 8px;font-size:13px}nav a
 .src{color:#6c727b;font-size:12px;margin-top:8px}
 @media (max-width:700px){header,.bar{padding-left:16px;padding-right:16px}#wrap{padding:8px}}
 </style></head><body>
-<header><h1>2-5 · 잠그거나 돌리거나 — 도안</h1><p>레버로 물길을 잠그거나 돌린다. 펌프실에서 위/아래 두 갈래. 끝은 유령 두 장을 반대색으로 칠해 건너는 종합. <span class="src">출처: scenes/world_2_클로드/작업/stage_2-5_작업.md · docs/작업기록_2026-09-05_Codex_하수도_2-5_제어레버.md(이후 레버 수가 바뀜 — 지금 씬 기준)</span></p></header>
+<header><h1>2-5 · 계단을 꺼내라 — 도안</h1><p>★[2026-10-08 v3] 도형님 uvtt 도면 stage_2-5_176x107(한 칸 32px · 5,632×3,424). 아래 → 위로 오른다. 양동이를 페인트로 채워 발판_1(누르는 동안만)에 올리면 검은지형 1~5 가 왼벽에서 차례로 튀어나와 계단 · 복도 가시 위 검·흰 공중 지형 · 흰색 지형 · 곁길의 검은 열쇠가 도착 문을 연다 · 벨브로 흰색물_1 을 끄고 검·흰 격자. 정답 발수 3. <span class="src">출처: tools/build_하수도_2-5.gd 머리말 · docs/작업기록_2026-10-08_Claude_2-5_uvtt도면_재제작.md</span></p></header>
 <nav><a href="index.html">← 목록</a><a href="stage_2-1_도안.html" class="">2-1</a><a href="stage_2-2_도안.html" class="">2-2</a><a href="stage_2-3_도안.html" class="">2-3</a><a href="stage_2-4_도안.html" class="">2-4</a><a href="stage_2-5_도안.html" class="on">2-5</a><a href="stage_2-6_도안.html" class="">2-6</a><a href="stage_2-7_도안.html" class="">2-7</a><a href="stage_2-8_도안.html" class="">2-8</a><a href="stage_2-9_도안.html" class="">2-9</a></nav>
 <div class="bar">
-<span>경로:</span><label style="color:#ff9d2e"><input type="checkbox" data-r="route-0" checked> 정답 <small style="color:var(--dim)">(칠하기 2회 · 색 전환 3회)</small></label>
+<span>경로:</span><label style="color:#ff9d2e"><input type="checkbox" data-r="route-0" checked> 정답 <small style="color:var(--dim)">(칠하기 3회 · 색 전환 12회)</small></label>
 <label><input type="checkbox" id="t-labels" checked> 이름표</label>
 <label><input type="checkbox" id="t-grid" checked> 좌표 격자</label>
 <button data-z="1">맞춤</button><button data-z="1.8">1.8×</button><button data-z="3">3×</button>
-<span class="stats">8672×1696 · 물 5 · 호퍼 1 · 레버 4 · CP 3 · 유령 2</span>
+<span class="stats">5632×3424 · 물 2 · 가시 2 · 톱 3 · 격자 16 · 레버 1 · 버튼 1 · 양동이 1 · CP 3 · 유령 2</span>
 </div>
-<div id="wrap"><svg id="map" viewBox="-132.0 -520.0 9192.0 2476.0" xmlns="http://www.w3.org/2000/svg">
+<div id="wrap"><svg id="map" viewBox="-244.0 -488.0 6152.0 4204.0" xmlns="http://www.w3.org/2000/svg">
 <defs>
 <pattern id="ghost" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="40" height="40" fill="rgba(180,140,255,.18)"/><line x1="0" y1="0" x2="0" y2="40" stroke="rgba(190,150,255,.55)" stroke-width="10"/></pattern>
-<clipPath id="frame"><rect x="128.0" y="0.0" width="8672.0" height="1696.0"/></clipPath>
+<clipPath id="frame"><rect x="16.0" y="32.0" width="5632.0" height="3424.0"/></clipPath>
 <marker id="ahbig" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker>
 <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
 <linearGradient id="swapfill" x1="0" x2="1"><stop offset=".5" stop-color="#08090a"/><stop offset=".5" stop-color="#eeeeea"/></linearGradient></defs>
-<rect x="128.0" y="0.0" width="8672.0" height="1696.0" fill="var(--air)"/>
+<rect x="16.0" y="32.0" width="5632.0" height="3424.0" fill="var(--air)"/>
 <g class="grid">
-<line x1="128" y1="0.0" x2="128" y2="1696.0"/><text x="140" y="1786.0">128</text>
-<line x1="640" y1="0.0" x2="640" y2="1696.0"/><text x="652" y="1786.0">640</text>
-<line x1="1152" y1="0.0" x2="1152" y2="1696.0"/><text x="1164" y="1786.0">1152</text>
-<line x1="1664" y1="0.0" x2="1664" y2="1696.0"/><text x="1676" y="1786.0">1664</text>
-<line x1="2176" y1="0.0" x2="2176" y2="1696.0"/><text x="2188" y="1786.0">2176</text>
-<line x1="2688" y1="0.0" x2="2688" y2="1696.0"/><text x="2700" y="1786.0">2688</text>
-<line x1="3200" y1="0.0" x2="3200" y2="1696.0"/><text x="3212" y="1786.0">3200</text>
-<line x1="3712" y1="0.0" x2="3712" y2="1696.0"/><text x="3724" y="1786.0">3712</text>
-<line x1="4224" y1="0.0" x2="4224" y2="1696.0"/><text x="4236" y="1786.0">4224</text>
-<line x1="4736" y1="0.0" x2="4736" y2="1696.0"/><text x="4748" y="1786.0">4736</text>
-<line x1="5248" y1="0.0" x2="5248" y2="1696.0"/><text x="5260" y="1786.0">5248</text>
-<line x1="5760" y1="0.0" x2="5760" y2="1696.0"/><text x="5772" y="1786.0">5760</text>
-<line x1="6272" y1="0.0" x2="6272" y2="1696.0"/><text x="6284" y="1786.0">6272</text>
-<line x1="6784" y1="0.0" x2="6784" y2="1696.0"/><text x="6796" y="1786.0">6784</text>
-<line x1="7296" y1="0.0" x2="7296" y2="1696.0"/><text x="7308" y="1786.0">7296</text>
-<line x1="7808" y1="0.0" x2="7808" y2="1696.0"/><text x="7820" y="1786.0">7808</text>
-<line x1="8320" y1="0.0" x2="8320" y2="1696.0"/><text x="8332" y="1786.0">8320</text>
-<line x1="128.0" y1="0" x2="8800.0" y2="0"/><text x="108.0" y="28" text-anchor="end">0</text>
-<line x1="128.0" y1="512" x2="8800.0" y2="512"/><text x="108.0" y="540" text-anchor="end">512</text>
-<line x1="128.0" y1="1024" x2="8800.0" y2="1024"/><text x="108.0" y="1052" text-anchor="end">1024</text>
-<line x1="128.0" y1="1536" x2="8800.0" y2="1536"/><text x="108.0" y="1564" text-anchor="end">1536</text>
+<line x1="16" y1="32.0" x2="16" y2="3456.0"/><text x="28" y="3546.0">16</text>
+<line x1="528" y1="32.0" x2="528" y2="3456.0"/><text x="540" y="3546.0">528</text>
+<line x1="1040" y1="32.0" x2="1040" y2="3456.0"/><text x="1052" y="3546.0">1040</text>
+<line x1="1552" y1="32.0" x2="1552" y2="3456.0"/><text x="1564" y="3546.0">1552</text>
+<line x1="2064" y1="32.0" x2="2064" y2="3456.0"/><text x="2076" y="3546.0">2064</text>
+<line x1="2576" y1="32.0" x2="2576" y2="3456.0"/><text x="2588" y="3546.0">2576</text>
+<line x1="3088" y1="32.0" x2="3088" y2="3456.0"/><text x="3100" y="3546.0">3088</text>
+<line x1="3600" y1="32.0" x2="3600" y2="3456.0"/><text x="3612" y="3546.0">3600</text>
+<line x1="4112" y1="32.0" x2="4112" y2="3456.0"/><text x="4124" y="3546.0">4112</text>
+<line x1="4624" y1="32.0" x2="4624" y2="3456.0"/><text x="4636" y="3546.0">4624</text>
+<line x1="5136" y1="32.0" x2="5136" y2="3456.0"/><text x="5148" y="3546.0">5136</text>
+<line x1="5648" y1="32.0" x2="5648" y2="3456.0"/><text x="5660" y="3546.0">5648</text>
+<line x1="16.0" y1="32" x2="5648.0" y2="32"/><text x="-4.0" y="60" text-anchor="end">32</text>
+<line x1="16.0" y1="544" x2="5648.0" y2="544"/><text x="-4.0" y="572" text-anchor="end">544</text>
+<line x1="16.0" y1="1056" x2="5648.0" y2="1056"/><text x="-4.0" y="1084" text-anchor="end">1056</text>
+<line x1="16.0" y1="1568" x2="5648.0" y2="1568"/><text x="-4.0" y="1596" text-anchor="end">1568</text>
+<line x1="16.0" y1="2080" x2="5648.0" y2="2080"/><text x="-4.0" y="2108" text-anchor="end">2080</text>
+<line x1="16.0" y1="2592" x2="5648.0" y2="2592"/><text x="-4.0" y="2620" text-anchor="end">2592</text>
+<line x1="16.0" y1="3104" x2="5648.0" y2="3104"/><text x="-4.0" y="3132" text-anchor="end">3104</text>
 </g>
 <g class="zones">
-<rect x="138" y="10" width="2140" height="1676" rx="24" class="room"/>
-<rect x="2298" y="10" width="2292" height="1676" rx="24" class="room"/>
-<rect x="4610" y="10" width="2068" height="1676" rx="24" class="room"/>
-<rect x="6698" y="10" width="2092" height="1676" rx="24" class="room"/>
+<rect x="1066" y="2634" width="1628" height="460" rx="24" class="room"/>
+<rect x="730" y="2058" width="1964" height="592" rx="24" class="room"/>
+<rect x="426" y="1482" width="2540" height="428" rx="24" class="room"/>
+<rect x="2986" y="1310" width="1580" height="280" rx="24" class="room"/>
+<rect x="538" y="330" width="4988" height="1180" rx="24" class="room"/>
 </g>
 <g clip-path="url(#frame)">
-<polygon points="-1408,1120 1856,1120 1856,1024 1984,1024 1984,928 2112,928 2112,832 2240,832 2240,736 2368,736 2368,1120 5696,1120 5696,3008 -1408,3008 -1408,1120" class="tb"><title>SS_CEM_FLOOR_1 — 검정 · 기본지형 · 플랫폼 · 7104×2272</title></polygon>
-<polygon points="-1408,-1536 9856,-1536 9856,0 -1408,0 -1408,-1536" class="tb"><title>SS_WALL_CEIL_1 — 검정 · 기본지형 · 플랫폼 · 11264×1536</title></polygon>
-<polygon points="-1408,0 128,0 128,1120 -1408,1120 -1408,0" class="tb"><title>SS_WALL_END_L — 검정 · 기본지형 · 플랫폼 · 1536×1120</title></polygon>
-<polygon points="8800,0 9856,0 9856,3008 8800,3008 8800,0" class="tw"><title>SS_WALL_END_R — 흰색 · 기본지형 · 플랫폼 · 1056×3008</title></polygon>
-<polygon points="2532,736 3068,736 3072,740 3072,800 2528,800 2528,741 2532,736" class="tw"><title>B_상부_흰수로 — 흰색 · 기본지형 · 플랫폼 · 544×64</title></polygon>
-<polygon points="3236,736 3388,736 3392,740 3392,800 3232,800 3232,741 3236,736" class="tb"><title>B_상부_밸브실 — 검정 · 기본지형 · 플랫폼 · 160×64</title></polygon>
-<polygon points="3428,832 3612,832 3616,836 3616,896 3424,896 3424,837 3428,832" class="tb"><title>B_복귀계단_상 — 검정 · 기본지형 · 플랫폼 · 192×64</title></polygon>
-<polygon points="3700,928 3884,928 3888,932 3888,992 3696,992 3696,933 3700,928" class="tb"><title>B_복귀계단_중 — 검정 · 기본지형 · 플랫폼 · 192×64</title></polygon>
-<polygon points="3972,1024 4156,1024 4160,1028 4160,1088 3968,1088 3968,1029 3972,1024" class="tb"><title>B_복귀계단_하 — 검정 · 기본지형 · 플랫폼 · 192×64</title></polygon>
-<polygon points="5696,1216 5888,1216 5888,1312 6080,1312 6080,1408 6272,1408 6272,1504 6688,1504 6688,3008 5696,3008 5696,1216" class="tb"><title>C_회수계단 — 검정 · 기본지형 · 플랫폼 · 992×1792</title></polygon>
-<polygon points="5892,1120 6092,1120 6096,1124 6096,1184 5888,1184 5888,1125 5892,1120" class="tghost"><title>C_유령_검정 — 유령 발판(칠해야 밟힘) · 기본지형 · 플랫폼 · 208×64</title></polygon>
-<polygon points="6292,1120 6492,1120 6496,1124 6496,1184 6288,1184 6288,1125 6292,1120" class="tghost"><title>C_유령_흰색 — 유령 발판(칠해야 밟힘) · 기본지형 · 플랫폼 · 208×64</title></polygon>
-<polygon points="6688,1120 8800,1120 8800,3008 6688,3008 6688,1120" class="tw"><title>SS_CEM_FLOOR_6 — 흰색 · 기본지형 · 플랫폼 · 2112×1888</title></polygon>
+<polygon points="352,128 2384,128 2384,320 528,320 528,1312 1376,1312 1376,1344 2016,1344 2016,1408 2128,1408 2128,1456 2352,1456 2352,1472 2480,1472 2480,1488 2608,1488 2608,1520 2064,1520 2064,1472 416,1472 416,1984 512,1984 512,2048 720,2048 720,2656 1232,2656 1232,2640 1456,2640 1456,2848 1072,2848 1072,2784 528,2784 528,3184 1072,3184 1072,3088 2688,3088 2688,2064 1632,2064 1632,2048 1536,2048 1536,2032 1424,2032 1424,2016 1360,2016 1360,2000 1232,2000 1232,1968 944,1968 944,1936 736,1936 736,1920 608,1920 608,1888 1232,1888 1232,1840 1456,1840 1456,1824 1664,1824 1664,1872 2736,1872 2736,1920 2816,1920 2816,1872 2864,1872 2864,1888 2880,1888 2880,1872 2928,1872 2928,1888 2912,1888 2912,1904 2928,1904 2928,2016 2976,2016 2976,3344 112,3344 112,1296 128,1296 128,672 352,672 352,128" class="tb"><title>아래층_큰바위 — 검정 · 기본지형 · 플랫폼 · 2864×3216</title></polygon>
+<polygon points="4592,176 5536,176 5536,448 4992,448 4992,304 4592,304 4592,176" class="tb"><title>도착_천장바위 — 검정 · 기본지형 · 플랫폼 · 944×272</title></polygon>
+<polygon points="3296,752 4992,752 4992,848 5536,848 5536,976 5104,976 5104,1328 4960,1328 4960,1584 3840,1584 3840,1504 4416,1504 4416,1488 4544,1488 4544,1328 4416,1328 4416,976 2800,976 2800,864 3024,864 3024,816 3296,816 3296,752" class="tb"><title>도착_바위 — 검정 · 기본지형 · 플랫폼 · 2736×832</title></polygon>
+<polygon points="2512,928 2720,928 2720,992 2512,992 2512,928" class="tb"><title>윗방_디딤돌 — 검정 · 기본지형 · 플랫폼 · 208×64</title></polygon>
+<polygon points="3056,1504 3440,1504 3440,1584 3056,1584 3056,1504" class="tb"><title>낙사존_발판1 — 검정 · 기본지형 · 플랫폼 · 384×80</title></polygon>
+<polygon points="3552,1504 3744,1504 3744,1584 3552,1584 3552,1504" class="tb"><title>낙사존_발판2 — 검정 · 기본지형 · 플랫폼 · 192×80</title></polygon>
+<polygon points="1696,1744 1840,1744 1840,1792 1696,1792 1696,1744" class="tb"><title>복도_검정공중1 — 검정 · 기본지형 · 플랫폼 · 144×48</title></polygon>
+<polygon points="2160,1744 2288,1744 2288,1792 2160,1792 2160,1744" class="tb"><title>복도_검정공중2 — 검정 · 기본지형 · 플랫폼 · 128×48</title></polygon>
+<polygon points="1584,2320 1808,2320 1808,2352 1936,2352 1936,2320 2144,2320 2144,2480 1584,2480 1584,2320" class="tb"><title>가운데방_블록 — 검정 · 기본지형 · 플랫폼 · 560×160</title></polygon>
+<polygon points="2720,1520 2976,1520 2976,2016 2928,2016 2928,1904 2912,1904 2912,1888 2928,1888 2928,1872 2880,1872 2880,1888 2864,1888 2864,1872 2816,1872 2816,1920 2736,1920 2736,1872 2720,1872 2720,1520" class="tw"><title>흰색지형 — 흰색 · 기본지형 · 플랫폼 · 256×496</title></polygon>
+<polygon points="2384,1712 2512,1712 2512,1760 2384,1760 2384,1712" class="tw"><title>복도_흰공중2 — 흰색 · 기본지형 · 플랫폼 · 128×48</title></polygon>
+<polygon points="1936,1744 2064,1744 2064,1792 1936,1792 1936,1744" class="tw"><title>복도_흰공중1 — 흰색 · 기본지형 · 플랫폼 · 128×48</title></polygon>
+<polygon points="16,32 5648,32 5648,128 5536,128 5536,176 4592,176 4592,128 352,128 352,672 112,672 112,3344 2976,3344 2976,3456 16,3456 16,32" class="tb"><title>가장자리_채움 — 검정 · 기본지형 · 채움 · 5632×3424</title></polygon>
+<polygon points="1200,2368 1328,2368 1328,2416 1200,2416 1200,2368" class="tghost"><title>투명발판_1 — 유령 발판(칠해야 밟힘) · 기본지형 · 플랫폼 · 128×48</title></polygon>
+<polygon points="1408,2336 1520,2336 1520,2384 1408,2384 1408,2336" class="tghost"><title>투명발판_2 — 유령 발판(칠해야 밟힘) · 기본지형 · 플랫폼 · 112×48</title></polygon>
+<polygon points="-144,2272 720,2272 720,2320 -144,2320 -144,2272" class="tb"><title>검은지형_1 — 검정 · 버튼이 움직이는 지형(문·다리·땅) · 플랫폼 · 864×48</title></polygon>
+<polygon points="-16,2224 720,2224 720,2272 -16,2272 -16,2224" class="tb"><title>검은지형_2 — 검정 · 버튼이 움직이는 지형(문·다리·땅) · 플랫폼 · 736×48</title></polygon>
+<polygon points="112,2176 720,2176 720,2224 112,2224 112,2176" class="tb"><title>검은지형_3 — 검정 · 버튼이 움직이는 지형(문·다리·땅) · 플랫폼 · 608×48</title></polygon>
+<polygon points="224,2128 720,2128 720,2176 224,2176 224,2128" class="tb"><title>검은지형_4 — 검정 · 버튼이 움직이는 지형(문·다리·땅) · 플랫폼 · 496×48</title></polygon>
+<polygon points="336,2080 720,2080 720,2128 336,2128 336,2080" class="tb"><title>검은지형_5 — 검정 · 버튼이 움직이는 지형(문·다리·땅) · 플랫폼 · 384×48</title></polygon>
+<polygon points="4992,544 5088,544 5088,752 4992,752 4992,544" class="tb"><title>도착_문 — 검정 · 버튼이 움직이는 지형(문·다리·땅) · 플랫폼 · 96×208</title></polygon>
 </g>
 <g class="labels">
-<text x="5992.0" y="1098.0" text-anchor="middle" class="lbl ghost">유령 유령 · 검정 2발</text>
-<text x="6392.0" y="1098.0" text-anchor="middle" class="lbl ghost">유령 유령 · 흰색 2발</text>
+<text x="1264.0" y="2346.0" text-anchor="middle" class="lbl ghost">유령 1 · 검정 1발</text>
+<text x="1464.0" y="2314.0" text-anchor="middle" class="lbl ghost">유령 2 · 검정 1발</text>
 </g>
 <g class="water">
-<rect x="1104.0" y="352.0" width="448.0" height="832.0" class="wf" fill="#f4f6f8"><title>F1_첫길막_흰물 — 물 흰색 · 폭 448 · 길이 832 · 켜짐</title></rect>
-<path d="M880.0 1184.0 q224.0 -30 448.0 0 q224.0 30 448.0 0" class="splash"/>
-<text x="1568.0" y="382.0" transform="rotate(90 1568.0 382.0)" class="lbl water haz">F1 흰색 물 · 검정 몸 사망</text>
-<rect x="2576.0" y="864.0" width="448.0" height="336.0" class="wf" fill="#f4f6f8"><title>F2A_흰길막 — 물 흰색 · 폭 448 · 길이 336 · 켜짐</title></rect>
-<path d="M2352.0 1200.0 q224.0 -30 448.0 0 q224.0 30 448.0 0" class="splash"/>
-<text x="3040.0" y="894.0" transform="rotate(90 3040.0 894.0)" class="lbl water haz">F2A 흰색 물 · 검정 몸 사망</text>
-<rect x="2576.0" y="288.0" width="448.0" height="512.0" class="wf off" fill="#050506"><title>F2B_검정배수 — 물 검정 · 폭 448 · 길이 512 · 꺼짐(호퍼·레버가 켠다)</title></rect>
-<path d="M2352.0 800.0 q224.0 -30 448.0 0 q224.0 30 448.0 0" class="splash"/>
-<text x="3040.0" y="318.0" transform="rotate(90 3040.0 318.0)" class="lbl water haz">F2B 검정 물 · 흰 몸 사망 · 처음엔 꺼짐</text>
-<rect x="4176.0" y="352.0" width="448.0" height="832.0" class="wf" fill="#f4f6f8"><title>F3_두번째길막 — 물 흰색 · 폭 448 · 길이 832 · 켜짐</title></rect>
-<path d="M3952.0 1184.0 q224.0 -30 448.0 0 q224.0 30 448.0 0" class="splash"/>
-<text x="4640.0" y="382.0" transform="rotate(90 4640.0 382.0)" class="lbl water haz">F3 흰색 물 · 검정 몸 사망</text>
-<rect x="5768.0" y="576.0" width="448.0" height="624.0" class="wf" fill="#f4f6f8"><title>F4_레버앞_흰물 — 물 흰색 · 폭 448 · 길이 624 · 켜짐</title></rect>
-<path d="M5544.0 1200.0 q224.0 -30 448.0 0 q224.0 30 448.0 0" class="splash"/>
-<text x="6232.0" y="606.0" transform="rotate(90 6232.0 606.0)" class="lbl water haz">F4 흰색 물 · 검정 몸 사망</text>
+<rect x="1728.0" y="320.0" width="192.0" height="1024.0" class="wf" fill="#f4f6f8"><title>흰색물_1 — 물 흰색 · 폭 192 · 길이 1024 · 켜짐</title></rect>
+<path d="M1632.0 1344.0 q96.0 -30 192.0 0 q96.0 30 192.0 0" class="splash"/>
+<text x="1936.0" y="350.0" transform="rotate(90 1936.0 350.0)" class="lbl water haz">흰색물 흰색 물 · 검정 몸 사망</text>
+<rect x="2528.0" y="2064.0" width="160.0" height="1024.0" class="wf" fill="#f4f6f8"><title>흰색물_2 — 물 흰색 · 폭 160 · 길이 1024 · 켜짐</title></rect>
+<path d="M2448.0 3088.0 q80.0 -30 160.0 0 q80.0 30 160.0 0" class="splash"/>
+<text x="2704.0" y="2094.0" transform="rotate(90 2704.0 2094.0)" class="lbl water haz">흰색물 흰색 물 · 검정 몸 사망</text>
 </g>
 <g class="devices">
-<g class="lever"><line x1="864.0" y1="1056.0" x2="894.0" y2="966.0"/><circle cx="894.0" cy="966.0" r="20"/><title>L1_원형_첫밸브 — 레버 직선(갈래 A/B)</title></g><text x="864.0" y="926.0" text-anchor="middle" class="lbl leverl">L1 원형 첫밸브</text>
-<path d="M894.0 966.0 Q1096.0 102.0 1328.0 392.0" class="leverlink" marker-end="url(#ah)"/>
-<g class="lever"><line x1="2288.0" y1="672.0" x2="2318.0" y2="582.0"/><circle cx="2318.0" cy="582.0" r="20"/><title>L2_직선_갈래선택 — 레버 직선(갈래 A/B)</title></g><text x="2288.0" y="542.0" text-anchor="middle" class="lbl leverl">L2 직선 갈래선택</text>
-<path d="M2318.0 582.0 Q2544.0 422.0 2800.0 904.0" class="leverlink" marker-end="url(#ah)"/>
-<path d="M2318.0 582.0 Q2544.0 38.0 2800.0 328.0" class="leverlink" marker-end="url(#ah)"/>
-<g class="lever"><line x1="3312.0" y1="672.0" x2="3342.0" y2="582.0"/><circle cx="3342.0" cy="582.0" r="20"/><title>L3_원형_양자택일 — 레버 원형(물 켜고 끔)</title></g><text x="3312.0" y="542.0" text-anchor="middle" class="lbl leverl">L3 원형 양자택일</text>
-<path d="M3342.0 582.0 Q3856.0 102.0 4400.0 392.0" class="leverlink" marker-end="url(#ah)"/>
-<g class="lever"><line x1="5232.0" y1="1056.0" x2="5262.0" y2="966.0"/><circle cx="5262.0" cy="966.0" r="20"/><title>L4_원형_반대색건너 — 레버 원형(물 켜고 끔)</title></g><text x="5232.0" y="926.0" text-anchor="middle" class="lbl leverl">L4 원형 반대색건너</text>
-<path d="M5262.0 966.0 Q5612.0 326.0 5992.0 616.0" class="leverlink" marker-end="url(#ah)"/>
-<rect x="5408.0" y="1024.0" width="160.0" height="56.0" class="dev 호퍼"><title>H4_색전환발판 — 호퍼(밟을 수 있음 · 색 규칙 밖) · 폭 160 · 밟는면 y 1024</title></rect><text x="5488.0" y="1008.0" text-anchor="middle" class="lbl">호퍼</text>
-<g class="exit"><path d="M8148.0 1050.0 h90 v-40 l80 70 l-80 70 v-40 h-90 z"/></g><text x="8208.0" y="970.0" text-anchor="middle" class="lbl big">출구 → stage_2-6</text>
-<circle cx="500.0" cy="1040.0" r="44" class="start"/><text x="500.0" y="950.0" text-anchor="middle" class="lbl big">시작</text>
-<g class="cp"><line x1="2288.0" y1="736.0" x2="2288.0" y2="616.0"/><path d="M2288.0 616.0 l60 20 l-60 20 z"/><title>CP_갈래앞</title></g>
-<g class="cp"><line x1="5040.0" y1="1120.0" x2="5040.0" y2="1000.0"/><path d="M5040.0 1000.0 l60 20 l-60 20 z"/><title>CP_종합앞</title></g>
-<g class="cp"><line x1="6960.0" y1="1120.0" x2="6960.0" y2="1000.0"/><path d="M6960.0 1000.0 l60 20 l-60 20 z"/><title>CP_출구</title></g>
+<rect x="480.0" y="1888.0" width="128.0" height="20.0" class="dev 격자"><title>격자_배관 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 128×20 · 필요횟수 1</title></rect><text x="544.0" y="1872.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="912.0" y="2464.0" width="192.0" height="20.0" class="dev 격자"><title>격자_가운데1 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 192×20 · 필요횟수 1</title></rect><text x="1008.0" y="2448.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1024.0" y="1216.0" width="272.0" height="20.0" class="dev 격자"><title>격자_윗방1 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 272×20 · 필요횟수 1</title></rect><text x="1160.0" y="1200.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1200.0" y="2544.0" width="192.0" height="20.0" class="dev 격자"><title>격자_가운데2 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 192×20 · 필요횟수 1</title></rect><text x="1296.0" y="2528.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1344.0" y="1152.0" width="288.0" height="20.0" class="dev 격자"><title>격자_윗방2 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 288×20 · 필요횟수 1</title></rect><text x="1488.0" y="1136.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1456.0" y="2640.0" width="1040.0" height="20.0" class="dev 격자"><title>격자_바닥 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 1040×20 · 필요횟수 1</title></rect><text x="1976.0" y="2624.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1552.0" y="2816.0" width="288.0" height="20.0" class="dev 격자"><title>격자_시작1 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 288×20 · 필요횟수 1</title></rect><text x="1696.0" y="2800.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1552.0" y="2992.0" width="272.0" height="20.0" class="dev 격자"><title>격자_시작2 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 272×20 · 필요횟수 1</title></rect><text x="1688.0" y="2976.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1680.0" y="1088.0" width="272.0" height="20.0" class="dev 격자"><title>격자_윗방3 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 272×20 · 필요횟수 1</title></rect><text x="1816.0" y="1072.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1856.0" y="2736.0" width="304.0" height="20.0" class="dev 격자"><title>격자_시작3 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 304×20 · 필요횟수 1</title></rect><text x="2008.0" y="2720.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1888.0" y="2880.0" width="304.0" height="20.0" class="dev 격자"><title>격자_시작4 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 304×20 · 필요횟수 1</title></rect><text x="2040.0" y="2864.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1984.0" y="1024.0" width="208.0" height="20.0" class="dev 격자"><title>격자_윗방4 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 208×20 · 필요횟수 1</title></rect><text x="2088.0" y="1008.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="2240.0" y="976.0" width="208.0" height="20.0" class="dev 격자"><title>격자_윗방5 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 208×20 · 필요횟수 1</title></rect><text x="2344.0" y="960.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="2288.0" y="2960.0" width="256.0" height="20.0" class="dev 격자"><title>격자_시작5 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 256×20 · 필요횟수 1</title></rect><text x="2416.0" y="2944.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="2576.0" y="1664.0" width="144.0" height="20.0" class="dev 격자"><title>격자_흰1 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 144×20 · 필요횟수 1</title></rect><text x="2648.0" y="1648.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="2640.0" y="1568.0" width="80.0" height="20.0" class="dev 격자"><title>격자_흰2 — 통과플랫폼(물이 통과 · 페인트 안 지워짐 · 안 칠하면 검정) · 80×20 · 필요횟수 1</title></rect><text x="2680.0" y="1552.0" text-anchor="middle" class="lbl">격자</text>
+<rect x="1808.0" y="2320.0" width="128.0" height="32" class="dev 버튼"><title>발판_1 — 압력버튼 · 누르는 동안만 · 누름 PackedStringArray(&quot;양동이&quot;) · 움직임 Array[Vector2]([Vector2(864, 0), Vector2(736, 0), Vector2(608, 0), Vector2(496, 0), Vector2(384, 0)])</title></rect><text x="1872.0" y="2304.0" text-anchor="middle" class="lbl">버튼</text>
+<rect x="1946.0" y="2220.0" width="92" height="100" class="dev 양동이"><title>양동이 — 양동이 검정 · 채워도 움직임(운반) · 밟을 수 있음 · 색 사망 없음</title></rect><text x="1992.0" y="2204.0" text-anchor="middle" class="lbl">양동이</text>
+<g class="lever"><line x1="1968.0" y1="1344.0" x2="1998.0" y2="1254.0"/><circle cx="1998.0" cy="1254.0" r="20"/><title>벨브_1 — 레버 원형(물 켜고 끔)</title></g><text x="1968.0" y="1214.0" text-anchor="middle" class="lbl leverl">벨브 1</text>
+<path d="M1998.0 1254.0 Q1896.0 70.0 1824.0 360.0" class="leverlink" marker-end="url(#ah)"/>
+<path d="M720.0 2660.0 l16 -26 l16 26 z M752.0 2660.0 l16 -26 l16 26 z M784.0 2660.0 l16 -26 l16 26 z M816.0 2660.0 l16 -26 l16 26 z M848.0 2660.0 l16 -26 l16 26 z M880.0 2660.0 l16 -26 l16 26 z M912.0 2660.0 l16 -26 l16 26 z M944.0 2660.0 l16 -26 l16 26 z M976.0 2660.0 l16 -26 l16 26 z M1008.0 2660.0 l16 -26 l16 26 z M1040.0 2660.0 l16 -26 l16 26 z M1072.0 2660.0 l16 -26 l16 26 z M1104.0 2660.0 l16 -26 l16 26 z M1136.0 2660.0 l16 -26 l16 26 z M1168.0 2660.0 l16 -26 l16 26 z M1200.0 2660.0 l16 -26 l16 26 z " class="spike"><title>가시_가운데방 — 가시 16칸 · 색 무관 즉사</title></path>
+<text x="976.0" y="2730.0" text-anchor="middle" class="lbl haz">가시</text>
+<path d="M1664.0 1876.0 l16 -26 l16 26 z M1696.0 1876.0 l16 -26 l16 26 z M1728.0 1876.0 l16 -26 l16 26 z M1760.0 1876.0 l16 -26 l16 26 z M1792.0 1876.0 l16 -26 l16 26 z M1824.0 1876.0 l16 -26 l16 26 z M1856.0 1876.0 l16 -26 l16 26 z M1888.0 1876.0 l16 -26 l16 26 z M1920.0 1876.0 l16 -26 l16 26 z M1952.0 1876.0 l16 -26 l16 26 z M1984.0 1876.0 l16 -26 l16 26 z M2016.0 1876.0 l16 -26 l16 26 z M2048.0 1876.0 l16 -26 l16 26 z M2080.0 1876.0 l16 -26 l16 26 z M2112.0 1876.0 l16 -26 l16 26 z M2144.0 1876.0 l16 -26 l16 26 z M2176.0 1876.0 l16 -26 l16 26 z M2208.0 1876.0 l16 -26 l16 26 z M2240.0 1876.0 l16 -26 l16 26 z M2272.0 1876.0 l16 -26 l16 26 z M2304.0 1876.0 l16 -26 l16 26 z M2336.0 1876.0 l16 -26 l16 26 z M2368.0 1876.0 l16 -26 l16 26 z M2400.0 1876.0 l16 -26 l16 26 z M2432.0 1876.0 l16 -26 l16 26 z M2464.0 1876.0 l16 -26 l16 26 z M2496.0 1876.0 l16 -26 l16 26 z M2528.0 1876.0 l16 -26 l16 26 z M2560.0 1876.0 l16 -26 l16 26 z M2592.0 1876.0 l16 -26 l16 26 z M2624.0 1876.0 l16 -26 l16 26 z M2656.0 1876.0 l16 -26 l16 26 z " class="spike"><title>가시_복도 — 가시 32칸 · 색 무관 즉사</title></path>
+<text x="2176.0" y="1946.0" text-anchor="middle" class="lbl haz">가시</text>
+<circle cx="992.0" cy="1888.0" r="36" class="spike"><title>회전톱 r40.0 · 왕복 352.0px / 3s · 색 무관 즉사</title></circle>
+<circle cx="3504.0" cy="1560.0" r="36" class="spike"><title>회전톱 r48.0 · 왕복 400.0px / 3s · 색 무관 즉사</title></circle>
+<circle cx="3792.0" cy="1568.0" r="36" class="spike"><title>회전톱 r48.0 · 왕복 400.0px / 3.6s · 색 무관 즉사</title></circle>
+<g class="cp"><line x1="1168.0" y1="3088.0" x2="1168.0" y2="2968.0"/><path d="M1168.0 2968.0 l60 20 l-60 20 z"/><title>CP_시작</title></g>
+<g class="cp"><line x1="1680.0" y1="2320.0" x2="1680.0" y2="2200.0"/><path d="M1680.0 2200.0 l60 20 l-60 20 z"/><title>CP_블록</title></g>
+<g class="cp"><line x1="880.0" y1="1312.0" x2="880.0" y2="1192.0"/><path d="M880.0 1192.0 l60 20 l-60 20 z"/><title>CP_윗방</title></g>
+<g class="exit"><path d="M4932.0 682.0 h90 v-40 l80 70 l-80 70 v-40 h-90 z"/></g><text x="4992.0" y="602.0" text-anchor="middle" class="lbl big">출구 → stage_2-6</text>
+<circle cx="864.0" cy="3028.0" r="44" class="start"/><text x="864.0" y="2938.0" text-anchor="middle" class="lbl big">시작</text>
 </g>
-<g class="scale"><rect x="388.0" y="230.0" width="1920" height="1080"/><text x="408.0" y="300.0">화면 한 장 1920×1080 (줌 1.0)</text></g>
+<g class="scale"><rect x="276.0" y="262.0" width="1920" height="1080"/><text x="296.0" y="332.0">화면 한 장 1920×1080 (줌 1.0)</text></g>
 <g id="route-0" class="route" style="--rc:#ff9d2e">
-<path d="M500 1060 L516 1080 L532 1080 L548 1080 L564 1080 L580 1080 L596 1080 L612 1080 L628 1080 L644 1080 L660 1080 L676 1080 L692 1080 L708 1080 L724 1080 L740 1080 L756 1080 L772 1080 L788 1080 L804 1080 L820 1080 L836 1080 L852 1080 L864 1080" class="rwalk"/>
-<path d="M864 1080 L880 1080 L896 1080 L912 1080 L928 1080 L944 1080 L960 1080 L976 1080 L992 1080 L1008 1080 L1024 1080 L1040 1080 L1056 1080 L1072 1080 L1088 1080 L1104 1080 L1120 1080 L1136 1080 L1152 1080 L1168 1080 L1184 1080 L1200 1080 L1216 1080 L1232 1080 L1248 1080 L1264 1080 L1280 1080 L1296 1080 L1312 1080 L1328 1080 L1344 1080 L1360 1080 L1376 1080 L1392 1080 L1408 1080 L1424 1080 L1440 1080 L1456 1080 L1472 1080 L1488 1080 L1504 1080 L1520 1080 L1536 1080 L1552 1080 L1568 1080 L1584 1080 L1600 1080 L1616 1080 L1632 1080 L1648 1080 L1664 1080 L1680 1080 L1696 1080 L1712 1080 L1728 1080 L1744 1080 L1760 1080 L1776 1080 L1792 1080 L1808 1080 L1824 1080 L1840 1080 L1856 984 L1872 984 L1888 984 L1904 984 L1920 984 L1936 984 L1952 984 L1968 984 L1984 888 L2000 888 L2016 888 L2032 888 L2048 888 L2064 888 L2080 888 L2096 888 L2112 792 L2128 792 L2144 792 L2160 792 L2176 792 L2192 792 L2208 792 L2224 792 L2240 696 L2256 696 L2272 696 L2288 696" class="rwalk"/>
-<path d="M2288 696" class="rwalk"/>
-<path d="M2288 696 L2304 696 L2320 696 L2336 696 L2352 696 L2368 1080 L2384 1080 L2400 1080 L2416 1080 L2432 1080 L2448 1080 L2448 1080" class="rwalk"/>
-<path d="M2448 1080 L2464 1080 L2480 1080 L2496 1080 L2512 1080 L2528 1080 L2544 1080 L2560 1080 L2576 1080 L2592 1080 L2608 1080 L2624 1080 L2640 1080 L2656 1080 L2672 1080 L2688 1080 L2704 1080 L2720 1080 L2736 1080 L2752 1080 L2768 1080 L2784 1080 L2800 1080 L2816 1080 L2832 1080 L2848 1080 L2864 1080 L2880 1080 L2896 1080 L2912 1080 L2928 1080 L2944 1080 L2960 1080 L2976 1080 L2992 1080 L3008 1080 L3024 1080 L3040 1080 L3056 1080 L3072 1080 L3088 1080 L3104 1080 L3120 1080 L3136 1080 L3152 1080 L3168 1080 L3184 1080 L3200 1080 L3216 1080 L3232 1080 L3248 1080 L3264 1080 L3280 1080 L3296 1080 L3312 1080 L3328 1080 L3344 1080 L3360 1080 L3376 1080 L3392 1080 L3408 1080 L3424 1080 L3440 1080 L3456 1080 L3472 1080 L3488 1080 L3504 1080 L3520 1080 L3536 1080 L3552 1080 L3568 1080 L3584 1080 L3600 1080 L3616 1080 L3632 1080 L3648 1080 L3664 1080 L3680 1080" class="rwalk"/>
-<path d="M4056 1080 L4040 984 L4024 984 L4016 984" class="rwalk"/>
-<path d="M4016 984 L4006 942 L3995 903 L3985 869 L3974 838 L3964 812 L3954 789 L3943 770 L3933 756 L3922 745 L3912 738 L3902 735 L3891 736 L3881 741 L3870 750 L3860 764 L3850 780 L3839 801 L3829 826 L3818 855 L3808 888" class="rjump"/>
-<path d="M3808 888 L3792 888 L3776 888 L3760 888 L3744 888" class="rwalk"/>
-<path d="M3744 888 L3734 846 L3723 807 L3713 773 L3702 742 L3692 716 L3682 693 L3671 674 L3661 660 L3650 649 L3640 642 L3630 639 L3619 640 L3609 645 L3598 654 L3588 668 L3578 684 L3567 705 L3557 730 L3546 759 L3536 792" class="rjump"/>
-<path d="M3536 792 L3525 750 L3514 711 L3502 677 L3491 646 L3480 620 L3469 597 L3458 578 L3446 564 L3435 553 L3424 546 L3413 543 L3402 544 L3390 549 L3379 558 L3368 572 L3357 588 L3346 609 L3334 634 L3323 663 L3312 696" class="rjump"/>
-<path d="M3312 696" class="rwalk"/>
-<path d="M3312 696 L3328 696 L3344 696 L3360 696 L3376 696 L3392 1080 L3408 1080 L3424 1080 L3440 1080 L3456 1080 L3472 1080 L3488 1080 L3504 1080 L3520 1080 L3536 1080 L3552 1080 L3568 1080 L3584 1080 L3600 1080 L3616 1080 L3632 1080 L3648 1080 L3664 1080 L3680 1080" class="rwalk"/>
-<path d="M5040 1080 L5056 1080 L5072 1080 L5088 1080 L5104 1080 L5120 1080 L5136 1080 L5152 1080 L5168 1080 L5184 1080 L5200 1080 L5216 1080 L5232 1080" class="rwalk"/>
-<path d="M5232 1080 L5248 1080 L5264 1080 L5280 1080 L5296 1080 L5312 1080 L5328 1080 L5344 1080 L5360 1080 L5376 1080 L5392 1080 L5408 984 L5424 984 L5440 984 L5456 984 L5472 984 L5488 984" class="rwalk"/>
-<path d="M5488 924 L6392 1112" class="rshot"/>
-<path d="M5488 924 L5992 1112" class="rshot"/>
-<path d="M5488 984 L5504 984 L5520 984 L5536 984 L5552 984 L5568 1080 L5584 1080 L5600 1080 L5616 1080 L5632 1080 L5648 1080 L5664 1080 L5672 1080 L5672 1080" class="rwalk"/>
-<path d="M5672 1080 L5686 1052 L5699 1026 L5713 1004 L5726 984 L5740 968 L5754 954 L5767 944 L5781 936 L5794 932 L5808 930 L5822 932 L5835 936 L5849 944 L5862 954 L5876 968 L5890 984 L5903 1004 L5917 1026 L5930 1052 L5944 1080" class="rjump"/>
-<path d="M5944 1080 L5960 1080 L5976 1080 L5992 1080 L6008 1080 L6024 1080 L6040 1080 L6056 1080" class="rwalk"/>
-<path d="M6056 1080 L6070 1052 L6084 1026 L6098 1004 L6112 984 L6126 968 L6140 954 L6154 944 L6168 936 L6182 932 L6196 930 L6210 932 L6224 936 L6238 944 L6252 954 L6266 968 L6280 984 L6294 1004 L6308 1026 L6322 1052 L6336 1080" class="rjump"/>
-<path d="M6336 1080 L6352 1080 L6368 1080 L6384 1080 L6400 1080 L6416 1080 L6432 1080 L6448 1080 L6456 1080" class="rwalk"/>
-<path d="M6456 1080 L6470 1052 L6484 1026 L6498 1004 L6512 984 L6526 968 L6540 954 L6554 944 L6568 936 L6582 932 L6596 930 L6610 932 L6624 936 L6638 944 L6652 954 L6666 968 L6680 984 L6694 1004 L6708 1026 L6722 1052 L6736 1080" class="rjump"/>
-<path d="M6736 1080 L6752 1080 L6768 1080 L6784 1080 L6800 1080 L6816 1080 L6832 1080 L6848 1080 L6864 1080 L6880 1080 L6896 1080 L6912 1080 L6928 1080 L6944 1080 L6960 1080 L6976 1080 L6992 1080 L7008 1080 L7024 1080 L7040 1080 L7056 1080 L7072 1080 L7088 1080 L7104 1080 L7120 1080 L7136 1080 L7152 1080 L7168 1080 L7184 1080 L7200 1080 L7216 1080 L7232 1080 L7248 1080 L7264 1080 L7280 1080 L7296 1080 L7312 1080 L7328 1080 L7344 1080 L7360 1080 L7376 1080 L7392 1080 L7408 1080 L7424 1080 L7440 1080 L7456 1080 L7472 1080 L7488 1080 L7504 1080 L7520 1080 L7536 1080 L7552 1080 L7568 1080 L7584 1080 L7600 1080 L7616 1080 L7632 1080 L7648 1080 L7664 1080 L7680 1080 L7696 1080 L7712 1080 L7728 1080 L7744 1080 L7760 1080 L7776 1080 L7792 1080 L7808 1080 L7824 1080 L7840 1080 L7856 1080 L7872 1080 L7888 1080 L7904 1080 L7920 1080 L7936 1080 L7952 1080 L7968 1080 L7984 1080 L8000 1080 L8016 1080 L8032 1080 L8048 1080 L8064 1080 L8080 1080 L8096 1080 L8112 1080 L8128 1080 L8144 1080 L8160 1080 L8176 1080 L8192 1080 L8200 1080" class="rwalk"/>
-<g class="step slever"><circle cx="864" cy="1080" r="46"/><text x="864" y="1096" text-anchor="middle">E</text><title>L1_원형_첫밸브 당김</title></g>
-<g class="step slever"><circle cx="2288" cy="696" r="46"/><text x="2288" y="712" text-anchor="middle">E</text><title>L2_직선_갈래선택 당김</title></g>
-<g class="step sjump"><circle cx="3808" cy="888" r="34"/><text x="3808" y="904" text-anchor="middle"></text><title>뛰기 4016 → (3808, 928)</title></g>
-<g class="step sjump"><circle cx="3536" cy="792" r="34"/><text x="3536" y="808" text-anchor="middle"></text><title>뛰기 3744 → (3536, 832)</title></g>
-<g class="step sjump"><circle cx="3312" cy="696" r="34"/><text x="3312" y="712" text-anchor="middle"></text><title>뛰기 3536 → (3312, 736)</title></g>
-<g class="step slever"><circle cx="3312" cy="696" r="46"/><text x="3312" y="712" text-anchor="middle">E</text><title>L3_원형_양자택일 당김</title></g>
-<g class="step slever"><circle cx="5232" cy="1080" r="46"/><text x="5232" y="1096" text-anchor="middle">E</text><title>L4_원형_반대색건너 당김</title></g>
-<g class="step sswap"><circle cx="5488" cy="984" r="46"/><text x="5488" y="1000" text-anchor="middle"></text><title>흰색으로 전환</title></g>
-<g class="step sshot"><circle cx="6392" cy="1112" r="46"/><text x="6392" y="1128" text-anchor="middle">●</text><title>C_유령_흰색 를 흰색으로 칠함</title></g>
-<g class="step sswap"><circle cx="5488" cy="984" r="46"/><text x="5488" y="1000" text-anchor="middle"></text><title>검정으로 전환</title></g>
-<g class="step sshot"><circle cx="5992" cy="1112" r="46"/><text x="5992" y="1128" text-anchor="middle">●</text><title>C_유령_검정 를 검정으로 칠함</title></g>
-<g class="step sjump"><circle cx="5944" cy="1080" r="34"/><text x="5944" y="1096" text-anchor="middle"></text><title>뛰기 5672 → (5944, 1120)</title></g>
-<g class="step sswap"><circle cx="6196" cy="930" r="46"/><text x="6196" y="946" text-anchor="middle"></text><title>뛰는 중 흰색으로 전환 → 착지 (6336, 1120)</title></g>
-<g class="step sjump"><circle cx="6736" cy="1080" r="34"/><text x="6736" y="1096" text-anchor="middle"></text><title>뛰기 6456 → (6736, 1120)</title></g>
+<path d="M864 3048 L880 3144 L896 3144 L912 3144 L928 3144 L944 3144 L960 3144 L976 3144 L992 3144 L1008 3144 L1024 3144 L1040 3144 L1056 3144 L1072 3048 L1088 3048 L1104 3048 L1120 3048 L1136 3048 L1152 3048 L1168 3048 L1184 3048 L1200 3048 L1216 3048 L1232 3048 L1248 3048 L1264 3048 L1280 3048 L1296 3048 L1312 3048 L1328 3048 L1344 3048 L1360 3048 L1376 3048 L1392 3048 L1408 3048 L1424 3048 L1440 3048 L1456 3048 L1472 3048 L1488 3048 L1500 3048" class="rwalk"/>
+<path d="M1500 3048 L1516 3048 L1530 3048" class="rwalk"/>
+<path d="M1530 3048 L1536 3006 L1542 2967 L1548 2933 L1554 2902 L1560 2876 L1566 2853 L1572 2834 L1578 2820 L1584 2809 L1590 2802 L1596 2799 L1602 2800 L1608 2805 L1614 2814 L1620 2828 L1626 2844 L1632 2865 L1638 2890 L1644 2919 L1650 2952" class="rjump"/>
+<path d="M1650 2952 L1666 2952 L1682 2952 L1698 2952 L1714 2952 L1730 2952 L1746 2952 L1762 2952 L1778 2952 L1794 2952 L1800 2952" class="rwalk"/>
+<path d="M1800 2952 L1808 2907 L1815 2867 L1822 2830 L1830 2798 L1838 2770 L1845 2745 L1852 2725 L1860 2709 L1868 2698 L1875 2690 L1882 2686 L1890 2687 L1898 2692 L1905 2701 L1912 2714 L1920 2731 L1928 2752 L1935 2777 L1942 2806 L1950 2840" class="rjump"/>
+<path d="M1950 2840 L1966 2840 L1982 2840 L1998 2840 L2000 2840" class="rwalk"/>
+<path d="M2000 2840 L2000 2791 L2001 2746 L2002 2705 L2002 2669 L2002 2638 L2003 2610 L2004 2588 L2004 2569 L2004 2555 L2005 2546 L2006 2541 L2006 2540 L2006 2544 L2007 2553 L2008 2566 L2008 2583 L2008 2604 L2009 2630 L2010 2661 L2010 2696" class="rjump"/>
+<path d="M2010 2696 L2010 2654 L2011 2615 L2012 2581 L2012 2550 L2012 2524 L2013 2501 L2014 2482 L2014 2468 L2014 2457 L2015 2450 L2016 2447 L2016 2448 L2016 2453 L2017 2462 L2018 2476 L2018 2492 L2018 2513 L2019 2538 L2020 2567 L2020 2600" class="rjump"/>
+<path d="M2020 2600 L2004 2600 L1988 2600 L1972 2600 L1956 2600 L1940 2600 L1924 2600 L1908 2600 L1892 2600 L1876 2600 L1860 2600 L1844 2600 L1828 2600 L1812 2600 L1796 2600 L1780 2600 L1764 2600 L1748 2600 L1732 2600 L1716 2600 L1700 2600 L1684 2600 L1668 2600 L1652 2600 L1636 2600 L1620 2600 L1604 2600 L1588 2600 L1572 2600 L1556 2600 L1540 2600 L1524 2600 L1508 2600 L1492 2600 L1476 2600 L1460 2600 L1444 2600 L1428 2600 L1412 2600 L1396 2600 L1380 2504 L1370 2504" class="rwalk"/>
+<path d="M1370 2504 L1370 2476 L1370 2450 L1370 2427 L1370 2408 L1370 2392 L1371 2378 L1371 2368 L1371 2360 L1371 2356 L1371 2354 L1371 2356 L1371 2360 L1371 2368 L1371 2378 L1372 2392 L1372 2408 L1372 2428 L1372 2450 L1372 2476 L1372 2504" class="rjump"/>
+<path d="M1372 2504 L1356 2504 L1340 2504 L1324 2504 L1308 2504 L1292 2504 L1276 2504 L1260 2504 L1244 2504 L1228 2504 L1222 2504" class="rwalk"/>
+<path d="M1222 2504 L1213 2464 L1205 2428 L1196 2395 L1188 2366 L1179 2342 L1170 2320 L1162 2303 L1153 2290 L1145 2280 L1136 2274 L1127 2272 L1119 2274 L1110 2279 L1102 2288 L1093 2302 L1084 2318 L1076 2339 L1067 2364 L1059 2392 L1050 2424" class="rjump"/>
+<path d="M1050 2364 L1264 2352" class="rshot"/>
+<path d="M1050 2364 L1464 2320" class="rshot"/>
+<path d="M1050 2424 L1066 2424 L1082 2424" class="rwalk"/>
+<path d="M1082 2424 L1091 2382 L1100 2343 L1109 2309 L1118 2278 L1126 2252 L1135 2229 L1144 2210 L1153 2196 L1162 2185 L1171 2178 L1180 2175 L1189 2176 L1198 2181 L1207 2190 L1216 2204 L1224 2220 L1233 2241 L1242 2266 L1251 2295 L1260 2328" class="rjump"/>
+<path d="M1260 2328 L1276 2328 L1292 2328 L1306 2328" class="rwalk"/>
+<path d="M1306 2328 L1314 2295 L1321 2265 L1329 2239 L1337 2215 L1344 2196 L1352 2179 L1360 2166 L1368 2156 L1375 2149 L1383 2146 L1391 2146 L1398 2149 L1406 2156 L1414 2166 L1422 2180 L1429 2196 L1437 2216 L1445 2239 L1452 2266 L1460 2296" class="rjump"/>
+<path d="M1460 2296 L1476 2296 L1492 2296 L1498 2296" class="rwalk"/>
+<path d="M1498 2296 L1506 2265 L1514 2238 L1522 2213 L1530 2192 L1538 2174 L1547 2158 L1555 2147 L1563 2138 L1571 2132 L1579 2130 L1587 2131 L1595 2135 L1603 2142 L1611 2152 L1620 2166 L1628 2182 L1636 2202 L1644 2225 L1652 2251 L1660 2280" class="rjump"/>
+<path d="M1660 2220 L1992 2180" class="rshot"/>
+<path d="M1660 2280 L1676 2280 L1692 2280 L1708 2280 L1724 2280 L1740 2280 L1756 2280 L1760 2280" class="rwalk"/>
+<path d="M1760 2280 L1772 2238 L1783 2200 L1795 2165 L1806 2135 L1818 2109 L1830 2086 L1841 2068 L1853 2053 L1864 2043 L1876 2036 L1888 2033 L1899 2034 L1911 2040 L1922 2049 L1934 2062 L1946 2079 L1957 2100 L1969 2124 L1980 2153 L1992 2186" class="rjump"/>
+<path d="M1992 2186 L2008 2180 L2024 2180 L2040 2280 L2056 2280 L2072 2280 L2088 2280 L2100 2280" class="rwalk"/>
+<path d="M2100 2280 L2084 2280 L2068 2280 L2052 2280 L2036 2180 L2020 2180 L2004 2180 L1988 2180 L1972 2180 L1956 2180 L1940 2280 L1924 2280 L1908 2280 L1892 2280 L1876 2280 L1872 2280" class="rwalk"/>
+<path d="M1872 2280 L1888 2280 L1904 2280 L1920 2280 L1936 2280 L1952 2180 L1968 2180 L1984 2180 L2000 2180 L2016 2180 L2032 2180 L2048 2280 L2064 2280 L2080 2280 L2096 2280 L2110 2280" class="rwalk"/>
+<path d="M2110 2280 L2101 2238 L2092 2200 L2083 2165 L2074 2135 L2065 2109 L2056 2086 L2047 2068 L2038 2053 L2029 2043 L2020 2036 L2011 2033 L2002 2034 L1993 2040 L1984 2049 L1975 2062 L1966 2079 L1957 2100 L1948 2124 L1939 2153 L1930 2186" class="rjump"/>
+<path d="M1930 2186 L1914 2280 L1898 2280 L1882 2280 L1866 2280 L1850 2280 L1834 2280 L1818 2280 L1802 2280 L1786 2280 L1770 2280 L1754 2280 L1738 2280 L1722 2280 L1706 2280 L1690 2280 L1674 2280 L1658 2280 L1642 2280 L1640 2280 L1640 2280" class="rwalk"/>
+<path d="M1640 2280 L1624 2280 L1608 2280 L1606 2280" class="rwalk"/>
+<path d="M1606 2280 L1602 2245 L1597 2213 L1593 2184 L1589 2159 L1584 2138 L1580 2119 L1576 2105 L1572 2094 L1567 2086 L1563 2082 L1559 2081 L1554 2084 L1550 2090 L1546 2100 L1542 2114 L1537 2130 L1533 2150 L1529 2174 L1524 2201 L1520 2232" class="rjump"/>
+<path d="M1520 2232 L1504 2296 L1488 2296 L1478 2296" class="rwalk"/>
+<path d="M1478 2296 L1474 2251 L1470 2211 L1466 2174 L1462 2142 L1458 2114 L1455 2089 L1451 2069 L1447 2053 L1443 2042 L1439 2034 L1435 2030 L1431 2031 L1427 2036 L1423 2045 L1420 2058 L1416 2075 L1412 2096 L1408 2121 L1404 2150 L1400 2184" class="rjump"/>
+<path d="M1400 2184 L1384 2504 L1368 2504 L1366 2504" class="rwalk"/>
+<path d="M1366 2504 L1362 2422 L1358 2347 L1355 2278 L1351 2217 L1347 2162 L1343 2113 L1339 2071 L1336 2036 L1332 2008 L1328 1986 L1324 1971 L1320 1963 L1317 1961 L1313 1966 L1309 1978 L1305 1996 L1301 2021 L1298 2053 L1294 2091 L1290 2136" class="rjump"/>
+<path d="M1290 2136 L1274 2328 L1258 2328 L1254 2328" class="rwalk"/>
+<path d="M1254 2328 L1250 2265 L1247 2207 L1243 2154 L1239 2107 L1236 2066 L1232 2029 L1228 1998 L1224 1973 L1221 1953 L1217 1938 L1213 1929 L1210 1925 L1206 1926 L1202 1933 L1198 1946 L1195 1963 L1191 1986 L1187 2015 L1184 2049 L1180 2088" class="rjump"/>
+<path d="M1180 2088 L1164 2616 L1148 2616 L1132 2616 L1126 2616" class="rwalk"/>
+<path d="M1126 2616 L1122 2504 L1118 2401 L1115 2306 L1111 2220 L1107 2144 L1103 2075 L1099 2016 L1096 1965 L1092 1923 L1088 1890 L1084 1866 L1080 1850 L1077 1843 L1073 1845 L1069 1856 L1065 1875 L1061 1903 L1058 1940 L1054 1986 L1050 2040" class="rjump"/>
+<path d="M1050 2040" class="rwalk"/>
+<path d="M742 2040 L738 2007 L734 1977 L730 1951 L726 1927 L722 1908 L717 1891 L713 1878 L709 1868 L705 1861 L701 1858 L697 1858 L693 1861 L689 1868 L685 1878 L680 1892 L676 1908 L672 1928 L668 1951 L664 1978 L660 2008" class="rjump"/>
+<path d="M660 2008" class="rwalk"/>
+<path d="M540 2008 L536 1970 L532 1936 L528 1906 L524 1879 L520 1856 L516 1836 L512 1820 L508 1808 L504 1799 L500 1794 L496 1793 L492 1795 L488 1801 L484 1810 L480 1824 L476 1840 L472 1861 L468 1885 L464 1913 L460 1944" class="rjump"/>
+<path d="M460 1944 L470 1944" class="rwalk"/>
+<path d="M470 1944 L474 1902 L479 1863 L484 1829 L488 1798 L492 1772 L497 1749 L502 1730 L506 1716 L510 1705 L515 1698 L520 1695 L524 1696 L528 1701 L533 1710 L538 1724 L542 1740 L546 1761 L551 1786 L556 1815 L560 1848" class="rjump"/>
+<path d="M560 1848 L576 1848 L592 1848 L608 1848 L624 1848 L640 1848 L656 1848 L672 1848 L688 1848 L704 1848 L720 1848 L735 1848" class="rwalk"/>
+<path d="M735 1848 L751 1819 L768 1794 L784 1772 L800 1752 L816 1736 L832 1722 L849 1712 L865 1704 L881 1700 L898 1698 L914 1700 L930 1704 L946 1712 L962 1722 L979 1736 L995 1752 L1011 1772 L1028 1794 L1044 1820 L1060 1848" class="rjump"/>
+<path d="M1060 1848 L1076 1848 L1092 1848 L1108 1848 L1124 1848 L1140 1848 L1156 1848 L1172 1848 L1188 1848 L1204 1848 L1220 1848 L1236 1800 L1252 1800 L1268 1800 L1284 1800 L1300 1800 L1316 1800 L1332 1800 L1348 1800 L1364 1800 L1380 1800 L1396 1800 L1412 1800 L1428 1800 L1444 1800 L1460 1784 L1476 1784 L1492 1784 L1508 1784 L1524 1784 L1540 1784 L1556 1784 L1572 1784 L1588 1784 L1604 1784 L1620 1784 L1636 1784 L1640 1784" class="rwalk"/>
+<path d="M1640 1784 L1642 1784" class="rwalk"/>
+<path d="M1642 1784 L1648 1744 L1655 1708 L1661 1675 L1668 1646 L1674 1622 L1680 1600 L1687 1583 L1693 1570 L1700 1560 L1706 1554 L1712 1552 L1719 1554 L1725 1559 L1732 1568 L1738 1582 L1744 1598 L1751 1619 L1757 1644 L1764 1672 L1770 1704" class="rjump"/>
+<path d="M1770 1704 L1786 1704 L1802 1704 L1818 1704" class="rwalk"/>
+<path d="M1818 1704 L1827 1676 L1836 1650 L1845 1628 L1854 1608 L1864 1592 L1873 1578 L1882 1568 L1891 1560 L1900 1556 L1909 1554 L1918 1556 L1927 1560 L1936 1568 L1945 1578 L1954 1592 L1964 1608 L1973 1628 L1982 1650 L1991 1676 L2000 1704" class="rjump"/>
+<path d="M2000 1704 L2016 1704 L2032 1704 L2042 1704" class="rwalk"/>
+<path d="M2042 1704 L2051 1676 L2060 1650 L2069 1628 L2078 1608 L2088 1592 L2097 1578 L2106 1568 L2115 1560 L2124 1556 L2133 1554 L2142 1556 L2151 1560 L2160 1568 L2169 1578 L2178 1592 L2188 1608 L2197 1628 L2206 1650 L2215 1676 L2224 1704" class="rjump"/>
+<path d="M2224 1704 L2240 1704 L2256 1704 L2266 1704" class="rwalk"/>
+<path d="M2266 1704 L2275 1671 L2284 1641 L2293 1615 L2302 1591 L2312 1572 L2321 1555 L2330 1542 L2339 1532 L2348 1525 L2357 1522 L2366 1522 L2375 1525 L2384 1532 L2393 1542 L2402 1556 L2412 1572 L2421 1592 L2430 1615 L2439 1642 L2448 1672" class="rjump"/>
+<path d="M2448 1672 L2464 1672 L2480 1672 L2490 1672" class="rwalk"/>
+<path d="M2490 1672 L2498 1637 L2505 1605 L2512 1576 L2520 1551 L2528 1530 L2535 1511 L2542 1497 L2550 1486 L2558 1478 L2565 1474 L2572 1473 L2580 1476 L2588 1482 L2595 1492 L2602 1506 L2610 1522 L2618 1542 L2625 1566 L2632 1593 L2640 1624" class="rjump"/>
+<path d="M2640 1624 L2656 1528 L2672 1528 L2688 1528 L2690 1528" class="rwalk"/>
+<path d="M2690 1528 L2690 1500 L2690 1474 L2691 1451 L2691 1432 L2691 1416 L2692 1402 L2692 1392 L2692 1384 L2692 1380 L2692 1378 L2693 1380 L2693 1384 L2693 1392 L2694 1402 L2694 1416 L2694 1432 L2694 1452 L2694 1474 L2695 1500 L2695 1528" class="rjump"/>
+<path d="M2695 1528 L2698 1528" class="rwalk"/>
+<path d="M2698 1528 L2703 1493 L2708 1461 L2713 1432 L2718 1407 L2724 1386 L2729 1367 L2734 1353 L2739 1342 L2744 1334 L2749 1330 L2754 1329 L2759 1332 L2764 1338 L2769 1348 L2774 1362 L2780 1378 L2785 1398 L2790 1422 L2795 1449 L2800 1480" class="rjump"/>
+<path d="M2800 1480 L2816 1480 L2832 1480 L2848 1480 L2864 1480 L2880 1480 L2896 1480 L2912 1480 L2928 1480 L2944 1480 L2954 1480" class="rwalk"/>
+<path d="M2954 1480 L2962 1449 L2970 1422 L2977 1397 L2985 1376 L2993 1358 L3001 1342 L3009 1331 L3016 1322 L3024 1316 L3032 1314 L3040 1315 L3048 1319 L3055 1326 L3063 1336 L3071 1350 L3079 1366 L3087 1386 L3094 1409 L3102 1435 L3110 1464" class="rjump"/>
+<path d="M3110 1464 L3126 1464 L3142 1464 L3158 1464 L3174 1464 L3190 1464 L3206 1464 L3222 1464 L3238 1464 L3254 1464 L3270 1464 L3286 1464 L3302 1464 L3318 1464 L3334 1464 L3350 1464 L3366 1464 L3382 1464 L3398 1464 L3414 1464 L3418 1464" class="rwalk"/>
+<path d="M3418 1464 L3428 1435 L3438 1410 L3448 1387 L3458 1368 L3468 1352 L3479 1338 L3489 1328 L3499 1320 L3509 1316 L3519 1314 L3529 1316 L3539 1320 L3549 1328 L3559 1338 L3570 1352 L3580 1368 L3590 1388 L3600 1410 L3610 1436 L3620 1464" class="rjump"/>
+<path d="M3620 1464 L3636 1464 L3652 1464 L3668 1464 L3684 1464 L3700 1464 L3716 1464 L3722 1464" class="rwalk"/>
+<path d="M3722 1464 L3731 1435 L3740 1410 L3749 1387 L3758 1368 L3766 1352 L3775 1338 L3784 1328 L3793 1320 L3802 1316 L3811 1314 L3820 1316 L3829 1320 L3838 1328 L3847 1338 L3856 1352 L3864 1368 L3873 1388 L3882 1410 L3891 1436 L3900 1464" class="rjump"/>
+<path d="M3900 1464 L3916 1464 L3932 1464 L3948 1464 L3964 1464 L3980 1464 L3996 1464 L4012 1464 L4028 1464 L4044 1464 L4060 1464 L4076 1464 L4092 1464 L4108 1464 L4124 1464 L4140 1464 L4156 1464 L4172 1464 L4188 1464 L4204 1464 L4220 1464 L4236 1464 L4252 1464 L4268 1464 L4284 1464 L4300 1464 L4316 1464 L4332 1464 L4348 1464 L4364 1464 L4380 1464 L4396 1464 L4412 1464 L4428 1448 L4444 1448 L4460 1448 L4470 1448" class="rwalk"/>
+<path d="M4470 1448 L4454 1448 L4438 1448 L4422 1448 L4406 1464 L4390 1464 L4374 1464 L4358 1464 L4342 1464 L4326 1464 L4310 1464 L4294 1464 L4278 1464 L4262 1464 L4246 1464 L4230 1464 L4214 1464 L4198 1464 L4182 1464 L4166 1464 L4150 1464 L4134 1464 L4118 1464 L4102 1464 L4086 1464 L4070 1464 L4054 1464 L4038 1464 L4022 1464 L4006 1464 L3990 1464 L3974 1464 L3958 1464 L3942 1464 L3926 1464 L3910 1464 L3894 1464 L3878 1464 L3862 1464" class="rwalk"/>
+<path d="M3862 1464 L3852 1435 L3842 1410 L3832 1387 L3822 1368 L3812 1352 L3801 1338 L3791 1328 L3781 1320 L3771 1316 L3761 1314 L3751 1316 L3741 1320 L3731 1328 L3721 1338 L3710 1352 L3700 1368 L3690 1388 L3680 1410 L3670 1436 L3660 1464" class="rjump"/>
+<path d="M3660 1464 L3644 1464 L3628 1464 L3612 1464 L3596 1464 L3580 1464 L3574 1464" class="rwalk"/>
+<path d="M3574 1464 L3564 1435 L3555 1410 L3545 1387 L3535 1368 L3526 1352 L3516 1338 L3506 1328 L3496 1320 L3487 1316 L3477 1314 L3467 1316 L3458 1320 L3448 1328 L3438 1338 L3428 1352 L3419 1368 L3409 1388 L3399 1410 L3390 1436 L3380 1464" class="rjump"/>
+<path d="M3380 1464 L3364 1464 L3348 1464 L3332 1464 L3316 1464 L3300 1464 L3284 1464 L3268 1464 L3252 1464 L3236 1464 L3220 1464 L3204 1464 L3188 1464 L3172 1464 L3156 1464 L3140 1464 L3124 1464 L3108 1464 L3092 1464 L3078 1464" class="rwalk"/>
+<path d="M3078 1464 L3069 1435 L3060 1409 L3051 1386 L3042 1366 L3034 1350 L3025 1336 L3016 1326 L3007 1319 L2998 1315 L2989 1314 L2980 1316 L2971 1322 L2962 1331 L2953 1342 L2944 1358 L2936 1376 L2927 1397 L2918 1422 L2909 1449 L2900 1480" class="rjump"/>
+<path d="M2900 1480 L2884 1480 L2868 1480 L2852 1480 L2836 1480 L2820 1480 L2804 1480 L2788 1480 L2772 1480 L2756 1480 L2742 1480" class="rwalk"/>
+<path d="M2742 1480 L2733 1447 L2724 1417 L2715 1391 L2706 1367 L2696 1348 L2687 1331 L2678 1318 L2669 1308 L2660 1301 L2651 1298 L2642 1298 L2633 1301 L2624 1308 L2615 1318 L2606 1332 L2596 1348 L2587 1368 L2578 1391 L2569 1418 L2560 1448" class="rjump"/>
+<path d="M2560 1448 L2544 1448 L2528 1448 L2512 1448 L2496 1448 L2480 1448 L2464 1432 L2448 1432 L2432 1432 L2416 1432 L2400 1432 L2384 1432 L2368 1432 L2352 1432 L2336 1416 L2320 1416 L2304 1416 L2288 1416 L2272 1416 L2256 1416 L2240 1416 L2224 1416 L2208 1416 L2192 1416 L2176 1416 L2160 1416 L2144 1416 L2128 1416 L2112 1368 L2096 1368 L2080 1368 L2064 1368 L2048 1368 L2032 1368 L2016 1368 L2000 1304 L1984 1304 L1975 1304" class="rwalk"/>
+<path d="M1975 1304 L1968 1304" class="rwalk"/>
+<path d="M1968 1304 L1952 1304 L1936 1304 L1920 1304 L1904 1304 L1888 1304 L1872 1304 L1856 1304 L1840 1304 L1824 1304 L1808 1304 L1792 1304 L1776 1304 L1760 1304 L1744 1304 L1728 1304 L1712 1304 L1696 1304 L1680 1304 L1664 1304 L1648 1304 L1632 1304 L1616 1304 L1600 1304 L1584 1304 L1568 1304 L1552 1304 L1536 1304 L1520 1304 L1504 1304 L1488 1304 L1472 1304 L1456 1304 L1440 1304 L1424 1304 L1420 1304" class="rwalk"/>
+<path d="M1420 1304 L1404 1304 L1400 1304" class="rwalk"/>
+<path d="M1400 1304 L1396 1271 L1393 1241 L1390 1215 L1386 1191 L1382 1172 L1379 1155 L1376 1142 L1372 1132 L1368 1125 L1365 1122 L1362 1122 L1358 1125 L1354 1132 L1351 1142 L1348 1156 L1344 1172 L1340 1192 L1337 1215 L1334 1242 L1330 1272" class="rjump"/>
+<path d="M1330 1272 L1314 1272 L1298 1272 L1282 1176 L1266 1176 L1250 1176 L1234 1176 L1218 1176 L1202 1176 L1186 1176 L1170 1176 L1154 1176 L1138 1176 L1122 1176 L1106 1176 L1090 1176 L1074 1176 L1058 1176 L1050 1176" class="rwalk"/>
+<path d="M1050 1176 L1052 1148 L1055 1122 L1058 1099 L1060 1080 L1062 1064 L1065 1050 L1068 1040 L1070 1032 L1072 1028 L1075 1026 L1078 1028 L1080 1032 L1082 1040 L1085 1050 L1088 1064 L1090 1080 L1092 1100 L1095 1122 L1098 1148 L1100 1176" class="rjump"/>
+<path d="M1100 1176 L1116 1176 L1132 1176 L1148 1176 L1164 1176 L1180 1176 L1196 1176 L1212 1176 L1228 1176 L1244 1176 L1260 1176 L1274 1176" class="rwalk"/>
+<path d="M1274 1176 L1281 1138 L1289 1104 L1296 1074 L1303 1047 L1310 1024 L1318 1004 L1325 988 L1332 976 L1340 967 L1347 962 L1354 961 L1362 963 L1369 969 L1376 978 L1384 992 L1391 1008 L1398 1029 L1405 1053 L1413 1081 L1420 1112" class="rjump"/>
+<path d="M1420 1112 L1436 1112 L1452 1112 L1468 1112 L1484 1112 L1500 1112 L1516 1112 L1532 1112 L1548 1112 L1564 1112 L1580 1112 L1596 1112 L1610 1112" class="rwalk"/>
+<path d="M1610 1112 L1618 1074 L1625 1040 L1632 1010 L1640 983 L1648 960 L1655 940 L1662 924 L1670 912 L1678 903 L1685 898 L1692 897 L1700 899 L1708 905 L1715 914 L1722 928 L1730 944 L1738 965 L1745 989 L1752 1017 L1760 1048" class="rjump"/>
+<path d="M1760 1048 L1776 1048 L1792 1048 L1808 1048 L1824 1048 L1840 1048 L1856 1048 L1860 1048" class="rwalk"/>
+<path d="M1860 1048 L1872 1010 L1883 976 L1894 946 L1906 919 L1918 896 L1929 876 L1940 860 L1952 848 L1964 839 L1975 834 L1986 833 L1998 835 L2010 841 L2021 850 L2032 864 L2044 880 L2056 901 L2067 925 L2078 953 L2090 984" class="rjump"/>
+<path d="M2090 984 L2106 984 L2122 984 L2138 984 L2154 984 L2170 984" class="rwalk"/>
+<path d="M2170 984 L2178 949 L2185 917 L2192 888 L2200 863 L2208 842 L2215 823 L2222 809 L2230 798 L2238 790 L2245 786 L2252 785 L2260 788 L2268 794 L2275 804 L2282 818 L2290 834 L2298 854 L2305 878 L2312 905 L2320 936" class="rjump"/>
+<path d="M2320 936 L2336 936 L2352 936 L2368 936 L2384 936 L2400 936 L2416 936 L2426 936" class="rwalk"/>
+<path d="M2426 936 L2434 901 L2441 869 L2449 840 L2457 815 L2464 794 L2472 775 L2480 761 L2488 750 L2495 742 L2503 738 L2511 737 L2518 740 L2526 746 L2534 756 L2542 770 L2549 786 L2557 806 L2565 830 L2572 857 L2580 888" class="rjump"/>
+<path d="M2580 888 L2596 888 L2612 888 L2628 888 L2644 888 L2660 888 L2676 888 L2692 888 L2698 888" class="rwalk"/>
+<path d="M2698 888 L2706 850 L2714 816 L2722 786 L2730 759 L2738 736 L2747 716 L2755 700 L2763 688 L2771 679 L2779 674 L2787 673 L2795 675 L2803 681 L2811 690 L2820 704 L2828 720 L2836 741 L2844 765 L2852 793 L2860 824" class="rjump"/>
+<path d="M2860 824 L2876 824 L2892 824 L2908 824 L2924 824 L2940 824 L2956 824 L2972 824 L2988 824 L3004 824 L3020 824 L3036 776 L3052 776 L3068 776 L3084 776 L3100 776 L3116 776 L3132 776 L3148 776 L3164 776 L3180 776 L3196 776 L3212 776 L3228 776 L3244 776 L3260 776 L3276 776 L3292 776 L3308 712 L3324 712 L3340 712 L3356 712 L3372 712 L3388 712 L3404 712 L3420 712 L3436 712 L3452 712 L3468 712 L3484 712 L3500 712 L3516 712 L3532 712 L3548 712 L3564 712 L3580 712 L3596 712 L3612 712 L3628 712 L3644 712 L3660 712 L3676 712 L3692 712 L3708 712 L3724 712 L3740 712 L3756 712 L3772 712 L3788 712 L3804 712 L3820 712 L3836 712 L3852 712 L3868 712 L3884 712 L3900 712 L3916 712 L3932 712 L3948 712 L3964 712 L3980 712 L3996 712 L4012 712 L4028 712 L4044 712 L4060 712 L4076 712 L4092 712 L4108 712 L4124 712 L4140 712 L4156 712 L4172 712 L4188 712 L4204 712 L4220 712 L4236 712 L4252 712 L4268 712 L4284 712 L4300 712 L4316 712 L4332 712 L4348 712 L4364 712 L4380 712 L4396 712 L4412 712 L4428 712 L4444 712 L4460 712 L4476 712 L4492 712 L4508 712 L4524 712 L4540 712 L4556 712 L4572 712 L4588 712 L4604 712 L4620 712 L4636 712 L4652 712 L4668 712 L4684 712 L4700 712 L4716 712 L4732 712 L4748 712 L4764 712 L4780 712 L4796 712 L4812 712 L4828 712 L4844 712 L4860 712 L4876 712 L4892 712 L4908 712 L4924 712 L4940 712 L4956 712 L4972 712 L4988 712" class="rwalk"/>
+<g class="step sjump"><circle cx="1650" cy="2952" r="34"/><text x="1650" y="2968" text-anchor="middle"></text><title>뛰기 1530 → (1650, 2992)</title></g>
+<g class="step sjump"><circle cx="1950" cy="2840" r="34"/><text x="1950" y="2856" text-anchor="middle"></text><title>뛰기 1800 → (1950, 2880)</title></g>
+<g class="step sjump"><circle cx="2010" cy="2696" r="34"/><text x="2010" y="2712" text-anchor="middle"></text><title>뛰기 2000 → (2010, 2736)</title></g>
+<g class="step sjump"><circle cx="2020" cy="2600" r="34"/><text x="2020" y="2616" text-anchor="middle"></text><title>뛰기 2010 → (2020, 2640)</title></g>
+<g class="step sjump"><circle cx="1372" cy="2504" r="34"/><text x="1372" y="2520" text-anchor="middle"></text><title>뛰기 1370 → (1372, 2544)</title></g>
+<g class="step sjump"><circle cx="1050" cy="2424" r="34"/><text x="1050" y="2440" text-anchor="middle"></text><title>뛰기 1222 → (1050, 2464)</title></g>
+<g class="step sshot"><circle cx="1264" cy="2352" r="46"/><text x="1264" y="2368" text-anchor="middle">●</text><title>투명발판_1 를 검정으로 칠함</title></g>
+<g class="step sshot"><circle cx="1464" cy="2320" r="46"/><text x="1464" y="2336" text-anchor="middle">●</text><title>투명발판_2 를 검정으로 칠함</title></g>
+<g class="step sjump"><circle cx="1260" cy="2328" r="34"/><text x="1260" y="2344" text-anchor="middle"></text><title>뛰기 1082 → (1260, 2368)</title></g>
+<g class="step sjump"><circle cx="1460" cy="2296" r="34"/><text x="1460" y="2312" text-anchor="middle"></text><title>뛰기 1306 → (1460, 2336)</title></g>
+<g class="step sjump"><circle cx="1660" cy="2280" r="34"/><text x="1660" y="2296" text-anchor="middle"></text><title>뛰기 1498 → (1660, 2320)</title></g>
+<g class="step sshot"><circle cx="1992" cy="2180" r="46"/><text x="1992" y="2196" text-anchor="middle">●</text><title>양동이 를 검정으로 칠함</title></g>
+<g class="step sjump"><circle cx="1992" cy="2186" r="34"/><text x="1992" y="2202" text-anchor="middle"></text><title>뛰기 1760 → (1992, 2226)</title></g>
+<g class="step spush"><circle cx="1872" cy="2280" r="46"/><text x="1872" y="2296" text-anchor="middle">⇢</text><title>양동이 밀기 → x 1872</title></g>
+<g class="step sjump"><circle cx="1930" cy="2186" r="34"/><text x="1930" y="2202" text-anchor="middle"></text><title>뛰기 2110 → (1930, 2226)</title></g>
+<g class="step sjump"><circle cx="1520" cy="2232" r="34"/><text x="1520" y="2248" text-anchor="middle"></text><title>뛰기 1606 → (1520, 2272)</title></g>
+<g class="step sjump"><circle cx="1400" cy="2184" r="34"/><text x="1400" y="2200" text-anchor="middle"></text><title>뛰기 1478 → (1400, 2224)</title></g>
+<g class="step sjump"><circle cx="1290" cy="2136" r="34"/><text x="1290" y="2152" text-anchor="middle"></text><title>뛰기 1366 → (1290, 2176)</title></g>
+<g class="step sjump"><circle cx="1180" cy="2088" r="34"/><text x="1180" y="2104" text-anchor="middle"></text><title>뛰기 1254 → (1180, 2128)</title></g>
+<g class="step sjump"><circle cx="1050" cy="2040" r="34"/><text x="1050" y="2056" text-anchor="middle"></text><title>뛰기 1126 → (1050, 2080)</title></g>
+<g class="step sjump"><circle cx="660" cy="2008" r="34"/><text x="660" y="2024" text-anchor="middle"></text><title>뛰기 742 → (660, 2048)</title></g>
+<g class="step sjump"><circle cx="460" cy="1944" r="34"/><text x="460" y="1960" text-anchor="middle"></text><title>뛰기 540 → (460, 1984)</title></g>
+<g class="step sjump"><circle cx="560" cy="1848" r="34"/><text x="560" y="1864" text-anchor="middle"></text><title>뛰기 470 → (560, 1888)</title></g>
+<g class="step sjump"><circle cx="1060" cy="1848" r="34"/><text x="1060" y="1864" text-anchor="middle"></text><title>뛰기 735 → (1060, 1888)</title></g>
+<g class="step sjump"><circle cx="1770" cy="1704" r="34"/><text x="1770" y="1720" text-anchor="middle"></text><title>뛰기 1642 → (1770, 1744)</title></g>
+<g class="step sswap"><circle cx="1909" cy="1554" r="46"/><text x="1909" y="1570" text-anchor="middle"></text><title>뛰는 중 흰색으로 전환 → 착지 (2000, 1744)</title></g>
+<g class="step sswap"><circle cx="2133" cy="1554" r="46"/><text x="2133" y="1570" text-anchor="middle"></text><title>x 2090 지나 검정으로 전환 → 착지 (2224, 1744)</title></g>
+<g class="step sswap"><circle cx="2357" cy="1522" r="46"/><text x="2357" y="1538" text-anchor="middle"></text><title>x 2312 지나 흰색으로 전환 → 착지 (2448, 1712)</title></g>
+<g class="step sswap"><circle cx="2565" cy="1474" r="46"/><text x="2565" y="1490" text-anchor="middle"></text><title>x 99999 지나 흰색으로 전환 → 착지 (2640, 1664)</title></g>
+<g class="step sjump"><circle cx="2695" cy="1528" r="34"/><text x="2695" y="1544" text-anchor="middle"></text><title>뛰기 2690 → (2695, 1568)</title></g>
+<g class="step sjump"><circle cx="2800" cy="1480" r="34"/><text x="2800" y="1496" text-anchor="middle"></text><title>뛰기 2698 → (2800, 1520)</title></g>
+<g class="step sswap"><circle cx="3032" cy="1314" r="46"/><text x="3032" y="1330" text-anchor="middle"></text><title>뛰는 중 검정으로 전환 → 착지 (3110, 1504)</title></g>
+<g class="step sjump"><circle cx="3620" cy="1464" r="34"/><text x="3620" y="1480" text-anchor="middle"></text><title>뛰기 3418 → (3620, 1504)</title></g>
+<g class="step sjump"><circle cx="3900" cy="1464" r="34"/><text x="3900" y="1480" text-anchor="middle"></text><title>뛰기 3722 → (3900, 1504)</title></g>
+<g class="step sjump"><circle cx="3660" cy="1464" r="34"/><text x="3660" y="1480" text-anchor="middle"></text><title>뛰기 3862 → (3660, 1504)</title></g>
+<g class="step sjump"><circle cx="3380" cy="1464" r="34"/><text x="3380" y="1480" text-anchor="middle"></text><title>뛰기 3574 → (3380, 1504)</title></g>
+<g class="step sswap"><circle cx="2989" cy="1314" r="46"/><text x="2989" y="1330" text-anchor="middle"></text><title>뛰는 중 흰색으로 전환 → 착지 (2900, 1520)</title></g>
+<g class="step sswap"><circle cx="2651" cy="1298" r="46"/><text x="2651" y="1314" text-anchor="middle"></text><title>뛰는 중 검정으로 전환 → 착지 (2560, 1488)</title></g>
+<g class="step slever"><circle cx="1968" cy="1304" r="46"/><text x="1968" y="1320" text-anchor="middle">E</text><title>벨브_1 당김</title></g>
+<g class="step sswap"><circle cx="1365" cy="1122" r="46"/><text x="1365" y="1138" text-anchor="middle"></text><title>x -99999 지나 검정으로 전환 → 착지 (1330, 1312)</title></g>
+<g class="step sjump"><circle cx="1100" cy="1176" r="34"/><text x="1100" y="1192" text-anchor="middle"></text><title>뛰기 1050 → (1100, 1216)</title></g>
+<g class="step sswap"><circle cx="1347" cy="962" r="46"/><text x="1347" y="978" text-anchor="middle"></text><title>뛰는 중 흰색으로 전환 → 착지 (1420, 1152)</title></g>
+<g class="step sswap"><circle cx="1685" cy="898" r="46"/><text x="1685" y="914" text-anchor="middle"></text><title>뛰는 중 검정으로 전환 → 착지 (1760, 1088)</title></g>
+<g class="step sswap"><circle cx="1975" cy="834" r="46"/><text x="1975" y="850" text-anchor="middle"></text><title>뛰는 중 흰색으로 전환 → 착지 (2090, 1024)</title></g>
+<g class="step sswap"><circle cx="2245" cy="786" r="46"/><text x="2245" y="802" text-anchor="middle"></text><title>뛰는 중 검정으로 전환 → 착지 (2320, 976)</title></g>
+<g class="step sjump"><circle cx="2580" cy="888" r="34"/><text x="2580" y="904" text-anchor="middle"></text><title>뛰기 2426 → (2580, 928)</title></g>
+<g class="step sjump"><circle cx="2860" cy="824" r="34"/><text x="2860" y="840" text-anchor="middle"></text><title>뛰기 2698 → (2860, 864)</title></g>
 </g>
 <g class="roomlabels">
-<g class="roomchip"><circle cx="218" cy="90" r="58"/><text x="218" y="118" text-anchor="middle" class="rk">A</text><text x="294" y="112" class="rt">첫 밸브</text></g>
-<g class="roomchip"><circle cx="2378" cy="90" r="58"/><text x="2378" y="118" text-anchor="middle" class="rk">B</text><text x="2454" y="112" class="rt">펌프실 — 위냐 아래냐</text></g>
-<g class="roomchip"><circle cx="4690" cy="90" r="58"/><text x="4690" y="118" text-anchor="middle" class="rk">C</text><text x="4766" y="112" class="rt">반대색으로 건넌다</text></g>
-<g class="roomchip"><circle cx="6778" cy="90" r="58"/><text x="6778" y="118" text-anchor="middle" class="rk">D</text><text x="6854" y="112" class="rt">흰 출구</text></g>
+<g class="roomchip"><circle cx="1146" cy="2714" r="58"/><text x="1146" y="2742" text-anchor="middle" class="rk">A</text><text x="1222" y="2736" class="rt">시작 방</text></g>
+<g class="roomchip"><circle cx="810" cy="2138" r="58"/><text x="810" y="2166" text-anchor="middle" class="rk">B</text><text x="886" y="2160" class="rt">가운데 방 — 양동이 · 발판 · 계단</text></g>
+<g class="roomchip"><circle cx="506" cy="1562" r="58"/><text x="506" y="1590" text-anchor="middle" class="rk">C</text><text x="582" y="1584" class="rt">복도 — 톱 · 검흰 공중 지형</text></g>
+<g class="roomchip"><circle cx="3066" cy="1390" r="58"/><text x="3066" y="1418" text-anchor="middle" class="rk">D</text><text x="3142" y="1412" class="rt">곁길 — 낙사 존 · 검은 열쇠</text></g>
+<g class="roomchip"><circle cx="618" cy="410" r="58"/><text x="618" y="438" text-anchor="middle" class="rk">E</text><text x="694" y="432" class="rt">윗방 — 벨브 · 검흰 격자 · 도착</text></g>
 </g>
 </svg></div>
 <main>
@@ -194,7 +316,7 @@ nav{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 8px;font-size:13px}nav a
 <span><i style="background:#ff4d4d"></i>가시(색 무관 즉사)</span><span><i style="background:#ff8ad8"></i>레버 → 바꾸는 물</span><span><i style="background:#ffd84d"></i>체크포인트</span>
 <span><i style="background:#ffb347"></i>호퍼·격자·저장고·양동이·박스·버튼·발판</span><span><i style="background:#ff9d2e"></i>정답 경로</span><span><i style="background:#4fd1ff"></i>다른 갈래</span><span><i style="background:#ffd166"></i>방 · 방 순서</span>
 </div><p class="src">경로: 실선 = 걷기 · 점선 = 점프 · 잔 점선 = 페인트 발사. 흑백 원 = 색 전환 · ● 원 = 칠함 · E 원 = 레버 · ⇢ 원 = 밀기. 지형·물·표식에 마우스를 올리면 이름과 값이 나온다. 좌표 = 월드 px (y 는 아래로 커진다). 경로는 공략표를 그림으로 옮긴 것이라 실제 궤적과 조금 다르다.</p></section>
-<section class="card"><h2><span class="rk">A</span>방 A · 첫 밸브</h2><p>시작하자마자 레버 L1 이 앞길의 흰 물 F1 을 잠근다 — 조작 결과를 가까이서 본다. 계단을 올라 펌프실로.</p></section><section class="card"><h2><span class="rk">B</span>방 B · 펌프실 — 위냐 아래냐</h2><p>직선 레버 L2 가 흰 길막(A)과 위쪽 검정 배수(B) 중 하나를 흘린다. 아래로: B 로 돌리고 아래 검정 바닥 → 오른쪽 계단 → 상부 밸브실. 위로: 그대로 두고 틈 두 곳에서 공중 색 전환 → 상부. 어느 쪽이든 레버 L3 이 두 번째 흰 길막 F3 을 끈다.</p></section><section class="card"><h2><span class="rk">C</span>방 C · 반대색으로 건넌다</h2><p>레버 L4 로 흰 물 F4 를 끈다 → 호퍼 H4(색 규칙 밖) 위에서 흰색으로 흰 유령, 검정으로 검정 유령을 칠한다 → 두 장을 뛰어 건너며 흰색으로. 빠지면 E 로 회수하고 아래 계단으로 복귀.</p></section><section class="card"><h2><span class="rk">D</span>방 D · 흰 출구</h2><p>흰 바닥 복도 → 출구(2-6). 색 판단이 끝까지 남는다.</p></section>
+<section class="card"><h2><span class="rk">A</span>방 A · 시작 방</h2><p>격자 5 장을 밟고 올라 긴 격자(가운데 방 바닥)를 밑에서 뚫는다. 오른쪽 벽에서 흰색물_2 가 쏟아진다(검은 몸은 피한다).</p></section><section class="card"><h2><span class="rk">B</span>방 B · 가운데 방 — 양동이 · 발판 · 계단</h2><p>격자 2 장 → 투명발판 2 장을 칠해(2 발) 블록으로 → 양동이를 쏴 채우고(1 발) 발판_1 에 민다 → 검은지형_1~5 가 아래부터 튀어나와 큰 계단. 양동이 위로 올라타 넘어야 한다(걸어 지나가면 양동이를 발판에서 밀어낸다). 계단 꼭대기 → 왼쪽 턱 → 격자 배관.</p></section><section class="card"><h2><span class="rk">C</span>방 C · 복도 — 톱 · 검흰 공중 지형</h2><p>땅에 박힌 톱(좌우)을 넘는다 → 가시 위 검·흰·검·흰 공중 지형을 공중 색 전환으로 → 흰 격자 2 장 → 흰색 지형. 슬래브가 낮아 흰 몸은 짧게 뛴다.</p></section><section class="card"><h2><span class="rk">D</span>방 D · 곁길 — 낙사 존 · 검은 열쇠</h2><p>흰색 지형에서 검정으로 → 상하 톱 둘이 아래로 내려간 틈에 발판을 건너 열쇠 홈 → 열쇠를 주우면 도착 문이 열린다 → 되돌아온다.</p></section><section class="card"><h2><span class="rk">E</span>방 E · 윗방 — 벨브 · 검흰 격자 · 도착</h2><p>흰색 지형 → 윗방 바닥을 거슬러 → 물 오른쪽 벨브로 흰색물_1 을 끈다 → 격자 검·흰·검·흰·검 → 디딤돌 → 바위 윗면 → 도착 문 → 출구(2-6).</p></section>
 </main>
 <script>
 document.querySelectorAll('.bar input[data-r]').forEach(c=>c.addEventListener('change',()=>document.getElementById(c.dataset.r).classList.toggle('hidden',!c.checked)));

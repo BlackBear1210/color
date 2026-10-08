@@ -45,6 +45,12 @@ extends CharacterBody2D
 	set(v):
 		물색 = clampi(v, ColorDefs.BLACK, ColorDefs.GRAY)
 		queue_redraw()
+## ★[2026-10-08 Claude · 2-5] 페인트를 쏘면 그 색으로 가득 찬다(무게추가 된다) · E 회수로 비운다.
+##   왜: 2-5 도면 "발판_1 에 색을 채운 양동이를 밀어 올려두면 … 양동이에 있는 페인트를 회수하면 양동이는 가벼워져서
+##   발판의 홀드가 풀린다" — 가운데 방에는 물줄기가 없어 페인트로 채워야 한다.
+##   09-30 "쏴서 채우기 없음" 은 물 양동이 규칙이라 **이 값을 켠 양동이만** 바뀐다(기본 끔 → 2-6·2-7·2-8 그대로).
+##   채운 페인트는 페인트 코어의 회수줄에 들어간다 → E 회수(FIFO)·사망 리셋 때 `되돌리기()` 로 빈다.
+@export var 페인트로_채움: bool = false
 @export_group("")
 
 const 중력: float = 1200.0
@@ -169,12 +175,24 @@ func _물_담기_검사(delta: float) -> void:
 
 
 ## 페인트 총의 대상이 되지 않는 기계 장치다. 색은 "밀기 조건"일 뿐 사망 판정용 색이 아니다.
-func 명중(_색: int, _월드좌표: Vector2) -> String:
-	return "blocked"
+## ★[2026-10-08] `페인트로_채움` 이 켜진 양동이만 예외 — 빈 양동이에 맞으면 그 색으로 가득 찬다("painted" → 회수줄).
+##   이미 차 있으면 "wasted"(환급) — 반대색으로 덮어 다시 칠하는 규칙은 두지 않는다(무게는 색과 상관없다).
+func 명중(색_: int, _월드좌표: Vector2) -> String:
+	if not 페인트로_채움:
+		return "blocked"
+	if 물참:
+		return "wasted"
+	물색 = 색_
+	물참 = true
+	return "painted"
 
 
+## 페인트 코어가 E 회수·사망 리셋 때 부른다. 페인트로 채운 양동이만 비울 수 있다(물 양동이는 그대로 false).
 func 되돌리기() -> bool:
-	return false
+	if not 페인트로_채움 or not 물참:
+		return false
+	물참 = false
+	return true
 
 
 func 현재색() -> int:
