@@ -1,5 +1,5 @@
-; 생성: tools/쳅터1/만들기.py · out=de089be0ac55c6ec · 손으로 고치지 말고 도안(쳅터1_15_집밖_하수도길.json)을 고친 뒤 다시 생성
-[gd_scene load_steps=120 format=3]
+; 생성: tools/쳅터1/만들기.py · out=4958dace5a486b26 · 손으로 고치지 말고 도안(쳅터1_15_집밖_하수도길.json)을 고친 뒤 다시 생성
+[gd_scene load_steps=159 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -16,6 +16,13 @@
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/외부_v01/house_exterior.png" id="13_extra"]
 [ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반사빛길.tscn" id="14_extra"]
 [ext_resource type="Resource" path="res://assets/background/쳅터1/프리셋/방_판자.tres" id="15_preset"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/거미줄.tscn" id="add_web"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/그을음.tscn" id="add_soot"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/누름발판.tscn" id="add_plate"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/박스.tscn" id="add_box"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/튀어나오는판.tscn" id="add_popout"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/썩은마루판.tscn" id="add_plank"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -111,57 +118,105 @@ position = Vector2(1504, 576)
 
 [sub_resource type="Resource" id="P_S01_23"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(2080, 576)
+position = Vector2(1728, 576)
 
 [sub_resource type="Resource" id="P_S01_24"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(2080, 640)
+position = Vector2(1728, 640)
 
 [sub_resource type="Resource" id="P_S01_25"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(2496, 640)
+position = Vector2(1920, 640)
 
 [sub_resource type="Resource" id="P_S01_26"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(2496, 704)
+position = Vector2(1920, 576)
 
 [sub_resource type="Resource" id="P_S01_27"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(3456, 704)
+position = Vector2(2080, 576)
 
 [sub_resource type="Resource" id="P_S01_28"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(3456, 512)
+position = Vector2(2080, 640)
 
 [sub_resource type="Resource" id="P_S01_29"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(2912, 512)
+position = Vector2(2176, 640)
 
 [sub_resource type="Resource" id="P_S01_30"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(2912, -1024)
+position = Vector2(2176, 864)
 
 [sub_resource type="Resource" id="P_S01_31"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-2896, -1024)
+position = Vector2(2400, 864)
 
 [sub_resource type="Resource" id="P_S01_32"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-2896, -1696)
+position = Vector2(2400, 640)
 
 [sub_resource type="Resource" id="P_S01_33"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(4224, -1696)
+position = Vector2(2496, 640)
 
 [sub_resource type="Resource" id="P_S01_34"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(4224, 1696)
+position = Vector2(2496, 704)
 
 [sub_resource type="Resource" id="P_S01_35"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-4224, 1696)
+position = Vector2(2624, 704)
 
 [sub_resource type="Resource" id="P_S01_36"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2624, 768)
+
+[sub_resource type="Resource" id="P_S01_37"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2784, 768)
+
+[sub_resource type="Resource" id="P_S01_38"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2784, 704)
+
+[sub_resource type="Resource" id="P_S01_39"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(3456, 704)
+
+[sub_resource type="Resource" id="P_S01_40"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(3456, 512)
+
+[sub_resource type="Resource" id="P_S01_41"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2912, 512)
+
+[sub_resource type="Resource" id="P_S01_42"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2912, -1024)
+
+[sub_resource type="Resource" id="P_S01_43"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2896, -1024)
+
+[sub_resource type="Resource" id="P_S01_44"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2896, -1696)
+
+[sub_resource type="Resource" id="P_S01_45"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(4224, -1696)
+
+[sub_resource type="Resource" id="P_S01_46"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(4224, 1696)
+
+[sub_resource type="Resource" id="P_S01_47"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-4224, 1696)
+
+[sub_resource type="Resource" id="P_S01_48"]
 script = ExtResource("6_ss2d_point")
 position = Vector2(-4224, -1696)
 
@@ -204,33 +259,375 @@ _points = {
 33: SubResource("P_S01_33"),
 34: SubResource("P_S01_34"),
 35: SubResource("P_S01_35"),
-36: SubResource("P_S01_36")
+36: SubResource("P_S01_36"),
+37: SubResource("P_S01_37"),
+38: SubResource("P_S01_38"),
+39: SubResource("P_S01_39"),
+40: SubResource("P_S01_40"),
+41: SubResource("P_S01_41"),
+42: SubResource("P_S01_42"),
+43: SubResource("P_S01_43"),
+44: SubResource("P_S01_44"),
+45: SubResource("P_S01_45"),
+46: SubResource("P_S01_46"),
+47: SubResource("P_S01_47"),
+48: SubResource("P_S01_48")
 }
-_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36)
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48)
 _constraints = {
-Vector2i(0, 36): 15
+Vector2i(0, 48): 15
 }
-_next_key = 37
+_next_key = 49
+
+[sub_resource type="Resource" id="P_W01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="P_W01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, -32)
+
+[sub_resource type="Resource" id="P_W01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, 32)
+
+[sub_resource type="Resource" id="P_W01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(28.57, 32)
+
+[sub_resource type="Resource" id="P_W01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(15.13, 23.99)
+
+[sub_resource type="Resource" id="P_W01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-5.48, 27.19)
+
+[sub_resource type="Resource" id="P_W01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-16.23, 32)
+
+[sub_resource type="Resource" id="P_W01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, 32)
+
+[sub_resource type="Resource" id="P_W01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="PA_W01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W01_0"),
+1: SubResource("P_W01_1"),
+2: SubResource("P_W01_2"),
+3: SubResource("P_W01_3"),
+4: SubResource("P_W01_4"),
+5: SubResource("P_W01_5"),
+6: SubResource("P_W01_6"),
+7: SubResource("P_W01_7"),
+8: SubResource("P_W01_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_G01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="P_G01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, -32)
+
+[sub_resource type="Resource" id="P_G01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, 32)
+
+[sub_resource type="Resource" id="P_G01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, 32)
+
+[sub_resource type="Resource" id="P_G01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="PA_G01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_G01_0"),
+1: SubResource("P_G01_1"),
+2: SubResource("P_G01_2"),
+3: SubResource("P_G01_3"),
+4: SubResource("P_G01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_W02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="P_W02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, -32)
+
+[sub_resource type="Resource" id="P_W02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, 32)
+
+[sub_resource type="Resource" id="P_W02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(30.69, 32)
+
+[sub_resource type="Resource" id="P_W02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(17.25, 23.91)
+
+[sub_resource type="Resource" id="P_W02_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3.36, 27.14)
+
+[sub_resource type="Resource" id="P_W02_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-14.11, 32)
+
+[sub_resource type="Resource" id="P_W02_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, 32)
+
+[sub_resource type="Resource" id="P_W02_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="PA_W02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W02_0"),
+1: SubResource("P_W02_1"),
+2: SubResource("P_W02_2"),
+3: SubResource("P_W02_3"),
+4: SubResource("P_W02_4"),
+5: SubResource("P_W02_5"),
+6: SubResource("P_W02_6"),
+7: SubResource("P_W02_7"),
+8: SubResource("P_W02_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_B01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="P_B01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, -32)
+
+[sub_resource type="Resource" id="P_B01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, 32)
+
+[sub_resource type="Resource" id="P_B01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, 32)
+
+[sub_resource type="Resource" id="P_B01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="PA_B01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B01_0"),
+1: SubResource("P_B01_1"),
+2: SubResource("P_B01_2"),
+3: SubResource("P_B01_3"),
+4: SubResource("P_B01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_B02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-192, -176)
+
+[sub_resource type="Resource" id="P_B02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -176)
+
+[sub_resource type="Resource" id="P_B02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 112)
+
+[sub_resource type="Resource" id="P_B02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(192, 112)
+
+[sub_resource type="Resource" id="P_B02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(192, 176)
+
+[sub_resource type="Resource" id="P_B02_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-192, 176)
+
+[sub_resource type="Resource" id="P_B02_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-192, -176)
+
+[sub_resource type="Resource" id="PA_B02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B02_0"),
+1: SubResource("P_B02_1"),
+2: SubResource("P_B02_2"),
+3: SubResource("P_B02_3"),
+4: SubResource("P_B02_4"),
+5: SubResource("P_B02_5"),
+6: SubResource("P_B02_6")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6)
+_constraints = {
+Vector2i(0, 6): 15
+}
+_next_key = 7
+
+[sub_resource type="Resource" id="P_W03_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="P_W03_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -32)
+
+[sub_resource type="Resource" id="P_W03_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 32)
+
+[sub_resource type="Resource" id="P_W03_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, 32)
+
+[sub_resource type="Resource" id="P_W03_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="PA_W03"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W03_0"),
+1: SubResource("P_W03_1"),
+2: SubResource("P_W03_2"),
+3: SubResource("P_W03_3"),
+4: SubResource("P_W03_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_B03_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="P_B03_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="P_B03_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="P_B03_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="P_B03_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="PA_B03"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B03_0"),
+1: SubResource("P_B03_1"),
+2: SubResource("P_B03_2"),
+3: SubResource("P_B03_3"),
+4: SubResource("P_B03_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_W04_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, -32)
+
+[sub_resource type="Resource" id="P_W04_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(128, -32)
+
+[sub_resource type="Resource" id="P_W04_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(128, 32)
+
+[sub_resource type="Resource" id="P_W04_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, 32)
+
+[sub_resource type="Resource" id="P_W04_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, -32)
+
+[sub_resource type="Resource" id="PA_W04"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W04_0"),
+1: SubResource("P_W04_1"),
+2: SubResource("P_W04_2"),
+3: SubResource("P_W04_3"),
+4: SubResource("P_W04_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
 
 [sub_resource type="Resource" id="P_S02_0"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
+position = Vector2(-128, -16)
 
 [sub_resource type="Resource" id="P_S02_1"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(96, -32)
+position = Vector2(128, -16)
 
 [sub_resource type="Resource" id="P_S02_2"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(96, 32)
+position = Vector2(128, 16)
 
 [sub_resource type="Resource" id="P_S02_3"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-96, 32)
+position = Vector2(-128, 16)
 
 [sub_resource type="Resource" id="P_S02_4"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
+position = Vector2(-128, -16)
 
 [sub_resource type="Resource" id="PA_S02"]
 script = ExtResource("7_ss2d_points")
@@ -247,279 +644,89 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="Resource" id="P_S03_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="P_S03_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, -32)
-
-[sub_resource type="Resource" id="P_S03_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, 32)
-
-[sub_resource type="Resource" id="P_S03_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, 32)
-
-[sub_resource type="Resource" id="P_S03_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="PA_S03"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S03_0"),
-1: SubResource("P_S03_1"),
-2: SubResource("P_S03_2"),
-3: SubResource("P_S03_3"),
-4: SubResource("P_S03_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S04_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="P_S04_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, -32)
-
-[sub_resource type="Resource" id="P_S04_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, 32)
-
-[sub_resource type="Resource" id="P_S04_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, 32)
-
-[sub_resource type="Resource" id="P_S04_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="PA_S04"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S04_0"),
-1: SubResource("P_S04_1"),
-2: SubResource("P_S04_2"),
-3: SubResource("P_S04_3"),
-4: SubResource("P_S04_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S05_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="P_S05_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, -32)
-
-[sub_resource type="Resource" id="P_S05_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, 32)
-
-[sub_resource type="Resource" id="P_S05_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, 32)
-
-[sub_resource type="Resource" id="P_S05_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="PA_S05"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S05_0"),
-1: SubResource("P_S05_1"),
-2: SubResource("P_S05_2"),
-3: SubResource("P_S05_3"),
-4: SubResource("P_S05_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S06_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="P_S06_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, -32)
-
-[sub_resource type="Resource" id="P_S06_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, 32)
-
-[sub_resource type="Resource" id="P_S06_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, 32)
-
-[sub_resource type="Resource" id="P_S06_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="PA_S06"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S06_0"),
-1: SubResource("P_S06_1"),
-2: SubResource("P_S06_2"),
-3: SubResource("P_S06_3"),
-4: SubResource("P_S06_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S07_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="P_S07_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, -32)
-
-[sub_resource type="Resource" id="P_S07_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(96, 32)
-
-[sub_resource type="Resource" id="P_S07_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, 32)
-
-[sub_resource type="Resource" id="P_S07_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-96, -32)
-
-[sub_resource type="Resource" id="PA_S07"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S07_0"),
-1: SubResource("P_S07_1"),
-2: SubResource("P_S07_2"),
-3: SubResource("P_S07_3"),
-4: SubResource("P_S07_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S08_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-112, -48)
-
-[sub_resource type="Resource" id="P_S08_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(112, -48)
-
-[sub_resource type="Resource" id="P_S08_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(112, 48)
-
-[sub_resource type="Resource" id="P_S08_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-112, 48)
-
-[sub_resource type="Resource" id="P_S08_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-112, -48)
-
-[sub_resource type="Resource" id="PA_S08"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S08_0"),
-1: SubResource("P_S08_1"),
-2: SubResource("P_S08_2"),
-3: SubResource("P_S08_3"),
-4: SubResource("P_S08_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S09_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-128, -48)
-
-[sub_resource type="Resource" id="P_S09_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(128, -48)
-
-[sub_resource type="Resource" id="P_S09_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(128, 48)
-
-[sub_resource type="Resource" id="P_S09_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-128, 48)
-
-[sub_resource type="Resource" id="P_S09_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-128, -48)
-
-[sub_resource type="Resource" id="PA_S09"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S09_0"),
-1: SubResource("P_S09_1"),
-2: SubResource("P_S09_2"),
-3: SubResource("P_S09_3"),
-4: SubResource("P_S09_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S10_0"]
+[sub_resource type="Resource" id="P_B04_0"]
 script = ExtResource("6_ss2d_point")
 position = Vector2(-64, -32)
 
-[sub_resource type="Resource" id="P_S10_1"]
+[sub_resource type="Resource" id="P_B04_1"]
 script = ExtResource("6_ss2d_point")
 position = Vector2(64, -32)
 
-[sub_resource type="Resource" id="P_S10_2"]
+[sub_resource type="Resource" id="P_B04_2"]
 script = ExtResource("6_ss2d_point")
 position = Vector2(64, 32)
 
-[sub_resource type="Resource" id="P_S10_3"]
+[sub_resource type="Resource" id="P_B04_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2.84, 32)
+
+[sub_resource type="Resource" id="P_B04_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-7.91, 22.66)
+
+[sub_resource type="Resource" id="P_B04_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-24.4, 26.4)
+
+[sub_resource type="Resource" id="P_B04_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-33, 32)
+
+[sub_resource type="Resource" id="P_B04_7"]
 script = ExtResource("6_ss2d_point")
 position = Vector2(-64, 32)
 
-[sub_resource type="Resource" id="P_S10_4"]
+[sub_resource type="Resource" id="P_B04_8"]
 script = ExtResource("6_ss2d_point")
 position = Vector2(-64, -32)
 
-[sub_resource type="Resource" id="PA_S10"]
+[sub_resource type="Resource" id="PA_B04"]
 script = ExtResource("7_ss2d_points")
 _points = {
-0: SubResource("P_S10_0"),
-1: SubResource("P_S10_1"),
-2: SubResource("P_S10_2"),
-3: SubResource("P_S10_3"),
-4: SubResource("P_S10_4")
+0: SubResource("P_B04_0"),
+1: SubResource("P_B04_1"),
+2: SubResource("P_B04_2"),
+3: SubResource("P_B04_3"),
+4: SubResource("P_B04_4"),
+5: SubResource("P_B04_5"),
+6: SubResource("P_B04_6"),
+7: SubResource("P_B04_7"),
+8: SubResource("P_B04_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_W05_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_W05_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_W05_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_W05_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_W05_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_W05"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W05_0"),
+1: SubResource("P_W05_1"),
+2: SubResource("P_W05_2"),
+3: SubResource("P_W05_3"),
+4: SubResource("P_W05_4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
 _constraints = {
@@ -527,69 +734,34 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
-[sub_resource type="Resource" id="P_S11_0"]
+[sub_resource type="Resource" id="P_B05_0"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-64, -32)
+position = Vector2(-80, -32)
 
-[sub_resource type="Resource" id="P_S11_1"]
+[sub_resource type="Resource" id="P_B05_1"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(64, -32)
+position = Vector2(80, -32)
 
-[sub_resource type="Resource" id="P_S11_2"]
+[sub_resource type="Resource" id="P_B05_2"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(64, 32)
+position = Vector2(80, 32)
 
-[sub_resource type="Resource" id="P_S11_3"]
+[sub_resource type="Resource" id="P_B05_3"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-64, 32)
+position = Vector2(-80, 32)
 
-[sub_resource type="Resource" id="P_S11_4"]
+[sub_resource type="Resource" id="P_B05_4"]
 script = ExtResource("6_ss2d_point")
-position = Vector2(-64, -32)
+position = Vector2(-80, -32)
 
-[sub_resource type="Resource" id="PA_S11"]
+[sub_resource type="Resource" id="PA_B05"]
 script = ExtResource("7_ss2d_points")
 _points = {
-0: SubResource("P_S11_0"),
-1: SubResource("P_S11_1"),
-2: SubResource("P_S11_2"),
-3: SubResource("P_S11_3"),
-4: SubResource("P_S11_4")
-}
-_point_order = PackedInt32Array(0, 1, 2, 3, 4)
-_constraints = {
-Vector2i(0, 4): 15
-}
-_next_key = 5
-
-[sub_resource type="Resource" id="P_S12_0"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-64, -32)
-
-[sub_resource type="Resource" id="P_S12_1"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(64, -32)
-
-[sub_resource type="Resource" id="P_S12_2"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(64, 32)
-
-[sub_resource type="Resource" id="P_S12_3"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-64, 32)
-
-[sub_resource type="Resource" id="P_S12_4"]
-script = ExtResource("6_ss2d_point")
-position = Vector2(-64, -32)
-
-[sub_resource type="Resource" id="PA_S12"]
-script = ExtResource("7_ss2d_points")
-_points = {
-0: SubResource("P_S12_0"),
-1: SubResource("P_S12_1"),
-2: SubResource("P_S12_2"),
-3: SubResource("P_S12_3"),
-4: SubResource("P_S12_4")
+0: SubResource("P_B05_0"),
+1: SubResource("P_B05_1"),
+2: SubResource("P_B05_2"),
+3: SubResource("P_B05_3"),
+4: SubResource("P_B05_4")
 }
 _point_order = PackedInt32Array(0, 1, 2, 3, 4)
 _constraints = {
@@ -604,7 +776,7 @@ script = ExtResource("1_world")
 "카메라_줌" = 1.0
 "시작_위치" = Vector2(240, 512)
 "낙사_y" = 2688
-"치명_낙하거리" = 1500
+"치명_낙하거리" = 720
 metadata/blueprint = "res://scenes/쳅터1/도안/쳅터1_15_집밖_하수도길.json"
 metadata/frame_only = false
 
@@ -650,8 +822,74 @@ collision_size = 0.0
 metadata/role = "구조"
 metadata/design_kind = "구조"
 
+[node name="흰판01" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(1520, 672)
+"위치별_판정" = true
+_points = SubResource("PA_W01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="유령판01" parent="지형" instance=ExtResource("5_tpl_ghost")]
+position = Vector2(1744, 800)
+_points = SubResource("PA_G01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
+[node name="흰판02" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(1968, 928)
+"위치별_판정" = true
+_points = SubResource("PA_W02")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="검정판01" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(2448, 1184)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판02" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(3136, 1360)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B02")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판03" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(2656, 1408)
+"위치별_판정" = true
+_points = SubResource("PA_W03")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="검정판03" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(3440, 1424)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B03")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판04" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(4320, 1408)
+"위치별_판정" = true
+_points = SubResource("PA_W04")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
 [node name="구조02" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(1472, 672)
+position = Vector2(4320, 1456)
 "칠하기_허용" = false
 "칠하기_방식" = 2
 "위치별_판정" = true
@@ -660,105 +898,31 @@ collision_size = 0.0
 metadata/role = "구조"
 metadata/design_kind = "구조"
 
-[node name="구조03" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(1664, 800)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S03")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조04" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(1856, 928)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S04")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조05" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(2048, 1056)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S05")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조06" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(2240, 1184)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S06")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조07" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(2432, 1312)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S07")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조08" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(3440, 1424)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S08")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조09" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(4320, 1424)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S09")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조10" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(2688, 1440)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S10")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조11" parent="지형" instance=ExtResource("3_tpl_black")]
-position = Vector2(3264, 1504)
-"칠하기_허용" = false
-"칠하기_방식" = 2
-"위치별_판정" = true
-_points = SubResource("PA_S11")
-collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
-
-[node name="구조12" parent="지형" instance=ExtResource("3_tpl_black")]
+[node name="검정판04" parent="지형" instance=ExtResource("3_tpl_black")]
 position = Vector2(4512, 1504)
-"칠하기_허용" = false
-"칠하기_방식" = 2
+"시작상태" = 1
 "위치별_판정" = true
-_points = SubResource("PA_S12")
+_points = SubResource("PA_B04")
 collision_size = 0.0
-metadata/role = "구조"
-metadata/design_kind = "구조"
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판05" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(4896, 1632)
+"위치별_판정" = true
+_points = SubResource("PA_W05")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="검정판05" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(5776, 1760)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B05")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
 
 [node name="연결" type="Node2D" parent="."]
 
@@ -782,27 +946,76 @@ script = ExtResource("11_link")
 "다음_연결" = ""
 "되돌아가기" = true
 
+[node name="장애물" type="Node2D" parent="."]
+
+[node name="가시01" parent="장애물" instance=ExtResource("10_spike")]
+position = Vector2(5360, 1888)
+"칸수" = 7
+
 [node name="체크포인트" type="Node2D" parent="."]
 
-[node name="체크01" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(272, 512)
-collision_layer = 0
-
 [node name="체크02" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(1840, 896)
-collision_layer = 0
-
-[node name="체크03" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(2960, 1536)
+position = Vector2(1008, 1536)
 collision_layer = 0
 
 [node name="체크04" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(4816, 1600)
+position = Vector2(4688, 1600)
 collision_layer = 0
 
-[node name="체크05" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(5776, 1728)
-collision_layer = 0
+[node name="추가기믹" type="Node2D" parent="."]
+
+[node name="부서지는판01_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(2160, 1024)
+
+[node name="부서지는판01_2" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(2256, 1024)
+
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(704, 1344)
+"멈춤들" = PackedVector2Array(0, 0, 704, -64, 1408, 0)
+"순환" = 0
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
+
+[node name="거미01" parent="추가기믹" instance=ExtResource("add_soot")]
+position = Vector2(1776, 1536)
+"방향" = -1
+"거미줄들" = Array[NodePath]([])
+
+[node name="누름계단01_발판" parent="추가기믹" instance=ExtResource("add_plate")]
+position = Vector2(2528, 1536)
+"생김새" = 1
+"그림_깊이" = 7.0
+"밟는면_충돌" = false
+"폭" = 128
+"높이" = 12.0
+"작동방식" = 0
+"누름_가능_그룹" = PackedStringArray("player", "박스")
+"이동속도" = 360.0
+"대상들" = Array[NodePath]([NodePath("../누름계단01_판1"), NodePath("../누름계단01_판2")])
+"대상_이동량들" = Array[Vector2]([Vector2(-224, 0), Vector2(-128, 0)])
+"대상_지연들" = Array[float]([0, 0.45])
+
+[node name="누름계단01_판1" parent="추가기믹" instance=ExtResource("add_popout")]
+position = Vector2(2944, 1440)
+"크기" = Vector2(224, 64)
+
+[node name="누름계단01_판2" parent="추가기믹" instance=ExtResource("add_popout")]
+position = Vector2(2944, 1312)
+"크기" = Vector2(128, 64)
+
+[node name="누름계단01_상자" parent="추가기믹" instance=ExtResource("add_box")]
+position = Vector2(1168, 1536)
+"생김새" = 1
+"부활하면_제자리" = true
+"낙사_y" = 2400.0
+
+[node name="부서지는판02_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(5296, 1696)
+
+[node name="부서지는판03_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(5424, 1664)
 
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(240, 512)

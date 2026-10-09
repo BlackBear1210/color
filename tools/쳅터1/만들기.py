@@ -70,10 +70,11 @@ EXT = [
     ("체크포인트", "PackedScene", None, "res://scenes/장애물/체크포인트.tscn"),
     ("가시", "PackedScene", None, "res://scenes/장애물/가시.tscn"),
     ("연결구", "Script", None, "res://scripts/쳅터1/연결구.gd"),
+    ("옆방문", "Script", None, "res://scripts/쳅터1/옆방문.gd"),
     ("배경", "Script", None, "res://scripts/쳅터1/방배경.gd"),
 ]
 _ASCII = {"월드": "world", "코어": "core", "검정": "tpl_black", "흰": "tpl_white", "유령": "tpl_ghost", "점": "ss2d_point",
-          "점배열": "ss2d_points", "플레이어": "player", "체크포인트": "checkpoint", "가시": "spike", "연결구": "link", "배경": "bg"}
+          "점배열": "ss2d_points", "플레이어": "player", "체크포인트": "checkpoint", "가시": "spike", "연결구": "link", "옆방문": "side_door", "배경": "bg"}
 
 구조_속성 = [('"칠하기_허용"', "false"), ('"칠하기_방식"', "2"), ('"위치별_판정"', "true")]
 if 구조_색 == "검정":
@@ -147,6 +148,8 @@ def 기믹_노드들(dn, ids):
     out = []
     for g in 기믹모듈.목록(dn):
         k = type(g).__name__
+        if k not in 기믹_장면:
+            continue          # [2026-10-09] 새 기믹은 추가기믹.py 가 "추가기믹" 묶음으로 만든다
         e = g.엔진값()
         머리 = f'[node name="{k}{g.i:02d}" parent="장애물" instance=ExtResource("{ids["기믹:" + k]}")]'
         if k == "빛줄기":
@@ -196,7 +199,7 @@ def 씬_글(dn):
         ext.append(("외부경관", "Texture2D", None, d["외부경관"]))
     if d.get("반사빛길"):
         ext.append(("반사빛길", "PackedScene", None, "res://scenes/쳅터1/기믹/반사빛길.tscn"))
-    for k in sorted({type(g).__name__ for g in 기믹모듈.목록(dn)}):
+    for k in sorted({type(g).__name__ for g in 기믹모듈.목록(dn)} & set(기믹_장면)):
         ext.append((f"기믹:{k}", "PackedScene", None, 기믹_장면[k][1]))
     프리셋 = d.get("배경", {}).get("프리셋", "방_판자")      # [2차] 도형님 선택 D = 판자·폐허
     ext.append(("프리셋", "Resource", None, f"res://assets/background/쳅터1/프리셋/{프리셋}.tres"))
@@ -264,7 +267,7 @@ def 씬_글(dn):
         '"카메라_줌" = 1.0',
         f'"시작_위치" = {V(*시작)}',
         f'"낙사_y" = {수((dn.h + 규격.바깥_세로) * C - C)}',
-        f'"치명_낙하거리" = {수(규격.치명_낙하)}',
+        f'"치명_낙하거리" = {수(d.get("치명_낙하", 규격.치명_낙하))}',
         f'metadata/blueprint = {문자열("res://scenes/쳅터1/도안/" + dn.이름 + ".json")}',
         f'metadata/frame_only = {"true" if d.get("큰틀") else "false"}',
     ]) + "\n")
@@ -323,6 +326,18 @@ def 씬_글(dn):
             f'"되돌아가기" = {"true" if 문.get("되돌아가기", True) and 연결 else "false"}',
         ]) + "\n")
 
+    # 나중에 도안을 다시 만들 때도 사진 지도의 갈림길이 사라지지 않도록 옆방 문을 함께 저장한다.
+    for 문 in d.get("옆방문", []):
+        다음, 입구 = 문["연결"]
+        다음 = 다음 if 다음.startswith("res://") else f"res://scenes/쳅터1/스테이지/{다음}.tscn"
+        줄.append("\n".join([
+            f'[node name="{문["이름"]}" type="Node2D" parent="연결"]',
+            f'position = {V(문["x"] * C + C / 2, 문["바닥"] * C)}',
+            f'script = ExtResource("{ids["옆방문"]}")',
+            f'"다음_씬" = {문자열(다음)}', f'"다음_연결" = {문자열(입구)}',
+            f'"표제" = {문자열(문.get("표제", "옆방"))}',
+        ]) + "\n")
+
     # 가시 · 기믹 — 둘 다 "장애물" 노드 아래
     가시들 = d.get("가시", [])
     기믹줄 = 기믹_노드들(dn, ids)
@@ -353,6 +368,12 @@ def 씬_글(dn):
         ext줄.append(f'[ext_resource type="{형}"{u} path="{경로}" id="{ids[k]}"]')
     몸 = (f"[gd_scene load_steps={len(ext) + len(서브) + 1} format=3]\n\n" + "\n".join(ext줄) + "\n\n"
          + "\n".join(서브) + "\n" + "\n".join(줄))
+    # [2026-10-09] 새 기믹(부서지는판·그을음·열쇠조각·잠긴문·레버퍼즐)은 "추가기믹" 묶음 — 손본 옛 씬에도 같은 글을
+    #   tools/쳅터1/추가기믹.py 가 갈아 끼우므로, 새로 만드는 씬도 같은 함수로 넣는다(두 길이 같은 결과).
+    import 추가기믹 as 추가모듈
+    a_ext, a_노드 = 추가모듈.노드_글(dn)
+    if a_노드:
+        몸 = 추가모듈.갈아끼우기(몸, a_ext, a_노드)
     해시 = hashlib.sha256(몸.encode("utf-8")).hexdigest()[:16]
     return f"{표식} · out={해시} · 손으로 고치지 말고 도안({dn.이름}.json)을 고친 뒤 다시 생성\n" + 몸
 
@@ -461,7 +482,13 @@ def 미리보기(dn, 배율=0.25, 플레이어="시작"):
             l, t, r, b = [v * 배율 for v in g.사각()]
             d.polygon([(l, b), (l + (r - l) * 0.15, t + (b - t) * 0.3), (r - (r - l) * 0.15, t + (b - t) * 0.3), (r, b)],
                       fill=(90, 84, 76) if not g.색 else ((20, 20, 20) if g.색 == "검정" else (230, 228, 220)), outline=(200, 190, 170))
-        else:
+        elif isinstance(g, 기믹모듈.부서지는판):
+            l, t, r, b = [v * 배율 for v in g.사각()]
+            d.rectangle([l, t, r, t + (b - t) * 0.6], fill=(120, 96, 70), outline=(70, 50, 30))
+        elif isinstance(g, 기믹모듈.그을음):
+            x, y = g.엔진값()["원점"]
+            d.ellipse([x * 배율 - 14 * 배율, y * 배율 - 20 * 배율, x * 배율 + 14 * 배율, y * 배율], fill=(10, 10, 10))
+        elif isinstance(g, 기믹모듈.움직이는발판):
             칸들 = g.위치들()
             l0, t0, r0, b0 = 칸들[0]
             l1, t1, r1, b1 = 칸들[-1]

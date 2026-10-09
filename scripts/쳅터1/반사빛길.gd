@@ -2,10 +2,12 @@ extends Node2D
 ## 한 경로를 그림·위험 판정·수광판 활성화에 함께 쓴다. 거울이 움직여도 다음 물리 틱에 다시 계산한다.
 const Mirror := preload("res://scripts/쳅터1/거울.gd")
 const Beam := preload("res://scripts/쳅터1/창문빛.gd")
-@export var 광원 := Vector2(0, -300)
+## [2026-10-09 Claude] 광원 = 하늘(달빛). 예전엔 −300(쇠기둥 위 창문)이었다 → 도형님 "집 밖 스테이지에 왜 창문이 달렸나 · 지워 줘".
+##   빛은 맨 위(하늘)에서 거울로 곧게 내려온다 — 거울·수광판·흰 다리 계산은 그대로(빛이 더 위에서 시작할 뿐).
+@export var 광원 := Vector2(0, -1200)       # 맨 위에서 3칸 안쪽 — 0 이면 방 밖 바깥 지형 경계에서 광선이 바로 막힌다
 @export var 광원방향 := Vector2.DOWN
 @export var 수광점 := Vector2(580, 0)
-@export var 최대거리 := 1600.0
+@export var 최대거리 := 2500.0     # [2026-10-09] 광원을 하늘로 900px 올린 만큼 늘렸다(예전 1600 — 그대로면 반사 뒤 수광판 앞에서 빛이 끊긴다)
 @export var 최대반사 := 6
 var 거울: Node2D
 var 빛경로: Array[Vector2] = []
@@ -104,15 +106,7 @@ func _physics_process(_delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	# 외부 마당의 집광 창은 공중에 떠 있지 않도록 오래된 철제 받침과 연결한다.
-	draw_line(광원 + Vector2(-44, -45), Vector2(-44, 78), Color(0.16,0.15,0.13), 9, true)
-	draw_line(광원 + Vector2(-44, -45), 광원 + Vector2(40,-45), Color(0.23,0.22,0.2), 9, true)
-	draw_circle(광원 + Vector2(-44,-45), 9, Color(0.3,0.28,0.23))
-	# 광원 유리와 빛 출발점이 동일 좌표라 장식 창문과 빛이 따로 놀지 않는다.
-	draw_rect(Rect2(광원 - Vector2(34, 44), Vector2(68, 88)), Color(0.09, 0.08, 0.07))
-	draw_rect(Rect2(광원 - Vector2(26, 36), Vector2(52, 72)), Color(0.68, 0.72, 0.78))
-	draw_line(광원 + Vector2(-26, 0), 광원 + Vector2(26, 0), Color(0.14, 0.13, 0.12), 5)
-	draw_line(광원 + Vector2(0, -36), 광원 + Vector2(0, 36), Color(0.14, 0.13, 0.12), 5)
+	# [2026-10-09] 창문·쇠기둥 그림을 지웠다(집 밖 마당) — 빛은 하늘에서 내려오는 달빛 줄기(빔 그림)만 보인다.
 	draw_circle(수광점, 25, Color(0.18, 0.17, 0.15))
 	draw_circle(수광점, 15, Color.WHITE if 길켜짐 else Color(0.4, 0.4, 0.4))
 	for body in _발판들:

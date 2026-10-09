@@ -4,6 +4,10 @@ extends CharacterBody2D
 
 @export_range(20.0, 600.0, 1.0) var 밀기_속도: float = 220.0
 @export_range(0.0, 2400.0, 1.0) var 낙사_y: float = 1900.0
+## [2026-10-09 Claude · 쳅터1 15] 켜면 플레이어가 죽어 부활할 때 상자도 처음 자리로 돌아간다(그룹 "부활복구").
+##   왜: 쳅터1 마당에서는 상자를 구석으로 밀어 넣으면 다시 꺼낼 수 없다(밀기만 된다) → 죽으면 퍼즐이 처음으로.
+##   하수도 스테이지는 기본값 false 라 예전과 똑같다.
+@export var 부활하면_제자리: bool = false
 
 const 중력: float = 1200.0
 const 최대_낙하속도: float = 1500.0
@@ -16,6 +20,8 @@ func _ready() -> void:
 		return
 	add_to_group("박스")
 	_리스폰_월드좌표 = global_position
+	if 부활하면_제자리:
+		add_to_group("부활복구")
 	# 상자는 플레이어·지형과만 충돌한다. 버튼의 Area2D는 그룹으로 따로 감지한다.
 	collision_layer = 1
 	collision_mask = 1
@@ -32,6 +38,12 @@ func _physics_process(delta: float) -> void:
 	if global_position.y > 낙사_y:
 		global_position = _리스폰_월드좌표
 		velocity = Vector2.ZERO
+
+
+## [2026-10-09] 월드 `_리스폰` → "부활복구" 그룹(부활하면_제자리 일 때만 그룹에 든다)
+func 부활_복구() -> void:
+	global_position = _리스폰_월드좌표
+	velocity = Vector2.ZERO
 
 
 ## 색이 없는 물체라 플레이어색은 받기만 하고 판정에는 쓰지 않는다.
@@ -68,6 +80,14 @@ const 주철_그림_경로 := "res://assets/textures/obstacles/box/cast_iron_v1/
 const 그림_원점 := Vector2(52.0, 100.0)
 static var _주철_그림: Texture2D = null
 
+## [2026-10-09 Claude · 쳅터1 15] 생김새 — 0 = 하수도 주철 궤짝(예전 그대로) / 1 = 쳅터1 나무 상자.
+##   도형님: "너무 기존의 지형 이미지와 안 어울려 · 기존 타일셋과 어울리게" → 저택 가구 '상자더미' 와 같은 말:
+##   어두운 판자 줄 + X 버팀목 + 모서리 쇠 덧댐 + 2.5D 윗면(목재 데크와 같은 위 왼쪽 빛). 판정(96×96)은 같다.
+@export_enum("주철 궤짝", "쳅터1 나무 상자") var 생김새: int = 0:
+	set(v):
+		생김새 = v
+		queue_redraw()
+
 ## 켜면 예전 코드 그림(회색 사각형 + X)으로 돌아간다 — 비교·문제 확인용.
 @export var 옛_그림: bool = false:
 	set(v):
@@ -76,6 +96,9 @@ static var _주철_그림: Texture2D = null
 
 
 func _draw() -> void:
+	if 생김새 == 1:
+		_나무상자_그리기()
+		return
 	if not 옛_그림:
 		if _주철_그림 == null and ResourceLoader.exists(주철_그림_경로):
 			_주철_그림 = load(주철_그림_경로) as Texture2D
@@ -86,3 +109,33 @@ func _draw() -> void:
 	draw_rect(Rect2(-48, -96, 96, 96), Color(0.68, 0.66, 0.60), false, 3.0)
 	draw_line(Vector2(-42, -88), Vector2(42, -8), Color(0.14, 0.13, 0.12), 4.0)
 	draw_line(Vector2(42, -88), Vector2(-42, -8), Color(0.14, 0.13, 0.12), 4.0)
+
+
+## [2026-10-09] 쳅터1 나무 상자 — 96×96 · 원점 = 바닥 가운데. 목재 데크·가구 상자더미와 같은 어두운 회색 판자.
+func _나무상자_그리기() -> void:
+	var 나무 := Color(0.17, 0.165, 0.16)
+	var 나무밝 := Color(0.30, 0.29, 0.28)
+	var 줄 := Color(0.07, 0.07, 0.07)
+	var 쇠 := Color(0.36, 0.35, 0.33)
+	var 앞 := Rect2(-48, -90, 96, 90)
+	draw_rect(Rect2(-45, -2, 96, 5), Color(0, 0, 0, 0.4))                  # 바닥 그늘
+	draw_rect(앞, 나무)
+	# 판자 줄(가로 4장) · 결
+	for i in 4:
+		var y := -90.0 + 22.5 * i
+		draw_line(Vector2(-48, y), Vector2(48, y), 줄, 2.0)
+		draw_line(Vector2(-44, y + 9), Vector2(-10, y + 10), 나무밝.darkened(0.35), 1.0)
+		draw_line(Vector2(6, y + 14), Vector2(42, y + 13), 나무밝.darkened(0.35), 1.0)
+	# 테두리 틀 + X 버팀목
+	draw_rect(앞, 줄, false, 5.0)
+	draw_line(Vector2(-42, -84), Vector2(42, -6), 나무밝, 9.0)
+	draw_line(Vector2(-42, -84), Vector2(42, -6), 줄, 2.0)
+	draw_line(Vector2(42, -84), Vector2(-42, -6), 나무밝, 9.0)
+	draw_line(Vector2(42, -84), Vector2(-42, -6), 줄, 2.0)
+	# 2.5D 윗면(위 왼쪽 빛)
+	draw_colored_polygon(PackedVector2Array([Vector2(-48, -90), Vector2(48, -90), Vector2(44, -96), Vector2(-44, -96)]), 나무밝)
+	draw_line(Vector2(-44, -96), Vector2(44, -96), 나무밝.lightened(0.2), 1.5)
+	# 모서리 쇠 덧댐 + 못
+	for c in [Vector2(-48, -90), Vector2(40, -90), Vector2(-48, -8), Vector2(40, -8)]:
+		draw_rect(Rect2(c, Vector2(8, 8)), 쇠)
+		draw_circle(c + Vector2(4, 4), 1.4, 줄)

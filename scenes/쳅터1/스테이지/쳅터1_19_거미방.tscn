@@ -1,0 +1,642 @@
+; 생성: tools/쳅터1/만들기.py · out=b35040d58b8623e1 · 손으로 고치지 말고 도안(쳅터1_19_거미방.json)을 고친 뒤 다시 생성
+[gd_scene load_steps=88 format=3]
+
+[ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
+[ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_검정.tscn" id="3_tpl_black"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_흰색.tscn" id="4_tpl_white"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_투명.tscn" id="5_tpl_ghost"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="6_ss2d_point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="7_ss2d_points"]
+[ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="8_player"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="9_checkpoint"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/가시.tscn" id="10_spike"]
+[ext_resource type="Script" path="res://scripts/쳅터1/연결구.gd" id="11_link"]
+[ext_resource type="Script" path="res://scripts/쳅터1/방배경.gd" id="12_bg"]
+[ext_resource type="Resource" path="res://assets/background/쳅터1/프리셋/방_판자.tres" id="13_preset"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/문_열림.png" id="14_furn0"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/사다리.png" id="15_furn1"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/상자더미.png" id="16_furn2"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/샹들리에.png" id="17_furn3"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/선반.png" id="18_furn4"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/액자.png" id="19_furn5"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/액자_팔각.png" id="20_furn6"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/옷장.png" id="21_furn7"]
+[ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/책장_높음.png" id="22_furn8"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/거미줄.tscn" id="add_web"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/그을음.tscn" id="add_soot"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/벽레버.tscn" id="add_lever"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/비밀문.tscn" id="add_secret"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/빛받이.tscn" id="add_receiver"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/썩은마루판.tscn" id="add_plank"]
+
+[sub_resource type="Resource" id="P_S01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-4352, -1824)
+
+[sub_resource type="Resource" id="P_S01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3024, -1824)
+
+[sub_resource type="Resource" id="P_S01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3024, -992)
+
+[sub_resource type="Resource" id="P_S01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3040, -992)
+
+[sub_resource type="Resource" id="P_S01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3040, 768)
+
+[sub_resource type="Resource" id="P_S01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3584, 768)
+
+[sub_resource type="Resource" id="P_S01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3584, 928)
+
+[sub_resource type="Resource" id="P_S01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-320, 928)
+
+[sub_resource type="Resource" id="P_S01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-320, 608)
+
+[sub_resource type="Resource" id="P_S01_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2304, 608)
+
+[sub_resource type="Resource" id="P_S01_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2304, 928)
+
+[sub_resource type="Resource" id="P_S01_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(3584, 928)
+
+[sub_resource type="Resource" id="P_S01_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(3584, 768)
+
+[sub_resource type="Resource" id="P_S01_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2848, 768)
+
+[sub_resource type="Resource" id="P_S01_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2848, -992)
+
+[sub_resource type="Resource" id="P_S01_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2176, -992)
+
+[sub_resource type="Resource" id="P_S01_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2176, 448)
+
+[sub_resource type="Resource" id="P_S01_17"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2048, 448)
+
+[sub_resource type="Resource" id="P_S01_18"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(2048, 256)
+
+[sub_resource type="Resource" id="P_S01_19"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1440, 256)
+
+[sub_resource type="Resource" id="P_S01_20"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1440, -992)
+
+[sub_resource type="Resource" id="P_S01_21"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(192, -992)
+
+[sub_resource type="Resource" id="P_S01_22"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(192, 448)
+
+[sub_resource type="Resource" id="P_S01_23"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 448)
+
+[sub_resource type="Resource" id="P_S01_24"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -992)
+
+[sub_resource type="Resource" id="P_S01_25"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1664, -992)
+
+[sub_resource type="Resource" id="P_S01_26"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1664, 768)
+
+[sub_resource type="Resource" id="P_S01_27"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1792, 768)
+
+[sub_resource type="Resource" id="P_S01_28"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1792, -992)
+
+[sub_resource type="Resource" id="P_S01_29"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3024, -992)
+
+[sub_resource type="Resource" id="P_S01_30"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3024, -1824)
+
+[sub_resource type="Resource" id="P_S01_31"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(4352, -1824)
+
+[sub_resource type="Resource" id="P_S01_32"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(4352, 1824)
+
+[sub_resource type="Resource" id="P_S01_33"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-4352, 1824)
+
+[sub_resource type="Resource" id="P_S01_34"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-4352, -1824)
+
+[sub_resource type="Resource" id="PA_S01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S01_0"),
+1: SubResource("P_S01_1"),
+2: SubResource("P_S01_2"),
+3: SubResource("P_S01_3"),
+4: SubResource("P_S01_4"),
+5: SubResource("P_S01_5"),
+6: SubResource("P_S01_6"),
+7: SubResource("P_S01_7"),
+8: SubResource("P_S01_8"),
+9: SubResource("P_S01_9"),
+10: SubResource("P_S01_10"),
+11: SubResource("P_S01_11"),
+12: SubResource("P_S01_12"),
+13: SubResource("P_S01_13"),
+14: SubResource("P_S01_14"),
+15: SubResource("P_S01_15"),
+16: SubResource("P_S01_16"),
+17: SubResource("P_S01_17"),
+18: SubResource("P_S01_18"),
+19: SubResource("P_S01_19"),
+20: SubResource("P_S01_20"),
+21: SubResource("P_S01_21"),
+22: SubResource("P_S01_22"),
+23: SubResource("P_S01_23"),
+24: SubResource("P_S01_24"),
+25: SubResource("P_S01_25"),
+26: SubResource("P_S01_26"),
+27: SubResource("P_S01_27"),
+28: SubResource("P_S01_28"),
+29: SubResource("P_S01_29"),
+30: SubResource("P_S01_30"),
+31: SubResource("P_S01_31"),
+32: SubResource("P_S01_32"),
+33: SubResource("P_S01_33"),
+34: SubResource("P_S01_34")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
+_constraints = {
+Vector2i(0, 34): 15
+}
+_next_key = 35
+
+[sub_resource type="Resource" id="P_G01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_G01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_G01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_G01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_G01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_G01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_G01_0"),
+1: SubResource("P_G01_1"),
+2: SubResource("P_G01_2"),
+3: SubResource("P_G01_3"),
+4: SubResource("P_G01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="P_B01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="P_B01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -32)
+
+[sub_resource type="Resource" id="P_B01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 32)
+
+[sub_resource type="Resource" id="P_B01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(32.1, 32)
+
+[sub_resource type="Resource" id="P_B01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(21.35, 22.16)
+
+[sub_resource type="Resource" id="P_B01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(4.86, 26.1)
+
+[sub_resource type="Resource" id="P_B01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3.74, 32)
+
+[sub_resource type="Resource" id="P_B01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, 32)
+
+[sub_resource type="Resource" id="P_B01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="PA_B01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B01_0"),
+1: SubResource("P_B01_1"),
+2: SubResource("P_B01_2"),
+3: SubResource("P_B01_3"),
+4: SubResource("P_B01_4"),
+5: SubResource("P_B01_5"),
+6: SubResource("P_B01_6"),
+7: SubResource("P_B01_7"),
+8: SubResource("P_B01_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="Resource" id="P_W01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="P_W01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -32)
+
+[sub_resource type="Resource" id="P_W01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 32)
+
+[sub_resource type="Resource" id="P_W01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, 32)
+
+[sub_resource type="Resource" id="P_W01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -32)
+
+[sub_resource type="Resource" id="PA_W01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W01_0"),
+1: SubResource("P_W01_1"),
+2: SubResource("P_W01_2"),
+3: SubResource("P_W01_3"),
+4: SubResource("P_W01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[node name="쳅터1_19_거미방" type="Node2D"]
+script = ExtResource("1_world")
+"스테이지_이름" = "19 · 다락 거미방 — 반딧불 빛과 거미줄 (13 → 19 → 14)"
+"카메라_리밋" = Rect2(0, 0, 6400, 2304)
+"카메라_줌" = 1.0
+"시작_위치" = Vector2(272, 2080)
+"낙사_y" = 2944
+"치명_낙하거리" = 1500
+metadata/blueprint = "res://scenes/쳅터1/도안/쳅터1_19_거미방.json"
+metadata/frame_only = false
+
+[node name="페인트코어" type="Node" parent="." groups=["페인트코어"]]
+script = ExtResource("2_core")
+
+[node name="어둠" type="CanvasModulate" parent="."]
+color = Color(0.74, 0.74, 0.74, 1)
+
+[node name="배경" type="Node2D" parent="."]
+script = ExtResource("12_bg")
+"프리셋" = ExtResource("13_preset")
+"방_크기" = Vector2(6400, 2304)
+"바닥_y" = 2080
+"천장_y" = 160
+"낡음_덮어쓰기" = 3
+"씨앗" = 16816
+"배경_명도" = 0.5
+"레이어_움직임" = true
+
+[node name="가구" type="Node2D" parent="배경"]
+z_index = -90
+
+[node name="선반1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(576, 1760)
+texture = ExtResource("18_furn4")
+centered = false
+
+[node name="상자더미1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(960, 1952)
+texture = ExtResource("16_furn2")
+centered = false
+
+[node name="상자더미2" type="Sprite2D" parent="배경/가구"]
+position = Vector2(192, 1952)
+texture = ExtResource("16_furn2")
+centered = false
+
+[node name="책장_높음1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(3488, 1184)
+texture = ExtResource("22_furn8")
+centered = false
+
+[node name="옷장1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(3856, 1440)
+texture = ExtResource("21_furn7")
+centered = false
+
+[node name="사다리1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(4336, 1248)
+texture = ExtResource("15_furn1")
+centered = false
+
+[node name="상자더미3" type="Sprite2D" parent="배경/가구"]
+position = Vector2(5024, 1632)
+texture = ExtResource("16_furn2")
+centered = false
+
+[node name="액자1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(2160, 384)
+texture = ExtResource("19_furn5")
+centered = false
+
+[node name="샹들리에1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(4000, 160)
+texture = ExtResource("17_furn3")
+centered = false
+
+[node name="액자_팔각1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(5536, 384)
+texture = ExtResource("20_furn6")
+centered = false
+
+[node name="문_열림1" type="Sprite2D" parent="배경/가구"]
+position = Vector2(6048, 1824)
+texture = ExtResource("14_furn0")
+centered = false
+
+[node name="지형" type="Node2D" parent="."]
+
+[node name="구조01" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(3200, 1152)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S01")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="유령판01" parent="지형" instance=ExtResource("5_tpl_ghost")]
+position = Vector2(4576, 1664)
+_points = SubResource("PA_G01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
+[node name="검정판01" parent="지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(2752, 1824)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판01" parent="지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(864, 1984)
+"위치별_판정" = true
+_points = SubResource("PA_W01")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="연결" type="Node2D" parent="."]
+
+[node name="왼쪽" type="Node2D" parent="연결"]
+position = Vector2(160, 2080)
+script = ExtResource("11_link")
+"방향" = -1
+"높이" = 160
+"벽두께" = 160
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_13_복도_G.tscn"
+"다음_연결" = "거미방문"
+"되돌아가기" = true
+
+[node name="오른쪽" type="Node2D" parent="연결"]
+position = Vector2(6240, 2080)
+script = ExtResource("11_link")
+"방향" = 1
+"높이" = 160
+"벽두께" = 160
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_14_굴뚝.tscn"
+"다음_연결" = "거미방길"
+"되돌아가기" = true
+
+[node name="장애물" type="Node2D" parent="."]
+
+[node name="가시01" parent="장애물" instance=ExtResource("10_spike")]
+position = Vector2(1920, 2080)
+"칸수" = 20
+
+[node name="가시02" parent="장애물" instance=ExtResource("10_spike")]
+position = Vector2(2560, 2080)
+"칸수" = 20
+
+[node name="가시03" parent="장애물" instance=ExtResource("10_spike")]
+position = Vector2(5744, 2080)
+"칸수" = 15
+
+[node name="체크포인트" type="Node2D" parent="."]
+
+[node name="체크02" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(1552, 2080)
+collision_layer = 0
+
+[node name="체크03" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(3536, 1760)
+collision_layer = 0
+
+[node name="체크04" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(5200, 1760)
+collision_layer = 0
+
+[node name="추가기믹" type="Node2D" parent="."]
+
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(480, 1888)
+"멈춤들" = PackedVector2Array(0, 0, 384, -64, 768, 0)
+"순환" = 0
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
+
+[node name="빛받이01" parent="추가기믹" instance=ExtResource("add_receiver")]
+position = Vector2(1382.4, 1792)
+"요구색" = 1
+"유지" = true
+"열것들" = Array[NodePath]([NodePath("../빛받이01_문")])
+
+[node name="빛받이01_문" parent="추가기믹" instance=ExtResource("add_secret")]
+position = Vector2(1472, 2080)
+"크기" = Vector2(96, 160)
+"밀림" = Vector2(0, -160)
+"모양" = 1
+
+[node name="부서지는판01_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(1680, 1984)
+
+[node name="부서지는판02_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(1872, 1920)
+
+[node name="부서지는판03_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(2064, 1856)
+
+[node name="부서지는판03_2" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(2160, 1856)
+
+[node name="부서지는판04_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(2352, 1856)
+
+[node name="부서지는판05_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(2544, 1824)
+
+[node name="반딧불02" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(1920, 1600)
+"멈춤들" = PackedVector2Array(0, 0, 416, -64, 1120, -32)
+"순환" = 0
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
+
+[node name="빛받이02" parent="추가기믹" instance=ExtResource("add_receiver")]
+position = Vector2(3216, 1536)
+"요구색" = 0
+"유지" = true
+"열것들" = Array[NodePath]([NodePath("../빛받이02_문")])
+
+[node name="빛받이02_문" parent="추가기믹" instance=ExtResource("add_secret")]
+position = Vector2(3328, 1760)
+"크기" = Vector2(96, 160)
+"밀림" = Vector2(0, -160)
+"모양" = 1
+
+[node name="반딧불03" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(3744, 1504)
+"멈춤들" = PackedVector2Array(0, 0, 448, -64, 960, 96)
+"순환" = 0
+"머묾" = 3.5
+"반경" = 200
+"색_시간" = 5
+
+[node name="거미01" parent="추가기믹" instance=ExtResource("add_soot")]
+position = Vector2(5040, 1760)
+"방향" = -1
+"거미줄들" = Array[NodePath]([NodePath("../거미01_줄1")])
+
+[node name="거미01_줄1" parent="추가기믹" instance=ExtResource("add_web")]
+position = Vector2(4768, 1408)
+"나" = Vector2(0, 352)
+"처음부터" = true
+
+[node name="빛받이03" parent="추가기믹" instance=ExtResource("add_receiver")]
+position = Vector2(4880, 1552)
+"요구색" = 1
+"유지" = true
+"열것들" = Array[NodePath]([NodePath("../빛받이03_문")])
+
+[node name="빛받이03_문" parent="추가기믹" instance=ExtResource("add_secret")]
+position = Vector2(5312, 1760)
+"크기" = Vector2(96, 160)
+"밀림" = Vector2(0, -160)
+"모양" = 1
+
+[node name="부서지는판06_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(5584, 1824)
+
+[node name="부서지는판07_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(5744, 1888)
+
+[node name="부서지는판08_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(5904, 1952)
+
+[node name="반딧불04" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(5568, 1536)
+"멈춤들" = PackedVector2Array(0, 0, 224, -64, 320, 128)
+"순환" = 0
+"머묾" = 2
+"반경" = 200
+"색_시간" = 5
+"새장_멈춤" = 2
+"새장_레버" = NodePath("../반딧불04_새장레버")
+
+[node name="반딧불04_새장레버" parent="추가기믹" instance=ExtResource("add_lever")]
+position = Vector2(5424, 1760)
+
+[node name="빛받이04" parent="추가기믹" instance=ExtResource("add_receiver")]
+position = Vector2(6016, 1792)
+"요구색" = 1
+"유지" = false
+"열것들" = Array[NodePath]([NodePath("../빛받이04_문")])
+
+[node name="빛받이04_문" parent="추가기믹" instance=ExtResource("add_secret")]
+position = Vector2(6128, 2080)
+"크기" = Vector2(96, 160)
+"밀림" = Vector2(0, -160)
+"모양" = 1
+
+[node name="Player" parent="." instance=ExtResource("8_player")]
+position = Vector2(272, 2080)
+"점프_거리_칸" = 20.0

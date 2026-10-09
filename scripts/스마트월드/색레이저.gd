@@ -61,6 +61,8 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group("색레이저")
+	# [2026-10-09] 그을음(빛에 닿으면 재가 되는 몹)을 태우는 빛 — `빛_안인가()` 로 묻는다(기획 §4-H)
+	add_to_group("태우는빛")
 	set_physics_process(true)
 	set_process(true)
 
@@ -139,6 +141,24 @@ func 위험한가(플레이어: Node) -> bool:
 	if not _영역.get_overlapping_bodies().has(플레이어):
 		return false
 	return int(플레이어.get("player_color")) != _색
+
+
+## [2026-10-09] 빛 판정 공통 — 이 빛(빔 · 창문 달빛 부피)이 지금 켜져 있고 그 월드 점이 빛 안인가.
+##   그을음이 몸 몇 점으로 묻는다(색과 무관 — 기획 §4-H "길을 여는/태우는 빛은 색 판정 없음").
+##   판정 모양은 위험 판정과 같은 것(사각형 빔 = RectangleShape2D · 창문빛 = ConvexPolygonShape2D)을 쓴다.
+func 빛_안인가(월드점: Vector2) -> bool:
+	if not _켜짐 or _영역 == null:
+		return false
+	var cs := _영역.get_node_or_null("모양") as CollisionShape2D
+	if cs == null or cs.shape == null or cs.disabled:
+		return false
+	var p := cs.get_global_transform().affine_inverse() * 월드점
+	if cs.shape is RectangleShape2D:
+		var h := (cs.shape as RectangleShape2D).size * 0.5
+		return absf(p.x) <= h.x and absf(p.y) <= h.y
+	if cs.shape is ConvexPolygonShape2D:
+		return Geometry2D.is_point_in_polygon(p, (cs.shape as ConvexPolygonShape2D).points)
+	return false
 
 
 func _draw() -> void:

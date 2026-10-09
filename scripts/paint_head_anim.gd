@@ -12,6 +12,11 @@ var _탱크_좌표: Dictionary = {}
 func _ready() -> void:
 	super._ready()
 	if not Engine.is_editor_hint():
+		# 기존 발 깊이 보정에 접지 그림자를 더한다. 물리 몸은 그대로여서 점프 높이와 색 규칙을 바꾸지 않는다.
+		if _player.get_node_or_null("발접지") == null:
+			var 접지 := preload("res://scripts/발_접지그림.gd").new()
+			접지.name = "발접지"
+			_player.add_child.call_deferred(접지)
 		# 부모가 색분할 재질을 만든 다음 교체해야 기존 색 경계 갱신을 함께 받는다.
 		call_deferred("_재질_준비")
 

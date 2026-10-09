@@ -164,6 +164,13 @@ var _비네트_트윈: Tween = null
 var _빨림: float = 0.0
 var _빨림_트윈: Tween = null
 
+## ── [2026-10-09] 비추기 — 장치가 열어 준 곳(비밀 통로·잠금 해제)을 잠깐 보여 주고 돌아온다 ──
+## 레버 퍼즐을 풀면 "어디가 열렸는지" 를 UI 글자 대신 카메라로 보여 준다(기획 §3 '세계 안의 사물로 알린다').
+## 0 = 평상시 · 1 = 목표점을 정중앙에. 트윈이 0 → 1 → 0 으로 움직인다(리밋 클램프는 그대로 — 방 밖은 안 보인다).
+var _비춤: float = 0.0
+var _비춤_점: Vector2 = Vector2.ZERO
+var _비춤_트윈: Tween = null
+
 
 func _ready() -> void:
 	# 스무딩은 우리가 직접 계산하므로 내장 스무딩은 끔 (이중 지연 방지)
@@ -348,11 +355,12 @@ func _physics_process(delta: float) -> void:
 	# [2026-08-22] 전환 "빨림": 룩어헤드를 접고(당김) 추적 반응을 급격히 올려
 	#   화면이 플레이어에게 빨려들 듯 당겨진다. _빨림=0 이면 예전과 완전히 같다.
 	var desired := _desired_center(공간s, _빨림)
-	var kx := 1.0 - exp(-lerpf(H_RESPONSE, H_RESPONSE * 3.2, _빨림) * delta)
+	var kx := 1.0 - exp(-lerpf(H_RESPONSE, H_RESPONSE * 3.2, maxf(_빨림, _비춤)) * delta)
 	# 수직 공간에서는 세로 반응을 올린다 (등반이 곧 플레이라서 — §V_RESPONSE_수직)
 	var v반응 := lerpf(V_RESPONSE, V_RESPONSE_수직, 공간s if _공간_수직 else 0.0)
 	# 전환 빨림 때는 세로도 몸에 바짝 붙여 "빨려드는" 감각을 완성한다
 	v반응 = lerpf(v반응, v반응 * 2.6, _빨림)
+	v반응 = lerpf(v반응, v반응 * 3.2, _비춤)        # [2026-10-09] 비추기 중엔 세로도 바짝 따라간다
 	var ky := 1.0 - exp(-v반응 * delta)
 	var pos := global_position
 	pos.x = lerpf(pos.x, desired.x, kx)
@@ -384,7 +392,28 @@ func _update_shake(delta: float) -> void:
 
 ## 카메라가 가야 할 이상적 중심점.
 ##   공간s : 카메라 공간이 얼마나 적용됐나(0~1). 0 이면 예전과 완전히 같은 계산이다.
+## [2026-10-09] 목표점으로 `가기` 초 동안 옮겨 가 `머묾` 초 보여 준 뒤 `오기` 초에 돌아온다.
+##   돌아오는 데 걸리는 전체 시간을 돌려준다(부른 쪽이 플레이어 조작을 그동안 묶어 둔다).
+func 비추기(점: Vector2, 머묾: float = 1.2, 가기: float = 0.9, 오기: float = 0.7) -> float:
+	_비춤_점 = 점
+	if _비춤_트윈 and _비춤_트윈.is_valid():
+		_비춤_트윈.kill()
+	_비춤_트윈 = create_tween()
+	_비춤_트윈.tween_property(self, "_비춤", 1.0, 가기).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_비춤_트윈.tween_interval(머묾)
+	_비춤_트윈.tween_property(self, "_비춤", 0.0, 오기).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	return 가기 + 머묾 + 오기
+
+
 func _desired_center(공간s: float = 0.0, 당김: float = 0.0) -> Vector2:
+	if _비춤 > 0.0:
+		# 비추는 중엔 플레이어 대신 목표점 쪽으로(섞어서 — 시작·끝이 부드럽다)
+		var 평소 := _desired_center_평소(공간s, 당김)
+		return 평소.lerp(_비춤_점, _비춤)
+	return _desired_center_평소(공간s, 당김)
+
+
+func _desired_center_평소(공간s: float = 0.0, 당김: float = 0.0) -> Vector2:
 	# [2026-08-07] 구역_오프셋 을 더한다. 기본값 0 이라 기존 씬은 결과가 같다.
 	# [2026-08-17] 공간이 켜지면 구역 시선은 물러나고 공간 시선이 들어온다(합이 항상 1).
 	var 시선 := 구역_오프셋.lerp(_공간_시선, 공간s)

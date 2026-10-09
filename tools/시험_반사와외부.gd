@@ -59,7 +59,8 @@ func run() -> void:
 	await wait(4)
 	await shot("07_거울_꺼짐")
 	# 안전한 마당에서 실제 캐릭터를 걷게 하여 하수도 진입을 검증한다.
-	p.global_position = Vector2(4700,1500)
+	# [2026-10-09 Claude] 15 개편으로 둑에 흰 바닥 조각·썩은 마루(가시)·검은 바닥 조각이 생겼다 → 연결만 보려고 그 뒤(마지막 체크 184칸)에서 걷는다
+	p.global_position = Vector2(184 * 32 + 16, 54 * 32 - 2)
 	p.velocity = Vector2.ZERO
 	p.set("자동_걷기",1.0)
 	for i in 400:

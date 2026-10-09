@@ -107,7 +107,13 @@ func _UI_만들기() -> void:
 	_배치()
 
 func _배치() -> void:
-	var 화면크기 := get_viewport().get_visible_rect().size
+	# [2026-10-09 Codex] 씬 교체 후 옛 메뉴는 트리에서 빠진다. size_changed/화면 전환의 남은 호출은 배치하지 않는다.
+	if _이동중 or not is_inside_tree() or not is_instance_valid(_영역) or not is_instance_valid(_목록):
+		return
+	var 뷰 := get_viewport()
+	if 뷰 == null:
+		return
+	var 화면크기 := 뷰.get_visible_rect().size
 	var 폭 := minf(720.0 if _화면 != "메인" else 360.0, 화면크기.x - 48.0)
 	var 높이 := minf(640.0, 화면크기.y - 48.0)
 	_영역.position = (화면크기 - Vector2(폭, 높이)) * 0.5
@@ -138,7 +144,14 @@ func _보이기(화면: String) -> void:
 			for 이름 in ["스테이지 선택", "설정", "시간 기록", "사망 기록"]:
 				_목록.add_child(_버튼(이름, _보이기.bind(이름)))
 			_목록.add_child(_버튼("게임 종료", _종료_확인))
-		"스테이지 선택": _스테이지_만들기()
+		# [2026-10-09 Claude] 스테이지 선택 = 퍼즐 보드(조각이 실로 이어진 화면) — 예전 칸 목록(_스테이지_만들기)은 남겨 둔다
+		"스테이지 선택":
+			# 같은 사진 지도에서 현재 플레이하는 챕터를 연다.
+			게임진행.선택_쳅터 = 2 if get_parent().scene_file_path.contains("world_2_클로드") else 1
+			# [2026-10-09 Codex] 선택창으로 이동하면 이전 메뉴의 배치·예약 포커스가 더 이상 유효하지 않다.
+			var 경로 := 게임진행.지도_씬 if get_parent().scene_file_path.contains("world_2_클로드") else 게임진행.보드_씬
+			_스테이지_이동(경로)
+			return
 		"설정": _설정_만들기()
 		"시간 기록", "사망 기록": _기록_만들기(화면 == "시간 기록")
 	_배치()

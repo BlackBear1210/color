@@ -1,5 +1,5 @@
 ; 목재 v03: 지형 점 부분 갱신 / 나머지 노드 보존
-[gd_scene load_steps=146 format=3]
+[gd_scene load_steps=155 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -24,6 +24,10 @@
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/액자.png" id="21_furn6"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/액자_팔각.png" id="22_furn7"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="23_furn8"]
+
+[ext_resource type="Script" path="res://scripts/쳅터1/옆방문.gd" id="codex_side_door"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/잠긴문.tscn" id="add_door"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/반반열쇠_조각.tscn" id="add_key"]
 
 [sub_resource type="Resource" id="P_W01_0"]
 script = ExtResource("6_ss2d_point")
@@ -690,6 +694,41 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
+[sub_resource type="Resource" id="add_t_black01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="add_t_black01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="add_t_black01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_black01_P0"),
+1: SubResource("add_t_black01_P1"),
+2: SubResource("add_t_black01_P2"),
+3: SubResource("add_t_black01_P3"),
+4: SubResource("add_t_black01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_04_복도_B" type="Node2D"]
 script = ExtResource("1_world")
 "스테이지_이름" = "04 · 2층 복도 B (→)"
@@ -870,7 +909,7 @@ script = ExtResource("11_link")
 "방향" = -1
 "높이" = 160
 "벽두께" = 160
-"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_03_방_서재.tscn"
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_02_복도_A.tscn"
 "다음_연결" = "오른쪽"
 "되돌아가기" = true
 
@@ -880,8 +919,8 @@ script = ExtResource("11_link")
 "방향" = 1
 "높이" = 160
 "벽두께" = 160
-"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_05_방_침실.tscn"
-"다음_연결" = "왼쪽아래"
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_06_복도_C.tscn"
+"다음_연결" = "오른쪽"
 "되돌아가기" = true
 
 [node name="장애물" type="Node2D" parent="."]
@@ -908,26 +947,50 @@ position = Vector2(3280, 942)
 
 [node name="체크포인트" type="Node2D" parent="."]
 
-[node name="체크01" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(272, 992)
-collision_layer = 0
-
-[node name="체크02" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(1520, 992)
-collision_layer = 0
-
 [node name="체크03" parent="체크포인트" instance=ExtResource("9_checkpoint")]
 position = Vector2(3088, 992)
 collision_layer = 0
 
-[node name="체크04" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(4688, 992)
-collision_layer = 0
+[node name="추가기믹" type="Node2D" parent="."]
 
-[node name="체크05" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(5776, 608)
-collision_layer = 0
+[node name="열쇠조각01" parent="추가기믹" instance=ExtResource("add_key")]
+position = Vector2(3840, 809.6)
+"쪽" = 0
+"주인_씬" = ""
+
+[node name="열쇠조각02" parent="추가기믹" instance=ExtResource("add_key")]
+position = Vector2(3872, 528)
+"쪽" = 1
+"주인_씬" = ""
+
+[node name="잠긴문01" parent="추가기믹" instance=ExtResource("add_door")]
+"길목" = NodePath("../../연결/오른쪽")
+
+[node name="추가지형" type="Node2D" parent="."]
+
+[node name="검정판추가01" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(2704, 944)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_black01_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
 
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(272, 992)
 "점프_거리_칸" = 20.0
+
+[node name="침실문" type="Node2D" parent="연결"]
+position = Vector2(5776, 608)
+script = ExtResource("codex_side_door")
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_05_방_침실.tscn"
+"다음_연결" = "왼쪽아래"
+"표제" = "침실"
+
+[node name="서재길" type="Node2D" parent="연결"]
+position = Vector2(272, 992)
+script = ExtResource("codex_side_door")
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_16_복도_썩은마루.tscn"
+"다음_연결" = "오른쪽"
+"표제" = "2층 복도 B0"

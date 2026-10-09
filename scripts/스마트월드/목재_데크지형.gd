@@ -45,12 +45,33 @@ func _ready() -> void:
 func _이웃연결() -> void:
 	if get_parent() == null:
 		return
-	for node in get_parent().get_children():
+	# 기본 지형과 추가 지형의 부모가 달라도 맞닿은 상판은 하나의 면으로 잘라야 한다.
+	for node in _목재_이웃들():
 		if node == self or not node.has_method("get_point_array"):
 			continue
 		if not node.points_modified.is_connected(set_as_dirty):
 			node.points_modified.connect(set_as_dirty)
 	set_as_dirty()
+
+func _목재_이웃들() -> Array[Node]:
+	var 결과: Array[Node] = []
+	if get_parent() == null:
+		return 결과
+	var 부모들: Array[Node] = [get_parent()]
+	var 씬 := get_parent()
+	while 씬.get_parent() != null and not 씬.has_node("Player"):
+		씬 = 씬.get_parent()
+	for 이름 in ["지형", "추가지형"]:
+		var 묶음 := 씬.get_node_or_null(이름)
+		if 묶음 != null and not 부모들.has(묶음):
+			부모들.append(묶음)
+			if not 묶음.child_order_changed.is_connected(_이웃연결):
+				묶음.child_order_changed.connect(_이웃연결)
+	for 부모 in 부모들:
+		for node in 부모.get_children():
+			if node != self and node.has_method("발_그림_깊이") and node.has_method("get_point_array"):
+				결과.append(node)
+	return 결과
 
 func _process(delta: float) -> void:
 	# 열린 편집기에서 스크립트가 교체되어도 _ready 재호출 없이 이전 액자 메시를 지운다.
@@ -79,7 +100,7 @@ func _이웃다각형(points: PackedVector2Array) -> Array[PackedVector2Array]:
 		bounds = bounds.expand(p)
 	var others: Array[PackedVector2Array] = []
 	if get_parent() != null:
-		for node in get_parent().get_children():
+		for node in _목재_이웃들():
 			if node == self or not node is Node2D or not node.has_method("get_point_array"):
 				continue
 			if not node.is_visible_in_tree():

@@ -86,6 +86,11 @@ func _다음_스테이지() -> void:
 	if _씬:
 		_씬.queue_free()
 		_씬 = null
+		# [2026-10-09] 앞 씬이 **다 지워진 뒤** 다음 씬을 연다. 비행이 0 개인 스테이지(18 숨은 서재)는 씬준비 프레임 안에서
+		#   곧장 여기로 와서, 지워지기 전 앞 씬과 새 씬이 한 프레임 겹쳤다("Parent node is busy" · 그다음 19 거미방이 13 전부 실패).
+		#   _씬 = null 인 동안 _physics_process 는 아무것도 안 한다.
+		await process_frame
+		await process_frame
 	_si += 1
 	if _si >= _스테이지들.size():
 		_끝()
@@ -138,6 +143,44 @@ func _유령_칠하기(색: int) -> void:
 			n.call("_충돌레이어_갱신")
 
 
+## [2026-10-09] 새 기믹 손질(시험용 — 게임 규칙을 바꾸는 게 아니다):
+##   · 잠긴 문 · 비밀문(책장): 검사기는 '열쇠·레버로 열었다고 치고' 길을 짠다 → 열린 채로 둔다(여는 과정은 시험_열쇠·시험_레버퍼즐).
+##   · 그을음: 몹의 추적 타이밍은 경로(비행) 시험 대상이 아니다 → 치운다(시험_그을음 이 따로 본다).
+##   · 부서지는 판: 비행마다 _다음_비행() 에서 되살린다(앞 비행이 부순 판을 다음 비행이 밟는다).
+func _새기믹_손질() -> void:
+	for n in get_nodes_in_group("잠긴문"):
+		if n.has_method("열린채로"):
+			n.call("열린채로")
+	for n in get_nodes_in_group("비밀문"):
+		n.set("영구", true)
+		n.set("_진행", 1.0)
+		n.set("_목표", 1.0)
+		n.call("_반영")
+	for n in get_nodes_in_group("그을음"):
+		n.queue_free()
+	# [2026-10-09 거미방] 반딧불 몹의 빛(색 규칙)은 기다리면 되는 움직이는 위험 — 검사기도 막지 않는다.
+	#   경로 재생은 '지형으로 갈 수 있나' 만 보므로 치운다(빛 규칙은 tools/시험_거미방.gd 가 따로 본다).
+	for n in get_nodes_in_group("광원몹"):
+		n.queue_free()
+	# [2026-10-09] 15 거울 각도를 씬 준비가 끝난 뒤에 한 번 더 — 씬을 막 넣은 순간엔 반사빛길이 거울을 아직 안 만들어
+	#   위(_다음_스테이지)의 −45° 대입이 조용히 건너뛰어졌다(거울 기본 −15° → 빛이 아래로 꺾여 흰 다리가 안 생김).
+	var 반사 := _씬.get_node_or_null("반사빛길")
+	if 반사 and 반사.get("거울"):
+		반사.거울.법선각 = -45.0
+	# [2026-10-09] 누름계단 — 검사기는 판을 '다 나온 채'로 본다 → 발판(압력버튼)을 멈추고 판을 다 나온 자리로 옮긴다.
+	#   (상자로 발판을 누르는 일 자체는 tools/시험_누름계단.gd 가 따로 본다)
+	for b in _씬.find_children("*_발판", "AnimatableBody2D", true, false):
+		if b.get("대상들") == null:
+			continue
+		var 이동량들: Array = b.get("대상_이동량들")
+		var 대상들: Array = b.get("대상들")
+		b.process_mode = Node.PROCESS_MODE_DISABLED
+		for i in 대상들.size():
+			var 판 := b.get_node_or_null(대상들[i])
+			if 판 and 판.has_method("나온채로") and i < 이동량들.size():
+				판.call("나온채로", 이동량들[i])
+
+
 func _놓기(위치: Vector2) -> void:
 	_p.velocity = Vector2.ZERO
 	_p.global_position = 위치
@@ -177,6 +220,7 @@ func _physics_process(_d: float) -> bool:
 				var 연결 := _씬.get_node_or_null("연결")
 				if 연결:
 					연결.process_mode = Node.PROCESS_MODE_DISABLED
+				_새기믹_손질()
 				_다음_비행()
 		"놓임":
 			# 3프레임 가만히 — 바닥에 붙는지 본다(점프는 바닥에서만 된다)
@@ -219,6 +263,7 @@ func _다음_비행() -> void:
 	_공중 = false
 	_튐 = false
 	_바닥프레임 = 0
+	call_group("붕괴발판", "부활_복구")       # [2026-10-09] 앞 비행이 부순 판을 되살린다
 	var 첫색 = s["첫색"]
 	if 첫색 != null:
 		_p.set("자유색", _색(첫색))
@@ -226,9 +271,9 @@ func _다음_비행() -> void:
 	var x := float(s["출발"][0])
 	var y := float(s["출발"][1])
 	if 출발노드 >= n:
-		# 도약대 출발: 검사기는 격자 윗면(바닥-1칸)에서 쏘지만 실제 발판 윗면은 바닥에서 23px 위
+		# 도약대 출발: 검사기는 격자 윗면(바닥-1칸)에서 쏜다. [2026-10-09] 도약대 판 윗면 = 바닥 위 32px(1칸 — 도약대.서는_높이)
 		var 바닥 := y + 32.0
-		_놓기(Vector2(x, 바닥 - 23.0 - 2.0))
+		_놓기(Vector2(x, 바닥 - 32.0 - 2.0))
 		_단계 = "도약대기"
 		_f = 0
 		# 점프 떼기(뗌)가 있는 도약 비행은 재생할 수 없다(점프를 누르면 바닥 점프가 먼저 나간다)

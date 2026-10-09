@@ -110,14 +110,31 @@ func _ready() -> void:
 	if _촛불형:
 		_촛불시트 = load("res://assets/textures/props/chapter1_checkpoint/candle_states.png")
 	add_to_group("checkpoint")
+	if _촛불형 and not Engine.is_editor_hint():
+		add_to_group("태우는빛")       # [2026-10-09] 켜진 촛불등 둘레는 그을음이 못 들어온다(기획 §4-H 태우는 빛)
 	collision_layer = 0
 	collision_mask = 1
 	monitoring = true
 	_재구성()
 	if _촛불형 and not Engine.is_editor_hint():
 		_바닥_맞추기.call_deferred()
+	elif _촛불형:
+		# [2026-10-09] 에디터에는 물리가 없어 발밑을 못 잰다 → 쳅터1 목재 상판 가운데(+7)로 미리 보여 준다.
+		#   (도형님: 에디터에서 촛불등이 상판 윗변에 얹혀 보였다 — 실행 화면과 같은 자리에 보이게)
+		_발깊이 = 7.0
+		_재구성()
 	if not Engine.is_editor_hint() and not body_entered.is_connected(_닿음):
 		body_entered.connect(_닿음)
+
+
+## [2026-10-09] 빛 판정 공통 — 켜진 촛불등의 빛 둘레(반경 `촛불_빛_반경`) 안인가. 그을음이 묻는다.
+##   꺼진 등은 빛이 없다 → 체크포인트를 켜면 그 둘레가 안전지대가 된다("빛 안은 안전지대").
+const 촛불_빛_반경 := 150.0
+func 빛_안인가(월드점: Vector2) -> bool:
+	if not _촛불형 or not 활성:
+		return false
+	var 불 := global_position + Vector2(0, -62.0 - float(걸이높이) + _발깊이)
+	return 월드점.distance_to(불) <= 촛불_빛_반경
 
 
 ## [2026-10-07] 발밑 지형을 물리로 찾아 그림상 서는 면에 맞춘다(충돌·판정 위치는 그대로).
@@ -127,9 +144,17 @@ func _바닥_맞추기() -> void:
 	if 걸이높이 > 0 or not is_inside_tree():
 		return
 	await get_tree().physics_frame
+	if not is_inside_tree():
+		return
 	var 공간 := get_world_2d().direct_space_state
 	var q := PhysicsRayQueryParameters2D.create(global_position + Vector2(0, -24), global_position + Vector2(0, 96), 1)
 	q.collide_with_areas = false
+	# 시작 위치의 플레이어 몸을 바닥으로 잡으면 등불이 떠 보인다. 지형만 찾도록 플레이어를 제외한다.
+	var 제외: Array[RID] = []
+	for 몸 in get_tree().get_nodes_in_group("player"):
+		if 몸 is CollisionObject2D:
+			제외.append(몸.get_rid())
+	q.exclude = 제외
 	var r := 공간.intersect_ray(q)
 	if r.is_empty():
 		return

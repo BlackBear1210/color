@@ -32,6 +32,8 @@ const 메뉴_스크립트 := preload("res://scripts/스마트월드/일시정지
 const 낙하감시_스크립트 := preload("res://scripts/스마트월드/낙하_감시.gd")
 ## [2026-10-04] 쳅터1 연결구 전환(줌인·암전·교체·줌아웃). 진행 중엔 사망 판정을 멈춘다.
 const 전경전환_스크립트 := preload("res://scripts/쳅터1/전경전환.gd")
+## [2026-10-08] 반반 열쇠·잠긴 문 — 열쇠 스테이지 표와 조립은 이 스크립트 한 곳(class_name 대신 경로 preload — 아래 주석과 같은 이유)
+const 반반열쇠_관리 := preload("res://scripts/장애물/반반열쇠_관리.gd")
 ## Inspector `시작_위치_방식`의 두 번째 선택값. 숫자를 함수마다 반복하지 않는다.
 const 시작_위치_방식_에디터_플레이어: int = 1
 ## [2026-08-17 추가] 점(pip) 방식 페인트 HUD + 그 어댑터.
@@ -176,6 +178,12 @@ func _ready() -> void:
 	var 기록 := 실행기록.new()
 	기록.name = "실행기록"
 	add_child(기록)
+	# [2026-10-09 Claude] 쳅터1 퍼즐 보드 — 방문 기록(숨은 스테이지 발견) + 플레이 중 한 장면 사진(클리어하면 보드 조각에)
+	# 하수도 사진 카드도 실제 플레이 화면을 써야 하므로 두 챕터 모두 스냅을 기록한다.
+	if scene_file_path.begins_with("res://scenes/쳅터1/스테이지/") or scene_file_path.begins_with("res://scenes/world_2_클로드/"):
+		var 스냅 := preload("res://scripts/진행/스테이지_스냅.gd").new()
+		스냅.name = "스테이지스냅"
+		add_child(스냅)
 	# 실제 목표문만 완료 이벤트에 연결한다. 끝도달_검사점 Marker2D는 건드리지 않는다.
 	for 목표 in get_tree().get_nodes_in_group("zone_exit"):
 		if 목표 is Area2D and is_ancestor_of(목표):
@@ -183,6 +191,9 @@ func _ready() -> void:
 				if body == _플레이어:
 					스테이지_완료())
 	_HUD_만들기()
+	# ★[2026-10-08] 반반 열쇠 — 열쇠 스테이지(표 또는 씬에 놓인 조각/문)면 조각·잠긴 문·HUD 칸을 만든다.
+	#   HUD 칸이 페인트 HUD 아래에 붙으므로 반드시 `_HUD_만들기()` 다음. 열쇠 스테이지가 아니면 아무것도 안 한다.
+	반반열쇠_관리.배치(self)
 	# 배치된 성수반은 불만 켜던 상태였으므로 실제 부활 위치도 이 월드에 저장한다.
 	#   쳅터1 촛불등은 빼고 — 촛불등은 안전 착지를 확인한 뒤 `_체크포인트_갱신` 이 저장한다(공중 스침 저장 방지).
 	for 지점 in get_tree().get_nodes_in_group("checkpoint"):
@@ -257,6 +268,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("interact"):
 		return
 	# ── E 중재 ── 레버가 손에 닿으면 레버가 우선 (기획: "가까이 다가가서 상호작용")
+	# [2026-10-09] 쳅터1 벽 레버·빗장 손잡이 등 "상호작용" 그룹(닿아있나()·조작() 만 있으면 된다)을 먼저 본다.
+	for n in get_tree().get_nodes_in_group("상호작용"):
+		if is_ancestor_of(n) and n.has_method("닿아있나") and n.call("닿아있나"):
+			n.call("조작")
+			return
 	for n in get_tree().get_nodes_in_group("제어레버"):
 		var 레버 := n as 제어레버
 		if 레버 and 레버.닿아있나():
@@ -372,6 +388,11 @@ func _사망_판정() -> bool:
 	for n in get_tree().get_nodes_in_group("색레이저"):
 		var 빔 := n as 색레이저
 		if 빔 and 빔.위험한가(_플레이어):
+			return true
+	# 1') [2026-10-09 Claude] 움직이는 색 빛(반딧불 몹) — 색레이저와 같은 규칙(빛 안 몸 색 ≠ 빛 색)이지만 클래스가 다르다.
+	#   그룹 "색빛" 에 든 노드가 `위험한가(플레이어)` 로 스스로 답한다(거미줄·지형 가림까지 그 노드가 계산).
+	for n in get_tree().get_nodes_in_group("색빛"):
+		if n.has_method("위험한가") and n.위험한가(_플레이어):
 			return true
 
 	# ⚠[2026-08-20 삭제] 여기 있던 `빛경계` 즉사 판정을 뺐다.
@@ -489,6 +510,8 @@ func _반대색_대상_찾기(맞은것: Object) -> Node:
 func 연결_도착(도착: Vector2, 안쪽: Vector2) -> void:
 	if _플레이어 == null:
 		return
+	# 보관한 씬은 _ready가 다시 불리지 않는다. 옆방에서 돌아와도 이어하기 위치를 현재 복도로 갱신한다.
+	게임진행.방문_기록(scene_file_path)
 	_플레이어.set("velocity", Vector2.ZERO)
 	_플레이어.global_position = 도착
 	_안전점 = 안쪽
@@ -556,6 +579,11 @@ func _리스폰() -> void:
 	# 사망은 "스테이지 재시도" 다 → 규칙대로 모든 페인트를 회수한다.
 	if _코어:
 		_코어.리셋()
+	# ★[2026-10-08] 부서지는 발판 v3 — 저절로 복구되지 않고 **죽어 부활할 때만** 전부 원래대로(기획 §4-F).
+	#   페인트 리셋은 칠한 지형에만 닿으므로, 안 칠한 채 부서진 발판까지 여기서 그룹으로 되살린다.
+	get_tree().call_group("붕괴발판", "부활_복구")
+	# [2026-10-09] 함정·퍼즐도 부활 때 되감는다(샹들리에 함정 · 레버 퍼즐 · 그을음 등 "부활복구" 그룹)
+	get_tree().call_group("부활복구", "부활_복구")
 	if _체크포인트_저장됨:
 		# 촛불등은 저장할 때 원래 발판색까지 확인했다(_체크포인트_갱신). 성수반은 부활 자리 바닥색을 다시 읽는다.
 		_플레이어.set("player_color", _체크포인트_색 if is_instance_valid(_저장체크) else _체크포인트_복원색())
@@ -737,6 +765,32 @@ func _내_통로들() -> Array[연결통로]:
 
 ## "마지막으로 안전하게 서 있던 땅"을 기억해 둔다.
 ## 조건: 바닥에 붙어 있고 · 죽을 상태가 아니고 · 낙하 위험도 0 · 일정 시간 유지.
+## 지금 발밑이 부서지는 발판(SS2D_붕괴발판 · "붕괴발판" 그룹)인가 — 마지막 이동의 바닥 접촉으로 본다.
+func _붕괴발판_위인가() -> bool:
+	for i in _플레이어.get_slide_collision_count():
+		var 접촉 := _플레이어.get_slide_collision(i)
+		if 접촉.get_normal().dot(Vector2.UP) < 0.5:
+			continue
+		var n := 접촉.get_collider() as Node
+		while n and n != self:
+			if n.is_in_group("붕괴발판"):
+				return true
+			n = n.get_parent()
+	return false
+
+
+## 지금 몸(발 · 허리 · 머리)이 이 씬 반딧불 몹(그룹 "광원몹" · `빛_닿을_수_있나`)의 정지점 빛 반경 안인가.
+func _반딧불_빛자리인가() -> bool:
+	var 몸 := _플레이어.global_position
+	for n in get_tree().get_nodes_in_group("광원몹"):
+		if not n.has_method("빛_닿을_수_있나") or not is_ancestor_of(n):
+			continue
+		for dy in [-8.0, -48.0, -88.0]:
+			if n.call("빛_닿을_수_있나", 몸 + Vector2(0, dy)):
+				return true
+	return false
+
+
 func _안전점_갱신(delta: float, 죽는가: bool) -> void:
 	if not 안전지점_자동저장:
 		return
@@ -751,6 +805,16 @@ func _안전점_갱신(delta: float, 죽는가: bool) -> void:
 		_안전_누적 = 0.0
 		return
 	if _낙하 and _낙하.위험도() > 0.0:
+		_안전_누적 = 0.0
+		return
+	# ★[2026-10-08] 부서지는 발판 위는 안전지점이 아니다 — v3 는 저절로 복구되지 않으므로, 그 위에 저장되면
+	#   부활할 때마다 같은 발판에서 되살아나 0.9초 뒤 또 떨어진다(시험_부서지는발판 에서 실제로 잡힘).
+	if _붕괴발판_위인가():
+		_안전_누적 = 0.0
+		return
+	# ★[2026-10-10] 반딧불 몹이 머물며 빛낼 수 있는 자리도 안전지점이 아니다 — 빛이 꺼진 사이 저장되면
+	#   다음 부활이 빛 한가운데라 또 죽는다(02·10·12 에 반딧불을 넣으며 시험에서 잡힘 · 15·19 도 같이 막힌다).
+	if _반딧불_빛자리인가():
 		_안전_누적 = 0.0
 		return
 	_안전_누적 += delta

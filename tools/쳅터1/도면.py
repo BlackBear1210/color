@@ -147,7 +147,118 @@ def 그리기(dn, 검사결과, 출력경로):
             d.line([(x0, bb), (x0, bb - g.오름 * S)], fill=(40, 150, 140, 160), width=2)
             d.polygon([(x0 - 5, bb - g.오름 * S + 8), (x0, bb - g.오름 * S), (x0 + 5, bb - g.오름 * S + 8)], fill=(40, 150, 140))
             d.text((c + 3, bb - 14), f"도약 {g.오름}칸" + (f"({g.색}만)" if g.색 else ""), font=f기, fill=(20, 110, 100))
-        else:
+        elif isinstance(g, 기믹모듈.부서지는판):
+            # [2026-10-09] 부서지는 판 — 갈색 판 + 금 표시
+            for k in range(g.장수):
+                a, bb = P(g.x + 3 * k, g.y)
+                c, e = P(g.x + 3 * (k + 1), g.y + 0.6)
+                d.rectangle([a + 1, bb, c - 1, e], fill=(150, 110, 70), outline=(90, 60, 30))
+                d.line([((a + c) / 2 - 3, bb), ((a + c) / 2 + 2, e)], fill=(60, 40, 20), width=2)
+            d.text((a + 3, bb - 14), f"부서지는판 ×{g.장수}", font=f기, fill=(120, 80, 40))
+        elif isinstance(g, 기믹모듈.반딧불몹):
+            # [2026-10-09 거미방] 반딧불 몹 — 정지점(번호) · 날아다니는 길(점선) · 빛 반경(옅은 원 = 색 규칙이 걸리는 곳)
+            r = g.반경 / 규격.칸 * S
+            for (ax, ay), (bx, by) in g.길():
+                _점선(d, [P(ax, ay), P(bx, by)], (200, 160, 30), 2)
+            for k, (mx, my) in enumerate(g.멈춤):
+                x, y = P(mx, my)
+                d.ellipse([x - r, y - r, x + r, y + r], outline=(225, 190, 60), width=1)
+                d.ellipse([x - 7, y - 7, x + 7, y + 7], fill=(255, 235, 140), outline=(120, 90, 10))
+                d.text((x + 9, y - 14), f"반딧불{g.i}·{k}" + (" 새장" if g.새장 and int(g.새장["멈춤"]) == k else ""), font=f기, fill=(140, 100, 10))
+            if g.새장:
+                lx, ly = g.새장["레버"]
+                x, y = P(lx + 0.5, ly)
+                d.rectangle([x - 5, y - 40, x + 5, y - 20], fill=(180, 150, 80), outline=(80, 60, 20))
+                d.text((x - 20, y - 56), "새장 레버", font=f기, fill=(120, 90, 20))
+        elif isinstance(g, 기믹모듈.누름계단):
+            # [2026-10-09] 누름계단 — 발판(홈) · 숨은 자리(점선) → 나온 자리(돌 판) · 상자
+            x0, 바닥, 폭 = g.발판
+            a, bb = P(x0, 바닥)
+            c, e = P(x0 + 폭, 바닥 + 1)
+            d.rectangle([a, bb, c, e], fill=(160, 120, 60), outline=(90, 60, 20))
+            d.text((a, e + 2), "누름 발판" + (" (유지)" if g.유지 else " (누르는 동안)"), font=f기, fill=(120, 80, 20))
+            for k, p in enumerate(g.판들):
+                a, bb = P(p["x"], p["y"])
+                c, e = P(p["x"] + p["w"], p["y"] + p["h"])
+                d.rectangle([a, bb, c, e], fill=(120, 116, 110), outline=(60, 58, 55), width=2)
+                ha, hb = P(p["x"] + p["나옴"], p["y"])
+                _점선(d, [(ha, hb), (ha + (c - a), hb), (ha + (c - a), e), (ha, e), (ha, hb)], (200, 200, 200), 1)
+                d.text((a + 2, bb - 14), f"튀어나옴{k + 1}({p.get('지연', 0)}초)", font=f기, fill=(60, 58, 55))
+            if g.상자:
+                sx, sb = g.상자
+                a, bb = P(sx - 1, sb - 3)
+                c, e = P(sx + 2, sb)
+                d.rectangle([a, bb, c, e], fill=(70, 66, 60), outline=(200, 190, 170), width=2)
+                d.line([(a, bb), (c, e)], fill=(200, 190, 170), width=1)
+                d.line([(c, bb), (a, e)], fill=(200, 190, 170), width=1)
+                d.text((a, bb - 14), "상자(무게)", font=f기, fill=(90, 80, 60))
+        elif isinstance(g, 기믹모듈.그을음거미):
+            x, y = P(g.x + 0.5, g.바닥)
+            d.ellipse([x - 13, y - 15, x + 13, y], fill=(25, 25, 25), outline=(150, 150, 150))
+            for s_ in (-1, 1):
+                for k in range(3):
+                    d.line([(x + s_ * 8, y - 8), (x + s_ * (18 + k * 3), y - 2 - k * 5)], fill=(25, 25, 25), width=2)
+            d.text((x + 16, y - 18), "거미(그을음)", font=f기, fill=(40, 40, 40))
+            for k, w in enumerate(g.줄):
+                a1, a2 = P(*w["가"]), P(*w["나"])
+                d.line([a1, a2], fill=(150, 150, 170), width=3 if w["처음부터"] else 1)
+                mx, my = (a1[0] + a2[0]) / 2, (a1[1] + a2[1]) / 2
+                for t in range(6):
+                    ang = t * math.pi / 3
+                    d.line([(mx, my), (mx + 14 * math.cos(ang), my + 14 * math.sin(ang))], fill=(150, 150, 170), width=1)
+                d.text((mx + 6, my + 4), f"거미줄{k + 1}" + (" (처음부터)" if w["처음부터"] else ""), font=f기, fill=(90, 90, 120))
+        elif isinstance(g, 기믹모듈.빛받이):
+            x, y = P(g.x, g.y)
+            테 = (20, 20, 20) if g.색 == "검정" else (250, 250, 240)
+            d.ellipse([x - 11, y - 11, x + 11, y + 11], fill=(150, 120, 60))
+            d.ellipse([x - 8, y - 8, x + 8, y + 8], fill=테, outline=(90, 70, 30))
+            d.text((x + 13, y - 8), f"빛받이({g.색}{'' if g.유지 else ' · 켜진 동안'})", font=f기, fill=(120, 90, 20))
+            if g.문:
+                dd = g.문
+                w, h = dd.get("크기", [3, 5])
+                a, bb = P(dd["x"] - w / 2, dd["바닥"] - h)
+                c, e = P(dd["x"] + w / 2, dd["바닥"])
+                _점선(d, [(a, bb), (c, bb), (c, e), (a, e), (a, bb)], (110, 110, 110), 2)
+                for t in range(1, 4):
+                    xx = a + (c - a) * t / 4
+                    d.line([(xx, bb), (xx, e)], fill=(110, 110, 110), width=1)
+                d.line([(x, y), ((a + c) / 2, bb)], fill=(150, 130, 70), width=1)
+                d.text((a, e + 2), "창살문", font=f기, fill=(90, 90, 90))
+        elif isinstance(g, 기믹모듈.그을음):
+            x, y = P(g.x + 0.5, g.바닥)
+            d.ellipse([x - 12, y - 14, x + 12, y], fill=(30, 30, 30), outline=(120, 120, 120))
+            d.ellipse([x - 5, y - 10, x - 2, y - 7], fill=(255, 255, 255))
+            d.ellipse([x + 2, y - 10, x + 5, y - 7], fill=(255, 255, 255))
+            d.text((x + 14, y - 16), "그을음", font=f기, fill=(40, 40, 40))
+        elif isinstance(g, 기믹모듈.열쇠조각):
+            x, y = P(g.x, g.y)
+            색 = (20, 20, 20) if g.색 == "검정" else (245, 245, 240)
+            d.ellipse([x - 9, y - 16, x + 9, y + 2], fill=색, outline=(200, 160, 40), width=2)
+            d.rectangle([x - 2, y + 2, x + 2, y + 16], fill=색, outline=(200, 160, 40))
+            d.text((x + 12, y - 12), f"열쇠 {g.색}" + (f" → {g.주인[6:]}" if g.주인 else ""), font=f기, fill=(160, 120, 20))
+        elif isinstance(g, 기믹모듈.레버퍼즐):
+            for k, (x0, y0) in enumerate(g.레버):
+                x, y = P(x0 + 0.5, y0)
+                d.rectangle([x - 5, y - 40, x + 5, y - 20], fill=(180, 150, 80), outline=(80, 60, 20))
+                d.text((x - 4, y - 56), "켬" if g.정답[k] else "끔", font=f기, fill=(120, 90, 20))
+            x, y = P(g.손잡이[0] + 0.5, g.손잡이[1])
+            d.ellipse([x - 7, y - 34, x + 7, y - 20], outline=(120, 90, 20), width=3)
+            d.text((x + 9, y - 40), "손잡이", font=f기, fill=(120, 90, 20))
+            if g.샹들리에:
+                x, y = P(g.샹들리에[0], g.샹들리에[1])
+                d.polygon([(x - 3 * S, y + 2 * S), (x + 3 * S, y + 2 * S), (x, y + 5 * S)], outline=(170, 40, 40))
+                d.text((x + 3 * S + 3, y + 2 * S), "샹들리에 함정", font=f기, fill=(170, 40, 40))
+            if g.단서:
+                x, y = P(g.단서[0], g.단서[1])
+                d.rectangle([x - 2.3 * S, y - 1.5 * S, x + 2.3 * S, y + 1.5 * S], outline=(120, 90, 20), width=2)
+                d.text((x - 2.3 * S, y + 1.6 * S), "단서판", font=f기, fill=(120, 90, 20))
+            if g.비밀문:
+                b = g.비밀문
+                a, bb = P(b["x"] - 3.5, b["바닥"] - 12)
+                c, e = P(b["x"] + 3.5, b["바닥"])
+                _점선(d, [(a, bb), (c, bb), (c, e), (a, e), (a, bb)], (120, 60, 160), 2)
+                d.text((a + 3, bb + 3), "비밀문(책장)", font=f기, fill=(120, 60, 160))
+        elif isinstance(g, 기믹모듈.움직이는발판):
             칸들 = g.위치들()
             l0, t0, r0, _ = 칸들[0]
             l1, t1, r1, b1 = 칸들[-1]

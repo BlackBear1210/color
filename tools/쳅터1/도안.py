@@ -71,6 +71,23 @@ class 도안:
                         g[yy][xx] = v
                     else:
                         self.경고.append(f"지형 {항목} 이 도안 밖으로 나감")
+        # [2026-10-09 Claude] 추가지형 — 손으로 고친 씬(생성기가 멈춤)에도 **새 판만** 얹을 수 있게 따로 적는 지형.
+        #   도형님: "그냥 걸어가는 곳이 많다 → 흰색 지형을 넣어 멈춰서 생각하게 · 색 반전을 쓰게".
+        #   · 격자에는 똑같이 칠한다 → 검사기·도면·미리보기·(생성기 소유 씬의) 생성은 보통 지형과 같다.
+        #   · 손으로 고친 씬에는 tools/쳅터1/추가기믹.py 가 이 사각형들만 "추가지형" 노드로 끼워 넣는다(다른 노드 무수정).
+        #   · 그래서 **빈칸에만** 놓는다(기존 지형과 겹치면 씬의 옛 다각형과 새 판이 포개진다 → 경고).
+        self.추가지형 = []
+        for 항목 in self.d.get("추가지형", []):
+            k, x, y, ww, hh = 항목[:5]
+            v = 종류_번호[k]
+            겹침 = [(xx, yy) for yy in range(y, y + hh) for xx in range(x, x + ww) if 0 <= xx < w and 0 <= yy < h and g[yy][xx] != 0]
+            if 겹침:
+                self.경고.append(f"추가지형 {항목} 이 기존 지형과 겹침 @{겹침[0]} — 빈칸에만 놓을 것")
+            for yy in range(y, y + hh):
+                for xx in range(x, x + ww):
+                    if 0 <= xx < w and 0 <= yy < h:
+                        g[yy][xx] = v
+            self.추가지형.append((k, x, y, ww, hh))
         # 문 파기
         for 문 in self.문:
             x0, x1 = (0, b["왼"]) if 문["쪽"] == "왼" else (w - b["오른"], w)

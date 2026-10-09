@@ -172,6 +172,14 @@ func _창문_원래() -> Vector2:
 	return _창문.get_meta("parallax_rest", _창문.position)
 
 
+## [2026-10-09] 그을음(몹)을 태우는 빛인가 — 근원이 '그을음'(검은 그을음 줄기)이면 빛이 아니다.
+##   창문 달빛·천장 틈 빛만 태운다(색레이저.빛_안인가 의 판정 모양을 그대로 쓴다).
+func 빛_안인가(월드점: Vector2) -> bool:
+	if 근원 == 2:
+		return false
+	return super.빛_안인가(월드점)
+
+
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	if _창문:

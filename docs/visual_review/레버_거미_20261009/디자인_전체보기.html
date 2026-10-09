@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GRAY · 레버와 거미 · 2026-10-09</title>
+<style>
+:root{color-scheme:dark;--bg:#1f1f1f}*{box-sizing:border-box}body{margin:0;background:#111;color:#e4e4e4;font:16px/1.65 system-ui,sans-serif}main{max-width:1200px;margin:auto;padding:30px}h1{font-size:28px}h2{font-size:21px}p{color:#bbb}button{padding:10px 16px;background:#343434;border:1px solid #777;color:#eee;border-radius:7px;cursor:pointer}button[aria-pressed=true]{border-color:white}.controls{position:sticky;top:0;background:#111e;padding:14px 0;z-index:1;display:flex;gap:10px;flex-wrap:wrap}.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}article{border:1px solid #444;border-radius:10px;overflow:hidden}article h2,article p{margin:16px 20px}.preview{background:var(--bg);padding:15px;text-align:center}.preview img{max-width:100%;max-height:480px;object-fit:contain;vertical-align:middle}.preview.gray img{filter:grayscale(1)}a{color:#ddd}label{padding:7px}.wide{grid-column:1/-1}.wide img{width:100%;max-height:none}.candles{display:flex;gap:18px;justify-content:space-evenly;align-items:flex-end;flex-wrap:wrap}.candles figure{margin:10px;text-align:center}.candles img{width:51px;height:160px}.candles figcaption{font-size:13px}.warning{border-left:3px solid #aaa;padding:10px 18px;background:#232323}@media(max-width:760px){.grid{grid-template-columns:1fr}main{padding:16px}}
+</style>
+<main><h1>GRAY · 레버와 거미</h1><p>2026-10-09 · 원화와 연결 검토. 게임 코드·씬 적용은 Claude 담당이며 아래 이미지는 적용 완료를 뜻하지 않습니다.</p>
+<div class="controls"><button aria-pressed="true" data-color="#1f1f1f">배경 31</button><button aria-pressed="false" data-color="#121212">바닥 18</button><button aria-pressed="false" data-color="#dcdcdc">밝은 배경</button><label><input id="gray" type="checkbox" checked> 흑백 연결 예상 보기</label></div>
+<p>원본에는 미세한 색조가 남아 있습니다. 체크를 풀면 저장된 원본 그대로 보입니다. 흑백 보기는 CSS 미리보기이며 파일을 변경하지 않습니다.</p>
+<div class="grid">
+<article><h2>벽 레버 · 꺼짐 / 켜짐</h2><div class="preview gray"><img src="../../../assets/textures/props/신규기믹_v02/레버/v01/벽레버_꺼짐켜짐_2상태.png" alt="입체 철제 레버 두 상태"></div><p>1536×1024 · 2열 1행. 얇은 오른쪽 면, 축 주변 홈, 둥근 손잡이. 원화 판 높이 약 628px → 게임 60px. 상태마다 축 기준을 맞춰 자르기 필요.</p></article>
+<article><h2>거미 · 여섯 자세</h2><div class="preview gray"><img src="../../../assets/textures/props/신규기믹_v02/거미/v01/거미_6자세.png" alt="오른쪽을 보는 거미 자세"></div><p>1536×1024 · 3열 2행. 대기 / 걷기 A / 걷기 B / 웅크림 / 엮기 예고 / 움찔. 같은 바닥선으로 재정렬할 키포즈 원화입니다. 완성된 걷기 루프는 아닙니다.</p></article>
+<article><h2>거미줄 · 세로 완성형</h2><div class="preview gray"><img src="../../../assets/textures/props/신규기믹_v02/거미줄/v01/거미줄_세로_완성.png" alt="가운데 줄을 기준으로 펼쳐진 세로 거미줄"></div><p>1024×1536 · 별도 리소스. 가운데 팽팽한 줄이 두 앵커를 잇습니다. 실제 빛 차단은 코드의 선분 판정이며 이미지 알파와 관계없습니다.</p></article>
+<article><h2>반딧불 · 붙음 / 비행 · 흰색 / 검은색</h2><div class="preview gray"><img src="../../../assets/textures/props/신규기믹_v02/반딧불몹/v01/반딧불_붙음비행_흰검_4상태.png" alt="반딧불 몸체 네 상태"></div><p>1254×1254 · 2열 2행. 위 붙음, 아래 비행, 왼쪽 흰색, 오른쪽 검은색. 빛 범위는 원화에 구워 넣지 않았습니다. 광원 그림·색 판정은 기존 구현에 맡깁니다.</p></article>
+<article class="wide"><h2>레버 배치 목업 · 생성형 편집</h2><div class="preview"><img src="레버_배치_생성형목업.png" alt="기존 저택에 입체 레버를 배치한 생성형 목업"></div><p>사용자 화면을 바탕으로 한 디자인 검토 이미지입니다. 출력 해상도와 일부 주변 표현은 원본과 달라질 수 있습니다. 실제 엔진 수정 후 캡처가 아닙니다.</p></article>
+<article class="wide"><h2>현재 연결된 양초 이미지 · 정적 확인</h2><div class="preview gray candles">
+<figure><img src="../../../assets/textures/props/신규기믹_v02/게임용/테마/양초_0.png" alt="가득 찬 양초"><figcaption>0초 · 100%</figcaption></figure>
+<figure><img src="../../../assets/textures/props/신규기믹_v02/게임용/테마/양초_1.png" alt="75퍼센트 양초"><figcaption>7.5초 · 75%</figcaption></figure>
+<figure><img src="../../../assets/textures/props/신규기믹_v02/게임용/테마/양초_2.png" alt="50퍼센트 양초"><figcaption>15초 · 50%</figcaption></figure>
+<figure><img src="../../../assets/textures/props/신규기믹_v02/게임용/테마/양초_3.png" alt="25퍼센트 양초"><figcaption>22.5초 · 25%</figcaption></figure>
+<figure><img src="../../../assets/textures/props/신규기믹_v02/게임용/테마/양초_4.png" alt="꺼진 양초 연기"><figcaption>연기 · 현재 미사용</figcaption></figure>
+<figure><img src="../../../assets/textures/props/신규기믹_v02/게임용/테마/양초_5.png" alt="다 탄 받침"><figcaption>30초 · 다 탐</figcaption></figure>
+</div><p>응접실 30초 설정으로 계산한 선택 시점입니다. 102×320px PNG를 코드와 동일한 0.5배로 표시했습니다. 연속적으로 녹는 표현은 아니며 소진 직후 연기를 건너뜁니다.</p></article>
+</div><p class="warning">엔진 실행·신규 원화 적용 후 전후 캡처 미실행. 정적 확인 및 원화 검토 완료, 실제 게임 시각 검증 대기.</p>
+<p><a href="../../../docs/작업기록_2026-10-09_Codex_레버거미_디자인_양초점검.md">작업기록 및 Claude 연결 안내</a> · <a href="이미지_검사.json">파일 검사</a> · <a href="생성_프롬프트.json">생성 프롬프트</a></p></main>
+<script>
+document.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{document.documentElement.style.setProperty('--bg',b.dataset.color);document.querySelectorAll('[data-color]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});document.querySelector('#gray').onchange=e=>document.querySelectorAll('.preview').forEach(x=>x.classList.toggle('gray',e.target.checked));
+</script></html>

@@ -1,5 +1,5 @@
 ; 목재 v03: 지형 점 부분 갱신 / 나머지 노드 보존
-[gd_scene load_steps=90 format=3]
+[gd_scene load_steps=92 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -22,6 +22,9 @@
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="19_furn3"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/책장.png" id="20_furn4"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/피아노.png" id="21_furn5"]
+
+[ext_resource type="Script" path="res://scripts/쳅터1/옆방문.gd" id="codex_side_door"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -602,26 +605,27 @@ position = Vector2(4944, 910)
 
 [node name="체크포인트" type="Node2D" parent="."]
 
-[node name="체크01" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(272, 992)
-collision_layer = 0
-
-[node name="체크02" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(3024, 896)
-collision_layer = 0
-
 [node name="체크03" parent="체크포인트" instance=ExtResource("9_checkpoint")]
 position = Vector2(3344, 992)
 collision_layer = 0
 
-[node name="체크04" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(4688, 992)
-collision_layer = 0
+[node name="추가기믹" type="Node2D" parent="."]
 
-[node name="체크05" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(5776, 992)
-collision_layer = 0
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(3616, 768)
+"멈춤들" = PackedVector2Array(0, 0, 480, -32, 1056, 0)
+"순환" = 0
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
 
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(272, 992)
 "점프_거리_칸" = 20.0
+
+[node name="응접실길" type="Node2D" parent="연결"]
+position = Vector2(272, 992)
+script = ExtResource("codex_side_door")
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_17_응접실.tscn"
+"다음_연결" = "오른쪽"
+"표제" = "1층 응접실"

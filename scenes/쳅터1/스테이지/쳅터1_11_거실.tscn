@@ -1,5 +1,5 @@
 ; 목재 v03: 지형 점 부분 갱신 / 나머지 노드 보존
-[gd_scene load_steps=146 format=3]
+[gd_scene load_steps=185 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -22,6 +22,10 @@
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/소파.png" id="19_furn3"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="20_furn4"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/피아노.png" id="21_furn5"]
+
+[ext_resource type="Script" path="res://scripts/쳅터1/옆방문.gd" id="codex_side_door"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/잠긴문.tscn" id="add_door"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/반반열쇠_조각.tscn" id="add_key"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -698,6 +702,216 @@ Vector2i(0, 8): 15
 }
 _next_key = 9
 
+[sub_resource type="Resource" id="add_t_white01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -48)
+
+[sub_resource type="Resource" id="add_t_white01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -48)
+
+[sub_resource type="Resource" id="add_t_white01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 48)
+
+[sub_resource type="Resource" id="add_t_white01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 48)
+
+[sub_resource type="Resource" id="add_t_white01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -48)
+
+[sub_resource type="Resource" id="add_t_white01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_white01_P0"),
+1: SubResource("add_t_white01_P1"),
+2: SubResource("add_t_white01_P2"),
+3: SubResource("add_t_white01_P3"),
+4: SubResource("add_t_white01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_black01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="add_t_black01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="add_t_black01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_black01_P0"),
+1: SubResource("add_t_black01_P1"),
+2: SubResource("add_t_black01_P2"),
+3: SubResource("add_t_black01_P3"),
+4: SubResource("add_t_black01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_black02_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black02_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="add_t_black02_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="add_t_black02_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="add_t_black02_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black02_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_black02_P0"),
+1: SubResource("add_t_black02_P1"),
+2: SubResource("add_t_black02_P2"),
+3: SubResource("add_t_black02_P3"),
+4: SubResource("add_t_black02_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_black03_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black03_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="add_t_black03_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="add_t_black03_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="add_t_black03_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black03_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_black03_P0"),
+1: SubResource("add_t_black03_P1"),
+2: SubResource("add_t_black03_P2"),
+3: SubResource("add_t_black03_P3"),
+4: SubResource("add_t_black03_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_white02_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -48)
+
+[sub_resource type="Resource" id="add_t_white02_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -48)
+
+[sub_resource type="Resource" id="add_t_white02_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 48)
+
+[sub_resource type="Resource" id="add_t_white02_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 48)
+
+[sub_resource type="Resource" id="add_t_white02_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -48)
+
+[sub_resource type="Resource" id="add_t_white02_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_white02_P0"),
+1: SubResource("add_t_white02_P1"),
+2: SubResource("add_t_white02_P2"),
+3: SubResource("add_t_white02_P3"),
+4: SubResource("add_t_white02_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_black04_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black04_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="add_t_black04_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="add_t_black04_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="add_t_black04_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black04_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_black04_P0"),
+1: SubResource("add_t_black04_P1"),
+2: SubResource("add_t_black04_P2"),
+3: SubResource("add_t_black04_P3"),
+4: SubResource("add_t_black04_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_11_거실" type="Node2D"]
 script = ExtResource("1_world")
 "스테이지_이름" = "11 · 1층 거실 (샹들리에 다리 · 발코니)"
@@ -916,26 +1130,90 @@ position = Vector2(2384, 1422)
 
 [node name="체크포인트" type="Node2D" parent="."]
 
-[node name="체크01" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(272, 2080)
-collision_layer = 0
-
 [node name="체크02" parent="체크포인트" instance=ExtResource("9_checkpoint")]
 position = Vector2(3344, 2080)
-collision_layer = 0
-
-[node name="체크03" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(4656, 2080)
 collision_layer = 0
 
 [node name="체크04" parent="체크포인트" instance=ExtResource("9_checkpoint")]
 position = Vector2(6576, 1184)
 collision_layer = 0
 
-[node name="체크05" parent="체크포인트" instance=ExtResource("9_checkpoint")]
-position = Vector2(6800, 2080)
-collision_layer = 0
+[node name="추가기믹" type="Node2D" parent="."]
+
+[node name="열쇠조각01" parent="추가기믹" instance=ExtResource("add_key")]
+position = Vector2(2560, 1328)
+"쪽" = 0
+"주인_씬" = ""
+
+[node name="열쇠조각02" parent="추가기믹" instance=ExtResource("add_key")]
+position = Vector2(6800, 944)
+"쪽" = 1
+"주인_씬" = ""
+
+[node name="잠긴문01" parent="추가기믹" instance=ExtResource("add_door")]
+"길목" = NodePath("../../연결/오른쪽")
+
+[node name="추가지형" type="Node2D" parent="."]
+
+[node name="흰판추가01" parent="추가지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(6816, 1136)
+"위치별_판정" = true
+_points = SubResource("add_t_white01_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="검정판추가01" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(592, 2032)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_black01_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판추가02" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(2288, 2032)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_black02_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판추가03" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(5744, 2032)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_black03_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="흰판추가02" parent="추가지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(6144, 2032)
+"위치별_판정" = true
+_points = SubResource("add_t_white02_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="검정판추가04" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(6576, 2032)
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_black04_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
 
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(272, 2080)
 "점프_거리_칸" = 20.0
+
+[node name="응접실문" type="Node2D" parent="연결"]
+position = Vector2(6800, 2080)
+script = ExtResource("codex_side_door")
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_17_응접실.tscn"
+"다음_연결" = "왼쪽"
+"표제" = "1층 응접실"

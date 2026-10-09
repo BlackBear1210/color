@@ -32,6 +32,9 @@
 [ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_deck_v3/black/fill.tres" id="23_5htib"]
 [ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="24_gk8ah"]
 
+[ext_resource type="Script" path="res://scripts/쳅터1/옆방문.gd" id="codex_side_door"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vqeew"]
 shader = ExtResource("15_4tves")
 shader_parameter/wood_mode = 1
@@ -2013,8 +2016,8 @@ script = ExtResource("11_link")
 z_index = 60
 position = Vector2(5984, 608)
 script = ExtResource("11_link")
-"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_03_방_서재.tscn"
-"다음_연결" = "왼쪽위"
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_04_복도_B.tscn"
+"다음_연결" = "왼쪽"
 
 [node name="장애물" type="Node2D" parent="." unique_id=286753557]
 
@@ -2093,26 +2096,27 @@ shape = SubResource("RectangleShape2D_ramst")
 
 [node name="체크포인트" type="Node2D" parent="." unique_id=2019084816]
 
-[node name="체크01" parent="체크포인트" unique_id=1662099084 instance=ExtResource("9_checkpoint")]
-position = Vector2(304, 608)
-collision_layer = 0
-
-[node name="체크02" parent="체크포인트" unique_id=1191154974 instance=ExtResource("9_checkpoint")]
-position = Vector2(1168, 992)
-collision_layer = 0
-
 [node name="체크03" parent="체크포인트" unique_id=2034625859 instance=ExtResource("9_checkpoint")]
-position = Vector2(2608, 992)
+position = Vector2(2576, 992)
 collision_layer = 0
 
-[node name="체크04" parent="체크포인트" unique_id=389699752 instance=ExtResource("9_checkpoint")]
-position = Vector2(4592, 992)
-collision_layer = 0
+[node name="추가기믹" type="Node2D" parent="."]
 
-[node name="체크05" parent="체크포인트" unique_id=551781759 instance=ExtResource("9_checkpoint")]
-position = Vector2(5776, 608)
-collision_layer = 0
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(2816, 768)
+"멈춤들" = PackedVector2Array(0, 0, 576, 0)
+"순환" = 1
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
 
 [node name="Player" parent="." unique_id=1222057813 instance=ExtResource("8_player")]
 position = Vector2(304, 608)
 "점프_거리_칸" = 20.0
+
+[node name="서재문" type="Node2D" parent="연결"]
+position = Vector2(5776, 608)
+script = ExtResource("codex_side_door")
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_03_방_서재.tscn"
+"다음_연결" = "왼쪽위"
+"표제" = "서재"

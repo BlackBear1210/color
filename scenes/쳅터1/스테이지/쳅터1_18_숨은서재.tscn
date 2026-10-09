@@ -1,0 +1,2676 @@
+[gd_scene format=4 uid="uid://cl1ljokvoi7rb"]
+
+[ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
+[ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_검정.tscn" id="3_tpl_black"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_흰색.tscn" id="4_tpl_white"]
+[ext_resource type="PackedScene" path="res://scenes/지형/목재/목재_데크_투명.tscn" id="5_tpl_ghost"]
+[ext_resource type="Script" uid="uid://bwcf4pjgprn0k" path="res://addons/rmsmartshape/shapes/point.gd" id="6_ss2d_point"]
+[ext_resource type="Script" uid="uid://bo5f7qe27jfje" path="res://addons/rmsmartshape/shapes/point_array.gd" id="7_ss2d_points"]
+[ext_resource type="PackedScene" uid="uid://dk1itr2afb8hv" path="res://scenes/player/Player.tscn" id="8_player"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/체크포인트.tscn" id="9_checkpoint"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/가시.tscn" id="10_spike"]
+[ext_resource type="Script" uid="uid://buirx8ppmb74m" path="res://scripts/쳅터1/연결구.gd" id="11_link"]
+[ext_resource type="Script" uid="uid://chw2s7ivx7trp" path="res://scripts/쳅터1/방배경.gd" id="12_bg"]
+[ext_resource type="Resource" path="res://assets/background/쳅터1/프리셋/방_서재.tres" id="13_preset"]
+[ext_resource type="Texture2D" uid="uid://cff1ioe0cegtv" path="res://assets/background/쳅터1/레이어_v01/가구/벽등.png" id="14_furn0"]
+[ext_resource type="Script" uid="uid://llobjh5hvry" path="res://addons/rmsmartshape/shapes/mesh.gd" id="14_kj83v"]
+[ext_resource type="Texture2D" uid="uid://dxvjuklab4spj" path="res://assets/background/쳅터1/레이어_v01/가구/사다리.png" id="15_furn1"]
+[ext_resource type="Shader" uid="uid://cdfwb1cf3jysf" path="res://shaders/지형_페인트.gdshader" id="15_mnnse"]
+[ext_resource type="Texture2D" uid="uid://dxtwbt7xrvcvq" path="res://assets/background/쳅터1/레이어_v01/가구/지구본.png" id="16_furn2"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_deck_v3/white/fill.tres" id="16_tyfjf"]
+[ext_resource type="Texture2D" uid="uid://glp4gq2ks6c8" path="res://assets/background/쳅터1/레이어_v01/가구/책상.png" id="17_furn3"]
+[ext_resource type="Texture2D" uid="uid://dyc6ptnsmgtfu" path="res://assets/textures/smartshape/wood_deck_v3/grain.png" id="17_w55de"]
+[ext_resource type="Texture2D" uid="uid://tu68drjmhl5a" path="res://assets/textures/smartshape/wood_deck_v5/front_nails.png" id="18_2usrh"]
+[ext_resource type="Texture2D" uid="uid://cxmlpw4yo2ie8" path="res://assets/background/쳅터1/레이어_v01/가구/책장.png" id="18_furn4"]
+[ext_resource type="Texture2D" uid="uid://bc3kwthryjt5r" path="res://assets/background/쳅터1/레이어_v01/가구/책장_높음.png" id="19_furn5"]
+[ext_resource type="Texture2D" uid="uid://dg240dhx4tbxr" path="res://assets/textures/smartshape/wood_deck_v4/top_grain.png" id="19_sxi08"]
+[ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_deck_v3/black/fill.tres" id="20_1sst8"]
+[ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="21_my553"]
+[ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="22_584qa"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/타이머양초.tscn" id="add_candle"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/반반열쇠_조각.tscn" id="add_key"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/썩은마루판.tscn" id="add_plank"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/그을음.tscn" id="add_soot"]
+
+[sub_resource type="Resource" id="P_S01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3072, -1568)
+
+[sub_resource type="Resource" id="P_S01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1744, -1568)
+
+[sub_resource type="Resource" id="P_S01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1744, -736)
+
+[sub_resource type="Resource" id="P_S01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1760, -736)
+
+[sub_resource type="Resource" id="P_S01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1760, -352)
+
+[sub_resource type="Resource" id="P_S01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2304, -352)
+
+[sub_resource type="Resource" id="P_S01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-2304, -192)
+
+[sub_resource type="Resource" id="P_S01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-992, -192)
+
+[sub_resource type="Resource" id="P_S01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-992, -128)
+
+[sub_resource type="Resource" id="P_S01_9"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1760, -128)
+
+[sub_resource type="Resource" id="P_S01_10"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1760, 672)
+
+[sub_resource type="Resource" id="P_S01_11"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0, 672)
+
+[sub_resource type="Resource" id="P_S01_12"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(0, 768)
+
+[sub_resource type="Resource" id="P_S01_13"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1760, 768)
+
+[sub_resource type="Resource" id="P_S01_14"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(1760, -736)
+
+[sub_resource type="Resource" id="P_S01_15"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1744, -736)
+
+[sub_resource type="Resource" id="P_S01_16"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-1744, -1568)
+
+[sub_resource type="Resource" id="P_S01_17"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(3072, -1568)
+
+[sub_resource type="Resource" id="P_S01_18"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(3072, 1568)
+
+[sub_resource type="Resource" id="P_S01_19"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3072, 1568)
+
+[sub_resource type="Resource" id="P_S01_20"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-3072, -1568)
+
+[sub_resource type="Resource" id="PA_S01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S01_0"),
+1: SubResource("P_S01_1"),
+2: SubResource("P_S01_2"),
+3: SubResource("P_S01_3"),
+4: SubResource("P_S01_4"),
+5: SubResource("P_S01_5"),
+6: SubResource("P_S01_6"),
+7: SubResource("P_S01_7"),
+8: SubResource("P_S01_8"),
+9: SubResource("P_S01_9"),
+10: SubResource("P_S01_10"),
+11: SubResource("P_S01_11"),
+12: SubResource("P_S01_12"),
+13: SubResource("P_S01_13"),
+14: SubResource("P_S01_14"),
+15: SubResource("P_S01_15"),
+16: SubResource("P_S01_16"),
+17: SubResource("P_S01_17"),
+18: SubResource("P_S01_18"),
+19: SubResource("P_S01_19"),
+20: SubResource("P_S01_20")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
+_constraints = {
+Vector2i(0, 20): 15
+}
+_next_key = 23
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kj83v"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1920, 896)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_mnnse"]
+_surfaces = [{
+"aabb": AABB(-3072, -1568, 0, 6144, 3136, 1e-05),
+"attribute_data": PackedByteArray("/////6qqKsBWVRXAqqoqwFZVFcD/////YCO/PlZVFcBgI78+VlUVwP/////Al9A+VlURwMCX0D5WVRHA/////zChvT7kOA4/MKG9PuQ4Dj//////MKG9Ph3H8T8wob0+HcfxP/////84jmO/HcfxPziOY78dx/E//////ziOY7/HcRxAOI5jv8dxHED/////t0wHQMdxHEC3TAdAx3EcQP////9DewlAx3EgQEN7CUDHcSBA/////0N7CUCrqipAQ3sJQKuqKkD/////MKG9PquqKkAwob0+q6oqQP////8wob0+5DiuQDChvT7kOK5A/////54hjUDkOK5AniGNQOQ4rkD/////5DiOQOQ4sEDkOI5A5DiwQP/////aSwhB5DgOP9pLCEHkOA4//////xDt5T7kOA4/EO3lPuQ4Dj//////wJfQPlhV9T7Al9A+WFX1Pv/////Al9A+VlUVwMCX0D5WVRXA/////+xXOEFWVRXA7Fc4QVZVFcD/////juM4QVZVEcCO4zhBVlURwP////+O4zhBjuMIQY7jOEGO4whB/////wAAKMCO4whBAAAowI7jCEH/////qqoqwKuqB0GqqirAq6oHQf/////kOI5AjuO4QOQ4jkCO47hA/////8CX0D7kOA4/wJfQPuQ4Dj//////2ksIQY7juEDaSwhBjuO4QA=="),
+"format": 34359742527,
+"index_count": 72,
+"index_data": PackedByteArray("AAABAAIAAwAEAAUABgAHAAgACAAJAAoACwAMAA0ADgAPABAAEQASABMAFAAVABYABgAIAAoACwANABcABgAKAAsADgAQABEAAAACABgADgARABMAAAAYAAMAGQAOABMAAAADAAUAGQATABQAFgAAAAUAFwAZABQAFgAFAAYACwAXABQAFgAGAAsACwAUABYA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 26,
+"vertex_data": PackedByteArray("AABAxQAAxMQAAAAARtfbxAAAxMQAAAAAAADaxADAwcQAAAAAAADcxAAAOMQAAAAAAADcxAAAsMMAAAAAAAAQxQAAsMMAAAAAAAAQxQAAQMMAAAAAjK57xAAAQMMAAAAAAAB4xAAALsMAAAAAAAB4xAAAAMMAAAAAAADcxAAAAMMAAAAAAADcxAAAKEQAAAAA6aJrwQAAKEQAAAAAAAAAAACALEQAAAAAAADcRAAAOMQAAAAAAMDXxAAAOMQAAAAAAADaxACAPcQAAAAAAADaxAAAxMQAAAAAXRQ/RQAAxMQAAAAAAABARQDAwcQAAAAAAABARQAAxEQAAAAAAOA+xQAAxEQAAAAAAABAxQBAwUQAAAAAAAAAAAAAQEQAAAAAAADaxAAAOMQAAAAAAADcRAAAQEQAAAAA//////7//7//////////v/////////+//////////7//////////v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v//////+//+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////vw==")
+}]
+
+[sub_resource type="Resource" id="Resource_tyfjf"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_mnnse")
+material = SubResource("ShaderMaterial_kj83v")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w55de"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1920, 896)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2usrh"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-3072, -1572, 0, 6144, 3140, 0),
+"attribute_data": PackedByteArray("/////wAAMEAAAOBA/////wAAMEAAAOBA/////wAALkBVVfVA/////wAALkBVVfVA/////wAALUDP9/9A/////wAALUDP9/9A/////wAALkAAAMBA/////wAAIEAAAMBA/////wAAIEDP999A/////wAALkDP999A/////wAAIEAAAOBA/////wAAHUDP9/9A/////wAAHUDP9/9A/////wAAIEAAAOBA/////wAAIEAAAMBA/////wAAwMAAAMBA/////wAAwMDP999A/////wAAIEDP999A/////wAAwMAAAOBA/////wCAwcDP9/9A/////wCAwcDP9/9A/////wAAwMAAAOBA/////wAAaEEAAOBA/////wAAaEEAAOBA/////wBAZ0HP9/9A/////wBAZ0HP9/9A/////wAAaEEAAMBA/////wAAIEAAAMBA/////wAAIEDP999A/////wAAaEHP999A/////wAAIEAAAOBA/////wAAHUDP9/9A/////wAAHUDP9/9A/////wAAIEAAAOBA/////wAA8EEAAOBA/////wAA8EEAAOBA/////wCg70HP9/9A/////wCg70HP9/9A/////7QAUELP959A/////wDAUkIAAIBA/////wAAtkAAAIBA/////6IFoEDP959A/////wAAZkIAAMBA/////wAAQkAAAMBA/////6CLP0DP999A/////wAAZkLP999A/////6IFoEDP959A/////wAAoEAAAIBA/////wAAnsEAAIBA/////zlOnsEcx4FA/////znOosEcx4FA/////5j+p8HP959A/////wAAnEIAAOBA/////wAAnEIAAOBA/////wDom0LP9/9A/////wDom0LP9/9A/////wAAnEIAAMBA/////wDAjcEAAMBA/////4wOjsHP999A/////wAAnELP999A/////1oAmkLP959A/////wAAmkIAAIBA/////wCAosEAAIBA/////5j+p8HP959A/////5h+o8HP959A/////5h+ocHP959A/////wCAocEAAIBA/////wCAosEAAIBA/////wCAo8Fy0YVA/////wCAo8Fy0YVA/////wCAosEAAIBA/////wCAo8EAAIBA/////wAAoEC8uzs//////wAAAAC8uzs//////wnrtbOJiAg+/////wAAoECJiAg+/////wAAoECJiAg+/////wnrtbOJiAg+/////wAAAAAAAAAA/////wAAoEAAAAAA/////wAAoEAAAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAoEC8uzs//////wAAMEAAAOBA/////wAAMEAAAOBA/////wAALUDP9/9A/////wAALUDP9/9A/////9BFHkDP9/9A/////9BFIUDP9/9A/////9BFIUDP9/9A/////9BFHkDP9/9A/////wAAG0DP9/9A/////wAAHkDP9/9A/////zfsPT28uzs//2D//ypxjr28uzs//2D//zwwT7yJiAg+/////z6B0z2JiAg+/////wAAoEC8uzs//////zfsPT28uzs//////z6B0z2JiAg+/////wAAoECJiAg+/////z6B0z2JiAg+/2D//zwwT7yJiAg+/2D//wAAAAAAAAAA/////0Vn7T0AAAAA/////wAAoECJiAg+/////z6B0z2JiAg+/////0Vn7T0AAAAA/////wAAoEAAAAAA/////zfsPT0AAIA//2D//ypxjr0AAIA//2D//ypxjr28uzs//////zfsPT28uzs//////wAAoEAAAIA//////zfsPT0AAIA//////zfsPT28uzs//////wAAoEC8uzs//////wAAaEEAAOBA/////wAAaEEAAOBA/////wBAZ0HP9/9A/////wBAZ0HP9/9A/////3SRY0HP9/9A/////3RRZEHP9/9A/////3RRZEHP9/9A/////3SRY0HP9/9A/////wDAYkHP9/9A/////wCAY0HP9/9A//////p0Pj28uzs//2D//7zXjr28uzs//2D//27FT7yJiAg+/////4sZ1D2JiAg+/////wAA2EC8uzs///////p0Pj28uzs//////4sZ1D2JiAg+/////wAA2ECJiAg+/////4sZ1D2JiAg+/2D//27FT7yJiAg+/2D//wAAAAAAAAAA/////zkS7j0AAAAA/////wAA2ECJiAg+/////4sZ1D2JiAg+/////zkS7j0AAAAA/////wAA2EAAAAAA//////p0Pj0AAIA//2D//7zXjr0AAIA//2D//7zXjr28uzs///////p0Pj28uzs//////wAA2EAAAIA///////p0Pj0AAIA///////p0Pj28uzs//////wAA2EC8uzs//////wAA8EEAAOBA/////wAA8EEAAOBA/////wCg70HP9/9A/////wCg70HP9/9A/////7rI7UHP9/9A/////7oo7kHP9/9A/////7oo7kHP9/9A/////7rI7UHP9/9A/////wBg7UHP9/9A/////wDA7UHP9/9A/////6x9Qz28uzs//2D//0Gekr28uzs//2D//0hDVbyJiAg+/////6602T2JiAg+/////w5r20C8uzs//////6x9Qz28uzs//////6602T2JiAg+/////+VK3UCJiAg+/3r//wAA4EC8uzs//////w5r20C8uzs//////+VK3UCJiAg+/3r//16V30CJiAg+/3r//wAA4EAAAAAA/////6602T2JiAg+/2D//0hDVbyJiAg+/2D//wAAAAAAAAAA/////xdd9D0AAAAA/////+VK3UCJiAg+/////6602T2JiAg+/////xdd9D0AAAAA/////4e13UAAAAAA/3r//16V30CJiAg+/////+VK3UCJiAg+/////4e13UAAAAAA/3r//wAA4EAAAAAA/////6x9Qz0AAIA//2D//0Gekr0AAIA//2D//0Gekr28uzs//////6x9Qz28uzs//////w5r20AAAIA//////6x9Qz0AAIA//////6x9Qz28uzs//////w5r20C8uzs//3r//wAA4EAAAIA//////w5r20AAAIA//////w5r20C8uzs//3r//wAA4EC8uzs//////5h+o8HP959A/////5h+ocHP959A/////wGAocEcx4FA/////znOosEcx4FA/////wCAo8Fy0YVA/////wCAo8Fy0YVA/////znOosEcx4FA//////9/o8Ecx4FA/////wAAlkG8uzs//////wAAAAC8uzs//////2pCurOJiAg+/////wAAlkGJiAg+/////wAAlkGJiAg+/////2pCurOJiAg+/////wTTaLQi4iY9/////6kNgDsAAAAA/////wAAlkEAAAAA/////wAAlkEAAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAlkG8uzs//////wAAnEIAAOBA/////wAAnEIAAOBA/////wDom0LP9/9A/////wDom0LP9/9A/////y5ym0LP9/9A/////y6Km0LP9/9A/////y6Km0LP9/9A/////y5ym0LP9/9A/////wBYm0LP9/9A/////wBwm0LP9/9A"),
+"format": 34393296921,
+"index_count": 366,
+"index_data": PackedByteArray("BQAAAAEAAgADAAQABQABAAIAAgAEAAUACQAGAAcABwAIAAkADQAKAAsACwAMAA0AEQAOAA8ADwAQABEAFQASABMAEwAUABUAGQAWABcAFwAYABkAHQAaABsAGwAcAB0AIQAeAB8AHwAgACEAJQAiACMAIwAkACUAKQAmACcAJwAoACkALQAqACsAKwAsAC0AMwAuAC8ALwAwADEAMQAyADMAMwAvADEANwA0ADUANQA2ADcAOwA4ADkAOQA6ADsAPwA8AD0APQA+AD8ARABAAEEAQQBCAEMAQwBEAEEARwBFAEYASwBIAEkASQBKAEsATwBMAE0ATQBOAE8AUwBQAFEAUQBSAFMAVABVAFYAVwBYAFkAVABWAFcAVwBZAFQAXQBaAFsAWwBcAF0AYQBeAF8AXwBgAGEAZQBiAGMAYwBkAGUAaQBmAGcAZwBoAGkAbQBqAGsAawBsAG0AcQBuAG8AbwBwAHEAdQByAHMAcwB0AHUAdgB3AHgAeQB6AHsAdgB4AHkAeQB7AHYAfwB8AH0AfQB+AH8AgwCAAIEAgQCCAIMAhwCEAIUAhQCGAIcAiwCIAIkAiQCKAIsAjwCMAI0AjQCOAI8AkwCQAJEAkQCSAJMAlwCUAJUAlQCWAJcAmACZAJoAmwCcAJ0AmACaAJsAmwCdAJgAoQCeAJ8AnwCgAKEApQCiAKMAowCkAKUAqQCmAKcApwCoAKkAqgCrAKwArQCuAKoAqgCsAK0AsgCvALAAsACxALIAtgCzALQAtAC1ALYAugC3ALgAuAC5ALoAvgC7ALwAvAC9AL4AwgC/AMAAwADBAMIAxgDDAMQAxADFAMYAywDHAMgAyADJAMoAygDLAMgAzgDMAM0A0gDPANAA0ADRANIA1wDTANQA1ADVANYA1gDXANQA2wDYANkA2QDaANsA3ADdAN4A3wDgAOEA3ADeAN8A3wDhANwA5QDiAOMA4wDkAOUA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 230,
+"vertex_data": PackedByteArray("AADaxADAwcQAANrEAIA9xABA2sQAgD3EAEDaxAAAOMQAYNrEAAA4xABg2sRVNcLEAEDaxAAAOMQAANzEAAA4xAAA3MQAwDjEAEDaxADAOMQAANzEAACwwwBg3MQAALDDAGDcxAAAOMQAANzEAAA4xAAA3MQAALDDAAAQxQAAsMMAABDFAICxwwAA3MQAgLHDAAAQxQAAQMMAMBDFAABAwwAwEMUAALDDAAAQxQAAsMMAAHjEAAAuwwAAeMQAAADDAMB4xAAAAMMAwHjEqqoxwwAAeMQAAADDAADcxAAAAMMAANzEAAADwwAAeMQAAAPDAADcxAAAKEQAYNzEAAAoRABg3MQAAADDAADcxAAAAMMAAAAAAIAsRAAAAAAAAEBEAABAwAAAQEQAAEDAVZUrRABA3kQAAEBEAADcRAAAQEQAANxEAAA4xABA3kQAADjEAADcRAAAOMQAwNfEAAA4xIwO2MQAwDjEAADcRADAOMQAwNfEAAA4xAAA2sQAgD3EAADaxADAwcQA4NnEAMDBxADg2cQAAMTEAMDXxAAAxMQAAEBFAMDBxAAAQEUAAMREANA/RQAAxEQA0D9FVTXCxAAAQEUAAMREAOA+xQAAxERGBz/FAKDDRAAAQEUAoMNEAOA+xQAAxEQAAEDFAEDBRAAAQMUAAMTEAOA+xQAAxMQA4D7FAMDBxADgPsUAwMDEAABAxQCAw8QAAEDFAADExKPLP8UAAMTEo8s/xQAAxMQAAEDFAADExAAAQMUAgMTEAADaxADAwcQA4D7FAMDBxKPLP8UAAMTERtfbxAAAxMRG19vEAADExKPLP8UAAMTEAABAxQCAxMQAQNzEAIDExAAA2sQAwMDEAOA+xQDAwMQA4D7FAMDBxAAA2sQAwMHEAADaxADAwcQAANrEAMDAxABg2sQAwMDEAGDaxADAwcRGN9zEAADExEbX28QAAMTERtfbxAAAxMRGN9zEAADExACg3MQAgMTEAEDcxACAxMQAIA7FAAAuwwAAEMUAAC7DAAAQxQAAQMMAIA7FAABAwwAAeMQAAC7DACAOxQAALsMAIA7FAABAw4yue8QAAEDDACAOxQAAQMMAABDFAABAwwAAEMUAAETDACAOxQAARMOMrnvEAABAwwAgDsUAAEDDACAOxQAARMMAgHzEAABEwwAgDsUAACbDAAAQxQAAJsMAABDFAAAuwwAgDsUAAC7DAAB4xAAAJsMAIA7FAAAmwwAgDsUAAC7DAAB4xAAALsMAAHjEAAAuwwAAeMQAACbDAMB4xAAAJsMAwHjEAAAuw4xufMQAAEDDjK57xAAAQMOMrnvEAABAw4xufMQAAEDDAEB9xAAARMMAgHzEAABEwwBA2MQAgCxEAADcxACALEQAANzEAAAoRABA2MQAAChEAAAAAACALEQAQNjEAIAsRABA2MQAAChE6KJrwQAAKEQAQNjEAAAoRAAA3MQAAChEAADcxAAAJ0QAQNjEAAAnROiia8EAAChEAEDYxAAAKEQAQNjEAAAnRAAAkMEAACdEAEDYxACALkQAANzEAIAuRAAA3MQAgCxEAEDYxACALEQAAAAAAIAuRABA2MQAgC5EAEDYxACALEQAAAAAAIAsRAAAAAAAgCxEAAAAAACALkQAAEDAAIAuRAAAQMAAgCxEdNGNwQAAKEToomvBAAAoROiia8EAAChEdNGNwQAAKEQAAKjBAAAnRAAAkMEAACdEAADwQQCAREQAAAAAAIBERAAAAAAAAEBEAADwQQAAQEQAwNlEAIBERAAA8EEAgEREAADwQQAAQEQAwNlEAABARABA3kQAgEREAMDZRACAREQAwNlEAABARAAA3EQAAEBEAADcRAAAP0QAAPBBAABARAAAAAAAAEBEAAAAAAAAP0QAAPBBAAA/RADA2UQAAEBEAADwQQAAQEQAAPBBAAA/RADA2UQAAD9EAADcRAAAQEQAwNlEAABARADA2UQAAD9EAADcRAAAP0QAAPBBAIBGRAAAAAAAgEZEAAAAAACAREQAAPBBAIBERADA2UQAgEZEAADwQQCARkQAAPBBAIBERADA2UQAgEREAEDeRACARkQAwNlEAIBGRADA2UQAgEREAEDeRACAREQAwNfEAMDBxADA18QAwMDEAODZxORYw8QA4NnEAADExEaX2cQAAMTERpfZxAAAxMQA4NnEAADExADg2cTjWMTEAABARQDAwcQAwNfEAMDBxEaX2cQAAMTEXRQ/RQAAxMRdFD9FAADExEaX2cQAAMTEAODZxONYxMQA4NnEAIDExADgPkUAgMTEAABARQDAwMQAwNfEAMDAxADA18QAwMHEAABARQDAwcQAAEBFAMDBxAAAQEUAwMDEANA/RQDAwMQA0D9FAMDBxF3kPkUAAMTEXRQ/RQAAxMRdFD9FAADExF3kPkUAAMTEALA+RQCAxMQA4D5FAIDExA==")
+}]
+
+[sub_resource type="Resource" id="Resource_sxi08"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_2usrh")
+material = SubResource("ShaderMaterial_w55de")
+
+[sub_resource type="Resource" id="Resource_1sst8"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_kj83v")
+
+[sub_resource type="Resource" id="P_S02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_S02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_S02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_S02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_S02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_S02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S02_0"),
+1: SubResource("P_S02_1"),
+2: SubResource("P_S02_2"),
+3: SubResource("P_S02_3"),
+4: SubResource("P_S02_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_my553"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1120, 832)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_584qa"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////ya0F0ByHDtAJrQXQHIcO0D/////JrQXQBzHMUAmtBdAHMcxQP////9i9zFAHMcxQGL3MUAcxzFA/////+4lNEAcxzVA7iU0QBzHNUD/////7iU0QAAAQEDuJTRAAABAQP/////RXhpAAABAQNFeGkAAAEBA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAAACcwgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_ugwnw"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_584qa")
+material = SubResource("ShaderMaterial_my553")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m2c8o"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1120, 832)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_bwl5f"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAAmEEAAOBA/////wAAmEEAAOBA/////wCgl0HP9/9A/////wCgl0HP9/9A/////wAAmEEAAMBA/////wBAgkEAAMBA/////3TxgUHP999A/////wAAmEHP999A/////2gB2EHP959A/////wAA2EEAAIBA/////wCAzUEAAIBA/////2gByEHP959A/////2iBzEHP959A/////2iBzkHP959A/////wCAzkEAAIBA/////wCAzUEAAIBA/////wCAzEF00YVA/////wCAzEF00YVA/////wCAzUEAAIBA/////wCAzEEAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAmEEAAOBA/////wAAmEEAAOBA/////wCgl0HP9/9A/////wCgl0HP9/9A/////7rIlUHP9/9A/////7oolkHP9/9A/////7oolkHP9/9A/////7rIlUHP9/9A/////wBglUHP9/9A/////wDAlUHP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQgAAnMIAAABCuuigwgAA6EEAAMBCAADoQQAAnMIAAABCAADAwgAAIEEAAMDCAAAAwgAAnMIAAADCAACcwgAAYMEAAJzCAADAwAAAwMIAAODBAADAwgAAAMJddLnCAAAAwl10ucIAAADCAADAwgAAAMIAAMDCAAAQwgAAwEIAAGDBAACcwgAAYMFddLnCAAAAwqOLokIAAADCo4uiQgAAAMJddLnCAAAAwgAAwMIAABDCAACcQgAAEMIAAMBCAADAwAAAnMIAAMDAAACcwgAAYMEAAMBCAABgwQAAwEIAAGDBAADAQgAAwMAAALpCAADAwAAAukIAAGDBo4ucQgAAAMKji6JCAAAAwqOLokIAAADCo4ucQgAAAMIAAJZCAAAQwgAAnEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_fnuro"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_bwl5f")
+material = SubResource("ShaderMaterial_m2c8o")
+
+[sub_resource type="Resource" id="Resource_qhqwf"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_my553")
+
+[sub_resource type="Resource" id="P_S03_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_S03_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_S03_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_S03_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_S03_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_S03"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S03_0"),
+1: SubResource("P_S03_1"),
+2: SubResource("P_S03_2"),
+3: SubResource("P_S03_3"),
+4: SubResource("P_S03_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fiwh4"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(864, 960)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_xx05a"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////zmO4z85jldAOY7jPzmOV0D/////OY7jP+M4TkA5juM/4zhOQP////9YCgxA4zhOQFgKDEDjOE5A/////+Q4DkDjOFJA5DgOQOM4UkD/////5DgOQMdxXEDkOA5Ax3FcQP////+O4+g/x3FcQI7j6D/HcVxA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAAACcwgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_j2a4h"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_xx05a")
+material = SubResource("ShaderMaterial_fiwh4")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eqibn"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(864, 960)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sodno"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAAcEEAAOBA/////wAAcEEAAOBA/////wBAb0HP9/9A/////wBAb0HP9/9A/////wAAcEEAAMBA/////wCAREEAAMBA/////+niQ0HP999A/////wAAcEHP999A/////2gB+EHP959A/////wAA+EEAAIBA/////wCA7UEAAIBA/////2gB6EHP959A/////2iB7EHP959A/////2iB7kHP959A/////wCA7kEAAIBA/////wCA7UEAAIBA/////wCA7EF00YVA/////wCA7EF00YVA/////wCA7UEAAIBA/////wCA7EEAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAcEEAAOBA/////wAAcEEAAOBA/////wBAb0HP9/9A/////wBAb0HP9/9A/////3SRa0HP9/9A/////3RRbEHP9/9A/////3RRbEHP9/9A/////3SRa0HP9/9A/////wDAakHP9/9A/////wCAa0HP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQgAAnMIAAABCuuigwgAA6EEAAMBCAADoQQAAnMIAAABCAADAwgAAIEEAAMDCAAAAwgAAnMIAAADCAACcwgAAYMEAAJzCAADAwAAAwMIAAODBAADAwgAAAMJddLnCAAAAwl10ucIAAADCAADAwgAAAMIAAMDCAAAQwgAAwEIAAGDBAACcwgAAYMFddLnCAAAAwqOLokIAAADCo4uiQgAAAMJddLnCAAAAwgAAwMIAABDCAACcQgAAEMIAAMBCAADAwAAAnMIAAMDAAACcwgAAYMEAAMBCAABgwQAAwEIAAGDBAADAQgAAwMAAALpCAADAwAAAukIAAGDBo4ucQgAAAMKji6JCAAAAwqOLokIAAADCo4ucQgAAAMIAAJZCAAAQwgAAnEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_mjlou"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_sodno")
+material = SubResource("ShaderMaterial_eqibn")
+
+[sub_resource type="Resource" id="Resource_ao7il"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_fiwh4")
+
+[sub_resource type="Resource" id="P_S04_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_S04_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_S04_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_S04_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_S04_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_S04"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S04_0"),
+1: SubResource("P_S04_1"),
+2: SubResource("P_S04_2"),
+3: SubResource("P_S04_3"),
+4: SubResource("P_S04_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xo157"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1120, 1088)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_20t1n"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////ya0F0ABAHRAJrQXQAEAdED/////JrQXQKuqakAmtBdAq6pqQP////9i9zFAq6pqQGL3MUCrqmpA/////+4lNECrqm5A7iU0QKuqbkD/////7iU0QI/jeEDuJTRAj+N4QP/////RXhpAj+N4QNFeGkCP43hA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAAACcwgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_n7yxv"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_20t1n")
+material = SubResource("ShaderMaterial_xo157")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1a0qa"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1120, 1088)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ffppv"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAAmEEAAOBA/////wAAmEEAAOBA/////wCgl0HP9/9A/////wCgl0HP9/9A/////wAAmEEAAMBA/////wBAgkEAAMBA/////3TxgUHP999A/////wAAmEHP999A/////7QADELP959A/////wAADEIAAIBA/////wDABkIAAIBA/////7QABELP959A/////7RABkLP959A/////7RAB0LP959A/////wBAB0IAAIBA/////wDABkIAAIBA/////wBABkJ00YVA/////wBABkJ00YVA/////wDABkIAAIBA/////wBABkIAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAmEEAAOBA/////wAAmEEAAOBA/////wCgl0HP9/9A/////wCgl0HP9/9A/////7rIlUHP9/9A/////7oolkHP9/9A/////7oolkHP9/9A/////7rIlUHP9/9A/////wBglUHP9/9A/////wDAlUHP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQgAAnMIAAABCuuigwgAA6EEAAMBCAADoQQAAnMIAAABCAADAwgAAIEEAAMDCAAAAwgAAnMIAAADCAACcwgAAYMEAAJzCAADAwAAAwMIAAODBAADAwgAAAMJddLnCAAAAwl10ucIAAADCAADAwgAAAMIAAMDCAAAQwgAAwEIAAGDBAACcwgAAYMFddLnCAAAAwqOLokIAAADCo4uiQgAAAMJddLnCAAAAwgAAwMIAABDCAACcQgAAEMIAAMBCAADAwAAAnMIAAMDAAACcwgAAYMEAAMBCAABgwQAAwEIAAGDBAADAQgAAwMAAALpCAADAwAAAukIAAGDBo4ucQgAAAMKji6JCAAAAwqOLokIAAADCo4ucQgAAAMIAAJZCAAAQwgAAnEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_g5pbr"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_ffppv")
+material = SubResource("ShaderMaterial_1a0qa")
+
+[sub_resource type="Resource" id="Resource_o5bme"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_xo157")
+
+[sub_resource type="Resource" id="P_W01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_W01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_W01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_W01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_W01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_W01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_W01_0"),
+1: SubResource("P_W01_1"),
+2: SubResource("P_W01_2"),
+3: SubResource("P_W01_3"),
+4: SubResource("P_W01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qtcig"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(3520, 1184)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("20_1sst8")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_g56ap"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////zCh/UCrqoRAMKH9QKuqhED/////MKH9QAAAgEAwof1AAACAQP////9nYQVBAACAQGdhBUEAAIBA/////wrtBUEAAIJACu0FQQAAgkD/////Cu0FQXIch0AK7QVBchyHQP////+G9v5AchyHQIb2/kByHIdA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAAACcwgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_pfhup"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("16_tyfjf")
+mesh = SubResource("ArrayMesh_g56ap")
+material = SubResource("ShaderMaterial_qtcig")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k4fb4"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(3520, 1184)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("20_1sst8")
+shader_parameter/base_is_white = true
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_8ktl4"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAAYkIAAOBA/////wAAYkIAAOBA/////wDQYULP9/9A/////wDQYULP9/9A/////wAAYkIAAMBA/////wAgV0IAAMBA/////7r4VkLP999A/////wAAYkLP999A/////7QAGELP959A/////wAAGEIAAIBA/////wDAEkIAAIBA/////7QAEELP959A/////7RAEkLP959A/////7RAE0LP959A/////wBAE0IAAIBA/////wDAEkIAAIBA/////wBAEkJ00YVA/////wBAEkJ00YVA/////wDAEkIAAIBA/////wBAEkIAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAYkIAAOBA/////wAAYkIAAOBA/////wDQYULP9/9A/////wDQYULP9/9A/////13kYELP9/9A/////10UYULP9/9A/////10UYULP9/9A/////13kYELP9/9A/////wCwYELP9/9A/////wDgYELP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQgAAnMIAAABCuuigwgAA6EEAAMBCAADoQQAAnMIAAABCAADAwgAAIEEAAMDCAAAAwgAAnMIAAADCAACcwgAAYMEAAJzCAADAwAAAwMIAAODBAADAwgAAAMJddLnCAAAAwl10ucIAAADCAADAwgAAAMIAAMDCAAAQwgAAwEIAAGDBAACcwgAAYMFddLnCAAAAwqOLokIAAADCo4uiQgAAAMJddLnCAAAAwgAAwMIAABDCAACcQgAAEMIAAMBCAADAwAAAnMIAAMDAAACcwgAAYMEAAMBCAABgwQAAwEIAAGDBAADAQgAAwMAAALpCAADAwAAAukIAAGDBo4ucQgAAAMKji6JCAAAAwqOLokIAAADCo4ucQgAAAMIAAJZCAAAQwgAAnEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_ajudl"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("16_tyfjf")
+mesh = SubResource("ArrayMesh_8ktl4")
+material = SubResource("ShaderMaterial_k4fb4")
+
+[sub_resource type="Resource" id="Resource_3lh5q"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("16_tyfjf")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_qtcig")
+
+[sub_resource type="Resource" id="P_S05_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_S05_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_S05_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_S05_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_S05_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_S05"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S05_0"),
+1: SubResource("P_S05_1"),
+2: SubResource("P_S05_2"),
+3: SubResource("P_S05_3"),
+4: SubResource("P_S05_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mnq6h"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(864, 1216)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_m3jpq"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////zmO4z/kOIhAOY7jP+Q4iED/////OY7jPzmOg0A5juM/OY6DQP////9YCgxAOY6DQFgKDEA5joNA/////+Q4DkA5joVA5DgOQDmOhUD/////5DgOQKuqikDkOA5Aq6qKQP////+O4+g/q6qKQI7j6D+rqopA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAAACcwgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_6k612"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_m3jpq")
+material = SubResource("ShaderMaterial_mnq6h")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1up14"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(864, 1216)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_kvoaw"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAAcEEAAOBA/////wAAcEEAAOBA/////wBAb0HP9/9A/////wBAb0HP9/9A/////wAAcEEAAMBA/////wCAREEAAMBA/////+niQ0HP999A/////wAAcEHP999A/////7QAHELP959A/////wAAHEIAAIBA/////wDAFkIAAIBA/////7QAFELP959A/////7RAFkLP959A/////7RAF0LP959A/////wBAF0IAAIBA/////wDAFkIAAIBA/////wBAFkJ00YVA/////wBAFkJ00YVA/////wDAFkIAAIBA/////wBAFkIAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAcEEAAOBA/////wAAcEEAAOBA/////wBAb0HP9/9A/////wBAb0HP9/9A/////3SRa0HP9/9A/////3RRbEHP9/9A/////3RRbEHP9/9A/////3SRa0HP9/9A/////wDAakHP9/9A/////wCAa0HP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQgAAnMIAAABCuuigwgAA6EEAAMBCAADoQQAAnMIAAABCAADAwgAAIEEAAMDCAAAAwgAAnMIAAADCAACcwgAAYMEAAJzCAADAwAAAwMIAAODBAADAwgAAAMJddLnCAAAAwl10ucIAAADCAADAwgAAAMIAAMDCAAAQwgAAwEIAAGDBAACcwgAAYMFddLnCAAAAwqOLokIAAADCo4uiQgAAAMJddLnCAAAAwgAAwMIAABDCAACcQgAAEMIAAMBCAADAwAAAnMIAAMDAAACcwgAAYMEAAMBCAABgwQAAwEIAAGDBAADAQgAAwMAAALpCAADAwAAAukIAAGDBo4ucQgAAAMKji6JCAAAAwqOLokIAAADCo4ucQgAAAMIAAJZCAAAQwgAAnEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_fcw3l"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_kvoaw")
+material = SubResource("ShaderMaterial_1up14")
+
+[sub_resource type="Resource" id="Resource_xfwae"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_mnq6h")
+
+[sub_resource type="Resource" id="P_S06_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_S06_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_S06_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_S06_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_S06_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_S06"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S06_0"),
+1: SubResource("P_S06_1"),
+2: SubResource("P_S06_2"),
+3: SubResource("P_S06_3"),
+4: SubResource("P_S06_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qn5e3"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1120, 1344)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_peqoa"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////ya0F0DHcZZAJrQXQMdxlkD/////JrQXQBzHkUAmtBdAHMeRQP////9i9zFAHMeRQGL3MUAcx5FA/////+4lNEAcx5NA7iU0QBzHk0D/////7iU0QI7jmEDuJTRAjuOYQP/////RXhpAjuOYQNFeGkCO45hA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAAACcwgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_80k2f"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_peqoa")
+material = SubResource("ShaderMaterial_qn5e3")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bi2i8"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1120, 1344)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_r3f6f"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAAmEEAAOBA/////wAAmEEAAOBA/////wCgl0HP9/9A/////wCgl0HP9/9A/////wAAmEEAAMBA/////wBAgkEAAMBA/////3TxgUHP999A/////wAAmEHP999A/////7QALELP959A/////wAALEIAAIBA/////wDAJkIAAIBA/////7QAJELP959A/////7RAJkLP959A/////7RAJ0LP959A/////wBAJ0IAAIBA/////wDAJkIAAIBA/////wBAJkJ00YVA/////wBAJkJ00YVA/////wDAJkIAAIBA/////wBAJkIAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAmEEAAOBA/////wAAmEEAAOBA/////wCgl0HP9/9A/////wCgl0HP9/9A/////7rIlUHP9/9A/////7oolkHP9/9A/////7oolkHP9/9A/////7rIlUHP9/9A/////wBglUHP9/9A/////wDAlUHP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQgAAnMIAAABCuuigwgAA6EEAAMBCAADoQQAAnMIAAABCAADAwgAAIEEAAMDCAAAAwgAAnMIAAADCAACcwgAAYMEAAJzCAADAwAAAwMIAAODBAADAwgAAAMJddLnCAAAAwl10ucIAAADCAADAwgAAAMIAAMDCAAAQwgAAwEIAAGDBAACcwgAAYMFddLnCAAAAwqOLokIAAADCo4uiQgAAAMJddLnCAAAAwgAAwMIAABDCAACcQgAAEMIAAMBCAADAwAAAnMIAAMDAAACcwgAAYMEAAMBCAABgwQAAwEIAAGDBAADAQgAAwMAAALpCAADAwAAAukIAAGDBo4ucQgAAAMKji6JCAAAAwqOLokIAAADCo4ucQgAAAMIAAJZCAAAQwgAAnEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_s158a"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_r3f6f")
+material = SubResource("ShaderMaterial_bi2i8")
+
+[sub_resource type="Resource" id="Resource_mk1eb"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_qn5e3")
+
+[sub_resource type="Resource" id="P_G01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="P_G01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, -32)
+
+[sub_resource type="Resource" id="P_G01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, 32)
+
+[sub_resource type="Resource" id="P_G01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, 32)
+
+[sub_resource type="Resource" id="P_G01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="PA_G01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_G01_0"),
+1: SubResource("P_G01_1"),
+2: SubResource("P_G01_2"),
+3: SubResource("P_G01_3"),
+4: SubResource("P_G01_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n5s81"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(2448, 1440)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_aoqbq"]
+_surfaces = [{
+"aabb": AABB(-80, -32, 0, 160, 64, 1e-05),
+"attribute_data": PackedByteArray("/////0xor0ByHKFATGivQHIcoUD/////TGivQMdxnEBMaK9Ax3GcQP////8aK7pAx3GcQBorukDHcZxA/////2BCu0DHcZ5AYEK7QMdxnkD/////YEK7QDmOo0BgQrtAOY6jQP////+ivbBAOY6jQKK9sEA5jqNA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AACgwgAAIEEAAAAAAACgwgAAAMIAAAAAo4uCQgAAAMIAAAAAAACgQgAAYMEAAAAAAACgQgAAAEIAAAAAAAB4wgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_jng6w"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_aoqbq")
+material = SubResource("ShaderMaterial_n5s81")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s7mmx"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(2448, 1440)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_7yhap"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-80, -36, 0, 160, 68, 0),
+"attribute_data": PackedByteArray("/////wAAHkIAAOBA/////wAAHkIAAOBA/////wDQHULP9/9A/////wDQHULP9/9A/////wAAHkIAAMBA/////wAgFUIAAMBA/////7r4FELP999A/////wAAHkLP999A/////7QAOELP959A/////wAAOEIAAIBA/////wDAMkIAAIBA/////7QAMELP959A/////7RAMkLP959A/////7RAM0LP959A/////wBAM0IAAIBA/////wDAMkIAAIBA/////wBAMkJ00YVA/////wBAMkJ00YVA/////wDAMkIAAIBA/////wBAMkIAAIBA/////wAAAD+8uzs//////wAAAAC8uzs//////2zTJzGJiAg+/////wAAAD+JiAg+/////wAAAD+JiAg+/////2zTJzGJiAg+/////wAAAAAAAAAA/////wAAAD8AAAAA/////wAAAD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAAD+8uzs//////wAAHkIAAOBA/////wAAHkIAAOBA/////wDQHULP9/9A/////wDQHULP9/9A/////13kHELP9/9A/////10UHULP9/9A/////10UHULP9/9A/////13kHELP9/9A/////wCwHELP9/9A/////wDgHELP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AACgQgAAYMEAAKBCAAAAQgAAmkIAAABCAACaQlRVjcEAAKBCAAAAQgAAeMIAAABCuuiAwgAA6EEAAKBCAADoQQAAeMIAAABCAACgwgAAIEEAAKDCAAAAwgAAeMIAAADCAAB4wgAAYMEAAHjCAADAwAAAoMIAAODBAACgwgAAAMJddJnCAAAAwl10mcIAAADCAACgwgAAAMIAAKDCAAAQwgAAoEIAAGDBAAB4wgAAYMFddJnCAAAAwqOLgkIAAADCo4uCQgAAAMJddJnCAAAAwgAAoMIAABDCAAB4QgAAEMIAAKBCAADAwAAAeMIAAMDAAAB4wgAAYMEAAKBCAABgwQAAoEIAAGDBAACgQgAAwMAAAJpCAADAwAAAmkIAAGDBRhd5QgAAAMKji4JCAAAAwqOLgkIAAADCRhd5QgAAAMIAAGxCAAAQwgAAeEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_01kyr"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_7yhap")
+material = SubResource("ShaderMaterial_s7mmx")
+
+[sub_resource type="Resource" id="Resource_75aqa"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_n5s81")
+
+[sub_resource type="Resource" id="P_B01_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_B01_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_B01_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_B01_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(22.47, 32)
+
+[sub_resource type="Resource" id="P_B01_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(6.34, 26.01)
+
+[sub_resource type="Resource" id="P_B01_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-18.39, 28.41)
+
+[sub_resource type="Resource" id="P_B01_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-31.29, 32)
+
+[sub_resource type="Resource" id="P_B01_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_B01_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_B01"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_B01_0"),
+1: SubResource("P_B01_1"),
+2: SubResource("P_B01_2"),
+3: SubResource("P_B01_3"),
+4: SubResource("P_B01_4"),
+5: SubResource("P_B01_5"),
+6: SubResource("P_B01_6"),
+7: SubResource("P_B01_7"),
+8: SubResource("P_B01_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7ypqw"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(3168, 1440)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_884qe"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////zmO40ByHKFAOY7jQHIcoUD/////OY7jQMdxnEA5juNAx3GcQP/////Xr/BAx3GcQNev8EDHcZxA/////x3H8UDHcZ5AHcfxQMdxnkD/////HcfxQDmOo0Adx/FAOY6jQP/////EVOxAOY6jQMRU7EA5jqNA/////+Ui60DX46JA5SLrQNfjokD/////8E3pQBsoo0DwTelAGyijQP////9RWehAOY6jQFFZ6EA5jqNA/////4/j5EA5jqNAj+PkQDmOo0A="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABwAIAAkACQAAAAIAAgAEAAYABgAHAAkACQACAAYA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAj8KzQQAAAEIAAAAASOHKQHsU0EEAAAAAuB6Twa5H40EAAAAA7FH6wQAAAEIAAAAAAACcwgAAAEIAAAAA//////7//7//////////v//////+//+///////7//7///////v//v/////////+///////7//7///////v//v/////////+///////7//78=")
+}]
+
+[sub_resource type="Resource" id="Resource_4xyqf"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_884qe")
+material = SubResource("ShaderMaterial_7ypqw")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4tvx5"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(3168, 1440)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_1u4v3"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAATEIAAOBA/////wAATEIAAOBA/////wDQS0LP9/9A/////wDQS0LP9/9A/////wAATEIAAMBA/////4VnR0IAAMBA/////4VnR0LP999A/////wAATELP999A/////zt4R0LP999A/////4VnR0IAAMBA/////3FlRkIAAMBA/////yZ2RkLP999A/////3FlRkIAAMBA/////8PZREIAAMBA/////yDVRELP999A/////85gRkLP999A/////8PZREIAAMBA/////1wLREIAAMBA/////37+Q0LP999A/////+TMRELP999A/////1wLREIAAMBA/////wAgQUIAAMBA/////7r4QELP999A/////1wLRELP999A/////7QAOELP959A/////wAAOEIAAIBA/////wDAMkIAAIBA/////7QAMELP959A/////7RAMkLP959A/////7RAM0LP959A/////wBAM0IAAIBA/////wDAMkIAAIBA/////wBAMkJ00YVA/////wBAMkJ00YVA/////wDAMkIAAIBA/////wBAMkIAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAATEIAAOBA/////wAATEIAAOBA/////wDQS0LP9/9A/////wDQS0LP9/9A/////13kSkLP9/9A/////10US0LP9/9A/////10US0LP9/9A/////13kSkLP9/9A/////wCwSkLP9/9A/////wDgSkLP9/9A"),
+"format": 34393296921,
+"index_count": 90,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsADwAMAA0ADQAOAA8AEwAQABEAEQASABMAFwAUABUAFQAWABcAGwAYABkAGQAaABsAIAAcAB0AHQAeAB8AHwAgAB0AIwAhACIAJwAkACUAJQAmACcAKwAoACkAKQAqACsALwAsAC0ALQAuAC8AMAAxADIAMwA0ADUAMAAyADMAMwA1ADAAOQA2ADcANwA4ADkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 58,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQpDCs0EAAABCkMKzQQAA6EEAAMBCAADoQXQdvEFUgOlBkMKzQQAAAEJQ4cpAfBTQQeBM7EDQlLlBUOHKQHwU0EG4HpPBsEfjQTRwlcFoZMtBYJvBQDgxuEG4HpPBsEfjQexR+sEAAABClmAAwvDg6EH4jZnBoCjMQexR+sEAAABCAACcwgAAAEK66KDCAADoQexR+sEAAOhBAACcwgAAAEIAAMDCAAAgQQAAwMIAAADCAACcwgAAAMIAAJzCAABgwQAAnMIAAMDAAADAwgAA4MEAAMDCAAAAwl10ucIAAADCXXS5wgAAAMIAAMDCAAAAwgAAwMIAABDCAADAQgAAYMEAAJzCAABgwV10ucIAAADCo4uiQgAAAMKji6JCAAAAwl10ucIAAADCAADAwgAAEMIAAJxCAAAQwgAAwEIAAMDAAACcwgAAwMAAAJzCAABgwQAAwEIAAGDBAADAQgAAYMEAAMBCAADAwAAAukIAAMDAAAC6QgAAYMGji5xCAAAAwqOLokIAAADCo4uiQgAAAMKji5xCAAAAwgAAlkIAABDCAACcQgAAEMI=")
+}]
+
+[sub_resource type="Resource" id="Resource_f053r"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_1u4v3")
+material = SubResource("ShaderMaterial_4tvx5")
+
+[sub_resource type="Resource" id="Resource_6rwrm"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_7ypqw")
+
+[sub_resource type="Resource" id="P_S07_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="P_S07_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -32)
+
+[sub_resource type="Resource" id="P_S07_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 32)
+
+[sub_resource type="Resource" id="P_S07_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 32)
+
+[sub_resource type="Resource" id="P_S07_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -32)
+
+[sub_resource type="Resource" id="PA_S07"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_S07_0"),
+1: SubResource("P_S07_1"),
+2: SubResource("P_S07_2"),
+3: SubResource("P_S07_3"),
+4: SubResource("P_S07_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_342cg"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(864, 1472)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_b7hjt"]
+_surfaces = [{
+"aabb": AABB(-96, -32, 0, 192, 64, 1e-05),
+"attribute_data": PackedByteArray("/////zmO4z+rqqRAOY7jP6uqpED/////OY7jPwAAoEA5juM/AACgQP////9YCgxAAACgQFgKDEAAAKBA/////+Q4DkAAAKJA5DgOQAAAokD/////5DgOQHIcp0DkOA5AchynQP////+O4+g/chynQI7j6D9yHKdA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADAwgAAIEEAAAAAAADAwgAAAMIAAAAAo4uiQgAAAMIAAAAAAADAQgAAYMEAAAAAAADAQgAAAEIAAAAAAACcwgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_v6b7g"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_b7hjt")
+material = SubResource("ShaderMaterial_342cg")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2fde0"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(864, 1472)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_k3kur"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-96, -36, 0, 192, 68, 0),
+"attribute_data": PackedByteArray("/////wAAcEEAAOBA/////wAAcEEAAOBA/////wBAb0HP9/9A/////wBAb0HP9/9A/////wAAcEEAAMBA/////wCAREEAAMBA/////+niQ0HP999A/////wAAcEHP999A/////7QAPELP959A/////wAAPEIAAIBA/////wDANkIAAIBA/////7QANELP959A/////7RANkLP959A/////7RAN0LP959A/////wBAN0IAAIBA/////wDANkIAAIBA/////wBANkJ00YVA/////wBANkJ00YVA/////wDANkIAAIBA/////wBANkIAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////ydxTTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////ydxTTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAcEEAAOBA/////wAAcEEAAOBA/////wBAb0HP9/9A/////wBAb0HP9/9A/////3SRa0HP9/9A/////3RRbEHP9/9A/////3RRbEHP9/9A/////3SRa0HP9/9A/////wDAakHP9/9A/////wCAa0HP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADAQgAAYMEAAMBCAAAAQgAAukIAAABCAAC6QlRVjcEAAMBCAAAAQgAAnMIAAABCuuigwgAA6EEAAMBCAADoQQAAnMIAAABCAADAwgAAIEEAAMDCAAAAwgAAnMIAAADCAACcwgAAYMEAAJzCAADAwAAAwMIAAODBAADAwgAAAMJddLnCAAAAwl10ucIAAADCAADAwgAAAMIAAMDCAAAQwgAAwEIAAGDBAACcwgAAYMFddLnCAAAAwqOLokIAAADCo4uiQgAAAMJddLnCAAAAwgAAwMIAABDCAACcQgAAEMIAAMBCAADAwAAAnMIAAMDAAACcwgAAYMEAAMBCAABgwQAAwEIAAGDBAADAQgAAwMAAALpCAADAwAAAukIAAGDBo4ucQgAAAMKji6JCAAAAwqOLokIAAADCo4ucQgAAAMIAAJZCAAAQwgAAnEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_uhnhq"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_k3kur")
+material = SubResource("ShaderMaterial_2fde0")
+
+[sub_resource type="Resource" id="Resource_gdq4e"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_342cg")
+
+[sub_resource type="Resource" id="P_G02_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="P_G02_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, -32)
+
+[sub_resource type="Resource" id="P_G02_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, 32)
+
+[sub_resource type="Resource" id="P_G02_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, 32)
+
+[sub_resource type="Resource" id="P_G02_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="PA_G02"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_G02_0"),
+1: SubResource("P_G02_1"),
+2: SubResource("P_G02_2"),
+3: SubResource("P_G02_3"),
+4: SubResource("P_G02_4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kd4tg"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(2128, 1504)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_isxi7"]
+_surfaces = [{
+"aabb": AABB(-80, -32, 0, 160, 64, 1e-05),
+"attribute_data": PackedByteArray("/////ya0l0DkOKhAJrSXQOQ4qED/////JrSXQDmOo0AmtJdAOY6jQP/////0dqJAOY6jQPR2okA5jqNA/////zqOo0A5jqVAOo6jQDmOpUD/////Oo6jQKuqqkA6jqNAq6qqQP////98CZlAq6qqQHwJmUCrqqpA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AACgwgAAIEEAAAAAAACgwgAAAMIAAAAAo4uCQgAAAMIAAAAAAACgQgAAYMEAAAAAAACgQgAAAEIAAAAAAAB4wgAAAEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_vg74j"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_isxi7")
+material = SubResource("ShaderMaterial_kd4tg")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pjosr"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(2128, 1504)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_x8f7e"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-80, -36, 0, 160, 68, 0),
+"attribute_data": PackedByteArray("/////wAACkIAAOBA/////wAACkIAAOBA/////wDQCULP9/9A/////wDQCULP9/9A/////wAACkIAAMBA/////wAgAUIAAMBA/////7r4AELP999A/////wAACkLP999A/////7QAQELP959A/////wAAQEIAAIBA/////wDAOkIAAIBA/////7QAOELP959A/////7RAOkLP959A/////7RAO0LP959A/////wBAO0IAAIBA/////wDAOkIAAIBA/////wBAOkJ00YVA/////wBAOkJ00YVA/////wDAOkIAAIBA/////wBAOkIAAIBA/////wAAAD+8uzs//////wAAAAC8uzs//////2zTJzGJiAg+/////wAAAD+JiAg+/////wAAAD+JiAg+/////2zTJzGJiAg+/////wAAAAAAAAAA/////wAAAD8AAAAA/////wAAAD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAAD+8uzs//////wAACkIAAOBA/////wAACkIAAOBA/////wDQCULP9/9A/////wDQCULP9/9A/////13kCELP9/9A/////10UCULP9/9A/////10UCULP9/9A/////13kCELP9/9A/////wCwCELP9/9A/////wDgCELP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AACgQgAAYMEAAKBCAAAAQgAAmkIAAABCAACaQlRVjcEAAKBCAAAAQgAAeMIAAABCuuiAwgAA6EEAAKBCAADoQQAAeMIAAABCAACgwgAAIEEAAKDCAAAAwgAAeMIAAADCAAB4wgAAYMEAAHjCAADAwAAAoMIAAODBAACgwgAAAMJddJnCAAAAwl10mcIAAADCAACgwgAAAMIAAKDCAAAQwgAAoEIAAGDBAAB4wgAAYMFddJnCAAAAwqOLgkIAAADCo4uCQgAAAMJddJnCAAAAwgAAoMIAABDCAAB4QgAAEMIAAKBCAADAwAAAeMIAAMDAAAB4wgAAYMEAAKBCAABgwQAAoEIAAGDBAACgQgAAwMAAAJpCAADAwAAAmkIAAGDBRhd5QgAAAMKji4JCAAAAwqOLgkIAAADCRhd5QgAAAMIAAGxCAAAQwgAAeEIAABDC")
+}]
+
+[sub_resource type="Resource" id="Resource_sguts"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_x8f7e")
+material = SubResource("ShaderMaterial_pjosr")
+
+[sub_resource type="Resource" id="Resource_2fyi3"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_kd4tg")
+
+[sub_resource type="Resource" id="P_G03_0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="P_G03_1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, -32)
+
+[sub_resource type="Resource" id="P_G03_2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(80, 32)
+
+[sub_resource type="Resource" id="P_G03_3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(25.43, 32)
+
+[sub_resource type="Resource" id="P_G03_4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(11.99, 23.91)
+
+[sub_resource type="Resource" id="P_G03_5"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-8.61, 27.15)
+
+[sub_resource type="Resource" id="P_G03_6"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-19.37, 32)
+
+[sub_resource type="Resource" id="P_G03_7"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, 32)
+
+[sub_resource type="Resource" id="P_G03_8"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-80, -32)
+
+[sub_resource type="Resource" id="PA_G03"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("P_G03_0"),
+1: SubResource("P_G03_1"),
+2: SubResource("P_G03_2"),
+3: SubResource("P_G03_3"),
+4: SubResource("P_G03_4"),
+5: SubResource("P_G03_5"),
+6: SubResource("P_G03_6"),
+7: SubResource("P_G03_7"),
+8: SubResource("P_G03_8")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8)
+_constraints = {
+Vector2i(0, 8): 15
+}
+_next_key = 9
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fkpgc"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(2768, 1504)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sfq0l"]
+_surfaces = [{
+"aabb": AABB(-80, -32, 0, 160, 64, 1e-05),
+"attribute_data": PackedByteArray("/////3Icx0DkOKhAchzHQOQ4qED/////chzHQDmOo0ByHMdAOY6jQP////9A39FAOY6jQEDf0UA5jqNA/////4b20kA5jqVAhvbSQDmOpUD/////hvbSQKuqqkCG9tJAq6qqQP////+2685Aq6qqQLbrzkCrqqpA/////9rszUCNxKlA2uzNQI3EqUD/////N2bMQLYgqkA3ZsxAtiCqQP////8smstAq6qqQCyay0CrqqpA/////8hxyECrqqpAyHHIQKuqqkA="),
+"format": 34359742527,
+"index_count": 24,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAYABwAIAAkACQAAAAIAAgAEAAYABgAHAAkACQACAAYA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 10,
+"vertex_data": PackedByteArray("AACgwgAAIEEAAAAAAACgwgAAAMIAAAAAo4uCQgAAAMIAAAAAAACgQgAAYMEAAAAAAACgQgAAAEIAAAAApHDLQQAAAEIAAAAACtc/Qa5Hv0EAAAAAj8IJwTMz2UEAAAAAw/WawQAAAEIAAAAAAAB4wgAAAEIAAAAA//////7//7//////////v/////////+///////7//7///////v//v/////////+///////7//7///////v//v/////////+///////7//78=")
+}]
+
+[sub_resource type="Resource" id="Resource_048rd"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_sfq0l")
+material = SubResource("ShaderMaterial_fkpgc")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7vttl"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(2768, 1504)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_srw8d"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-80, -36, 0, 160, 68, 0),
+"attribute_data": PackedByteArray("/////wAAMkIAAOBA/////wAAMkIAAOBA/////wDQMULP9/9A/////wDQMULP9/9A/////wAAMkIAAMBA/////+GWLkIAAMBA/////+GWLkLP999A/////wAAMkLP999A/////6KvLkLP999A/////+GWLkIAAMBA/////9e/LUIAAMBA/////5jYLULP999A/////9e/LUIAAMBA/////z12LEIAAMBA/////8huLELP999A/////2K4LULP999A/////z12LEIAAMBA/////xTKK0IAAMBA/////1u2K0LP999A/////4RiLELP999A/////xTKK0IAAMBA/////wAgKUIAAMBA/////7r4KELP999A/////xTKK0LP999A/////7QAQELP959A/////wAAQEIAAIBA/////wDAOkIAAIBA/////7QAOELP959A/////7RAOkLP959A/////7RAO0LP959A/////wBAO0IAAIBA/////wDAOkIAAIBA/////wBAOkJ00YVA/////wBAOkJ00YVA/////wDAOkIAAIBA/////wBAOkIAAIBA/////wAAAD+8uzs//////wAAAAC8uzs//////2zTJzGJiAg+/////wAAAD+JiAg+/////wAAAD+JiAg+/////2zTJzGJiAg+/////wAAAAAAAAAA/////wAAAD8AAAAA/////wAAAD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAAD+8uzs//////wAAMkIAAOBA/////wAAMkIAAOBA/////wDQMULP9/9A/////wDQMULP9/9A/////13kMELP9/9A/////10UMULP9/9A/////10UMULP9/9A/////13kMELP9/9A/////wCwMELP9/9A/////wDgMELP9/9A"),
+"format": 34393296921,
+"index_count": 90,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsADwAMAA0ADQAOAA8AEwAQABEAEQASABMAFwAUABUAFQAWABcAGwAYABkAGQAaABsAIAAcAB0AHQAeAB8AHwAgAB0AIwAhACIAJwAkACUAJQAmACcAKwAoACkAKQAqACsALwAsAC0ALQAuAC8AMAAxADIAMwA0ADUAMAAyADMAMwA1ADAAOQA2ADcANwA4ADkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 58,
+"vertex_data": PackedByteArray("AACgQgAAYMEAAKBCAAAAQgAAmkIAAABCAACaQlRVjcEAAKBCAAAAQqRwy0EAAABCpHDLQQAA6EEAAKBCAADoQTDR10EQcOtBpHDLQQAAAEII1z9BsEe/QSCYWEHAt6pBCNc/QbBHv0GQwgnBNDPZQcA3EcHQfcFB2GE4QUySp0GQwgnBNDPZQcT1msEAAABCgNKkwbge6kEQfB3B7FHDQcT1msEAAABCAAB4wgAAAEK66IDCAADoQcT1msEAAOhBAAB4wgAAAEIAAKDCAAAgQQAAoMIAAADCAAB4wgAAAMIAAHjCAABgwQAAeMIAAMDAAACgwgAA4MEAAKDCAAAAwl10mcIAAADCXXSZwgAAAMIAAKDCAAAAwgAAoMIAABDCAACgQgAAYMEAAHjCAABgwV10mcIAAADCo4uCQgAAAMKji4JCAAAAwl10mcIAAADCAACgwgAAEMIAAHhCAAAQwgAAoEIAAMDAAAB4wgAAwMAAAHjCAABgwQAAoEIAAGDBAACgQgAAYMEAAKBCAADAwAAAmkIAAMDAAACaQgAAYMFGF3lCAAAAwqOLgkIAAADCo4uCQgAAAMJGF3lCAAAAwgAAbEIAABDCAAB4QgAAEMI=")
+}]
+
+[sub_resource type="Resource" id="Resource_otj4i"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_srw8d")
+material = SubResource("ShaderMaterial_7vttl")
+
+[sub_resource type="Resource" id="Resource_ghbsm"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_fkpgc")
+
+[sub_resource type="Resource" id="add_t_black01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="add_t_black01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="add_t_black01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_black01_P0"),
+1: SubResource("add_t_black01_P1"),
+2: SubResource("add_t_black01_P2"),
+3: SubResource("add_t_black01_P3"),
+4: SubResource("add_t_black01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u4joi"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(560, 656)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_vkdfi"]
+_surfaces = [{
+"aabb": AABB(-112, -48, 0, 224, 96, 1e-05),
+"attribute_data": PackedByteArray("/////6K9hD85jhdAor2EPzmOF0D/////or2EP3IcB0CivYQ/chwHQP////9bv8I/chwHQFu/wj9yHAdA/////3Icxz9yHAtAchzHP3IcC0D/////chzHP8hxHEByHMc/yHEcQP/////3Eoo/yHEcQPcSij/IcRxA"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADgwgAA0EEAAAAAAADgwgAAQMIAAAAAo4vCQgAAQMIAAAAAAADgQgAA8MEAAAAAAADgQgAAQEIAAAAAAAC8wgAAQEIAAAAA/////////7//////////v/////////+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_4x4om"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_vkdfi")
+material = SubResource("ShaderMaterial_u4joi")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gqc4q"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(560, 656)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_xqyh7"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-112, -52, 0, 224, 100, 0),
+"attribute_data": PackedByteArray("/////wAAKEEAAOBA/////wAAKEEAAOBA/////wBAJ0HP9/9A/////wBAJ0HP9/9A/////wAAKEEAAMBA/////wAA6UAAAMBA/////9LF50DP999A/////wAAKEHP999A/////2gBsEHP959A/////wAAsEEAAIBA/////wCAnUEAAIBA/////2gBmEHP959A/////2iBnEHP959A/////2iBnkHP959A/////wCAnkEAAIBA/////wCAnUEAAIBA/////wCAnEF00YVA/////wCAnEF00YVA/////wCAnUEAAIBA/////wCAnEEAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////1iHLTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////1iHLTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAAKEEAAOBA/////wAAKEEAAOBA/////wBAJ0HP9/9A/////wBAJ0HP9/9A/////3SRI0HP9/9A/////3RRJEHP9/9A/////3RRJEHP9/9A/////3SRI0HP9/9A/////wDAIkHP9/9A/////wCAI0HP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADgQgAA8MEAAOBCAABAQgAA2kIAAEBCAADaQqqqBsIAAOBCAABAQgAAvMIAAEBCuujAwgAANEIAAOBCAAA0QgAAvMIAAEBCAADgwgAA0EEAAODCAABAwgAAvMIAAEDCAAC8wgAA8MEAALzCAACwwQAA4MIAADDCAADgwgAAQMJddNnCAABAwl102cIAAEDCAADgwgAAQMIAAODCAABQwgAA4EIAAPDBAAC8wgAA8MFddNnCAABAwqOLwkIAAEDCo4vCQgAAQMJddNnCAABAwgAA4MIAAFDCAAC8QgAAUMIAAOBCAACwwQAAvMIAALDBAAC8wgAA8MEAAOBCAADwwQAA4EIAAPDBAADgQgAAsMEAANpCAACwwQAA2kIAAPDBo4u8QgAAQMKji8JCAABAwqOLwkIAAEDCo4u8QgAAQMIAALZCAABQwgAAvEIAAFDC")
+}]
+
+[sub_resource type="Resource" id="Resource_cgo5a"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_xqyh7")
+material = SubResource("ShaderMaterial_gqc4q")
+
+[sub_resource type="Resource" id="Resource_qpxgw"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_u4joi")
+
+[sub_resource type="Resource" id="add_t_black02_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black02_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -48)
+
+[sub_resource type="Resource" id="add_t_black02_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 48)
+
+[sub_resource type="Resource" id="add_t_black02_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 48)
+
+[sub_resource type="Resource" id="add_t_black02_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -48)
+
+[sub_resource type="Resource" id="add_t_black02_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_black02_P0"),
+1: SubResource("add_t_black02_P1"),
+2: SubResource("add_t_black02_P2"),
+3: SubResource("add_t_black02_P3"),
+4: SubResource("add_t_black02_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v1666"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 1
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1584, 1520)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_esv37"]
+_surfaces = [{
+"aabb": AABB(-112, -48, 0, 224, 96, 1e-05),
+"attribute_data": PackedByteArray("//////cSWkAcx6tA9xJaQBzHq0D/////9xJaQDmOo0D3ElpAOY6jQP/////UE3lAOY6jQNQTeUA5jqNA/////19Ce0A5jqVAX0J7QDmOpUD/////X0J7QOM4rkBfQntA4ziuQP////+ivVxA4ziuQKK9XEDjOK5A"),
+"format": 34359742527,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAgADAAQABAAFAAAAAAACAAQA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 6,
+"vertex_data": PackedByteArray("AADgwgAA0EEAAAAAAADgwgAAQMIAAAAAo4vCQgAAQMIAAAAAAADgQgAA8MEAAAAAAADgQgAAQEIAAAAAAAC8wgAAQEIAAAAA/////////7//////////v//////+//+///////7//7///////v//v/////////+/")
+}]
+
+[sub_resource type="Resource" id="Resource_lb5ou"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_esv37")
+material = SubResource("ShaderMaterial_v1666")
+z_index = -1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wurqq"]
+shader = ExtResource("15_mnnse")
+shader_parameter/wood_mode = 2
+shader_parameter/wood_grain = ExtResource("17_w55de")
+shader_parameter/wood_top_grain = ExtResource("19_sxi08")
+shader_parameter/wood_style = 2
+shader_parameter/wood_origin = Vector2(1584, 1520)
+shader_parameter/wood_nails = ExtResource("18_2usrh")
+shader_parameter/wood_inlay_count = 0
+shader_parameter/wood_inlay_rects = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/alt_tex = ExtResource("16_tyfjf")
+shader_parameter/base_is_white = false
+shader_parameter/alt_invert = false
+shader_parameter/seed_count = 0
+shader_parameter/seeds = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_r = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_a = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_c = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_d = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/seed_v = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/r_scale = 1.0
+shader_parameter/drip_width = 0.26
+shader_parameter/edge_soft = 2.0
+shader_parameter/noise_amount = 5.0
+shader_parameter/noise_scale = 0.07
+shader_parameter/blob_wobble = 0.14
+shader_parameter/organic_mode = true
+shader_parameter/organic_shape = 0.11
+shader_parameter/organic_aspect = 0.14
+shader_parameter/wet = 0.0
+shader_parameter/ghost_amount = 0.0
+shader_parameter/ghost_mosaic = 12.0
+shader_parameter/ghost_smear = 7.0
+shader_parameter/ghost_alpha = 0.55
+shader_parameter/ghost_tint = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/ghost_tint_amount = 0.3
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_v4t7p"]
+_surfaces = [{
+"2d": true,
+"aabb": AABB(-112, -52, 0, 224, 100, 0),
+"attribute_data": PackedByteArray("/////wAA1EEAAOBA/////wAA1EEAAOBA/////wCg00HP9/9A/////wCg00HP9/9A/////wAA1EEAAMBA/////wBAukEAAMBA/////3TxuUHP999A/////wAA1EHP999A/////7QARELP959A/////wAAREIAAIBA/////wDAOkIAAIBA/////7QAOELP959A/////7RAOkLP959A/////7RAO0LP959A/////wBAO0IAAIBA/////wDAOkIAAIBA/////wBAOkJ00YVA/////wBAOkJ00YVA/////wDAOkIAAIBA/////wBAOkIAAIBA/////wAAQD+8uzs//////wAAAAC8uzs//////1iHLTGJiAg+/////wAAQD+JiAg+/////wAAQD+JiAg+/////1iHLTGJiAg+/////wAAAAAAAAAA/////wAAQD8AAAAA/////wAAQD8AAIA//////wAAAAAAAIA//////wAAAAC8uzs//////wAAQD+8uzs//////wAA1EEAAOBA/////wAA1EEAAOBA/////wCg00HP9/9A/////wCg00HP9/9A/////7rI0UHP9/9A/////7oo0kHP9/9A/////7oo0kHP9/9A/////7rI0UHP9/9A/////wBg0UHP9/9A/////wDA0UHP9/9A"),
+"format": 34393296921,
+"index_count": 66,
+"index_data": PackedByteArray("AwAAAAEAAQACAAMABwAEAAUABQAGAAcACwAIAAkACQAKAAsAEAAMAA0ADQAOAA8ADwAQAA0AEwARABIAFwAUABUAFQAWABcAGwAYABkAGQAaABsAHwAcAB0AHQAeAB8AIAAhACIAIwAkACUAIAAiACMAIwAlACAAKQAmACcAJwAoACkA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 42,
+"vertex_data": PackedByteArray("AADgQgAA8MEAAOBCAABAQgAA2kIAAEBCAADaQqqqBsIAAOBCAABAQgAAvMIAAEBCuujAwgAANEIAAOBCAAA0QgAAvMIAAEBCAADgwgAA0EEAAODCAABAwgAAvMIAAEDCAAC8wgAA8MEAALzCAACwwQAA4MIAADDCAADgwgAAQMJddNnCAABAwl102cIAAEDCAADgwgAAQMIAAODCAABQwgAA4EIAAPDBAAC8wgAA8MFddNnCAABAwqOLwkIAAEDCo4vCQgAAQMJddNnCAABAwgAA4MIAAFDCAAC8QgAAUMIAAOBCAACwwQAAvMIAALDBAAC8wgAA8MEAAOBCAADwwQAA4EIAAPDBAADgQgAAsMEAANpCAACwwQAA2kIAAPDBo4u8QgAAQMKji8JCAABAwqOLwkIAAEDCo4u8QgAAQMIAALZCAABQwgAAvEIAAFDC")
+}]
+
+[sub_resource type="Resource" id="Resource_vjoxq"]
+script = ExtResource("14_kj83v")
+texture = ExtResource("20_1sst8")
+mesh = SubResource("ArrayMesh_v4t7p")
+material = SubResource("ShaderMaterial_wurqq")
+
+[sub_resource type="Resource" id="Resource_e3aqa"]
+script = ExtResource("22_584qa")
+fill_textures = Array[Texture2D]([ExtResource("20_1sst8")])
+fill_texture_z_index = -1
+fill_texture_scale = 0.28125
+fill_texture_absolute_position = true
+fill_mesh_material = SubResource("ShaderMaterial_v1666")
+
+[node name="쳅터1_18_숨은서재" type="Node2D" unique_id=2029498296]
+script = ExtResource("1_world")
+"스테이지_이름" = "18 · 숨은 서재 (특별) — 그을음과 멀리 있는 열쇠"
+"카메라_리밋" = Rect2(0, 0, 3840, 1792)
+"카메라_줌" = 1.0
+"시작_위치" = Vector2(272, 704)
+metadata/blueprint = "res://scenes/쳅터1/도안/쳅터1_18_숨은서재.json"
+metadata/frame_only = false
+
+[node name="페인트코어" type="Node" parent="." unique_id=971367318 groups=["페인트코어"]]
+script = ExtResource("2_core")
+
+[node name="어둠" type="CanvasModulate" parent="." unique_id=2130841044]
+color = Color(0.74, 0.74, 0.74, 1)
+
+[node name="배경" type="Node2D" parent="." unique_id=254219102]
+script = ExtResource("12_bg")
+"배경_명도" = 0.5
+"프리셋" = ExtResource("13_preset")
+"방_크기" = Vector2(3840, 1792)
+"바닥_y" = 1568.0
+"천장_y" = 160.0
+"낡음_덮어쓰기" = 3
+"씨앗" = 95475
+
+[node name="가구" type="Node2D" parent="배경" unique_id=1851786527]
+modulate = Color(0.5, 0.5, 0.5, 1)
+z_index = -90
+
+[node name="책장_높음1" type="Sprite2D" parent="배경/가구" unique_id=243476868]
+position = Vector2(256, 992)
+texture = ExtResource("19_furn5")
+centered = false
+metadata/parallax_rest = Vector2(256, 992)
+
+[node name="책장1" type="Sprite2D" parent="배경/가구" unique_id=368240575]
+position = Vector2(1424, 1184)
+texture = ExtResource("18_furn4")
+centered = false
+metadata/parallax_rest = Vector2(1424, 1184)
+
+[node name="사다리1" type="Sprite2D" parent="배경/가구" unique_id=547466043]
+position = Vector2(1680, 1056)
+texture = ExtResource("15_furn1")
+centered = false
+metadata/parallax_rest = Vector2(1680, 1056)
+
+[node name="지구본1" type="Sprite2D" parent="배경/가구" unique_id=1172172812]
+position = Vector2(1296, 1440)
+texture = ExtResource("16_furn2")
+centered = false
+metadata/parallax_rest = Vector2(1296, 1440)
+
+[node name="책상1" type="Sprite2D" parent="배경/가구" unique_id=2050322947]
+position = Vector2(512, 576)
+texture = ExtResource("17_furn3")
+centered = false
+metadata/parallax_rest = Vector2(512, 576)
+
+[node name="벽등1" type="Sprite2D" parent="배경/가구" unique_id=1670455442]
+position = Vector2(1824, 960)
+texture = ExtResource("14_furn0")
+centered = false
+metadata/parallax_rest = Vector2(1824, 960)
+
+[node name="책장2" type="Sprite2D" parent="배경/가구" unique_id=1266413687]
+position = Vector2(3216, 320)
+texture = ExtResource("18_furn4")
+centered = false
+metadata/parallax_rest = Vector2(3216, 320)
+
+[node name="지형" type="Node2D" parent="." unique_id=1024986372]
+
+[node name="구조01" parent="지형" unique_id=1092646576 instance=ExtResource("3_tpl_black")]
+position = Vector2(1920, 896)
+"내부_무늬" = Array[Rect2]([])
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S01")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_tyfjf"), SubResource("Resource_sxi08")])
+render_edges = false
+shape_material = SubResource("Resource_1sst8")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="구조02" parent="지형" unique_id=2061725940 instance=ExtResource("3_tpl_black")]
+position = Vector2(1120, 832)
+"내부_무늬" = Array[Rect2]([])
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S02")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_ugwnw"), SubResource("Resource_fnuro")])
+render_edges = false
+shape_material = SubResource("Resource_qhqwf")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="구조03" parent="지형" unique_id=1907247660 instance=ExtResource("3_tpl_black")]
+position = Vector2(864, 960)
+"내부_무늬" = Array[Rect2]([])
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S03")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_j2a4h"), SubResource("Resource_mjlou")])
+render_edges = false
+shape_material = SubResource("Resource_ao7il")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="구조04" parent="지형" unique_id=1174861348 instance=ExtResource("3_tpl_black")]
+position = Vector2(1120, 1088)
+"내부_무늬" = Array[Rect2]([])
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S04")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_n7yxv"), SubResource("Resource_g5pbr")])
+render_edges = false
+shape_material = SubResource("Resource_o5bme")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="흰판01" parent="지형" unique_id=374215360 instance=ExtResource("4_tpl_white")]
+position = Vector2(3520, 1184)
+"내부_무늬" = Array[Rect2]([])
+"위치별_판정" = true
+_points = SubResource("PA_W01")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_pfhup"), SubResource("Resource_ajudl")])
+render_edges = false
+shape_material = SubResource("Resource_3lh5q")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "흰"
+
+[node name="구조05" parent="지형" unique_id=820122245 instance=ExtResource("3_tpl_black")]
+position = Vector2(864, 1216)
+"내부_무늬" = Array[Rect2]([])
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S05")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_6k612"), SubResource("Resource_fcw3l")])
+render_edges = false
+shape_material = SubResource("Resource_xfwae")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="구조06" parent="지형" unique_id=525373301 instance=ExtResource("3_tpl_black")]
+position = Vector2(1120, 1344)
+"내부_무늬" = Array[Rect2]([])
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S06")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_80k2f"), SubResource("Resource_s158a")])
+render_edges = false
+shape_material = SubResource("Resource_mk1eb")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="유령판01" parent="지형" unique_id=1097096242 instance=ExtResource("5_tpl_ghost")]
+position = Vector2(2448, 1440)
+"내부_무늬" = Array[Rect2]([])
+_points = SubResource("PA_G01")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_jng6w"), SubResource("Resource_01kyr")])
+render_edges = false
+shape_material = SubResource("Resource_75aqa")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
+[node name="검정판01" parent="지형" unique_id=370239357 instance=ExtResource("3_tpl_black")]
+position = Vector2(3168, 1440)
+"내부_무늬" = Array[Rect2]([])
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("PA_B01")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_4xyqf"), SubResource("Resource_f053r")])
+render_edges = false
+shape_material = SubResource("Resource_6rwrm")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="구조07" parent="지형" unique_id=1106256338 instance=ExtResource("3_tpl_black")]
+position = Vector2(864, 1472)
+"내부_무늬" = Array[Rect2]([])
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"위치별_판정" = true
+_points = SubResource("PA_S07")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_v6b7g"), SubResource("Resource_uhnhq")])
+render_edges = false
+shape_material = SubResource("Resource_gdq4e")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="유령판02" parent="지형" unique_id=960127994 instance=ExtResource("5_tpl_ghost")]
+position = Vector2(2128, 1504)
+"내부_무늬" = Array[Rect2]([])
+_points = SubResource("PA_G02")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_vg74j"), SubResource("Resource_sguts")])
+render_edges = false
+shape_material = SubResource("Resource_2fyi3")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
+[node name="유령판03" parent="지형" unique_id=1390965905 instance=ExtResource("5_tpl_ghost")]
+position = Vector2(2768, 1504)
+"내부_무늬" = Array[Rect2]([])
+_points = SubResource("PA_G03")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_048rd"), SubResource("Resource_otj4i")])
+render_edges = false
+shape_material = SubResource("Resource_ghbsm")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
+[node name="연결" type="Node2D" parent="." unique_id=2001666530]
+
+[node name="왼쪽" type="Node2D" parent="연결" unique_id=1257678685]
+z_index = 60
+position = Vector2(160, 704)
+script = ExtResource("11_link")
+"방향" = -1
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_17_응접실.tscn"
+"다음_연결" = "비밀"
+
+[node name="장애물" type="Node2D" parent="." unique_id=150811681]
+
+[node name="가시01" parent="장애물" unique_id=545194180 instance=ExtResource("10_spike")]
+position = Vector2(2240, 1664)
+collision_layer = 0
+"칸수" = 20
+
+[node name="가시02" parent="장애물" unique_id=1767683954 instance=ExtResource("10_spike")]
+position = Vector2(2880, 1664)
+collision_layer = 0
+"칸수" = 20
+
+[node name="가시03" parent="장애물" unique_id=1437696546 instance=ExtResource("10_spike")]
+position = Vector2(3440, 1664)
+collision_layer = 0
+"칸수" = 15
+
+[node name="체크포인트" type="Node2D" parent="." unique_id=1085563264]
+
+[node name="체크04" parent="체크포인트" unique_id=1594868921 instance=ExtResource("9_checkpoint")]
+position = Vector2(3152, 1408)
+collision_layer = 0
+
+[node name="추가기믹" type="Node2D" parent="." unique_id=2110146276]
+
+[node name="그을음01" parent="추가기믹" unique_id=814018714 instance=ExtResource("add_soot")]
+position = Vector2(1360, 1568)
+
+[node name="촛불01" parent="추가기믹" unique_id=1690559586 instance=ExtResource("add_candle")]
+z_index = -1
+position = Vector2(528, 1568)
+"켜둠" = true
+"영원" = true
+
+[node name="촛불02" parent="추가기믹" unique_id=1606308597 instance=ExtResource("add_candle")]
+z_index = -1
+position = Vector2(1840, 1568)
+"켜둠" = true
+"영원" = true
+
+[node name="부서지는판01_1" parent="추가기믹" unique_id=1755306527 instance=ExtResource("add_plank")]
+position = Vector2(3312, 1280)
+collision_mask = 0
+
+[node name="열쇠조각01" parent="추가기믹" unique_id=344527022 instance=ExtResource("add_key")]
+position = Vector2(3168, 1248)
+"주인_씬" = "res://scenes/쳅터1/스테이지/쳅터1_17_응접실.tscn"
+
+[node name="열쇠조각02" parent="추가기믹" unique_id=1534070099 instance=ExtResource("add_key")]
+position = Vector2(3520, 992)
+"쪽" = 1
+"주인_씬" = "res://scenes/쳅터1/스테이지/쳅터1_17_응접실.tscn"
+
+[node name="추가지형" type="Node2D" parent="." unique_id=78907714]
+
+[node name="검정판추가01" parent="추가지형" unique_id=1834195971 instance=ExtResource("3_tpl_black")]
+position = Vector2(560, 656)
+"내부_무늬" = Array[Rect2]([])
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_black01_PA")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_4x4om"), SubResource("Resource_cgo5a")])
+render_edges = false
+shape_material = SubResource("Resource_qpxgw")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="검정판추가02" parent="추가지형" unique_id=363089516 instance=ExtResource("3_tpl_black")]
+position = Vector2(1584, 1520)
+"내부_무늬" = Array[Rect2]([])
+"시작상태" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_black02_PA")
+_meshes = Array[ExtResource("14_kj83v")]([SubResource("Resource_lb5ou"), SubResource("Resource_vjoxq")])
+render_edges = false
+shape_material = SubResource("Resource_e3aqa")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "검정"
+
+[node name="Player" parent="." unique_id=1844758394 instance=ExtResource("8_player")]
+position = Vector2(272, 704)
+"점프_거리_칸" = 20.0

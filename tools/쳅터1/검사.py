@@ -121,6 +121,8 @@ class 지도:
     def __init__(self, dn, 유령_밟힘=True):
         import numpy as np
         self.dn = dn
+        # [2026-10-09] 치명 낙하(px) — 도안 "치명_낙하" 로 스테이지마다 낮출 수 있다(15 집 밖: 지붕에서 마당으로 뛰어내려 색 계단을 건너뛰지 못하게)
+        self.치명 = float(dn.d.get("치명_낙하", 규격.치명_낙하))
         x0, y0, x1, y1 = dn.확장_범위()
         self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
         self.W, self.H = x1 - x0, y1 - y0
@@ -149,6 +151,13 @@ class 지도:
         self.도약대들 = [g for g in self.기믹 if isinstance(g, 기믹모듈.도약대)]
         self.발판들 = [g for g in self.기믹 if isinstance(g, 기믹모듈.움직이는발판)]
         self.빛들 = [(g, 기믹모듈.격자색[g.색]) for g in self.기믹 if isinstance(g, 기믹모듈.빛줄기) and g.고정]
+        # [2026-10-09] 부서지는판 — 무색 단단한 칸(두 색 다 선다 · 썩은마루판.gd). 부서지는 건 경로 재생이 따로 본다.
+        for g in self.기믹:
+            # [2026-10-09] 누름계단 판도 '다 나온 채' 무색 단단한 칸(상자로 발판을 누르는 일은 엔진 시험이 본다)
+            if isinstance(g, (기믹모듈.부서지는판, 기믹모듈.누름계단)):
+                for x, y in (g.칸들() if isinstance(g, 기믹모듈.부서지는판) else g.나온_칸들()):
+                    if 0 <= y - y0 < 단단.shape[0] and 0 <= x - x0 < 단단.shape[1]:
+                        단단[y - y0, x - x0] = True
         도약 = np.zeros_like(단단)            # 늘 튀는(무색) 도약대 칸 — 착지하면 튄다
         for g in self.도약대들:
             for x, y in g.칸들():
@@ -258,7 +267,7 @@ class 지도:
                     for n, g in enumerate(self.발판들):
                         for l, t, r, b in g.위치들():
                             if y <= t <= ny and x + SL - self.착지여유 >= l and x + SR + self.착지여유 <= r and not self.겹침(x - BL, t - BH, x + BR, t):
-                                if t - 최고 > 규격.치명_낙하:
+                                if t - 최고 > self.치명:
                                     return None, "낙하사", 색
                                 if not 색.본다(f, self.닿은_색들(x, t) | {2}):
                                     return None, 색.실패, 색
@@ -267,7 +276,7 @@ class 지도:
                     ny = math.floor(ny / C) * C        # 바로 위 칸 경계 = 판 윗면
                     if self.겹침(x - BL, ny - BH, x + BR, ny):
                         return None, "끼임", 색
-                    if ny - 최고 > 규격.치명_낙하:
+                    if ny - 최고 > self.치명:
                         return None, "낙하사", 색
                     if self.가시_닿음(x, ny):
                         return None, "가시", 색
@@ -623,6 +632,26 @@ def 검사(dn, 유령=True, 출력=True, 경로_저장=False):
         결과["실패"].append(f"색 비율 초과: 검정 {비['검정']:.0%} · 흰 {비['흰']:.0%} (최대 70% · 30%)")
     for w in 흰판_머리위(dn):
         결과["실패"].append("흰 판 머리 위: " + w)
+    # [2026-10-09] 열쇠 조각 · 레버 — 시작에서 닿는 바닥(편한 손 A 기준)에서 손이 닿아야 한다.
+    #   열쇠: 조각 가운데가 어떤 닿는 구간의 '서서 뛰어 닿는 상자'(가로 ±(편한 점프 거리의 절반) · 위로 점프 높이+몸 키) 안.
+    #   레버: 레버 칸 바로 위에 서 있을 수 있고 그 구간이 닿는다.
+    닿는구간 = [구간[i] for i in 본A if i < gr.n]
+    # [2026-10-09 Claude] 닿는 움직이는 발판의 위상 5곳 윗면도 '서 있는 자리' 로 친다 —
+    #   04 복도 B 아래 갈래처럼 발판을 타고 지나가야 줍는 조각(타고 가는 동안 몸에 겹침)을 검사하려고.
+    for k, 발판 in enumerate(m.발판들):
+        if gr.n + gr.P + k in 본A:
+            for l, t, r, _b in 발판.위치들():
+                닿는구간.append((t / C, l, r))
+    뛰는높이 = 규격.점프_높이 * 편한_점프_높이 + 규격.몸_키 + 30
+    for g in m.기믹:
+        if isinstance(g, 기믹모듈.열쇠조각):
+            px, py = g.x * C, g.y * C
+            if not any(a - 150 <= px <= b + 150 and r * C - 뛰는높이 <= py <= r * C + 20 for r, a, b in 닿는구간):
+                결과["실패"].append(f"열쇠조각{g.i}({g.색}) @({g.x},{g.y}) — 닿는 바닥에서 뛰어도 손이 안 닿는다")
+        elif isinstance(g, 기믹모듈.레버퍼즐):
+            for x0, y0 in g.레버 + [g.손잡이]:
+                if not any(r == y0 and a - 8 <= (x0 + 0.5) * C <= b + 8 for r, a, b in 닿는구간):
+                    결과["실패"].append(f"레버퍼즐{g.i} 레버 @({x0},{y0}) 앞에 설 수 없다(시작에서 안 닿음)")
     if 경로_저장 and 유령:
         os.makedirs(경로폴더, exist_ok=True)
         with open(os.path.join(경로폴더, dn.이름 + ".json"), "w", encoding="utf-8") as f:

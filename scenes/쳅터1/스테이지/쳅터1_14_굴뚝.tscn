@@ -25,6 +25,10 @@
 [ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="16_ymyth"]
 [ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="17_dx1fr"]
 
+[ext_resource type="Script" path="res://scripts/쳅터1/옆방문.gd" id="codex_side_door"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/잠긴문.tscn" id="add_door"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/반반열쇠_조각.tscn" id="add_key"]
+
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
 position = Vector2(-1856, -3488)
@@ -4751,10 +4755,6 @@ shape = SubResource("RectangleShape2D_vq5cf")
 
 [node name="체크포인트" type="Node2D" parent="." unique_id=1289928960]
 
-[node name="체크01" parent="체크포인트" unique_id=371803441 instance=ExtResource("9_checkpoint")]
-position = Vector2(208, 5408)
-collision_layer = 0
-
 [node name="체크02" parent="체크포인트" unique_id=1987369700 instance=ExtResource("9_checkpoint")]
 position = Vector2(1104, 3584)
 collision_layer = 0
@@ -4763,10 +4763,28 @@ collision_layer = 0
 position = Vector2(1104, 2048)
 collision_layer = 0
 
-[node name="체크04" parent="체크포인트" unique_id=1785370530 instance=ExtResource("9_checkpoint")]
-position = Vector2(1104, 512)
-collision_layer = 0
+[node name="추가기믹" type="Node2D" parent="."]
+
+[node name="열쇠조각01" parent="추가기믹" instance=ExtResource("add_key")]
+position = Vector2(1056, 1904)
+"쪽" = 0
+"주인_씬" = ""
+
+[node name="열쇠조각02" parent="추가기믹" instance=ExtResource("add_key")]
+position = Vector2(832, 3568)
+"쪽" = 1
+"주인_씬" = ""
+
+[node name="잠긴문01" parent="추가기믹" instance=ExtResource("add_door")]
+"길목" = NodePath("../../연결/오른쪽")
 
 [node name="Player" parent="." unique_id=1737428143 instance=ExtResource("8_player")]
 position = Vector2(208, 5408)
 "점프_거리_칸" = 20.0
+
+[node name="거미방길" type="Node2D" parent="연결"]
+position = Vector2(208, 5408)
+script = ExtResource("codex_side_door")
+"다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_19_거미방.tscn"
+"다음_연결" = "오른쪽"
+"표제" = "다락 거미방"

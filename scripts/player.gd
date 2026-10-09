@@ -68,6 +68,9 @@ var _jump_buffer_timer: float = 0.0
 var _fall_timer:        float = 0.0  ## 낙하가 시작된 뒤 경과 시간(낙하 가속용, 착지/상승 시 0으로 리셋)
 var _지난_바닥: bool = false
 var _착지_감시_시작: bool = false
+## [2026-10-08] 점프 버튼을 이륙 뒤 이만큼(초) 넘게 누르고 있으면 점프 이펙트가 약 → 강으로 자란다(기획 §4-D).
+const 강_점프_유지시간: float = 0.12
+var _점프_유지: float = -1.0  ## 이륙 뒤 누른 시간. −1 = 판정 끝(약으로 확정됐거나 이미 강)
 
 # ── 색 상태 ─────────────────────────────────────────────────────────────
 ## ★[2026-08-23 전면 변경] 색은 **값이 아니라 위치의 함수**가 됐다.
@@ -154,6 +157,20 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_released("jump") and velocity.y < 0.0:
 		velocity.y *= JUMP_CUT_MULTIPLIER
 
+	# ── [2026-10-08] 점프 이펙트 세기: 이륙 뒤 버튼을 강_점프_유지시간 넘게 누르고 있으면 약 → 강 ──
+	#   이륙 프레임엔 아직 세기를 모른다(가변 점프). 그래서 약으로 시작하고, 여기서 "끝까지 누르는 중" 이
+	#   확인되는 순간 한 번만 강으로 키운다. 떼면 −1 로 끝내 약 그대로 마른다.
+	if _점프_유지 >= 0.0:
+		if Input.is_action_pressed("jump") and velocity.y < 0.0:
+			_점프_유지 += delta
+			if _점프_유지 > 강_점프_유지시간:
+				_점프_유지 = -1.0
+				var 행동효과0 := get_node_or_null("ActionFX")
+				if 행동효과0 and 행동효과0.has_method("점프_강하게"):
+					행동효과0.점프_강하게()
+		else:
+			_점프_유지 = -1.0
+
 	# ── 점프 버퍼: 착지 직전 점프 입력을 잠깐 기억 ─────────────────
 	if Input.is_action_just_pressed("jump") and 자동_걷기 == 0.0:
 		_jump_buffer_timer = JUMP_BUFFER_TIME
@@ -173,6 +190,7 @@ func _physics_process(delta: float) -> void:
 		var 행동효과 := get_node_or_null("ActionFX")
 		if 행동효과 and 행동효과.has_method("점프"):
 			행동효과.점프(얼굴색())
+		_점프_유지 = 0.0      # [2026-10-08] 약 → 강 이펙트 판정 시작(위 "점프 이펙트 세기")
 		# [2026-10-05] 점프 소리도 먼지와 같은 이유로 "성립한 프레임"에만 낸다.
 		var 효과음 := get_node_or_null("효과음")
 		if 효과음:
