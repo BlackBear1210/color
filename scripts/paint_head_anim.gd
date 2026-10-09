@@ -84,8 +84,6 @@ func _잔량_갱신() -> void:
 			비율 = clampf(float(남음) / float(최대), 0.0, 1.0)
 	var 동작 := String(animation).get_slice("_", 1)
 	var 원본 := "jump" if 동작 in ["jump", "fall", "land"] else 동작
-	if 원본 == "idle":
-		원본 = "walk"
 	var 원본_프레임 := frame
 	if 동작 == "jump":
 		원본_프레임 += 2
@@ -100,8 +98,13 @@ func _잔량_갱신() -> void:
 			continue
 		var 색 := _color if 시트 == self else ("white" if _color == "black" else "black")
 		var 키 := 색 + "_" + 원본
+		# 새 대기 루프도 프레임마다 수위를 맞추고, 미생성 색은 기존 정지 자세를 쓴다.
+		var 표시_프레임 := 원본_프레임
+		if 원본 == "idle" and not _탱크_좌표.has(키):
+			키 = 색 + "_walk"
+			표시_프레임 = 0
 		if _탱크_좌표.has(키):
-			var 좌표: Array = _탱크_좌표[키][원본_프레임]
+			var 좌표: Array = _탱크_좌표[키][표시_프레임]
 			시트.material.set_shader_parameter("tank_rect", Vector4(좌표[0], 좌표[1], 좌표[2], 좌표[3]))
 		시트.material.set_shader_parameter("paint_fill", 비율)
 		시트.material.set_shader_parameter("tank_enabled", 원본 != "death")

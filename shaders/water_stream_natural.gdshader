@@ -12,8 +12,8 @@ uniform bool impact = true;
 uniform bool low_floor_impact = false;
 uniform sampler2D impact_frames : filter_linear, repeat_disable;
 uniform bool higgsfield_fluid = false;
-// Use the minimum visible fixed-center beam so wide streams do not hide their collision edges.
-uniform vec4 white_fluid_layout = vec4(123.022222, 69.6, 471.6, 26.0);
+// Separate impact layout: center X, contact Y, center half-width, fixed airborne spray scale.
+uniform vec4 white_fluid_layout = vec4(253.0, 228.0, 8.0, 0.4);
 // Hopper inlet: the stream enters a hopper pool drawn in front of it -> cut cleanly at the end
 // (a soft fade shows the metal behind as a grey block). Set by hopper_inlet script.
 uniform bool hard_end = false;
@@ -112,46 +112,48 @@ float fall_time(float y) {
     return (fall_speed(y) - release_speed) / gravity;
 }
 
-// The whole white fluid comes from the generated video, not a procedural splash rig.
-// Layout: original fixed-camera center X, body top Y, ground Y, and reference beam width.
+// v2: smooth masked body and separately mapped real-video impact.
+// White remains bright and opaque enough for the game's three-tone death rule.
+vec4 white_video_sample(vec2 local, float t) {
+    if (local.x < 0.5 || local.x > 511.5 || local.y < 0.5 || local.y > 287.5) { return vec4(0.0); }
+    float frame = mod(floor(t * 24.0), 96.0);
+    vec2 cell = vec2(mod(frame, 8.0), floor(frame / 8.0));
+    return texture(impact_frames, (cell + local / vec2(512.0, 288.0)) / vec2(8.0, 12.0));
+}
 vec4 higgsfield_white_water(vec2 p, float t) {
     float w = max(extent.x, 1.0);
     float fy = max(1.0, extent.y - (impact ? back_depth + 1.0 : 0.0));
-    float sx = white_fluid_layout.x + (p.x - extent.x * 0.5) * white_fluid_layout.w / w;
-    float pixel_scale = w / max(white_fluid_layout.w, 1.0);
-    float foot_height = min(min(96.0 * pixel_scale, 96.0), fy * 0.3);
-    bool contact_ready = impact && flow_head >= extent.y - back_depth * 0.5 - 1.0
+    float dx = p.x - extent.x * 0.5;
+    float u = clamp(dx / max(w * 0.5, 1.0), -1.0, 1.0);
+    float edge = 1.0 - smoothstep(w * 0.5 - 1.0, w * 0.5 + 1.0, abs(dx));
+    float rim = exp(-pow((abs(u) - 0.88) / 0.07, 2.0));
+    // Fixed world-space flow detail avoids low-resolution texture blocks and cloth-like stretching.
+    float detail = vnoise(vec2(u * 5.0 + 12.0, p.y / 48.0 - t * 9.0));
+    float present = smoothstep(0.0, 6.0, flow_head - p.y) * smoothstep(-2.0, 4.0, p.y - flow_tail);
+    float body_end = hard_end ? step(p.y, fy) : 1.0 - smoothstep(fy - 2.0, fy + 1.0, p.y);
+    float body_alpha = (0.84 + 0.08 * rim + 0.03 * detail) * edge * body_end * present * step(0.0, p.y);
+    vec4 result = vec4(vec3(0.92 + 0.04 * detail + 0.03 * rim), body_alpha);
+    bool arrived = impact && flow_head >= extent.y - back_depth * 0.5 - 1.0
         && flow_tail < extent.y - back_depth * 0.5 - 2.0;
-    bool foot = contact_ready && p.y >= fy - foot_height;
-    float body_end = max(1.0, fy - (contact_ready ? foot_height : 0.0));
-    float sy = mix(white_fluid_layout.y, white_fluid_layout.z - 96.0,
-        clamp(p.y / body_end, 0.0, 1.0));
-    if (foot) {
-        sy = white_fluid_layout.z + (p.y - fy) * 96.0 / max(foot_height, 1.0);
+    if (arrived && p.y >= fy - 90.0) {
+        // Stretch only the compact center foam; preserve airborne spray size at both edges.
+        float sx = white_fluid_layout.x + dx * white_fluid_layout.z / max(w * 0.5, 1.0);
+        if (abs(dx) > w * 0.5) {
+            sx = white_fluid_layout.x + sign(dx) * (white_fluid_layout.z + (abs(dx) - w * 0.5) / white_fluid_layout.w);
+        }
+        float sy = white_fluid_layout.y + (p.y - fy) / white_fluid_layout.w;
+        vec4 splash = white_video_sample(vec2(sx, sy), t);
+        // Remove the source's short feeding stem, leaving the independent clean body.
+        float source_stem = (1.0 - smoothstep(10.0, 16.0, abs(sx - white_fluid_layout.x)))
+            * (1.0 - smoothstep(white_fluid_layout.y - 16.0, white_fluid_layout.y - 8.0, sy));
+        splash.a *= 0.72 * (1.0 - source_stem) * (1.0 - smoothstep(fy + 1.0, fy + 3.0, p.y));
+        float footprint = 1.0 - smoothstep(max(0.0, w * 0.5 - 2.0), w * 0.5, abs(dx));
+        splash.a *= mix(1.0, footprint, smoothstep(fy - 2.0, fy, p.y));
+        result = over(result, splash);
+        float foam = (1.0 - smoothstep(0.0, 2.0, abs(p.y - fy))) * edge * 0.42;
+        result = over(result, vec4(vec3(0.94), foam));
     }
-    if (p.y < 0.0 || (!foot && p.y >= fy) || sx < 0.5 || sx > 255.5 || sy < 0.5 || sy > 511.5) {
-        return vec4(0.0);
-    }
-    float clock = mod(t * 12.0, 48.0);
-    float first = floor(clock);
-    float next = mod(first + 1.0, 48.0);
-    vec2 local_uv = vec2(sx, sy) / vec2(256.0, 512.0);
-    vec2 ca = vec2(mod(first, 8.0), floor(first / 8.0));
-    vec2 cb = vec2(mod(next, 8.0), floor(next / 8.0));
-    vec4 a = texture(impact_frames, (ca + local_uv) / vec2(8.0, 6.0));
-    vec4 b = texture(impact_frames, (cb + local_uv) / vec2(8.0, 6.0));
-    float alpha = mix(a.a, b.a, fract(clock));
-    vec3 rgb = mix(a.rgb * a.a, b.rgb * b.a, fract(clock)) / max(alpha, 0.0001);
-    float present = smoothstep(0.0, 6.0, flow_head - p.y)
-        * smoothstep(-2.0, 4.0, p.y - flow_tail);
-    alpha *= present;
-    // Only the floor film is limited to the collision/column width. Free airborne drops remain visible.
-    if (foot) {
-        float dx = abs(p.x - extent.x * 0.5);
-        float footprint = 1.0 - smoothstep(max(0.0, w * 0.5 - 2.0), w * 0.5, dx);
-        alpha *= mix(1.0, footprint, smoothstep(fy - 2.0, fy, p.y));
-    }
-    return vec4(rgb, alpha);
+    return result;
 }
 
 // Short ballistic bursts: 48 frames at 30 FPS, 1.6 second loop.

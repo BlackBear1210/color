@@ -22,12 +22,22 @@ class_name 열쇠
 @export var 문_이동량: Vector2 = Vector2(0, -304)
 @export_range(40.0, 1200.0) var 이동속도: float = 360.0
 @export_range(16.0, 160.0) var 감지_반지름: float = 40.0
+## ★[2026-10-09 Claude · 2-7] 이 열쇠들도 **다 주워야** 문이 움직인다(열쇠 조각). 비워 두면 예전처럼 혼자 연다.
+##   왜: 2-7 도면에 "흰색 열쇠조각" 과 "검은 열쇠조각" 이 따로 있다 — 두 조각을 모아야 도착 문이 열린다.
+##   문을 가진 열쇠 하나에만 짝을 적는다(둘 다 문을 가지면 같은 문을 두 번 민다).
+@export var 함께_필요한_열쇠들: Array[NodePath] = []
+## 그림 색 — 켜면 흰 열쇠(검은 테두리). 판정은 색과 상관없다(누구나 줍는다).
+@export var 흰_열쇠: bool = false:
+	set(v):
+		흰_열쇠 = v
+		queue_redraw()
 
 var 주움 := false
 var _문_노드들: Array[Node2D] = []
 var _문_목표들: Array[Vector2] = []
 var _기준y := 0.0
 var _시간 := 0.0
+var _짝들: Array[Node] = []
 
 
 func _ready() -> void:
@@ -49,6 +59,12 @@ func _ready() -> void:
 			continue
 		_문_노드들.append(문)
 		_문_목표들.append(문.position + 문_이동량)
+	for 경로2 in 함께_필요한_열쇠들:
+		var 짝 := get_node_or_null(경로2)
+		if 짝 == null:
+			push_warning("[열쇠:%s] 짝 열쇠 경로(%s)를 못 찾음" % [name, 경로2])
+			continue
+		_짝들.append(짝)
 
 
 func _감지_만들기() -> void:
@@ -76,6 +92,8 @@ func _physics_process(delta: float) -> void:
 		_시간 += delta
 		position.y = _기준y + sin(_시간 * 2.4) * 4.0
 		return
+	if not _짝도_다_주웠나():
+		return
 	var 다 := true
 	for i in _문_노드들.size():
 		var 문 := _문_노드들[i]
@@ -94,9 +112,17 @@ func _physics_process(delta: float) -> void:
 		set_physics_process(false)
 
 
+## 짝 열쇠(조각)를 전부 주웠나. 짝이 없으면 언제나 참.
+func _짝도_다_주웠나() -> bool:
+	for 짝 in _짝들:
+		if is_instance_valid(짝) and not bool(짝.get("주움")):
+			return false
+	return true
+
+
 ## 주행검사가 "문이 다 열렸나" 를 물을 때 쓴다.
 func 문_열림() -> bool:
-	if not 주움:
+	if not 주움 or not _짝도_다_주웠나():
 		return false
 	for i in _문_노드들.size():
 		if is_instance_valid(_문_노드들[i]) and _문_노드들[i].position != _문_목표들[i]:
@@ -108,6 +134,11 @@ func _draw() -> void:
 	# 검은 열쇠 — 어두운 하수도에서 읽히게 흰 테두리를 두른다. 원점 = 열쇠 가운데.
 	var 몸 := Color(0.06, 0.06, 0.07)
 	var 테 := Color(0.86, 0.87, 0.88)
+	if 흰_열쇠:
+		# 흰 열쇠 조각(2-7) — 몸과 테두리 색만 맞바꾼다(흰 지형 위에서도 테두리로 읽힌다).
+		var 임시 := 몸
+		몸 = Color(0.93, 0.93, 0.92)
+		테 = 임시
 	var 선 := PackedVector2Array([Vector2(-6, 0), Vector2(26, 0)])
 	draw_circle(Vector2(-16, 0), 13.0, 테)
 	draw_polyline(선, 테, 10.0)

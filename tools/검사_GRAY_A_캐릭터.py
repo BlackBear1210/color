@@ -14,11 +14,12 @@ ASSETS = ROOT / 'assets/characters/paint_head_a'
 def check(preview_dir, validator=None):
     manifest = json.loads((ASSETS / 'manifest.json').read_text(encoding='utf-8'))
     frames = (ASSETS / 'player_frames.tres').read_text(encoding='utf-8')
-    assert len(re.findall(r'\[sub_resource type="AtlasTexture"', frames)) == 160
+    # 대기 모션을 색별로 추가해도 전체 시트 수에서 프레임 수를 검증한다.
+    assert len(re.findall(r'\[sub_resource type="AtlasTexture"', frames)) == len(manifest['sources']) * 16
     assert len(re.findall(r'"name": &"', frames)) == 16
     declared = set(re.findall(r'id="([^"]+)"', frames))
     assert set(re.findall(r'SubResource\("([^"]+)"\)', frames)) <= declared
-    assert len(manifest['sources']) == 10
+    assert 10 <= len(manifest['sources']) <= 12
     for name, entries in manifest['frames'].items():
         image = Image.open(ASSETS / f'{name}.png')
         assert image.size == (2560, 2560) and image.mode == 'RGBA'
@@ -59,7 +60,7 @@ def check(preview_dir, validator=None):
         print(f'GDScript 정적 구문 검사: {len(paths)}개 통과 (엔진 타입 검사는 아님)')
     preview_dir.mkdir(parents=True, exist_ok=True)
     preview(manifest, preview_dir)
-    print('시트 10장 / 프레임 160개 / 애니메이션 16개 / 셰이더 ASCII / 투명 배경 검사 통과')
+    print(f"시트 {len(manifest['sources'])}장 / 프레임 {len(manifest['sources']) * 16}개 / 애니메이션 16개 / 셰이더 ASCII / 투명 배경 검사 통과")
 
 
 def preview(manifest, destination):

@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://scripts/스마트월드/물_힉스필드_출수구.gd" id="99_reference_outlet"]
+
 [ext_resource type="Script" path="res://scripts/스마트월드/월드.gd" id="1_aqutv"]
 [ext_resource type="Script" path="res://scripts/스마트월드/페인트_코어.gd" id="2_1v03e"]
 [ext_resource type="PackedScene" path="res://scenes/배경/하수도_벽돌배경_2_9_조정.tscn" id="3_mfwmd"]
@@ -7,7 +9,7 @@
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point.gd" id="5_tmcc3"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/point_array.gd" id="6_kqhvq"]
 [ext_resource type="Resource" path="res://assets/textures/smartshape/sewer_masonry_v02/땅_2-3_black.tres" id="7_qdo8g"]
-[ext_resource type="Script" path="res://scripts/스마트월드/SS2D_붕괴발판.gd" id="8_s2ybw"]
+[ext_resource type="Script" path="res://scripts/스마트월드/하수도_붕괴발판.gd" id="8_s2ybw"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="9_tuqfh"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/materials/shape_material.gd" id="10_26lyo"]
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/유체.tscn" id="11_fqmxl"]
@@ -1979,30 +1981,35 @@ script = ExtResource("2_1v03e")
 [node name="지형" type="Node2D" parent="." unique_id=1394467848]
 
 [node name="외곽_왼벽" parent="지형" unique_id=1034309511 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(-496, 1744)
 _points = SubResource("Resource_d6i2k")
 shape_material = ExtResource("7_qdo8g")
 metadata/role = "외곽"
 
 [node name="외곽_오른벽" parent="지형" unique_id=2094998304 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(13424, 1744)
 _points = SubResource("Resource_kucwx")
 shape_material = ExtResource("7_qdo8g")
 metadata/role = "외곽"
 
 [node name="외곽_천장" parent="지형" unique_id=1323579273 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(6464, -480)
 _points = SubResource("Resource_0bskp")
 shape_material = ExtResource("7_qdo8g")
 metadata/role = "외곽"
 
 [node name="외곽_바닥" parent="지형" unique_id=776022087 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(6464, 3968)
 _points = SubResource("Resource_gwaet")
 shape_material = ExtResource("7_qdo8g")
 metadata/role = "외곽"
 
 [node name="시작복도_바위" parent="지형" unique_id=872294437 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(1560, 1272)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2011,6 +2018,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="수갱_천장바위" parent="지형" unique_id=1396022010 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(3640, 464)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2019,6 +2027,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="수갱_오른바위" parent="지형" unique_id=844689740 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(3640, 1584)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2027,6 +2036,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="물탱크B_천장" parent="지형" unique_id=785606791 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(4640, 440)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2035,6 +2045,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="물탱크B_바위" parent="지형" unique_id=557676549 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(4640, 1944)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2043,6 +2054,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="호퍼2_천장" parent="지형" unique_id=537953690 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(5640, 408)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2051,6 +2063,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="호퍼2_바위" parent="지형" unique_id=1835801728 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(5640, 1928)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2059,6 +2072,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="사다리방_바위" parent="지형" unique_id=980936105 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(6592, 1024)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2067,6 +2081,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="수갱아래_바위" parent="지형" unique_id=651393799 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(6592, 2816)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2075,6 +2090,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="수갱바닥_바위" parent="지형" unique_id=530984510 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(7216, 2816)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2083,6 +2099,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="아래층_바위" parent="지형" unique_id=2031854279 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(8152, 2816)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2091,6 +2108,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="물탱크C_받침" parent="지형" unique_id=125539374 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(5960, 504)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2099,6 +2117,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="호퍼2_착지발판" parent="지형" unique_id=321409754 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(4512, 1016)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2107,6 +2126,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="도착방_바위" parent="지형" unique_id=648596404 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(11608, 2016)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2115,6 +2135,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="벨브_선반" parent="지형" unique_id=1237656219 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(8992, 1152)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2123,6 +2144,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="디딤_선반" parent="지형" unique_id=1207557385 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(8184, 1184)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2131,6 +2153,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="떠있는_선반" parent="지형" unique_id=1504208953 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(7680, 1544)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2139,6 +2162,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="호퍼4_오른바위" parent="지형" unique_id=596467568 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(9496, 1880)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2147,6 +2171,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="호퍼4_왼바위" parent="지형" unique_id=944837746 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(8720, 1904)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2155,6 +2180,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="수갱_징검발판" parent="지형" unique_id=1443427985 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(7296, 2304)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2163,6 +2189,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="낙사존_바위" parent="지형" unique_id=441119788 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(9536, 2488)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2171,6 +2198,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "플랫폼"
 
 [node name="하늘_채움" parent="지형" unique_id=2000366917 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(6464, 528)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2179,6 +2207,7 @@ shape_material = ExtResource("7_qdo8g")
 metadata/role = "채움"
 
 [node name="부서지는발판_1" parent="지형" unique_id=41367258 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(10168, 2296)
 script = ExtResource("8_s2ybw")
 "붕괴_대기" = 0.9
@@ -2193,6 +2222,7 @@ collision_polygon_node_path = NodePath("")
 metadata/role = "플랫폼"
 
 [node name="부서지는발판_2" parent="지형" unique_id=2036258559 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(10344, 2296)
 script = ExtResource("8_s2ybw")
 "붕괴_대기" = 0.9
@@ -2207,6 +2237,7 @@ collision_polygon_node_path = NodePath("")
 metadata/role = "플랫폼"
 
 [node name="부서지는발판_3" parent="지형" unique_id=1034913065 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(10536, 2296)
 script = ExtResource("8_s2ybw")
 "붕괴_대기" = 0.9
@@ -2221,6 +2252,7 @@ collision_polygon_node_path = NodePath("")
 metadata/role = "플랫폼"
 
 [node name="부서지는발판_4" parent="지형" unique_id=448658684 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(10728, 2296)
 script = ExtResource("8_s2ybw")
 "붕괴_대기" = 0.9
@@ -2240,6 +2272,7 @@ metadata/role = "플랫폼"
 position = Vector2(3568, 928)
 
 [node name="발판1_덮개_몸" parent="장치/발판1_덮개" unique_id=829774931 instance=ExtResource("4_sb2f1")]
+"챕터1_원근" = true
 position = Vector2(168, 32)
 "시안_명도조율" = true
 "앞지형_깊이" = true
@@ -2254,6 +2287,7 @@ collision_layer = 0
 script = ExtResource("12_q16nx")
 "호퍼_유입" = false
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "크기" = Vector2(96, 448)
 "켜짐" = false
 
@@ -2281,6 +2315,7 @@ position = Vector2(2800, 624)
 script = ExtResource("12_q16nx")
 "호퍼_유입" = true
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "색" = 1
 "크기" = Vector2(64, 156)
 
@@ -2291,6 +2326,7 @@ collision_layer = 0
 script = ExtResource("12_q16nx")
 "호퍼_유입" = true
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "색" = 0
 "크기" = Vector2(48, 60)
 "켜짐" = false
@@ -2310,6 +2346,7 @@ script = ExtResource("16_2y3gc")
 "끝_장치" = NodePath("../호퍼1_탱크공급")
 
 [node name="격자_수갱1" parent="장치" unique_id=1764139113 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(2960, 1242)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2320,6 +2357,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_수갱2" parent="장치" unique_id=158411267 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(2744, 1194)
 "크기" = Vector2(176, 20)
 "필요횟수" = 1
@@ -2330,6 +2368,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_수갱3" parent="장치" unique_id=31055080 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(2960, 1114)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2340,6 +2379,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_수갱4" parent="장치" unique_id=867938695 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(2744, 1034)
 "크기" = Vector2(176, 20)
 "필요횟수" = 1
@@ -2350,6 +2390,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_수갱5" parent="장치" unique_id=984596067 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(2960, 970)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2362,6 +2403,7 @@ one_way_collision_margin = 4.0
 [node name="발판_1" type="AnimatableBody2D" parent="장치" unique_id=980520938]
 position = Vector2(3504, 928)
 script = ExtResource("18_xanv4")
+"챕터1_원근" = true
 "높이" = 16.0
 "작동방식" = 1
 "누름_가능_그룹" = PackedStringArray("player")
@@ -2376,6 +2418,7 @@ collision_layer = 0
 script = ExtResource("12_q16nx")
 "호퍼_유입" = false
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "크기" = Vector2(96, 176)
 "켜짐" = false
 
@@ -2403,6 +2446,7 @@ position = Vector2(4448, 624)
 script = ExtResource("12_q16nx")
 "호퍼_유입" = true
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "색" = 1
 "크기" = Vector2(64, 108)
 
@@ -2413,6 +2457,7 @@ collision_layer = 0
 script = ExtResource("12_q16nx")
 "호퍼_유입" = true
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "색" = 0
 "크기" = Vector2(48, 60)
 "켜짐" = false
@@ -2432,6 +2477,7 @@ script = ExtResource("16_2y3gc")
 "끝_장치" = NodePath("../호퍼2_탱크공급")
 
 [node name="격자_사다리1" parent="장치" unique_id=472761511 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(5616, 890)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2442,6 +2488,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_사다리2" parent="장치" unique_id=2030161073 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(5392, 858)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2452,6 +2499,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_사다리3" parent="장치" unique_id=949352967 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(5616, 778)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2462,6 +2510,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_사다리4" parent="장치" unique_id=467630734 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(5392, 730)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2472,6 +2521,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_사다리5" parent="장치" unique_id=104205889 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(5616, 650)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2482,6 +2532,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_사다리6" parent="장치" unique_id=2031368594 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(5392, 586)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2492,6 +2543,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_사다리7" parent="장치" unique_id=481871757 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(5616, 506)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2508,6 +2560,7 @@ collision_layer = 0
 script = ExtResource("12_q16nx")
 "호퍼_유입" = false
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "크기" = Vector2(96, 1728)
 "켜짐" = false
 
@@ -2537,6 +2590,7 @@ collision_layer = 0
 script = ExtResource("12_q16nx")
 "호퍼_유입" = true
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "크기" = Vector2(64, 76)
 "켜짐" = false
 
@@ -2563,6 +2617,7 @@ script = ExtResource("20_0qg6b")
 "받아주는_최소수심" = 32.0
 
 [node name="격자_오름1" parent="장치" unique_id=1409431551 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(7872, 2170)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2573,6 +2628,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_오름2" parent="장치" unique_id=1448191374 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(8064, 2090)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2584,6 +2640,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_오름3" parent="장치" unique_id=2108533076 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(8256, 2010)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2594,6 +2651,7 @@ one_way_collision = true
 one_way_collision_margin = 4.0
 
 [node name="격자_오름4" parent="장치" unique_id=2048930424 instance=ExtResource("17_ovxr7")]
+"챕터1_원근" = true
 position = Vector2(8464, 1930)
 "크기" = Vector2(160, 20)
 "필요횟수" = 1
@@ -2611,6 +2669,7 @@ collision_layer = 0
 script = ExtResource("12_q16nx")
 "호퍼_유입" = false
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "크기" = Vector2(96, 736)
 "켜짐" = false
 
@@ -2638,6 +2697,7 @@ position = Vector2(8920, 1216)
 script = ExtResource("12_q16nx")
 "호퍼_유입" = true
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "색" = 1
 "크기" = Vector2(64, 668)
 
@@ -2646,6 +2706,7 @@ position = Vector2(8816, 1088)
 "대상_유체" = NodePath("../흰물_5")
 
 [node name="움직이는발판" parent="장치" unique_id=785906368 instance=ExtResource("22_ds8hu")]
+"챕터1_원근" = true
 position = Vector2(9728, 1168)
 "크기" = Vector2(192, 32)
 "이동거리" = 560.0
@@ -2658,6 +2719,7 @@ position = Vector2(9232, 1968)
 script = ExtResource("12_q16nx")
 "호퍼_유입" = false
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "색" = 0
 "크기" = Vector2(96, 304)
 
@@ -2666,6 +2728,7 @@ position = Vector2(10536, 1424)
 script = ExtResource("12_q16nx")
 "호퍼_유입" = false
 "물줄기_v3" = true
+"힉스필드_삼색프레임" = true
 "색" = 1
 "크기" = Vector2(96, 1280)
 
@@ -2739,3 +2802,11 @@ position = Vector2(560, 1344)
 "점프_거리_칸" = 20.0
 
 [node name="하수도화면효과" parent="." unique_id=1858616645 instance=ExtResource("28_bik5w")]
+
+[node name="出水_검정물" type="Node2D" parent="장치"]
+script = ExtResource("99_reference_outlet")
+"대상_유체" = NodePath("../검정물")
+
+[node name="出水_흰물_7" type="Node2D" parent="장치"]
+script = ExtResource("99_reference_outlet")
+"대상_유체" = NodePath("../흰물_7")

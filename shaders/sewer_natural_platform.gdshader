@@ -16,6 +16,11 @@ uniform vec4 ground_edges[128];
 uniform float ground_top_half_depth : hint_range(1.0, 6.0) = 4.0;
 uniform bool ground_top_enabled = true;
 uniform bool ground_side_enabled = true;
+// Chapter 1 projection uses the same stone atlas and paint coordinates.
+uniform bool chapter_trim = false;
+uniform vec4 chapter_uv_bounds = vec4(0.0, 0.0, 1.0, 1.0);
+varying vec2 chapter_uv;
+varying float chapter_shadow;
 // Horizontal three-stone sockets: left, right, surface y, adjacent stone width.
 uniform int socket_joint_count = 0;
 uniform vec4 socket_joints[8];
@@ -325,6 +330,10 @@ uniform int sewer_edge_count = 0;
 uniform vec4 sewer_edges[32];
 uniform float sewer_visible[32];
 void vertex() {
+ chapter_uv = mix(chapter_uv_bounds.xy, chapter_uv_bounds.zw, COLOR.rb);
+ chapter_shadow = COLOR.g;
+ // Packed geometry coordinates are not a color tint.
+ if (chapter_trim) { COLOR = vec4(1.0); }
  // Keep paint coordinates on the original SS2D mesh; expand only the image.
  local_pos = VERTEX;
  if (cached_draw_mode == 0 && ground_platform && ground_top_enabled && !ground_covered(VERTEX+vec2(0.0,-0.5))) {
@@ -355,6 +364,20 @@ float hash21(vec2 p) {
 	return fract(p.x * p.y);
 }
 
+// The atlas stones have unequal widths and lean in the source perspective.
+// Rectify each complete stone before the Chapter 1 mesh projects it again.
+vec2 chapter_stone_bounds(float variant, float depth) {
+ vec2 back = vec2(296.0, 490.0);
+ vec2 front = vec2(266.0, 464.0);
+ if (variant >= 1.0) { back = vec2(490.0, 676.0); front = vec2(464.0, 666.0); }
+ if (variant >= 2.0) { back = vec2(676.0, 879.0); front = vec2(666.0, 876.0); }
+ if (variant >= 3.0) { back = vec2(879.0, 1083.0); front = vec2(876.0, 1097.0); }
+ if (variant >= 4.0) { back = vec2(1083.0, 1283.0); front = vec2(1097.0, 1300.0); }
+ if (variant >= 5.0) { back = vec2(1283.0, 1477.0); front = vec2(1300.0, 1505.0); }
+ if (variant >= 6.0) { back = vec2(1477.0, 1636.0); front = vec2(1505.0, 1681.0); }
+ return mix(back, front, depth);
+}
+
 float vnoise(vec2 p) {
 	vec2 i = floor(p);
 	vec2 f = fract(p);
@@ -381,6 +404,51 @@ void fragment() {
 	
 	vec3 ink_black = base_is_white ? alt.rgb : base.rgb;
 	vec3 ink_white = base_is_white ? base.rgb : alt.rgb;
+ if (chapter_trim) {
+  // UV.y encodes separate top/left/right faces from the shared projection mesh.
+  float kind = floor(chapter_uv.y + 0.00001);
+  float phase = fract(chapter_uv.x * 4.0);
+  float source_y;
+  float source_depth = 1.0;
+  float lighting = 1.0;
+  float variant = floor(hash21(vec2(floor(chapter_uv.x * 4.0), 19.7)) * 7.0);
+  if (kind < 1.0) {
+   float depth = clamp(chapter_uv.y * 30.0 / 22.0, 0.0, 1.0);
+   source_depth = depth;
+   source_y = mix(292.0, 348.0, depth);
+   if (chapter_uv.y * 30.0 > 22.0) {
+    source_y = mix(351.0, 433.0, clamp((chapter_uv.y * 30.0 - 22.0) / 8.0, 0.0, 1.0));
+   }
+   // Preserve the existing metal socket's fitted coping joints.
+   for (int joint = 0; joint < 8; joint++) {
+    if (joint >= socket_joint_count) { break; }
+    vec4 socket = socket_joints[joint];
+    float sx = local_pos.x;
+    float sy = local_pos.y - socket.z;
+    if (sy < -4.01 || sy > 26.01 || socket.w <= 0.0) { continue; }
+    float inset = 2.0 + max(0.0, 6.0 - (sy + 4.0));
+    if (sy >= 9.0) { inset = 0.0; }
+    if (sx >= socket.x - socket.w && sx <= socket.x + inset) {
+     phase = clamp((sx - socket.x + socket.w) / (socket.w + inset), 0.0, 1.0) * 0.78;
+    } else if (sx >= socket.y - inset && sx <= socket.y + socket.w) {
+     phase = 0.22 + clamp((sx - socket.y + inset) / (socket.w + inset), 0.0, 1.0) * 0.78;
+    }
+   }
+  } else {
+   float across = fract(chapter_uv.y);
+   source_y = 351.0 + fract(chapter_uv.x) * 82.0;
+   phase = across;
+   lighting = kind < 5.0 ? 1.06 : 0.76;
+  }
+  // Several original stone blocks supply grain, pits and chipped mortar; no wood texture.
+  vec2 source_bounds = chapter_stone_bounds(variant, source_depth);
+  vec2 stone_uv = vec2(mix(source_bounds.x, source_bounds.y, phase) / 1774.0, source_y / 887.0);
+  vec4 stone_sample = texture(ground_cap_tex, stone_uv);
+  float stone = dot(stone_sample.rgb, vec3(0.2126, 0.7152, 0.0722));
+  float shadow = mix(0.82, 1.0, chapter_shadow);
+  ink_black = vec3(stone * 0.72 * lighting * shadow);
+  ink_white = vec3(mix(0.30, 0.94, smoothstep(0.01, 0.27, stone)) * lighting * shadow);
+ }
  if (ground_platform && cached_draw_mode != 1 && ground_edge_count > 0) {
   vec4 faces = cached_faces;
   float cap_weight = 1.0-smoothstep(18.0,24.0,faces.x);
@@ -672,6 +740,10 @@ void fragment() {
   vec4 faces = cached_faces;
   top_face = 1.0-smoothstep(2.0,4.0,faces.x);
   right_face = 1.0-smoothstep(2.0,7.0,faces.y);
+ }
+ if (chapter_trim) {
+  top_face = chapter_uv.y < 22.0 / 30.0 ? 1.0 : 0.0;
+  right_face = 0.0;
  }
  float luminance = dot(col, vec3(0.2126, 0.7152, 0.0722));
  col = vec3(luminance) * (0.94 + 0.12*top_face - 0.17*right_face - 0.20*underside);

@@ -19,6 +19,18 @@ class_name 통과플랫폼
 
 # 검정/흰색 원본과 구멍의 알파를 그대로 사용해 물과 배경이 격자 사이로 보이게 한다.
 const 격자_아틀라스 = preload("res://assets/textures/obstacles/grate/cast_iron_v1/grate_atlas.png")
+const 원근_그림 = preload("res://scripts/스마트월드/격자_원근그림.gd")
+
+## 챕터1 원근 지형과 같은 방향의 주철 윗면. 기존 다른 스테이지는 저장값을 유지한다.
+@export var 챕터1_원근: bool = false:
+	set(value):
+		챕터1_원근 = value
+		queue_redraw()
+
+func 발_그림_깊이() -> float:
+	# 발 그림을 윗면 가운데로 내린다. 몸·충돌·도약 높이는 움직이지 않는다.
+	var shift := minf(18.0, 크기.x * 0.375)
+	return -4.0 + shift * 22.0 / 18.0 * 0.5 if 챕터1_원근 else 0.0
 
 @export var 크기: Vector2 = Vector2(224, 26):
 	set(v):
@@ -98,6 +110,10 @@ func 강제_초기화() -> void:
 
 
 func _draw() -> void:
+	if 챕터1_원근:
+		# 그림만 입체로 맞춘다. 기존 충돌 크기·고정색·물 통과·총알 차단 계약은 그대로다.
+		원근_그림.그리기(self, 크기, 고정색 == ColorDefs.WHITE)
+		return
 	# 생성 원본의 실제 불투명 경계를 사용해 그림 윗면과 충돌 윗면을 맞춘다.
 	var 원본 := Rect2(90, 810, 1075, 116) if 고정색 == ColorDefs.WHITE else Rect2(90, 326, 1074, 114)
 	var 배율 := 크기.y / 원본.size.y

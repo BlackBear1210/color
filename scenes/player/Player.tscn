@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" uid="uid://6h6viwi1sfak" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Script" uid="uid://cxyp00fit7cdr" path="res://scripts/gun.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/paint_head_anim.gd" id="3"]
-[ext_resource type="SpriteFrames" path="res://assets/characters/paint_head_a/player_frames.tres" id="4"]
+[ext_resource type="Script" uid="uid://bubow452gsmtx" path="res://scripts/paint_head_anim.gd" id="3"]
+[ext_resource type="SpriteFrames" uid="uid://bwbu0req86jff" path="res://assets/characters/paint_head_a/player_frames.tres" id="4"]
 [ext_resource type="Script" uid="uid://26v64gmyh1e7" path="res://scripts/총_받침.gd" id="5"]
 [ext_resource type="Script" uid="uid://l8bmveg5y7ny" path="res://scripts/색겹침.gd" id="6"]
 [ext_resource type="Script" uid="uid://wv15vx0gcktx" path="res://scripts/player_action_fx.gd" id="7"]
-[ext_resource type="Script" path="res://scripts/플레이어_보조광.gd" id="8"]
-[ext_resource type="Script" path="res://scripts/플레이어_효과음.gd" id="9"]
+[ext_resource type="Script" uid="uid://dw03jwg8071m7" path="res://scripts/플레이어_보조광.gd" id="8"]
+[ext_resource type="Script" uid="uid://cr4p8xoqkdy52" path="res://scripts/플레이어_효과음.gd" id="9"]
 
 [node name="Player" type="CharacterBody2D" unique_id=1147093704]
 scale = Vector2(0.7949601, 0.36771855)
@@ -45,10 +45,12 @@ visible = false
 script = ExtResource("7")
 "크기_배율" = 1.55
 
-[node name="플레이어_보조광" type="Node2D" parent="."]
+[node name="플레이어_보조광" type="Node2D" parent="." unique_id=657643302]
+position = Vector2(0, -130.53462)
+scale = Vector2(1.2579248, 2.7194712)
 script = ExtResource("8")
 
-[node name="효과음" type="Node" parent="."]
+[node name="효과음" type="Node" parent="." unique_id=1293465351]
 script = ExtResource("9")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=614551773]
@@ -56,4 +58,4 @@ visible = false
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=97548168]
 position = Vector2(0, -1)
-polygon = PackedVector2Array(20.126797, -260.06924, 32.706043, -81.58414, 15.095098, 0, -6.289624, 0, -22.642647, -81.58414, -8.805473, -260.06924)
+polygon = PackedVector2Array(16.353022, -243.75241, 23.900572, -86.02308, 15.095098, -1.7194712, -11.321323, -1.7194712, -22.642647, -81.58414, -18.868872, -243.75241)

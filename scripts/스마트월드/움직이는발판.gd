@@ -29,6 +29,17 @@ extends AnimatableBody2D
 ## ============================================================================
 class_name 움직이는발판
 
+const 원근_그림 = preload("res://scripts/스마트월드/격자_원근그림.gd")
+## 고정색 주철 승강기도 격자/돌과 같은 원근을 쓴다. 기존 칠하기 퍼즐의 외관은 보존한다.
+@export var 챕터1_원근: bool = false:
+	set(value):
+		챕터1_원근 = value
+		queue_redraw()
+
+func 발_그림_깊이() -> float:
+	# 몸과 승강기 왕복 경로는 그대로 두고 발 그림만 윗면 중앙에 맞춘다.
+	return -4.0 + minf(18.0, 크기.x * 0.375) * 22.0 / 18.0 * 0.5 if 챕터1_원근 and not 칠하기_가능 else 0.0
+
 @export_group("모양")
 @export var 크기: Vector2 = Vector2(180, 28):
 	set(v):
@@ -246,6 +257,10 @@ func _draw() -> void:
 ## (양끝 볼트는 비율 유지, 가운데만 늘림)이라 격자와 한 벌로 읽힌다.
 ## 방향 화살표는 그리지 않는다 — "움직인다"는 매달린 쇠사슬(장식 키트)이 알려 준다.
 func _주철판_그리기() -> void:
+	if 챕터1_원근:
+		# 정지 격자와 동일한 원본/분할/명암을 써 승강기만 정면 띠로 남는 이질감을 없앤다.
+		원근_그림.그리기(self, 크기, 고정색 == ColorDefs.WHITE)
+		return
 	var 원본 := Rect2(90, 810, 1075, 116) if 고정색 == ColorDefs.WHITE else Rect2(90, 326, 1074, 114)
 	var 배율 := 크기.y / 원본.size.y
 	var 끝폭 := minf(48.0 * 배율, 크기.x * 0.25)
