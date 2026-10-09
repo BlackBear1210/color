@@ -771,11 +771,28 @@ func _붕괴발판_위인가() -> bool:
 		var 접촉 := _플레이어.get_slide_collision(i)
 		if 접촉.get_normal().dot(Vector2.UP) < 0.5:
 			continue
-		var n := 접촉.get_collider() as Node
-		while n and n != self:
-			if n.is_in_group("붕괴발판"):
-				return true
-			n = n.get_parent()
+		if _붕괴발판_조상인가(접촉.get_collider() as Node):
+			return true
+	# ★[2026-10-10] 발밑도 레이로 직접 본다(발 가운데 · 양 끝 세 점). 슬라이드 기록만 보면
+	#   ① 판에 올라선 **첫 프레임**(순간이동·리스폰 직후)에는 기록이 비어 있고 ② 단단한 바닥과 판 경계에 걸치면 한쪽만 남는다.
+	#   그 틈에 미리 쌓인 안전 시간(0.45초)이 판 위를 안전지점으로 저장했다 → 죽으면 같은 판 위로 되살아나 또 떨어지는 고리
+	#   (16 썩은 마루 · 시험_새스테이지 에서 잡힘 — 10-09 체크포인트 정리로 판 앞 체크포인트가 빠지며 드러났다).
+	var 공간 := _플레이어.get_world_2d().direct_space_state
+	for dx in [-16.0, 0.0, 16.0]:
+		var 기준 := _플레이어.global_position + Vector2(dx, 0)
+		var q := PhysicsRayQueryParameters2D.create(기준 + Vector2(0, -4.0), 기준 + Vector2(0, 24.0), 1)
+		q.exclude = [_플레이어.get_rid()]
+		var r := 공간.intersect_ray(q)
+		if not r.is_empty() and _붕괴발판_조상인가(r.get("collider") as Node):
+			return true
+	return false
+
+
+func _붕괴발판_조상인가(n: Node) -> bool:
+	while n and n != self:
+		if n.is_in_group("붕괴발판"):
+			return true
+		n = n.get_parent()
 	return false
 
 

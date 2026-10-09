@@ -199,20 +199,27 @@ func _발사_속도() -> Vector2:
 ##   · 송풍기 바람도 같이 받는다 — 바람 구간에서 조준선만 곧게 가면 거짓말이 된다
 ##   · 단단한 지형은 이전→다음 구간 **레이캐스트**로 본다 (총알과 같은 터널링 방지)
 func _궤적_계산() -> PackedVector2Array:
+	_궤적_닿음 = false
+	_탄착_불가 = false
+	var 속도 := _발사_속도()
+	if 속도 == Vector2.ZERO:
+		return PackedVector2Array()
+	return _궤적_따라(_발사_원점(), 속도)
+
+
+## [2026-10-10] 궤적 본체 — 시작점·초속도를 받아 굴린다(시험이 마우스 없이 부를 수 있게 나눴다).
+##   ★총알처럼 **칠할 수 있는 통과형 오브젝트(레이어 16 · `명중` 이 있는 Area — 반딧불 몹 등)** 에서도 멈춘다.
+##   예전엔 지형만 봐서 반딧불을 겨눠도 조준선이 몸을 뚫고 뒤 벽에 빨간 X 를 찍었다 → "반딧불은 못 쏜다" 로 읽혔다
+##   (도형님 10-10 · 실제 총알은 맞는다 — 총알.gd 가 레이어 16 겹침을 본다).
+func _궤적_따라(위치: Vector2, 속도: Vector2) -> PackedVector2Array:
 	var 점들 := PackedVector2Array()
 	_궤적_닿음 = false
 	_탄착_불가 = false
-
-	var 속도 := _발사_속도()
-	if 속도 == Vector2.ZERO:
-		return 점들
-
 	var 공간 := get_world_2d().direct_space_state
 	var 제외: Array[RID] = []
 	if 플레이어 is CollisionObject2D:
 		제외.append((플레이어 as CollisionObject2D).get_rid())
 
-	var 위치 := _발사_원점()
 	점들.append(위치)
 
 	# 송풍기는 매 스텝 물어보면 비싸다. 개수가 적으니 목록만 미리 받아둔다.
@@ -231,6 +238,14 @@ func _궤적_계산() -> PackedVector2Array:
 		질의.collide_with_areas = false
 		질의.exclude = 제외
 		var 결과 := 공간.intersect_ray(질의)
+		# [2026-10-10] 칠할 수 있는 통과형 오브젝트(레이어 16 Area · `명중`) — 지형보다 먼저 닿으면 거기서 멈춘다
+		var 질의2 := PhysicsRayQueryParameters2D.create(위치, 다음, 16)
+		질의2.collide_with_areas = true
+		질의2.collide_with_bodies = false
+		var 결과2 := 공간.intersect_ray(질의2)
+		if 결과2 and (결과2.get("collider") as Object).has_method("명중") \
+				and (not 결과 or 위치.distance_to(결과2["position"]) < 위치.distance_to(결과["position"])):
+			결과 = 결과2
 		if 결과:
 			점들.append(결과["position"])     # 탄착점까지만 — 지형 뒤로는 안 그린다
 			_궤적_닿음 = true

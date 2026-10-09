@@ -36,10 +36,18 @@ const 거미_자세 := ["대기", "걸음A", "걸음B", "웅크림", "엮기", "
 const 시트정보 := preload("res://scripts/effects/잉크_시트정보.gd")
 const C := 32.0
 
-@export_range(2.0, 20.0, 0.5) var 깨어남_칸: float = 8.0
+## [2026-10-10] 8 → 6칸: 거미방(19)에서 줄 앞에 서기만 해도 깨어나 막다른 창살 앞까지 쫓겨 죽는 일이 잦았다(도형님 10-10).
+@export_range(2.0, 20.0, 0.5) var 깨어남_칸: float = 6.0
 @export_range(4.0, 30.0, 0.5) var 포기_칸: float = 14.0
 @export_range(0.3, 1.0, 0.01) var 속도_배: float = 0.68      ## 플레이어 달리기(390) 대비
 @export_range(1.0, 4.0, 0.25) var 덮침_칸: float = 2.0
+## [2026-10-10] 덮치기 전 웅크림(예고) 시간 — 0.3초는 보고 피하기에 짧았다.
+@export_range(0.2, 1.0, 0.05) var 덮침_예고: float = 0.45
+## [2026-10-10] 영역(둥지에서 칸) — 이보다 멀리는 쫓지 않고 **영역 끝에서 멈춰 노려본다**(대치). 0 = 끝없이(예전).
+##   왜: 거미가 방 끝까지 쫓아와 '피할 곳이 없다' → 영역 밖은 안전지대가 되고, 영역 끝은 '꾀어 둘 자리' 가 된다.
+##   거미방 C: 둥지 157 · 영역 10 → 끝 = 147 = 반딧불3 세 번째 자리 바로 아래 →
+##   거미를 영역 끝까지 꾀어 놓고 기다리면 반딧불이 내려앉아 빛이 켜지는 순간 거미가 탄다(퍼즐이 읽힌다).
+@export_range(0.0, 40.0, 0.5) var 영역_칸: float = 10.0
 @export_range(1.0, 20.0, 0.5) var 다시_태어남: float = 6.0
 ## 처음 바라보는 쪽(+1 오른쪽 · −1 왼쪽). 그림 원본은 오른쪽을 본다.
 @export_enum("왼쪽:-1", "오른쪽:1") var 방향: int = -1
@@ -183,11 +191,13 @@ func _physics_process(delta: float) -> void:
 				방향 = 1 if dx > 0 else -1
 				if absf(dx) < 덮침_칸 * C and absf(p.global_position.y - global_position.y) < 80.0:
 					_상태(상태.웅크림)
+				elif _영역_밖으로(방향):
+					_걷기(0.0, delta)          # [2026-10-10] 영역 끝 — 더 쫓지 않고 그 자리에서 노려본다(대치)
 				else:
 					_걷기(방향 * 390.0 * 속도_배, delta)
 		상태.웅크림:
 			velocity.x = 0.0
-			if _t >= 0.3:
+			if _t >= 덮침_예고:
 				_상태(상태.덮침)
 				velocity = Vector2(방향 * 560.0, -260.0)
 		상태.덮침:
@@ -202,7 +212,7 @@ func _physics_process(delta: float) -> void:
 			else:
 				방향 = 1 if dx2 > 0 else -1
 				_걷기(방향 * 390.0 * 속도_배 * 0.6, delta)
-				if p and 거리 < 깨어남_칸 * C * 0.75 and _플레이어_살아있나(p):
+				if p and 거리 < 깨어남_칸 * C * 0.75 and _플레이어_살아있나(p) and _영역_안(p.global_position.x):
 					_상태(상태.추적)
 		상태.탐:
 			velocity = Vector2.ZERO
@@ -218,6 +228,19 @@ func _physics_process(delta: float) -> void:
 
 
 var _예외됨 := false
+
+
+## [2026-10-10] 이 x 가 영역(둥지 ± 영역_칸) 안인가. 영역_칸 0 = 어디든 안.
+func _영역_안(x: float) -> bool:
+	return 영역_칸 <= 0.0 or absf(x - _둥지.x) <= 영역_칸 * C
+
+
+## [2026-10-10] 이 쪽으로 한 걸음 더 가면 영역을 벗어나는가(둥지 쪽으로 돌아오는 걸음은 막지 않는다).
+func _영역_밖으로(쪽: int) -> bool:
+	if 영역_칸 <= 0.0:
+		return false
+	var 다음 := global_position.x + 쪽 * 8.0 - _둥지.x
+	return absf(다음) > 영역_칸 * C and signf(다음) == float(쪽)
 
 
 ## [2026-10-09] 줄 치는 중에도 플레이어가 깨어남 거리 안 · 어둠에 들어오면 쫓는다(잠복의 깨어남과 같은 조건).

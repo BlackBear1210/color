@@ -259,7 +259,8 @@ func 시험18() -> void:
 	await wait(30)
 	check(String(g.call("상태_이름")) == "잠복", "멀리 촛불 빛 안에 있으면 잠복 그대로")
 	# 둥지 가까이(빛 밖)로 → 깨어나 쫓아온다
-	놓기(g.global_position + Vector2(-200, -4))
+	# [2026-10-10] 깨어남 8 → 6칸(192px)으로 줄어 200px 은 이제 '먼 곳' — 5칸(160px)에서 본다
+	놓기(g.global_position + Vector2(-160, -4))
 	await wait(50)
 	check(String(g.call("상태_이름")) in ["추적", "웅크림", "덮침"], "가까이 가면 0.5초 뒤 깨어나 쫓아온다(%s)" % g.call("상태_이름"))
 	await shot("18_1_그을음_추적")

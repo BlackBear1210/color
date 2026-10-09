@@ -313,6 +313,13 @@ func _바닥_찾기(위: Vector2) -> Vector2:
 
 func run() -> void:
 	게임진행.기록_허용 = 0
+	# [10-10] 도형님이 실제로 플레이해 주운 조각·연 문(진행.cfg)이 시험을 흐리지 않게 — 시험 스테이지 열쇠 기록을
+	#   **메모리에서만** 지운다(기록_허용 0 이라 파일엔 안 쓴다). 14 를 깬 뒤 돌렸더니 "조각 없음 · 문 열림" 으로 실패했다.
+	var cfg: ConfigFile = 게임진행._설정()
+	for 이름 in ["쳅터1_04_복도_B", "쳅터1_08_복도_D", "쳅터1_11_거실", "쳅터1_14_굴뚝"]:
+		for k in ["#왼쪽", "#오른쪽", "#문"]:
+			if cfg.has_section_key("열쇠", 폴더 + 이름 + ".tscn" + k):
+				cfg.erase_section_key("열쇠", 폴더 + 이름 + ".tscn" + k)
 	root.size = Vector2i(1920, 1080)
 	var 고른 := OS.get_cmdline_user_args()
 	if 고른.is_empty() or 고른.has("열쇠"):
