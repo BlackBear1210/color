@@ -197,6 +197,9 @@ static func 면추가(data: Dictionary, poly: PackedVector2Array, own: PackedVec
 	if clip:
 		parts = 가림(parts, others)
 		parts = 가림(parts, data["corner_cuts"])
+	# 돌 지형도 같은 투영을 공유하되, 수면 아래 마감은 기존처럼 숨긴다. 목재는 빈 목록이다.
+	var submerged: Array[PackedVector2Array] = data["submerged"]
+	parts = 가림(parts, submerged)
 	if not contacts.is_empty():
 		var cuts: Array[float] = []
 		for c in contacts:
@@ -245,20 +248,30 @@ static func _옆이웃(점: Vector2, others: Array[PackedVector2Array]) -> bool:
 	return false
 
 
-static func 생성(points: PackedVector2Array, others: Array[PackedVector2Array], origin: Vector2 = Vector2.ZERO) -> ArrayMesh:
+static func 생성(points: PackedVector2Array, others: Array[PackedVector2Array], origin: Vector2 = Vector2.ZERO, options: Dictionary = {}) -> ArrayMesh:
 	var p := 정리(points)
 	var mesh := ArrayMesh.new()
 	if p.size() < 3:
 		return mesh
 	# Dictionary 안의 Array를 쓴 뒤 마지막에 PackedArray로 변환한다(값 복사로 정점이 유실되는 것 방지).
-	var data := {"vertices": [], "uvs": [], "indices": [], "colors": [], "origin": origin, "corner_cuts": 모서리절단(p,others)}
+	# 기본 호출은 목재 그대로다. 하수도는 기하만 공유하고 돌 폭·침수·면 표시를 따로 준다.
+	# 빈 Array도 명시적으로 타입을 붙여 Godot의 typed Array 인수 검사를 통과시킨다.
+	var submerged: Array[PackedVector2Array] = []
+	if options.has("submerged"):
+		submerged.assign(options["submerged"])
+	var data := {"vertices": [], "uvs": [], "indices": [], "colors": [], "origin": origin, "corner_cuts": 모서리절단(p,others), "submerged": submerged}
 	# 왼 단면은 18px 폭의 독립된 면, 오른쪽은 3px 모서리선. 상판 그림을 돌려 쓰지 않는다.
 	for i in p.size():
+		if not options.get("side", true):
+			break
 		var a := p[i]
 		var b := p[(i+1)%p.size()]
 		var t := (b-a).normalized()
 		var n := Vector2(t.y,-t.x)
 		var kind := 6 if n.y > 0.65 else (4 if n.x < 0.0 else 7)
+		# 하수도에는 기존에 없던 밑면 띠를 추가하지 않는다.
+		if kind == 6 and not options.get("bottom", true):
+			continue
 		if n.y < -0.001 or (absf(n.x) < 0.90 and n.y < 0.65):
 			continue
 		for interval in 노출(a,b,others):
@@ -274,6 +287,8 @@ static func 생성(points: PackedVector2Array, others: Array[PackedVector2Array]
 		var a := p[i]
 		var b := p[(i+1)%p.size()]
 		# 수평인 발판만 덮는다. 세로벽·모따기·깨진 단면에는 상판을 생성하지 않는다.
+		if not options.get("top", true):
+			break
 		if b.x-a.x < 12.0 or absf(b.y-a.y) > 0.01:
 			continue
 		var left_end := (a-p[(i-1+p.size())%p.size()]).cross(b-a) > 0.01
@@ -318,7 +333,8 @@ static func 생성(points: PackedVector2Array, others: Array[PackedVector2Array]
 			var 이음_r := 투영폭 if (not right_end) and interval.y > 0.9999 and _옆이웃(b+Vector2(0.5,0.5),others) and shift >= 투영폭 else 0.0
 			ri += 이음_r
 			var run_l := l.x - 이음_l
-			var run_n := maxi(1, roundi((r.x-l.x-ri+이음_l)/64.0))
+			# 돌은 기존 갓돌 크기(약 47px)를 유지한다. 목재 판자 폭을 돌에 복사하지 않는다.
+			var run_n := maxi(1, roundi((r.x-l.x-ri+이음_l)/float(options.get("tile_width", 64.0))))
 			var run_w := (r.x-l.x-ri+이음_l)/float(run_n)
 			# 22px 윗면 + 8px 앞 단면. 볼록 끝은 사다리꼴 상판과 작은 나무 단면으로 닫는다.
 			if li > 0.0:

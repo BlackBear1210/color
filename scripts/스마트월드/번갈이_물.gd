@@ -19,6 +19,9 @@ extends Node2D
 ## 처음에 켜져 있는 물.
 @export var 물_A: NodePath
 ## 처음에 꺼져 있는 물. `주기` 초 뒤에 A 와 자리를 바꾼다.
+## ★[2026-10-09 · 2-6] 비워 두면 **깜빡이** — 물_A 하나만 `주기` 마다 켰다 껐다 한다.
+##   왜: 2-6 도면 "흰물_3 — 2 초 동안 켜지고 2 초 동안 꺼지는 것을 반복". 짝 물이 없는 같은 타이머 일이라
+##   스크립트를 새로 만들지 않고 여기에 붙였다(꺼진 물이 아무것도 안 남기는 길도 그대로 같다).
 @export var 물_B: NodePath
 ## 한 물이 켜져 있는 시간(초).
 @export_range(0.5, 30.0, 0.1) var 주기: float = 3.0
@@ -30,8 +33,8 @@ var _a_켜짐 := true
 
 func _ready() -> void:
 	_a = get_node_or_null(물_A)
-	_b = get_node_or_null(물_B)
-	if _a == null or _b == null:
+	_b = get_node_or_null(물_B) if not 물_B.is_empty() else null
+	if _a == null or (_b == null and not 물_B.is_empty()):
 		push_warning("번갈이_물 %s: 물_A/물_B 를 못 찾았다 — 아무것도 안 한다" % name)
 		return
 	# 저장된 값과 상관없이 시작 상태를 확정한다(둘 다 켜져 있으면 두 색이 겹쳐 누구든 죽는다).
@@ -52,6 +55,9 @@ func _바꾸기() -> void:
 
 ## 끄는 쪽을 먼저 끈다 — 같은 프레임에 둘 다 켜진 순간이 없게.
 func _반영() -> void:
+	if _b == null:
+		_a.set("켜짐", _a_켜짐)          # 깜빡이(물_B 없음) — A 만 켰다 껐다
+		return
 	if _a_켜짐:
 		_b.set("켜짐", false)
 		_a.set("켜짐", true)
@@ -62,4 +68,6 @@ func _반영() -> void:
 
 ## 검사 도구용 — 지금 켜진 물.
 func 켜진_물() -> Node:
+	if _b == null:
+		return _a if _a_켜짐 else null
 	return _a if _a_켜짐 else _b

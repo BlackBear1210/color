@@ -15,6 +15,22 @@ class_name 압력버튼
 
 # 호퍼와 같은 주철 부품을 분리해서 상판만 눌리고 고정 프레임은 움직이지 않게 한다.
 const 주철_부품 = preload("res://assets/textures/obstacles/switch/cast_iron_v1/parts.png")
+const 원근_그림 = preload("res://scripts/스마트월드/발판_원근그림.gd")
+const 원근_매립 = preload("res://scripts/스마트월드/발판_매립마감.gd")
+
+## 하수도 지형과 같은 윗면/단면을 선택한다. 저장값이 없는 기존 스테이지는 이전 외관을 유지한다.
+@export var 챕터1_원근: bool = false:
+	set(value):
+		챕터1_원근 = value
+		_원근_그림준비 = false
+		queue_redraw()
+		if value and is_node_ready():
+			_원근마감_설치()
+
+func 발_그림_깊이() -> float:
+	# 8px 솟은 상판과 발 그림을 같이 내린다. 누르는 동안 발이 판 속에 잠기거나 떠 보이는 차이를 줄인다.
+	# 실제 몸/충돌은 그대로여서 상자를 밀어 넣을 때 새 턱에 걸리지 않는다.
+	return 7.0 - 원근_그림.상판_올림(_눌림_표현) if 챕터1_원근 else 0.0
 
 @export_group("버튼 모양")
 @export_range(48.0, 320.0) var 폭: float = 96.0:
@@ -65,6 +81,15 @@ const 주철_부품 = preload("res://assets/textures/obstacles/switch/cast_iron_
 ##   왜: 2-5 도면 "발판_1 이 홀드가 되면 맨 아래 검은지형_1 부터 _5 까지 하나씩 튀어나와 큰 계단을 이룬다".
 ##   꺼질 때는 거꾸로(지연이 큰 것부터) 들어간다 — 맨 위 계단이 먼저 들어가야 아래 계단이 위 계단을 뚫고 지나가 보이지 않는다.
 @export var 대상_지연들: Array[float] = []
+## ★[2026-10-09 Claude · 2-7] 대상마다 "꺼진 뒤 몇 초 있다가 들어가기 시작하나". 비워 두면 위의 거꾸로 순서(예전 동작).
+##   왜: 2-7 도면 "발판_2 를 쭉 홀드할 수가 없는 상태 … 검은지형 다시 벽으로 들어가는 순서는 _1 부터 들어감".
+##   플레이어가 발판에서 내려 계단을 오르는 동안 **아래 계단부터** 차례로 들어가야 오르는 사람을 뒤쫓는 긴장이 생긴다.
+##   계단은 서로 다른 높이 띠에서 옆으로만 움직이므로 아래부터 들어가도 서로 겹쳐 보이지 않는다.
+@export var 대상_꺼짐_지연들: Array[float] = []
+## ★[2026-10-09 Claude · 2-7] 대상이 벽 속(숨는 자리)에 다 들어가 있으면 감춘다. −1 = 안 감춤(예전) · 0 = 시작 자리가 벽 속 · 1 = 나간 자리가 벽 속.
+##   왜: Codex 원근 지형(챕터1_원근)은 본체가 비쳐 보여서, 벽 속에 넣어 둔 계단의 윗면 덮개가 벽 위에 그대로 그려졌다
+##   (2-7 실화면 · z −1 그릇이어도 보인다). 다 들어간 동안만 숨기므로 나오고 들어가는 움직임은 그대로 보인다.
+@export_range(-1, 1) var 숨는_자리: int = -1
 
 var _감지: Area2D
 var _대상_노드들: Array[Node2D] = []
@@ -72,6 +97,9 @@ var _대상_시작위치들: Array[Vector2] = []
 var _기억된_눌림 := false
 var _활성 := false
 var _눌림_표현 := 0.0
+# 편집 중 스크립트 재연결 뒤에는 _ready가 다시 오지 않아 그림이 비어 있을 수 있다.
+var _편집_그림서명: int = 0
+var _원근_그림준비 := false
 ## 대상마다 지금 "나가 있어야 하나" — `대상_지연들` 이 있을 때만 활성과 달라진다.
 var _대상_켜짐: Array[bool] = []
 ## 활성이 마지막으로 바뀐 뒤 흐른 시간(초). 지연 판정에 쓴다.
@@ -81,12 +109,46 @@ var _전환_경과 := 0.0
 func _ready() -> void:
 	_재구성()
 	_대상_연결_갱신()
+	if 챕터1_원근:
+		_원근마감_설치()
 	if Engine.is_editor_hint():
 		return
 	set_physics_process(true)
 
 
+func _원근마감_설치() -> void:
+	if has_node("_원근_매립마감"):
+		return
+	# 생성 보조 노드는 저장하지 않는다. 기존 씬의 owner를 건드리지 않아 재로드 중복을 막는다.
+	var trim := Node2D.new()
+	trim.name = "_원근_매립마감"
+	trim.set_script(원근_매립)
+	add_child(trim)
+
+
+func _process(_delta: float) -> void:
+	if not Engine.is_editor_hint():
+		return
+	# 속성이 바뀌거나 오류 수정 후 스크립트가 다시 붙은 첫 순간에만 편집기 그림을 복구한다.
+	# 매 프레임 재그리면 2D 작업창이 느려지므로 같은 모양은 그대로 둔다.
+	var signature := hash([폭, 높이, 감지_높이, 챕터1_원근])
+	if signature == _편집_그림서명:
+		return
+	_편집_그림서명 = signature
+	_재구성()
+	if 챕터1_원근:
+		_원근마감_설치()
+
+
+func 원근_그림_준비됨() -> bool:
+	# 발판 그림이 그려진 뒤에만 돌 마감을 걷어내 빈자리만 남는 순서를 막는다.
+	return 챕터1_원근 and _원근_그림준비
+
+
 func _physics_process(delta: float) -> void:
+	# @tool도 물리 처리가 호출되므로 편집기에서는 연결된 지형을 이동하거나 숨기지 않는다.
+	if Engine.is_editor_hint():
+		return
 	var 지금_눌림 := _누를_수_있는_몸이_올라섰나()
 	if 지금_눌림:
 		_기억된_눌림 = true
@@ -128,8 +190,13 @@ func _대상_연결_갱신() -> void:
 
 ## i 번째 대상이 지금 나가 있어야 하나. 지연이 없으면 활성 그대로다(예전 동작).
 func _대상_나감(i: int) -> bool:
-	if 대상_지연들.is_empty():
+	if 대상_지연들.is_empty() and 대상_꺼짐_지연들.is_empty():
 		return _활성
+	# 꺼짐 지연을 따로 준 대상은 그 값만 본다(켜짐 쪽은 아래 예전 규칙 그대로).
+	if not _활성 and i < 대상_꺼짐_지연들.size():
+		if _전환_경과 >= 대상_꺼짐_지연들[i]:
+			_대상_켜짐[i] = false
+		return _대상_켜짐[i]
 	var 지연 := 대상_지연들[i] if i < 대상_지연들.size() else 0.0
 	var 최대 := 0.0
 	for v in 대상_지연들:
@@ -155,6 +222,12 @@ func _대상_이동(delta: float) -> void:
 		var 새위치 := 대상.position.move_toward(목표, 이동속도 * delta)
 		if 새위치 != 대상.position:
 			대상.position = 새위치
+		if 숨는_자리 >= 0:
+			# 숨는 자리(벽 속)에 다 들어가 있으면 감춘다 — 값이 바뀔 때만 대입한다.
+			var 숨을곳 := _대상_시작위치들[i] + (이동량 if 숨는_자리 == 1 else Vector2.ZERO)
+			var 보임 := 대상.position != 숨을곳
+			if 대상.visible != 보임:
+				대상.visible = 보임
 
 
 func _누를_수_있는_몸이_올라섰나() -> bool:
@@ -247,8 +320,15 @@ func _편집기_주인_지정(노드: Node) -> void:
 
 
 func _draw() -> void:
+	# [2026-10-10 병합] 쳅터1 바닥 철판(생김새 1 · Claude 10-09)과 원근 그림(챕터1_원근 · 팀 10-10)은 서로 다른 버튼이 쓴다 — 둘 다 둔다.
 	if 생김새 == 1:
 		_쳅터1_철판_그리기()
+		return
+	_원근_그림준비 = false
+	if 챕터1_원근:
+		# 면별 평면 원본을 투영해 대칭 원근을 제거하고, 상판만 누르므로 고정 프레임과 돌 접합은 남는다.
+		원근_그림.압력_그리기(self, 폭, 높이, _눌림_표현, _활성)
+		_원근_그림준비 = true
 		return
 	# 충돌/감지는 보존하고 최대 3px의 시각적 스트로크만 아래로 눌러 기존 점프 거리를 유지한다.
 	var 눌림 := _눌림_표현 * minf(3.0, 높이 * 0.125)

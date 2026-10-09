@@ -5,6 +5,27 @@ const 자연면_셰이더 = preload("res://shaders/sewer_natural_platform.gdshad
 const 선반_셰이더 = preload("res://shaders/sewer_ledge_v03.gdshader")
 const 상면_그림 = preload("res://assets/textures/smartshape/sewer_ledge_v03/black/fill.png")
 const 마감_생성기 = preload("res://scripts/스마트월드/하수도_마감메시.gd")
+const 원근_생성기 = preload("res://scripts/스마트월드/하수도_원근마감.gd")
+## 2-1~2-5와 신규 제작용. 돌 재질을 유지하며 챕터1처럼 윗면/왼 옆면을 같은 방향으로 투영한다.
+## 기본은 꺼서 이번 요청 밖 스테이지의 외관을 바꾸지 않는다.
+@export var 챕터1_원근: bool = false:
+	set(value):
+		if 챕터1_원근 == value:
+			return
+		챕터1_원근 = value
+		set_as_dirty()
+		_마감_요청()
+
+func 발_그림_깊이() -> float:
+	# 실제 몸/충돌은 움직이지 않고 발 그림만 22px 윗면의 가운데에 맞춘다.
+	return 7.0 if 챕터1_원근 and 땅지형 and not 석조선반 and 윗면표시 else 0.0
+
+func _build_fill_mesh(points: PackedVector2Array, s_mat: SS2D_Material_Shape, mesh_buffer: Array[SS2D_Mesh], buffer_idx: int) -> int:
+	if 챕터1_원근 and 땅지형 and not 석조선반 and 윗면표시:
+		# 본체 모서리도 덮개와 같은 사선으로 잘라 네모 앞면이 윗면 밖으로 튀어나오지 않게 한다.
+		# 충돌/편집 점은 그대로 두며 그림용 복사본만 쓴다.
+		points = 원근_생성기.투영.깎은_윤곽(원근_생성기.윤곽(points), 원근_생성기.이웃(self, points))
+	return super._build_fill_mesh(points, s_mat, mesh_buffer, buffer_idx)
 ## [2026-09-30] 보낸이를 싣는다 — 받는 쪽이 경계를 보고 자기와 닿을 때만 재계산한다.
 signal 마감_배치변경(보낸이: Node2D)
 var _마지막_변환 := Transform2D()
@@ -93,6 +114,14 @@ var _접합_서명: int = 0
 var _마감_노드: Array[MeshInstance2D] = []
 var _관찰대상: Array[Node2D] = []
 var 마감_생성횟수: int = 0
+
+func bake_collision() -> void:
+	super.bake_collision()
+	# 공중 돌 지형은 격자와 달리 아래·옆에서도 막혀야 한다.
+	# 씬에 남은 단방향 설정도 SS2D 최초 굽기와 점 편집 때마다 해제한다.
+	var 폴리 := get_collision_polygon_node()
+	if 폴리 != null:
+		폴리.one_way_collision = false
 
 func _ready() -> void:
 	super._ready()
@@ -236,7 +265,7 @@ func _접합_갱신() -> void:
 		for point in world_polygon:
 			local_polygon.append(to_local(point))
 		submerged.append(local_polygon)
-	var signature := hash([points, others, submerged, global_transform, 윗면표시, 옆면마감, shape_material.get_instance_id(),
+	var signature := hash([points, others, submerged, global_transform, 챕터1_원근, 윗면표시, 옆면마감, shape_material.get_instance_id(),
 		shape_material.fill_texture_scale, shape_material.fill_texture_offset,
 		shape_material.fill_texture_absolute_position, shape_material.fill_texture_angle_offset,
 		shape_material.fill_texture_absolute_rotation, shape_material.fill_textures])
@@ -247,7 +276,12 @@ func _접합_갱신() -> void:
 		_셰이더들.erase(part.material)
 		remove_child(part)
 		part.queue_free()
-	_마감_노드 = 마감_생성기.생성(self, points, others, 윗면표시, 옆면마감, submerged)
+	if 챕터1_원근:
+		_마감_노드 = 원근_생성기.생성(self, points, others, 윗면표시, 옆면마감, submerged)
+		# 이웃/침수 변경으로 덮개가 바뀌면 본체 절단도 다시 굽는다. 같은 서명에서는 반복하지 않는다.
+		set_as_dirty()
+	else:
+		_마감_노드 = 마감_생성기.생성(self, points, others, 윗면표시, 옆면마감, submerged)
 	for part in _마감_노드:
 		# 생성물은 저장하지 않는다. owner를 변경하지 않아 씬 재로드 중복을 막는다.
 		add_child(part)

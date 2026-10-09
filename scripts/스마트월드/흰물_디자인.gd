@@ -111,9 +111,9 @@ const STREAM_V3_SPLASH_PATH = "res://assets/textures/obstacles/liquid/stream_v3/
 		자연물 = value
 		_갱신()
 const NATURAL_SHADER_PATH = "res://shaders/water_stream_natural.gdshader"
-## 힉스필드가 만든 흰색 유체 영상의 실제 48프레임(12fps·4초 반복).
-## 손으로 움직인 물살 리그 대신 낙수 본체·착수부를 함께 읽고, 바닥 물막은 물줄기 폭에 맞춘다.
-const IMPACT_A_PATH = "res://assets/textures/obstacles/liquid/white_fluid_higgsfield_v1/white_fluid_f48_256x512_g8x6_fps12_loop.png"
+## 힉스필드가 만든 착수 영상의 실제 96프레임(24fps·4초 반복).
+## 본체는 색 판정을 읽기 쉬운 밝은 흰 재질로 따로 그린다. 착수부를 길게 늘려 천처럼 보이는 문제를 막는다.
+const IMPACT_A_PATH = "res://assets/textures/obstacles/liquid/white_fluid_higgsfield_v2/white_impact_f96_512x288_g8x12_fps24.png"
 var _착수_프레임: Texture2D
 var _착수_프레임_경로: String = ""
 
@@ -251,7 +251,7 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 	# 흰색은 생성 영상으로, 혼합된 검정/회색은 기존 재질로 그린다. 바닥 번짐 폭은 모두 본체에 맞춘다.
 	if 자연물 and sewer:
 		var 착수_프레임 := _착수_프레임_읽기()
-		# 생성 영상의 물줄기 본체와 착수부를 통째로 재생한다. 검정/회색 및 다른 스테이지는 기존 그림이다.
+		# 생성 착수부와 흰색 본체 재질을 분리한다. 흰색은 충분히 불투명하게 보여 회색과 구분되게 한다.
 		if 착수_프레임 != null:
 			mat.set_shader_parameter("impact_frames", 착수_프레임)
 		var 힉스필드_적용 := 착수_프레임 != null and stage.scene_file_path in [
@@ -290,8 +290,8 @@ func _draw() -> void:
 	if _v3_쓰나():
 		# v3 착수 프레임은 기준 폭에서 좌우 192px, 배율만큼 커진다(바닥 물막·잔물결이 잘리지 않게).
 		margin = maxf(margin, 192.0 * _v3_착수_배율() - 크기.x * 0.5 + 4.0)
-		# 새 유체 시트는 본체 폭에 맞춰 배율이 달라진다. 넓은 물막의 공중 방울도 자르지 않게 한다.
+		# 착수부의 공중 물방울은 고정 크기로 그린다. 본체가 넓어져도 시트 전체를 확대하지 않는다.
 		if 자연물 and 물색 == 1 and _착수_프레임 != null:
-			margin = maxf(margin, 크기.x * 2.0)
+			margin = maxf(margin, 110.0)
 	var bottom := 32.0 if 형태 in [0, 1, 2] else 0.0
 	draw_rect(Rect2(Vector2(-크기.x * 0.5 - margin, -back), 크기 + Vector2(margin * 2.0, back + bottom)), Color.WHITE)

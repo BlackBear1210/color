@@ -41,17 +41,35 @@ def component(mask):
     return Image.fromarray(result)
 
 
-def prepare(source):
+def prepare(source, idle_only=False):
     OUT.mkdir(parents=True, exist_ok=True)
     manifest = {'frame_size': SIZE, 'foot_y': 567, 'sources': {}, 'frames': {}}
+    # 대기 시트만 추가할 때 승인된 다른 모션과 원본 기록은 그대로 보존한다.
+    if idle_only:
+        manifest = json.loads((OUT / 'manifest.json').read_text(encoding='utf-8'))
     for color in ('black', 'white'):
-        for motion in ('walk', 'jump', 'shoot', 'push', 'death'):
+        for motion in (('idle',) if idle_only else ('walk', 'jump', 'shoot', 'push', 'death')):
             name = f'{color}_{motion}'
             filename = f'{name}_projectile.png' if motion == 'shoot' else f'{name}.png'
             path = source / filename
+            if idle_only and not path.exists():
+                continue
             original = Image.open(path).convert('RGBA')
+            # 대체 생성 도구의 정사각 출력도 같은 4×4 격자로 정리한다. 원본 파일은 보존한다.
+            if idle_only and original.width == original.height and original.size != (2048, 2048):
+                original = original.resize((2048, 2048), Image.Resampling.LANCZOS)
             if original.size != (2048, 2048):
                 raise ValueError(f'{filename}: 2048×2048 시트 필요')
+            idle_scale = None
+            if motion == 'idle':
+                # 생성 모델별 크기 차이를 걷기 시트의 중간 키에 맞추되 호흡의 크기 변화는 남긴다.
+                heights = []
+                for j in range(16):
+                    part = np.array(original.crop((j % 4 * 512, j // 4 * 512, j % 4 * 512 + 512, j // 4 * 512 + 512)))
+                    bounds = component(part[:, :, 3] >= 200).getbbox()
+                    heights.append(bounds[3] - bounds[1])
+                target_height = np.median([(e['source_bbox'][3] - e['source_bbox'][1]) * e['scale'] for e in manifest['frames'][f'{color}_walk']])
+                idle_scale = float(target_height / np.median(heights))
             manifest['sources'][name] = {'file': filename, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
             atlas = Image.new('RGBA', (SIZE * 4, SIZE * 4))
             entries = []
@@ -69,6 +87,8 @@ def prepare(source):
                 factor = 500 / (y1 - y0) if motion == 'death' else 500 / 470
                 # 죽음은 넓게 눕는 포즈이므로 확대하지 않고 같은 배율을 유지한다.
                 factor = min(factor, 500 / 470)
+                if idle_scale is not None:
+                    factor = idle_scale
                 center = (x0 + x1) / 2
                 offset = (round(320 - center * factor), round(567 - y1 * factor))
                 resized = frame.resize((round(512 * factor), round(512 * factor)), Image.Resampling.LANCZOS)
@@ -108,7 +128,7 @@ def prepare(source):
             atlas.save(OUT / f'{name}.png', optimize=True)
             entries and manifest['frames'].update({name: entries})
     (OUT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
-    write_frames()
+    write_frames(manifest)
     # 작은 사각 좌표만 전달해 잔량 표시 때문에 대형 텍스처 10장을 더 올리지 않는다.
     rects = {}
     for name, entries in manifest['frames'].items():
@@ -126,25 +146,31 @@ def prepare(source):
                                 (i // 4 * SIZE + y + tank[3] * scale) / (SIZE * 4)])
     muzzles = {color: [entry['muzzle'] for entry in manifest['frames'][f'{color}_shoot']] for color in ('black', 'white')}
     (OUT / 'tank_rects.gd').write_text('extends RefCounted\n# 원본 프레임별 탱크·총구 좌표: 내보내기에도 포함되도록 코드 리소스로 저장한다.\nconst FRAMES = ' + json.dumps(rects) + '\nconst MUZZLES = ' + json.dumps(muzzles) + '\n', encoding='utf-8')
-    print(f'10장 정리 완료: {OUT}')
+    print(f"{len(manifest['sources'])}장 정리 완료: {OUT}")
 
 
-def write_frames():
+def write_frames(manifest):
     lines = ['[gd_resource type="SpriteFrames" format=3]', '']
-    motions = ('walk', 'jump', 'shoot', 'push', 'death')
+    motions = ('walk', 'jump', 'shoot', 'push', 'death', 'idle')
     for color in ('black', 'white'):
         for motion in motions:
             key = f'{color}_{motion}'
+            if key not in manifest['frames']:
+                continue
             lines.append(f'[ext_resource type="Texture2D" path="res://assets/characters/paint_head_a/{key}.png" id="{key}"]')
     for color in ('black', 'white'):
         for motion in motions:
+            if f'{color}_{motion}' not in manifest['frames']:
+                continue
             for i in range(16):
                 key = f'{color}_{motion}'
                 lines += ['', f'[sub_resource type="AtlasTexture" id="{key}_{i}"]', f'atlas = ExtResource("{key}")', f'region = Rect2({i % 4 * SIZE}, {i // 4 * SIZE}, {SIZE}, {SIZE})']
     animations = []
     for color in ('black', 'white'):
+        # 생성된 색만 실제 대기 루프를 쓰고 아직 없는 색은 기존 정지 자세를 유지한다.
+        has_idle = f'{color}_idle' in manifest['frames']
         for motion, source, frames, fps, loop in (
-            ('idle', 'walk', [0], 1, True), ('walk', 'walk', list(range(16)), 20, True),
+            ('idle', 'idle' if has_idle else 'walk', list(range(16)) if has_idle else [0], 8 if has_idle else 1, True), ('walk', 'walk', list(range(16)), 20, True),
             ('jump', 'jump', list(range(2, 8)), 18, False), ('fall', 'jump', list(range(8, 12)), 14, False),
             ('land', 'jump', list(range(12, 16)), 22, False), ('shoot', 'shoot', list(range(4, 16)), 45, False),
             ('push', 'push', list(range(16)), 20, True), ('death', 'death', list(range(16)), 20, False)):
@@ -155,4 +181,4 @@ def write_frames():
 
 
 if __name__ == '__main__':
-    prepare(Path(sys.argv[1]))
+    prepare(Path(sys.argv[1]), '--idle-only' in sys.argv[2:])
