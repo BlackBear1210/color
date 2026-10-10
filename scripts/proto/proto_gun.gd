@@ -125,6 +125,8 @@ func _shoot() -> void:
 	get_tree().current_scene.add_child(bullet)
 	bullet.global_position = global_position   # 발사 원점 = 입
 	fired.emit()
+	# 프로토 스테이지도 탄약 검사 이후 실제로 생성된 총알에만 발사음을 붙인다.
+	preload("res://scripts/페인트_효과음.gd").재생(self, "플레이어_페인트발사", global_position, -10.0)
 
 
 ## ProtoGun은 회전하지 않으므로 왼쪽 조준 때도 오른쪽 입에 고정되면 뒤통수에서 쏜다.

@@ -17,6 +17,14 @@ extends Area2D
 ## ============================================================================
 class_name 열쇠
 
+const 새그림_폴더 := "res://assets/textures/props/신규기믹_v02/게임용/열쇠/"
+static var _새그림들: Dictionary = {}
+## 하수도 기존 문 연결·획득 규칙을 유지하고 새 원형 열쇠의 그림만 선택한다.
+@export_enum("기존", "완성", "검정 조각", "흰 조각") var 새_디자인: int = 0:
+	set(v):
+		새_디자인 = v
+		queue_redraw()
+
 @export var 문들: Array[NodePath] = []
 ## 문을 어디로 미나(px). 예: Vector2(0, -304) = 위로 304 (천장 바위 속으로).
 @export var 문_이동량: Vector2 = Vector2(0, -304)
@@ -131,6 +139,9 @@ func 문_열림() -> bool:
 
 
 func _draw() -> void:
+	# 새 조각 시스템으로 스크립트를 교체하면 색별 획득·진행 저장·문 규칙까지 바뀌므로 그림만 연결한다.
+	if 새_디자인 != 0 and _새_열쇠_그리기():
+		return
 	# 검은 열쇠 — 어두운 하수도에서 읽히게 흰 테두리를 두른다. 원점 = 열쇠 가운데.
 	var 몸 := Color(0.06, 0.06, 0.07)
 	var 테 := Color(0.86, 0.87, 0.88)
@@ -149,3 +160,25 @@ func _draw() -> void:
 	draw_polyline(선, 몸, 5.0)
 	draw_rect(Rect2(15.5, 0, 2, 11), 몸)
 	draw_rect(Rect2(22.5, 0, 2, 8), 몸)
+
+
+func _새_열쇠_그리기() -> bool:
+	var 이름들: Array[String] = ["왼쪽", "오른쪽"] if 새_디자인 == 1 else (["왼쪽"] if 새_디자인 == 2 else ["오른쪽"])
+	# 두 조각은 같은 크기·기준점의 캔버스다. 원본 위치 그대로 겹쳐야 지그재그 이음이 맞물린다.
+	for 이름 in 이름들:
+		if not _새그림들.has(이름):
+			var 경로 := 새그림_폴더 + 이름 + ".png"
+			var 그림: Texture2D = null
+			if ResourceLoader.exists(경로, "Texture2D"):
+				그림 = load(경로) as Texture2D
+			elif FileAccess.file_exists(경로):
+				# 에디터 임포트 전에도 새 PNG를 표시한다. 원본 이미지는 수정하지 않는다.
+				그림 = ImageTexture.create_from_image(Image.load_from_file(경로))
+			if 그림 == null:
+				return false
+			_새그림들[이름] = 그림
+	for 이름 in 이름들:
+		var 그림 := _새그림들[이름] as Texture2D
+		var 크기 := 그림.get_size() * 0.5
+		draw_texture_rect(그림, Rect2(-크기 * 0.5, 크기), false)
+	return true

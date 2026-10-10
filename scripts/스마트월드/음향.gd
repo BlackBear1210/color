@@ -121,11 +121,14 @@ func 현재_챕터() -> int:
 # ── 내부 ────────────────────────────────────────────────────────────────────
 
 func _ready() -> void:
+	# 합성 드론과 실제 음원을 같은 음악 버스로 보내 효과음 볼륨과 분리한다.
+	preload("res://scripts/스마트월드/게임설정.gd").소리_준비()
 	var 생성 := AudioStreamGenerator.new()
 	생성.mix_rate = 샘플레이트
 	생성.buffer_length = 버퍼길이
 
 	_플레이어 = AudioStreamPlayer.new()
+	_플레이어.bus = "BGM"
 	_플레이어.name = "드론"
 	_플레이어.stream = 생성
 	_플레이어.volume_db = 기본_음량db
@@ -135,6 +138,7 @@ func _ready() -> void:
 	_재생 = _플레이어.get_stream_playback() as AudioStreamGeneratorPlayback
 
 	_음원플레이어 = AudioStreamPlayer.new()
+	_음원플레이어.bus = "BGM"
 	_음원플레이어.name = "음원"
 	_음원플레이어.volume_db = 기본_음량db
 	_음원플레이어.process_mode = Node.PROCESS_MODE_ALWAYS

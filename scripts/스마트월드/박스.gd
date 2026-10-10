@@ -11,6 +11,9 @@ extends CharacterBody2D
 
 const 중력: float = 1200.0
 const 최대_낙하속도: float = 1500.0
+const 접지그림 = preload("res://scripts/스마트월드/이동물체_접지그림.gd")
+var _그림보정 := 0.0
+var _바닥깊이 := 0.0
 var _리스폰_월드좌표: Vector2 = Vector2.ZERO
 
 
@@ -35,6 +38,12 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y = 0.0
 	move_and_slide()
+	# 새로 누적하지 않고 현재 바닥에서 다시 구한다. 밀거나 떨어진 후에도 접지 중앙이 지형을 따른다.
+	var 접지 := 접지그림.보정(self, 0.0, _바닥깊이)
+	_바닥깊이 = 접지.y
+	if not is_equal_approx(_그림보정, 접지.x):
+		_그림보정 = 접지.x
+		queue_redraw()
 	if global_position.y > 낙사_y:
 		global_position = _리스폰_월드좌표
 		velocity = Vector2.ZERO
@@ -96,6 +105,8 @@ static var _주철_그림: Texture2D = null
 
 
 func _draw() -> void:
+	# 앞면은 중앙에서 (+9,+11), 뒷면은 (-9,-11)이다. 밑면과 윗면의 중심이 모두 충돌선+지형 깊이에 온다.
+	draw_set_transform(Vector2(9, _그림보정 + 11))
 	if 생김새 == 1:
 		_나무상자_그리기()
 		return
@@ -103,12 +114,30 @@ func _draw() -> void:
 		if _주철_그림 == null and ResourceLoader.exists(주철_그림_경로):
 			_주철_그림 = load(주철_그림_경로) as Texture2D
 		if _주철_그림 != null:
+			_주철_원근면()
 			draw_texture(_주철_그림, -그림_원점)
 			return
 	draw_rect(Rect2(-48, -96, 96, 96), Color(0.28, 0.27, 0.25), true)
 	draw_rect(Rect2(-48, -96, 96, 96), Color(0.68, 0.66, 0.60), false, 3.0)
 	draw_line(Vector2(-42, -88), Vector2(42, -8), Color(0.14, 0.13, 0.12), 4.0)
 	draw_line(Vector2(42, -88), Vector2(-42, -8), Color(0.14, 0.13, 0.12), 4.0)
+
+func 발_그림_깊이() -> float:
+	# 이 상자 위에 선 플레이어도 상판의 중앙을 밟도록 그림 깊이를 전달한다.
+	return _그림보정
+
+func _주철_원근면() -> void:
+	# 기존 정면의 금속 가장자리만 UV로 빌린다. 상자 전체를 기울이지 않고 앞면·상판·옆면을 분리한다.
+	var back := Vector2(-18, -22)
+	var tl := Vector2(-48, -96)
+	var tr := Vector2(48, -96)
+	var bl := Vector2(-48, 0)
+	var size := _주철_그림.get_size()
+	var top_uv := PackedVector2Array([Vector2(4, 16) / size, Vector2(100, 16) / size, Vector2(100, 4) / size, Vector2(4, 4) / size])
+	var side_uv := PackedVector2Array([Vector2(16, 4) / size, Vector2(16, 100) / size, Vector2(4, 100) / size, Vector2(4, 4) / size])
+	draw_polygon(PackedVector2Array([tl, tr, tr + back, tl + back]), PackedColorArray([Color(1.12, 1.12, 1.12), Color(1.12, 1.12, 1.12), Color.WHITE, Color.WHITE]), top_uv, _주철_그림)
+	draw_polygon(PackedVector2Array([tl, bl, bl + back, tl + back]), PackedColorArray([Color(0.7, 0.7, 0.7), Color(0.6, 0.6, 0.6), Color(0.55, 0.55, 0.55), Color(0.65, 0.65, 0.65)]), side_uv, _주철_그림)
+	draw_polyline(PackedVector2Array([bl + back, tl + back, tr + back, tr]), Color(0.10, 0.10, 0.10), 1.0, true)
 
 
 ## [2026-10-09] 쳅터1 나무 상자 — 96×96 · 원점 = 바닥 가운데. 목재 데크·가구 상자더미와 같은 어두운 회색 판자.
@@ -117,25 +146,28 @@ func _나무상자_그리기() -> void:
 	var 나무밝 := Color(0.30, 0.29, 0.28)
 	var 줄 := Color(0.07, 0.07, 0.07)
 	var 쇠 := Color(0.36, 0.35, 0.33)
-	var 앞 := Rect2(-48, -90, 96, 90)
+	# 정면 윗변도 실제 96px 충돌 높이에 맞춰 상자 위 발과 상판 중앙의 높이를 일치시킨다.
+	var 앞 := Rect2(-48, -96, 96, 96)
 	draw_rect(Rect2(-45, -2, 96, 5), Color(0, 0, 0, 0.4))                  # 바닥 그늘
 	draw_rect(앞, 나무)
 	# 판자 줄(가로 4장) · 결
 	for i in 4:
-		var y := -90.0 + 22.5 * i
+		var y := -96.0 + 24.0 * i
 		draw_line(Vector2(-48, y), Vector2(48, y), 줄, 2.0)
 		draw_line(Vector2(-44, y + 9), Vector2(-10, y + 10), 나무밝.darkened(0.35), 1.0)
 		draw_line(Vector2(6, y + 14), Vector2(42, y + 13), 나무밝.darkened(0.35), 1.0)
 	# 테두리 틀 + X 버팀목
 	draw_rect(앞, 줄, false, 5.0)
-	draw_line(Vector2(-42, -84), Vector2(42, -6), 나무밝, 9.0)
-	draw_line(Vector2(-42, -84), Vector2(42, -6), 줄, 2.0)
-	draw_line(Vector2(42, -84), Vector2(-42, -6), 나무밝, 9.0)
-	draw_line(Vector2(42, -84), Vector2(-42, -6), 줄, 2.0)
+	draw_line(Vector2(-42, -90), Vector2(42, -6), 나무밝, 9.0)
+	draw_line(Vector2(-42, -90), Vector2(42, -6), 줄, 2.0)
+	draw_line(Vector2(42, -90), Vector2(-42, -6), 나무밝, 9.0)
+	draw_line(Vector2(42, -90), Vector2(-42, -6), 줄, 2.0)
 	# 2.5D 윗면(위 왼쪽 빛)
-	draw_colored_polygon(PackedVector2Array([Vector2(-48, -90), Vector2(48, -90), Vector2(44, -96), Vector2(-44, -96)]), 나무밝)
-	draw_line(Vector2(-44, -96), Vector2(44, -96), 나무밝.lightened(0.2), 1.5)
+	# 목재도 동일한 (-18,-22) 사선을 쓴다. 좌우 대칭 사다리꼴은 지형의 한 방향 투영과 맞지 않았다.
+	draw_colored_polygon(PackedVector2Array([Vector2(-48, -96), Vector2(48, -96), Vector2(30, -118), Vector2(-66, -118)]), 나무밝)
+	draw_colored_polygon(PackedVector2Array([Vector2(-48, -96), Vector2(-48, 0), Vector2(-66, -22), Vector2(-66, -118)]), 나무.darkened(0.3))
+	draw_line(Vector2(-66, -118), Vector2(30, -118), 나무밝.lightened(0.2), 1.5)
 	# 모서리 쇠 덧댐 + 못
-	for c in [Vector2(-48, -90), Vector2(40, -90), Vector2(-48, -8), Vector2(40, -8)]:
+	for c in [Vector2(-48, -96), Vector2(40, -96), Vector2(-48, -8), Vector2(40, -8)]:
 		draw_rect(Rect2(c, Vector2(8, 8)), 쇠)
 		draw_circle(c + Vector2(4, 4), 1.4, 줄)

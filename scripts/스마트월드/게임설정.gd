@@ -90,6 +90,62 @@ static func 밝기_저장(값: float) -> void:
 const 로비_설정파일 := "user://settings.cfg"
 const 로비_구역 := "video"
 
+# [2026-10-10 Codex] 로비·인게임이 같은 키를 사용해야 씬 이동 뒤 소리 크기가 되돌아가지 않는다.
+# 기존 master 설정을 보존하고 음악·효과음은 Master로 보내 전체 볼륨도 함께 곱해지게 한다.
+const 소리_항목 := {"master": "전체 소리", "bgm": "배경음악", "sfx": "효과음"}
+const 소리_버스 := {"master": "Master", "bgm": "BGM", "sfx": "SFX"}
+static var _소리_준비됨 := false
+
+
+static func 소리_불러오기() -> Dictionary:
+	var cfg := ConfigFile.new()
+	cfg.load(로비_설정파일)
+	var 값 := {}
+	for 키 in 소리_항목:
+		값[키] = clampf(float(cfg.get_value("audio", 키, 1.0)), 0.0, 1.0)
+	return 값
+
+
+static func 소리_적용(키: String, 값: float) -> void:
+	if not 소리_버스.has(키):
+		return
+	var 버스 := AudioServer.get_bus_index(String(소리_버스[키]))
+	if 버스 < 0:
+		return
+	var 크기 := clampf(값, 0.0, 1.0)
+	AudioServer.set_bus_volume_db(버스, linear_to_db(maxf(크기, 0.0001)))
+	# 0%는 낮은 소리를 남기지 않고 음소거하며, 다시 올리면 반드시 음소거를 해제한다.
+	AudioServer.set_bus_mute(버스, 크기 <= 0.0)
+
+
+static func 소리_준비() -> void:
+	if _소리_준비됨:
+		return
+	for 키 in 소리_버스:
+		var 이름 := String(소리_버스[키])
+		if AudioServer.get_bus_index(이름) < 0:
+			AudioServer.add_bus()
+			var 번호 := AudioServer.bus_count - 1
+			AudioServer.set_bus_name(번호, 이름)
+			AudioServer.set_bus_send(번호, "Master")
+	var 값 := 소리_불러오기()
+	for 키 in 값:
+		소리_적용(키, 값[키])
+	_소리_준비됨 = true
+
+
+static func 소리_저장(키: String, 값: float) -> Error:
+	if not 소리_항목.has(키):
+		return ERR_INVALID_PARAMETER
+	소리_준비()
+	소리_적용(키, 값)
+	var cfg := ConfigFile.new()
+	var 읽기 := cfg.load(로비_설정파일)
+	if 읽기 != OK and 읽기 != ERR_FILE_NOT_FOUND:
+		return 읽기
+	cfg.set_value("audio", 키, clampf(값, 0.0, 1.0))
+	return cfg.save(로비_설정파일)
+
 
 static func 전체화면_불러오기() -> bool:
 	var cfg := ConfigFile.new()

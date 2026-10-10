@@ -73,7 +73,15 @@ func _ready() -> void:
 	$UILayer/Menu/SettingsButton.pressed.connect(func() -> void: settings_panel.visible = true)
 	$UILayer/Menu/QuitButton.pressed.connect(func() -> void: get_tree().quit())
 	$UILayer/SettingsPanel/Panel/VBox/BackButton.pressed.connect(_on_settings_back)
-	volume_slider.value_changed.connect(_on_volume_changed)
+	# F12 개발 로비도 같은 세 볼륨 행을 사용해 새 로비 설정을 덮어쓰지 않는다.
+	$UILayer/SettingsPanel/Panel/VBox/VolumeRow.hide()
+	var 소리칸 := VBoxContainer.new()
+	var 설정칸 := $UILayer/SettingsPanel/Panel/VBox
+	설정칸.add_child(소리칸)
+	설정칸.move_child(소리칸, 2)
+	preload("res://scripts/ui/소리설정.gd").만들기(소리칸)
+	$UILayer/SettingsPanel/Panel.offset_top = -280
+	$UILayer/SettingsPanel/Panel.offset_bottom = 280
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
 	# ★[2026-07-24 도형] 신규 챕터(스테이지 1~5, 페인트 v3) 입구를 로비에 추가.
 	#   lobby.tscn 파일은 건드리지 않고, 기존 시작 버튼을 복제해 런타임에 끼워 넣는다
@@ -380,9 +388,7 @@ func _on_settings_back() -> void:
 	_save_settings()
 
 func _on_volume_changed(v: float) -> void:
-	var bus := AudioServer.get_bus_index("Master")
-	AudioServer.set_bus_volume_db(bus, linear_to_db(clampf(v, 0.0001, 1.0)))
-	AudioServer.set_bus_mute(bus, v <= 0.001)
+	preload("res://scripts/스마트월드/게임설정.gd").소리_저장("master", v)
 
 func _on_fullscreen_toggled(on: bool) -> void:
 	DisplayServer.window_set_mode(
@@ -400,6 +406,7 @@ func _load_settings() -> void:
 
 func _save_settings() -> void:
 	var cfg := ConfigFile.new()
-	cfg.set_value("audio", "master", volume_slider.value)
+	# 파일을 먼저 읽어야 공통 UI가 저장한 음악·효과음·전체 볼륨이 사라지지 않는다.
+	cfg.load(SETTINGS_PATH)
 	cfg.set_value("video", "fullscreen", fullscreen_check.button_pressed)
 	cfg.save(SETTINGS_PATH)

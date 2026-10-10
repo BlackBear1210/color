@@ -11,7 +11,7 @@ extends Area2D
 ##   · 레이어 32(유체와 같은 층) + `반대색인가()` → 월드.gd `_조각이_반대색에_닿았나` 가 몸 조각마다 묻는다.
 ##     그래서 흰 몬스터는 검은 몸을 죽이고 흰 몸은 통과시킨다(색이 같으면 안전 — 게임의 핵심 규칙 그대로).
 ##   · `hazard`(색 무관 즉사)에는 넣지 않는다 — 넣으면 "칠하면 안전" 같은 색 규칙이 흐려진다(월드.gd §0 주석).
-##   · 총알은 그냥 지나간다(`총알_막나` = false). 몹을 칠하는 규칙은 아직 없다.
+##   · 플레이어 페인트 한 발로 몸색을 바꾼다. 접촉 판정·사격색도 같은 `색`을 사용하며 회수/리스폰은 원래 색으로 돌아간다.
 ##
 ## 성능: 그림은 AnimatedSprite2D 가 그린다(_draw 없음). 매 물리 틱 position 만 바꾼다 — 지형이 아니라 마감 재계산이 없다.
 ##   ★로드: `monster_frames.tres` 를 통째로 preload 하면 시트 6 장(걷기·차오르기·발사 × 검·흰)을 다 읽어
@@ -47,6 +47,9 @@ static var _프레임_캐시: Dictionary = {}
 
 var _방향 := 1.0
 var _그림: AnimatedSprite2D
+var _걸음_남음 := 0.2
+# 회수와 리스폰이 현재 칠한 색이 아니라 씬에서 지정한 원래 몸색을 복원해야 한다.
+var _원래색: int = ColorDefs.WHITE
 
 
 func _ready() -> void:
@@ -54,7 +57,9 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		set_physics_process(false)
 		return
+	_원래색 = 색
 	add_to_group("몬스터")
+	add_to_group("칠할수있음")
 	collision_layer = 32
 	collision_mask = 0
 	monitorable = true
@@ -111,6 +116,7 @@ static func _걷기_프레임(몸색: int) -> SpriteFrames:
 
 
 func _physics_process(delta: float) -> void:
+	var 이전_x := position.x
 	var x := position.x + _방향 * 속도 * delta
 	if x >= 오른끝:
 		x = 오른끝
@@ -119,6 +125,16 @@ func _physics_process(delta: float) -> void:
 		x = 왼끝
 		_방향 = 1.0
 	position.x = x
+	# 걷기 시트는 8프레임/10fps이므로 반 주기(0.4초)마다 한 발씩 낸다.
+	# 이동 없는 순찰 범위에서는 애니메이션만 돌아도 발소리를 내지 않는다.
+	if absf(position.x - 이전_x) > 0.001:
+		_걸음_남음 -= delta
+		if _걸음_남음 <= 0.0:
+			_걸음_남음 = 0.4
+			preload("res://scripts/페인트_효과음.gd").재생(self, "몬스터_걷기",
+				global_position, -16.0, randf_range(0.96, 1.04))
+	else:
+		_걸음_남음 = 0.2
 	if _그림:
 		_그림.flip_h = _방향 < 0.0      # 원본은 오른쪽을 본다
 
@@ -128,6 +144,39 @@ func 반대색인가(플레이어색: int) -> bool:
 	return 색규칙.위험한가(색, 플레이어색)
 
 
-## 총알은 지나간다(몹을 칠하는 규칙은 아직 없다 · 총알.gd 는 이 답만 따른다).
+## 유체 차단 계약은 그대로 두고, 총알 쪽의 몬스터 명중 경로에서 플레이어 페인트만 받는다.
 func 총알_막나(_총알색: int) -> bool:
 	return false
+
+
+## 몸 그림·접촉 위험·다음 사격이 같은 색을 보게 기존 색 setter 한 곳에서 갱신한다.
+func 명중(페인트색: int, _월드좌표: Vector2) -> String:
+	if 페인트색 != ColorDefs.BLACK and 페인트색 != ColorDefs.WHITE:
+		return "blocked"
+	if 페인트색 == 색:
+		return "wasted"
+	색 = 페인트색
+	return "painted"
+
+
+## 몬스터끼리 쏘는 탄과 분사기 탄이 몸색을 덮어 전투 규칙을 바꾸지 않게 한다.
+func 장치_명중(_페인트색: int, _월드좌표: Vector2) -> String:
+	return "blocked"
+
+
+func 현재색() -> int:
+	return 색
+
+
+func 칠_가능_미리보기(페인트색: int) -> bool:
+	return (페인트색 == ColorDefs.BLACK or 페인트색 == ColorDefs.WHITE) and 페인트색 != 색
+
+
+## 페인트코어의 E 회수와 리스폰 정산을 그대로 이용해 소비한 탄약이 사라지지 않게 한다.
+func 되돌리기() -> bool:
+	색 = _원래색
+	return true
+
+
+func 강제_초기화() -> void:
+	색 = _원래색

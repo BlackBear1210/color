@@ -29,6 +29,8 @@ func 연결(모듈레이트: CanvasModulate, 기준색: Color) -> void:
 func _ready() -> void:
 	layer = 120
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	# F6로 스테이지만 열어도 로비에서 저장한 소리 크기를 적용한다.
+	설정.소리_준비()
 	_UI_만들기()
 	visible = false
 
@@ -209,6 +211,8 @@ func _스테이지_이동(경로: String) -> void:
 	Input.mouse_mode = _이전_마우스
 
 func _설정_만들기() -> void:
+	# 일시정지 중에도 조작되는 공통 세 볼륨 행을 설정 목록의 맨 위에 둔다.
+	preload("res://scripts/ui/소리설정.gd").만들기(_목록)
 	var 밝기글 := Label.new()
 	밝기글.text = "밝기  %d%%" % roundi(_밝기 * 100)
 	_목록.add_child(밝기글)

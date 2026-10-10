@@ -2,6 +2,7 @@ extends Node2D
 ## 마우스 방향 조준 + 좌클릭 발사.
 
 const BULLET_SCENE: PackedScene = preload("res://scenes/bullet/Bullet.tscn")
+const 효과음 := preload("res://scripts/페인트_효과음.gd")
 
 # 탄약 없는 구 테스트 씬도 실제 총알 생성 이후에만 새 모션을 재생한다.
 signal fired
@@ -53,3 +54,5 @@ func _shoot() -> void:
 	get_tree().current_scene.add_child(bullet)
 	bullet.global_position = 시작
 	fired.emit()
+	# 옛 테스트 씬도 총알 생성이 끝난 실제 발사에만 같은 효과음을 쓴다.
+	효과음.재생(self, "플레이어_페인트발사", 시작, -10.0)

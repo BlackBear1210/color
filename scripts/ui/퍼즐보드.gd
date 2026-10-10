@@ -36,6 +36,8 @@ var _캔버스: Control
 var _그림: Dictionary = {}
 var _글꼴: Font
 var _다음쳅터: Button
+var _지도내용: Control
+var _지도스크롤: ScrollContainer
 
 
 func _ready() -> void:
@@ -55,12 +57,13 @@ func _ready() -> void:
 	_그림["제목_붓"] = load("res://assets/ui/로비/타이틀/메뉴_붓_물감_v02.png")
 	_글꼴 = load(글꼴_경로) if ResourceLoader.exists(글꼴_경로) else ThemeDB.fallback_font
 	_바탕()
+	_지도영역_만들기()
 	_실판 = Control.new()
 	_실판.name = "실"
 	_실판.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_실판.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_실판.draw.connect(_실_그리기)
-	_캔버스.add_child(_실판)
+	_지도내용.add_child(_실판)
 	_조각_놓기()
 	_핀판 = Control.new()
 	_핀판.name = "핀"
@@ -69,12 +72,34 @@ func _ready() -> void:
 	_핀판.draw.connect(func():
 		for b in _조각들.values():
 			_핀(_핀_자리(b)))
-	_캔버스.add_child(_핀판)
+	_지도내용.add_child(_핀판)
 	_머리와_정보()
 	call_deferred("_돌아옴_연출")
 
 
 # ── 바탕 · 제목 · 정보 ────────────────────────────────────────────────────────
+func _지도영역_만들기() -> void:
+	_지도내용 = _캔버스
+	if 게임진행.선택_쳅터 != 2:
+		return
+	# 챕터2만 사진 지도 본문을 스크롤한다. 제목·뒤로·선택 정보는 항상 화면에 남는다.
+	_지도스크롤 = ScrollContainer.new()
+	_지도스크롤.name = "하수도지도스크롤"
+	_지도스크롤.position = Vector2(40, 145)
+	_지도스크롤.size = Vector2(1840, 775)
+	_지도스크롤.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	_지도스크롤.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_지도스크롤.follow_focus = true
+	_캔버스.add_child(_지도스크롤)
+	_지도내용 = Control.new()
+	_지도내용.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var 폭 := 1840.0
+	for c in 보드표.조각들():
+		폭 = maxf(폭, float(c["위치"][0]) * 1920.0 + 100.0)
+	_지도내용.custom_minimum_size = Vector2(폭, 750)
+	_지도스크롤.add_child(_지도내용)
+
+
 func _바탕() -> void:
 	if _그림["배경"]:
 		var t := TextureRect.new()
@@ -175,7 +200,9 @@ func _조각_놓기() -> void:
 		조각.size = 조각_크기
 		var 위치: Array = c["위치"]
 		조각.position = Vector2(float(위치[0]), float(위치[1])) * 화면 - 조각_크기 * 0.5
-		_캔버스.add_child(조각)
+		if _지도스크롤:
+			조각.position -= _지도스크롤.position
+		_지도내용.add_child(조각)
 		var 상태값: int = 2 if 깸 else (1 if 열 else 0)
 		var 새로 := 깸 and not 게임진행.보드_본("본_" + 보드표.씬경로(c))
 		조각.call("준비", c, 상태값, 보드표.사진(c) if 깸 else null, 보드표.기록(c) if 깸 else {})
@@ -187,18 +214,17 @@ func _조각_놓기() -> void:
 		조각.focus_entered.connect(_고름.bind(c))
 		조각.mouse_entered.connect(func(): 조각.grab_focus())
 		_조각들[String(c["id"])] = 조각
-	# 다음 쳅터(하수도) 마디 — 15 를 깨면 열린다
+	# 챕터 선택 입구 — 개별 맵의 클리어 해금과 챕터 지도 열기는 별개다.
 	var 다음: Dictionary = 보드표.표().get("다음_쳅터", {})
 	if not 다음.is_empty():
 		var 위치2: Array = 다음["위치"]
 		_다음쳅터 = _글_버튼(String(다음["이름"]) + "  ▸", Vector2(float(위치2[0]), float(위치2[1])) * 화면 - Vector2(40, 20))
 		_다음쳅터.add_theme_font_size_override("font_size", 28)
-		var 열림2 := false
-		for id in 다음.get("앞", []):
-			열림2 = 열림2 or 보드표.클리어함(보드표.찾기(String(id)))
-		_다음쳅터.disabled = not 열림2
+		# [2026-10-10 Codex] 집 15번 미클리어 때문에 버튼이 먹통처럼 보였다. 로비와 동일하게 하수도 지도는 바로 연다.
+		_다음쳅터.disabled = not ResourceLoader.exists(게임진행.지도_씬, "PackedScene")
 		_다음쳅터.pressed.connect(func():
 			게임진행.보드_모드 = false
+			게임진행.선택_쳅터 = 2
 			StageTransition.change_scene(self, 게임진행.지도_씬))
 	_이웃_잇기()
 	var 처음: Control = _조각들.get(게임진행.마지막_칸 if 게임진행.선택_쳅터 == 2 else 게임진행.마지막_조각, null)
@@ -235,6 +261,11 @@ func _이웃_잇기() -> void:
 
 
 func _고름(c: Dictionary) -> void:
+	# 방향키와 클리어 채움 연출로 고른 새 열도 스크롤 안에 보이게 한다.
+	if _지도스크롤:
+		var 카드: Control = _조각들.get(String(c["id"]), null)
+		if 카드:
+			_지도스크롤.ensure_control_visible(카드)
 	var 깸 := 보드표.클리어함(c)
 	var 열 := 보드표.열림(c)
 	_정보.text = "%s · %s" % [String(c["id"]), String(c["이름"])]

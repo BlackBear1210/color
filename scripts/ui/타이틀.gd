@@ -20,6 +20,7 @@ const 글꼴_경로 := "res://assets/fonts/NotoSerifKR/NotoSerifKR.ttf"
 const 설정_경로 := "user://settings.cfg"
 const 개발_로비 := "res://scenes/lobby/lobby.tscn"
 const 보드표 := preload("res://scripts/진행/쳅터1_보드표.gd")
+const 설정 := preload("res://scripts/스마트월드/게임설정.gd")
 
 var _캔버스: Control
 var _그림: Dictionary = {}
@@ -199,7 +200,8 @@ func _메뉴_만들기() -> void:
 	if 있음:
 		_항목("이어하기", _이어하기)
 	_항목("처음부터", _처음부터)
-	_항목("스테이지", func(): _가기(게임진행.보드_씬))
+	# 집을 다 깨기 전에도 제작 중인 하수도 지도를 찾을 수 있도록 챕터 입구를 명시한다.
+	_항목("스테이지", _쳅터_선택)
 	_항목("설정", _설정_창)
 	_항목("나가기", func(): get_tree().quit())
 	var 첫: Button = _메뉴.get_child(0)
@@ -318,6 +320,8 @@ func _처음부터() -> void:
 func _새로_시작() -> void:
 	_이동중 = true
 	게임진행.보드_모드 = false
+	# 하수도 지도를 마지막으로 열었어도 '처음부터'는 집에서 시작해야 한다.
+	게임진행.선택_쳅터 = 1
 	var 첫: Dictionary = 보드표.조각들()[0]
 	load("res://scripts/쳅터1/전경전환.gd").씬으로_들어가기(self, 보드표.씬경로(첫), String(첫.get("입구", "")))
 
@@ -390,22 +394,26 @@ func _확인_창(물음: String, 예: Callable) -> void:
 	아니.grab_focus()
 
 
+func _쳅터_선택() -> void:
+	var 안 := _창_틀(Vector2(720, 390))
+	_글(안, "스테이지 선택", 34)
+	_창_버튼(안, "챕터 1 · 집", _지도_열기.bind(1)).grab_focus()
+	_창_버튼(안, "챕터 2 · 하수도", _지도_열기.bind(2))
+	_창_버튼(안, "뒤로", _창_닫기)
+
+
+func _지도_열기(번호: int) -> void:
+	게임진행.선택_쳅터 = 번호
+	_가기(게임진행.지도_씬 if 번호 == 2 else 게임진행.보드_씬)
+
+
 func _설정_창() -> void:
-	var 안 := _창_틀(Vector2(720, 380))
+	var 안 := _창_틀(Vector2(720, 550))
 	_글(안, "설정", 34)
 	var cfg := ConfigFile.new()
 	cfg.load(설정_경로)
-	_글(안, "소리 크기", 22)
-	var 소리 := HSlider.new()
-	소리.min_value = 0.0
-	소리.max_value = 1.0
-	소리.step = 0.05
-	소리.value = float(cfg.get_value("audio", "master", 1.0))
-	소리.custom_minimum_size = Vector2(500, 30)
-	소리.value_changed.connect(func(v: float):
-		AudioServer.set_bus_volume_db(0, linear_to_db(maxf(v, 0.0001)))
-		_설정_저장("audio", "master", v))
-	안.add_child(소리)
+	# 인게임과 같은 저장·음소거 동작을 사용하고 각각의 퍼센트를 표시한다.
+	preload("res://scripts/ui/소리설정.gd").만들기(안, _글꼴)
 	var 전체 := CheckBox.new()
 	전체.text = "전체 화면"
 	전체.add_theme_font_override("font", _글꼴)
@@ -426,10 +434,10 @@ func _설정_저장(구역: String, 키: String, 값: Variant) -> void:
 
 
 func _설정_적용() -> void:
+	설정.소리_준비()
 	var cfg := ConfigFile.new()
 	if cfg.load(설정_경로) != OK:
 		return
-	AudioServer.set_bus_volume_db(0, linear_to_db(maxf(float(cfg.get_value("audio", "master", 1.0)), 0.0001)))
 	if bool(cfg.get_value("video", "fullscreen", false)) and DisplayServer.get_name() != "headless":
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
@@ -447,6 +455,8 @@ func _음악() -> void:
 	if not ResourceLoader.exists(경로):
 		return
 	var p := AudioStreamPlayer.new()
+	# 타이틀 음악도 배경음악 슬라이더를 따라야 한다.
+	p.bus = "BGM"
 	p.stream = load(경로)
 	p.autoplay = true
 	if p.stream is AudioStreamOggVorbis:

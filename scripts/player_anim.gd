@@ -190,11 +190,41 @@ func _화면각_보정(원하는_화면각: float) -> float:
 	return atan(tan(a) / k)
 
 
+func _수중가림_갱신() -> void:
+	# 가까운 활성 웅덩이만 전달한다. 가림을 매번 재계산해 퇴수·끄기·리스폰 때 이전 물 마스크가 남지 않는다.
+	var edges := PackedVector4Array()
+	var counts := PackedInt32Array()
+	for pool in get_tree().get_nodes_in_group("웅덩이"):
+		if not pool.get("켜짐") or not pool.has_method("물그림_다각형"):
+			continue
+		var local: Vector2 = pool.to_local(_player.global_position)
+		var size: Vector2 = pool.get("크기")
+		if absf(local.x) > size.x * 0.5 + 120.0 or local.y < -size.y - 120.0 or local.y > 150.0:
+			continue
+		var polygon: PackedVector2Array = pool.call("물그림_다각형")
+		counts.append(polygon.size())
+		for i in polygon.size():
+			var a: Vector2 = pool.to_global(polygon[i])
+			var b: Vector2 = pool.to_global(polygon[(i + 1) % polygon.size()])
+			edges.append(Vector4(a.x, a.y, b.x, b.y))
+		if counts.size() == 4:
+			break
+	var count := counts.size()
+	counts.resize(4)
+	edges.resize(32)
+	for sheet in [self, get_node_or_null("색겹침")]:
+		if sheet != null and sheet.material is ShaderMaterial:
+			sheet.material.set_shader_parameter("water_pool_count", count)
+			sheet.material.set_shader_parameter("water_edge_counts", counts)
+			sheet.material.set_shader_parameter("water_edges", edges)
+
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	if _player == null:
 		return
+	# 투명한 회색 물에서도 수면 아래의 발은 보이지 않아야 한다. 두 색 시트를 같은 물 윤곽으로 자른다.
+	_수중가림_갱신()
 	# 색 접두어 — 어느 시트를 **부모**로 재생할지 고른다.
 	# ★[2026-09-05 STEP 3] `player_color`(대표색) → `선택색()`(자유색) 으로 바꿨다.
 	#

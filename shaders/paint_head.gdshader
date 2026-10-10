@@ -1,4 +1,5 @@
 shader_type canvas_item;
+#include "res://shaders/player_water_clip.gdshaderinc"
 // Preserve the original world-space color split while replacing baked tank fill.
 uniform int split_count = 0;
 uniform vec4 line_1 = vec4(0.0, 0.0, 0.0, 1.0);
@@ -15,6 +16,7 @@ void vertex() {
 }
 
 void fragment() {
+    if (submerged_pixel(world_pos)) { discard; }
     float region_color;
     if (split_count <= 0) {
         region_color = color_table.x;

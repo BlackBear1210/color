@@ -42,7 +42,8 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 	mat.set_shader_parameter("body_frames", read_texture(ASSET_DIR + ("wide_joint_%d_48.png" if 크기.x >= 160.0 else "water_%d_48.png") % 물색))
 	mat.set_shader_parameter("impact_frames", read_texture(IMPACT_A_PATH))
 	var height := 보이는_높이 if 보이는_높이 > 0.0 else 크기.y
-	mat.set_shader_parameter("extent", Vector2(크기.x, minf(height, 크기.y)))
+	# 삼색 프레임은 뒤깊이를 빼지 않으므로 지형 상판 중앙 깊이만 더한다. 물보라도 같은 끝점을 쓴다.
+	mat.set_shader_parameter("extent", Vector2(크기.x, minf(height, 크기.y) + 착수_그림깊이))
 	mat.set_shader_parameter("water_tone", 물색)
 	mat.set_shader_parameter("impact", 착수_물보라)
 	mat.set_shader_parameter("animate", 애니메이션)

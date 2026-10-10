@@ -57,6 +57,9 @@ const 중력: float = 1200.0
 const 최대_낙하속도: float = 1500.0
 const 마찰: float = 900.0
 const 상호작용_거리: float = 100.0
+const 접지그림 = preload("res://scripts/스마트월드/이동물체_접지그림.gd")
+var _그림보정 := 0.0
+var _바닥깊이 := 0.0
 
 var _리스폰_월드좌표: Vector2 = Vector2.ZERO
 ## 0 = 빔 · 1 = 가득. 가득 차면 `물참` 이 켜진다. 물줄기가 도중에 꺼지면 그 높이에서 멈춘다.
@@ -87,6 +90,12 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 	velocity.x = move_toward(velocity.x, 0.0, 마찰 * delta)
 	move_and_slide()
+	# 몸통 충돌 바닥(-6)과 유리 들통 밑테를 같은 상판 중앙에 둔다. 물 그림도 함께 이동한다.
+	var 접지 := 접지그림.보정(self, -6.0, _바닥깊이)
+	_바닥깊이 = 접지.y
+	if not is_equal_approx(_그림보정, 접지.x):
+		_그림보정 = 접지.x
+		queue_redraw()
 	_물_담기_검사(delta)
 	# 구멍에 빠진 양동이가 길을 영구히 막지 않도록, 자기 시작 위치로만 되돌린다.
 	if global_position.y > 낙사_y:
@@ -280,6 +289,8 @@ func _유리_그리기() -> void:
 
 
 func _draw() -> void:
+	# 자식 물감지와 충돌은 그대로 두고, 뒤 유리·내용물·쇠살의 그리기 원점만 같은 만큼 옮긴다.
+	draw_set_transform(Vector2(0, _그림보정))
 	if not 옛_그림:
 		if _유리_그림 == null and ResourceLoader.exists(유리_그림_경로):
 			_유리_그림 = load(유리_그림_경로) as Texture2D
@@ -300,3 +311,7 @@ func _draw() -> void:
 		if 물색 == ColorDefs.GRAY:
 			액체색 = Color(0.48, 0.50, 0.54)
 		draw_rect(Rect2(-39.0, -82.0, 78.0, 17.0), Color(액체색.r, 액체색.g, 액체색.b, 0.88))
+
+func 발_그림_깊이() -> float:
+	# 채운 양동이를 밟을 때도 플레이어 발이 이동한 입구 그림의 중앙을 따르게 한다.
+	return _그림보정

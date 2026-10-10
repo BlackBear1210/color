@@ -20,6 +20,12 @@ func _process(_delta: float) -> void:
 		visible = false
 		return
 	global_position = Vector2(면["point"]) + Vector2(0, float(면.get("그림깊이", 0)))
+	# 잠긴 발을 가린 뒤에도 접지 그림자가 수면 위에 남으면 발처럼 보인다. 같은 물 윤곽에서 숨긴다.
+	for pool in get_tree().get_nodes_in_group("웅덩이"):
+		if pool.get("켜짐") and pool.has_method("물그림_다각형"):
+			if Geometry2D.is_point_in_polygon(pool.to_local(global_position), pool.call("물그림_다각형")):
+				visible = false
+				return
 	global_rotation = 0.0
 	global_scale = Vector2.ONE
 

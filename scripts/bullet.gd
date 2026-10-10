@@ -23,8 +23,13 @@ func _physics_process(delta: float) -> void:
 	position += direction * speed * delta
 
 func _on_body_entered(body: Node2D) -> void:
+	# 한 프레임에 여러 몸체와 닿아도 삭제 예약 이후에는 명중음을 추가하지 않는다.
+	if is_queued_for_deletion():
+		return
 	if body.is_in_group("player"):
 		return
+	# 구형 타일맵 씬도 지형·물체 접촉 위치에서 같은 물감 명중음을 낸다.
+	preload("res://scripts/페인트_효과음.gd").재생(self, "플레이어_페인트명중", global_position, -12.0)
 	if body is TileMapLayer:
 		_paint_color(body as TileMapLayer)
 	# 기존 TileMap 씬도 총구가 아닌 실제 지형 충돌점에서 물감 조각을 낸다.

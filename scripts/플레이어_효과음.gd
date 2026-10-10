@@ -76,7 +76,10 @@ func _ready() -> void:
 
 
 func _새_재생기(이름: String) -> AudioStreamPlayer:
+	# 직접 스테이지를 열어도 발·착지·사망 소리가 저장된 효과음 볼륨을 따른다.
+	preload("res://scripts/스마트월드/게임설정.gd").소리_준비()
 	var p := AudioStreamPlayer.new()
+	p.bus = "SFX"
 	p.name = 이름
 	add_child(p)
 	return p

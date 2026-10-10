@@ -9,6 +9,8 @@ const WHITE_DESIGN = preload("res://scenes/장식/유체/흰물_디자인.tscn")
 var _white_visual: Node2D
 var _white_active: bool = false
 var _바닥_그림높이: float = 0.0
+## 원근 지형은 충돌선보다 상판 중앙이 아래에 있다. 웅덩이 착수와 구분해서 보관한다.
+var _바닥_그림깊이: float = 0.0
 var _수면_검사대기: float = 0.0
 
 func _웅덩이_착수_맞추기(delta: float) -> void:
@@ -23,6 +25,7 @@ func _웅덩이_착수_맞추기(delta: float) -> void:
 	if stage == null or not is_instance_valid(_white_visual):
 		return
 	var height := minf(_바닥_그림높이, 크기.y) if _바닥_그림높이 > 0.0 else 크기.y
+	var depth := _바닥_그림깊이
 	for pool in get_tree().get_nodes_in_group("웅덩이"):
 		if not pool.get("켜짐"):
 			continue
@@ -33,6 +36,10 @@ func _웅덩이_착수_맞추기(delta: float) -> void:
 		var surface := to_local(pool.to_global(Vector2(local.x, -size.y))).y
 		if surface > 0.0 and surface <= height:
 			height = surface
+			# 웅덩이는 아래 바닥 대신 자기 수면의 원근 중앙을 따른다.
+			var pool_depth := float(pool.call("수면_그림깊이")) if pool.has_method("수면_그림깊이") else 0.0
+			depth = to_local(pool.to_global(Vector2(0, pool_depth))).y - to_local(pool.to_global(Vector2.ZERO)).y
+	_white_visual.set("착수_그림깊이", depth)
 	# ★[2026-10-02 실측] 같은 값이어도 넣으면 물 그림이 재질을 통째로 다시 만든다(한 번 1.3ms).
 	#   0.1 초마다 물 8 개가 같은 프레임에 몰려 2-3 에서 스크립트가 10ms 씩 튀었다 → 바뀐 때만 넣는다.
 	if not is_equal_approx(float(_white_visual.get("보이는_높이")), height):
@@ -153,7 +160,8 @@ func _바닥_찾기() -> void:
 	var 질의 := PhysicsPointQueryParameters2D.new()
 	질의.collision_mask = 1
 	질의.collide_with_areas = false
-	var 아래 := 크기.y - 1.0
+	# 끝점이 바닥 충돌선과 정확히 같아도 지형을 찾도록 1px 안쪽에서 시작한다.
+	var 아래 := 크기.y + 1.0
 	# 물줄기 절반 · 240px 넘게 파묻혔으면 뭔가 다른 배치다 — 손대지 않는다.
 	var 한계 := minf(크기.y * 0.5, 240.0)
 	var 파묻힘 := 0.0
@@ -167,10 +175,20 @@ func _바닥_찾기() -> void:
 	# 4px 걸음으로 지나친 만큼 1px 씩 되돌아가 윗면을 정확히 잡는다.
 	while 파묻힘 > 0.0:
 		질의.position = to_global(Vector2(0.0, 아래 - 파묻힘 + 1.0))
-		if not 공간.intersect_point(질의, 1).is_empty():
+		var 접촉 := 공간.intersect_point(질의, 1)
+		if not 접촉.is_empty():
+			# 플레이어 발과 동일한 지형 API로 상판 중앙을 얻는다. 스케일은 물 로컬 좌표로 환산한다.
+			var 면: Node = 접촉[0]["collider"]
+			while 면 != null and not 면.has_method("발_그림_깊이"):
+				면 = 면.get_parent()
+			if 면 is Node2D:
+				var 지형깊이 := float(면.call("발_그림_깊이"))
+				_바닥_그림깊이 = to_local(면.to_global(Vector2(0, 지형깊이))).y - to_local(면.to_global(Vector2.ZERO)).y
 			break
 		파묻힘 -= 1.0
-	_바닥_그림높이 = 크기.y - 파묻힘
+	# 마지막 질의가 닿은 +1px 지점을 사용해야 상판 중앙보다 1px 떠 있지 않는다.
+	_바닥_그림높이 = 아래 - 파묻힘 + 1.0
+	_white_visual.set("착수_그림깊이", _바닥_그림깊이)
 	_white_visual.set("보이는_높이", _바닥_그림높이)
 
 func _새물인가() -> bool:
