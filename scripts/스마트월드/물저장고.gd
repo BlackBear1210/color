@@ -23,6 +23,11 @@ class_name 물저장고
 ## 전체 색칠에 필요한 명중 횟수.
 @export_range(1, 8) var 필요횟수: int = 3
 
+## ★[2026-10-10 Claude · 2-8] 처음 색. -1(기본) = 무색 — 물이 안 흐른다(예전 그대로).
+##   도형님 2-8 도면은 저장소에서 흰물_4 가 **처음부터 흐르고**, 저장소를 칠하면 그 색으로 바뀐다 → 1(흰색)로 시작.
+##   죽어 부활할 때(`되돌리기`)도 이 색으로 돌아간다.
+@export_enum("무색:-1", "검정:0", "흰색:1") var 시작색: int = -1
+
 ## 이 저장고가 색을 공급하는 물줄기. 비워 두면 윗쪽 출구_포트에 닿은 유체를 자동으로 찾는다.
 @export var 공급_유체: NodePath
 
@@ -48,6 +53,7 @@ func _ready() -> void:
 		return
 	add_to_group("칠할수있음")
 	add_to_group("물저장고")
+	_상태색 = 시작색
 	if not 공급_유체.is_empty():
 		_유체 = get_node_or_null(공급_유체) as 유체
 		_수동_공급 = _유체 != null
@@ -153,7 +159,7 @@ func 명중(색: int, _월드좌표: Vector2) -> String:
 func 되돌리기() -> bool:
 	if _상태색 == ColorDefs.GRAY:
 		return false
-	_상태색 = -1
+	_상태색 = 시작색
 	_맞은횟수 = 0
 	_공급_반영()
 	queue_redraw()
@@ -172,34 +178,11 @@ func _공급_반영() -> void:
 
 
 func _draw() -> void:
-	# ── [2026-08-07 도형] 디자이너 그림 슬롯 ────────────────────────────
-	# 자식 `그림`(아트슬롯.gd) 에 텍스처가 꽂혀 있으면 코드 그리기는 쉰다.
-	# 슬롯이 비어 있으면 지금까지처럼 아래 _draw 코드가 그린다 → 회귀 없음.
+	# [2026-10-10 Codex] 기능은 그대로 두고 원근 철제 탱크 그림만 분리해 교체한다.
 	if 아트슬롯.그림_있나(self):
 		return
 
-	var 금속 := Color(0.23, 0.24, 0.27)
-	var 반 := 크기 * 0.5
-	draw_rect(Rect2(-반, 크기), 금속)
-
-	# 내용물 — 칠한 진행도만큼 아래에서 차오른다
-	var 진행 := 1.0 if _상태색 >= 0 else clampf(float(_맞은횟수) / float(maxi(필요횟수, 1)), 0.0, 1.0)
-	var 내용 := Color(0.45, 0.47, 0.50)
-	match (_상태색 if _상태색 >= 0 else _진행색):
-		ColorDefs.BLACK: 내용 = Color(0.09, 0.09, 0.11)
-		ColorDefs.WHITE: 내용 = Color(0.90, 0.92, 0.94)
-		ColorDefs.GRAY:  내용 = Color(0.50, 0.50, 0.51)
-	if _상태색 < 0 and _맞은횟수 == 0:
-		진행 = 0.0
-	if 진행 > 0.0:
-		var h := (크기.y - 14.0) * 진행
-		draw_rect(Rect2(Vector2(-반.x + 7, 반.y - 7 - h), Vector2(크기.x - 14, h)),
-			Color(내용.r, 내용.g, 내용.b, 0.9))
-
-	# 테두리 + 배관 연결구(위쪽)
-	draw_rect(Rect2(-반, 크기), Color(0.45, 0.46, 0.50), false, 3.0)
-	draw_rect(Rect2(Vector2(-16, -반.y - 16), Vector2(32, 18)), 금속)
-	# 눈금 — 저장고처럼 보이게 하는 디테일
-	for i in range(1, 4):
-		var y := -반.y + 크기.y * float(i) / 4.0
-		draw_line(Vector2(-반.x + 6, y), Vector2(-반.x + 22, y), Color(1, 1, 1, 0.14), 2.0)
+	# 편집기에서도 시작색이 보여 실제 게임 초기 상태와 배치 화면이 일치한다.
+	var 표시색 := 시작색 if Engine.is_editor_hint() else _상태색
+	preload("res://scripts/스마트월드/물저장고_원근그림.gd").그리기(
+		self, 크기, 표시색, _진행색, _맞은횟수, 필요횟수)

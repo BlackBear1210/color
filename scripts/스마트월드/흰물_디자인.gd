@@ -3,6 +3,20 @@ extends Node2D
 ## 새 물의 시각 전용 부품. 기존 유체의 충돌을 임의로 덮어쓰지 않는다.
 ## 크기는 노드 scale 대신 이 값으로 바꿔야 물결/물방울의 픽셀 밀도가 유지된다.
 var 웅덩이_전용셰이더: Shader
+## 하수도 원근 상판과 동일한 뒤(-18,-4)·앞(0,18) 투영으로 수면을 채운다.
+var 원근_수면: bool = false:
+	set(value):
+		if 원근_수면 == value:
+			return
+		원근_수면 = value
+		_갱신()
+## 지형이 제공하는 상판 중앙 깊이를 착수 그림에만 더한다. 물리 길이와 출수구는 유지한다.
+var 착수_그림깊이: float = 0.0:
+	set(value):
+		if is_equal_approx(착수_그림깊이, value):
+			return
+		착수_그림깊이 = value
+		_갱신()
 
 const WATER_SHADER = preload("res://shaders/white_water_modular_v2.gdshader")
 const FLOW_TEXTURE = preload("res://assets/textures/obstacles/liquid/white_modular_v2/flow_white.png")
@@ -211,6 +225,7 @@ func _갱신() -> void:
 	mat.set_shader_parameter("pool_right_inset", minf(웅덩이_오른쪽_안쪽폭, 크기.x * 0.75))
 	mat.set_shader_parameter("pool_left_inset", minf(웅덩이_왼쪽_안쪽폭, 크기.x * 0.75 - minf(웅덩이_오른쪽_안쪽폭, 크기.x * 0.75)))
 	mat.set_shader_parameter("pool_tone", 웅덩이_색)
+	mat.set_shader_parameter("projected_pool", 원근_수면)
 	mat.set_shader_parameter("water_tone", 물색)
 	mat.set_shader_parameter("extent", 크기)
 	mat.set_shader_parameter("kind", 형태)
@@ -269,7 +284,9 @@ func _v3_갱신(mat: ShaderMaterial) -> void:
 	mat.set_shader_parameter("impact", 착수_물보라)
 	mat.set_shader_parameter("water_tone", 물색)
 	var 높이 := 보이는_높이 if 보이는_높이 > 0.0 else 크기.y
-	mat.set_shader_parameter("extent", Vector2(크기.x, minf(높이, 크기.y)))
+	# 기존 셰이더의 뒤깊이 보정을 상쇄하여 새 원근 상판에서는 발과 같은 중앙에 닿게 한다.
+	var 착수보정 := 착수_그림깊이 + 수면_뒤깊이 * 0.5 if not is_zero_approx(착수_그림깊이) else 0.0
+	mat.set_shader_parameter("extent", Vector2(크기.x, minf(높이, 크기.y) + 착수보정))
 	mat.set_shader_parameter("kind", 형태)
 	mat.set_shader_parameter("speed", 흐름속도)
 	mat.set_shader_parameter("back_depth", 수면_뒤깊이)
@@ -294,4 +311,9 @@ func _draw() -> void:
 		if 자연물 and 물색 == 1 and _착수_프레임 != null:
 			margin = maxf(margin, 110.0)
 	var bottom := 32.0 if 형태 in [0, 1, 2] else 0.0
+	# 사선 뒤쪽과 앞단면까지 그릴 여백만 확보한다. 물 영역은 셰이더의 실제 윤곽으로 자른다.
+	if 형태 == 3 and 원근_수면:
+		margin = 18.0
+		back = maxf(back, 4.0)
+		bottom = 18.0
 	draw_rect(Rect2(Vector2(-크기.x * 0.5 - margin, -back), 크기 + Vector2(margin * 2.0, back + bottom)), Color.WHITE)

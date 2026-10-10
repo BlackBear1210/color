@@ -292,7 +292,9 @@ func _파편_떨어뜨리기() -> void:
 		s.scale = Vector2.ONE * (폭 / float(tex.get_width()))
 		s.top_level = true
 		s.z_index = 5
-		get_tree().current_scene.add_child(s)
+		# 시험 실행(주행검사)은 씬을 root 에 바로 붙여 current_scene 이 비어 있다 → 그때는 발판의 부모에 단다(2-8 · 10-10).
+		var 담을곳: Node = get_tree().current_scene if get_tree().current_scene != null else get_parent()
+		담을곳.add_child(s)
 		s.global_position = to_global(Vector2(r.position.x + r.size.x * (float(i) + 0.5) / float(개수), r.position.y + minf(r.size.y, 48.0) * 0.5))
 		var 아래 := randf_range(160.0, 260.0)
 		var t := s.create_tween().set_parallel(true)

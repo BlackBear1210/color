@@ -82,14 +82,13 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if not 켜짐:
 		return
-	# 매립 수로의 양쪽 벽과 밑바닥에만 그린다. 수면 위와 판정 공간은 늘리지 않는다.
-	var half := 크기.x * 0.5
-	var inset := minf(오른쪽_안쪽폭, 크기.x * 0.75)
-	var left_inset := minf(왼쪽_안쪽폭, 크기.x * 0.75 - inset)
-	# 왼쪽 벽도 경사를 따라 그린다(2026-10-03 · 사다리꼴 웅덩이).
-	_젖은_띠(Vector2(-half, -크기.y), Vector2(-half + left_inset, 0.0), Vector2.LEFT, 0.0)
-	_젖은_띠(Vector2(half, -크기.y), Vector2(half - inset, 0.0), Vector2.RIGHT, 1.7)
-	_젖은_띠(Vector2(-half + left_inset, 0.0), Vector2(half - inset, 0.0), Vector2.DOWN, 3.1)
+	# 원근 수면의 사선과 앞쪽 바닥에 맞춰 젖은 마감도 동일한 윤곽을 따른다. 위 수면선은 제외한다.
+	var polygon := 물그림_다각형()
+	for i in range(1, polygon.size()):
+		var a := polygon[i]
+		var b := polygon[(i + 1) % polygon.size()]
+		var edge := b - a
+		_젖은_띠(a, b, Vector2(edge.y, -edge.x).normalized(), float(i) * 1.7)
 
 func _젖은_띠(start: Vector2, end: Vector2, outward: Vector2, seed: float) -> void:
 	# 경계로부터 2~6px 안에서만 불규칙하게 번져 직선 테두리나 검은 프레임을 피한다.

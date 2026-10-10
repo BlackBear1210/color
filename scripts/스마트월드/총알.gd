@@ -94,6 +94,9 @@ func _physics_process(delta: float) -> void:
 
 	# ── 1) 통과형 오브젝트(덤불·물·연기) 먼저 확인 ──
 	for 영역 in get_overlapping_areas():
+		# 몬스터는 아래 구간 레이로 지형과 거리순 판정한다. 장치 탄은 자기 몸도 통과한다.
+		if 영역.is_in_group("몬스터"):
+			continue
 		if 영역.has_method("총알_막나"):
 			if 영역.총알_막나(색):
 				_소멸(null, 이전)      # 켜진 반대색 물만 총알을 막는다.
@@ -111,6 +114,12 @@ func _physics_process(delta: float) -> void:
 	var 질의 := PhysicsRayQueryParameters2D.create(이전, 다음, 단단한_레이어)
 	질의.collide_with_areas = false
 	var 결과 := 공간.intersect_ray(질의)
+	# 빠른 플레이어 탄이 움직이는 몬스터를 관통하지 않게 이전→다음 구간을 검사한다.
+	# 같은 틱에 벽도 맞히면 더 가까운 충돌만 선택해 벽 뒤 몬스터를 칠하지 않는다.
+	var 몬스터결과 := _몬스터_충돌(공간, 이전, 다음)
+	if not 몬스터결과.is_empty() and (결과.is_empty() or
+			이전.distance_squared_to(몬스터결과["position"]) < 이전.distance_squared_to(결과["position"])):
+		결과 = 몬스터결과
 	if 결과:
 		var 맞은것: Object = 결과.get("collider")
 		_소멸(_칠할대상_찾기(맞은것), 결과["position"], true, 결과.get("normal", Vector2.ZERO))
@@ -122,6 +131,28 @@ func _physics_process(delta: float) -> void:
 	if _꼬리.size() > 8:
 		_꼬리.remove_at(0)
 	queue_redraw()
+
+
+## 몬스터와 물이 레이어 32를 공유하므로 물 영역은 제외하고 가까운 몬스터만 찾는다.
+## 장치 탄은 몸을 칠하지 않아 발사한 몬스터 안에서 생성돼도 소멸하지 않는다.
+func _몬스터_충돌(공간: PhysicsDirectSpaceState2D, 이전: Vector2, 다음: Vector2) -> Dictionary:
+	if 장치발:
+		return {}
+	var 질의 := PhysicsRayQueryParameters2D.create(이전, 다음, 32)
+	질의.collide_with_areas = true
+	질의.collide_with_bodies = false
+	질의.hit_from_inside = true
+	var 제외: Array[RID] = []
+	while true:
+		질의.exclude = 제외
+		var 결과 := 공간.intersect_ray(질의)
+		if 결과.is_empty():
+			return {}
+		var 대상 := 결과.get("collider") as Node
+		if 대상 != null and 대상.is_in_group("몬스터"):
+			return 결과
+		제외.append(결과["rid"])
+	return {}
 
 
 ## 콜리전 바디에서 "칠할 수 있는 대상"을 거슬러 올라가 찾는다.
@@ -136,7 +167,14 @@ func _칠할대상_찾기(맞은것: Object) -> Node:
 
 
 func _소멸(대상: Node, 지점: Vector2, 물감_튐: bool = false, 법선: Vector2 = Vector2.ZERO) -> void:
+	# 같은 프레임의 중복 충돌로 명중음과 탄약 정산이 두 번 일어나지 않게 한다.
+	if _끝남:
+		return
 	_끝남 = true
+	# 명중 이펙트 노드가 없는 분사기·옛 씬도 소리가 난다. 수명 만료에는 재생하지 않는다.
+	if 물감_튐:
+		var 음원 := "몬스터_페인트명중" if 장치발 else "플레이어_페인트명중"
+		preload("res://scripts/페인트_효과음.gd").재생(self, 음원, 지점, -12.0)
 	if OS.is_debug_build() and _바람_프레임 > 0:
 		var 방향변화 := rad_to_deg(_바람_시작속도.angle_to(_속도))
 		print("[총알] 바람 노출 종료 — %d프레임 노출, 시작속도=%s(%.1f°) 종료속도=%s(%.1f°) 방향변화=%.1f° 이동거리=%s" %

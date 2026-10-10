@@ -6,6 +6,8 @@ uniform vec2 extent = vec2(1408.0, 64.0);
 uniform float pool_right_inset = 0.0;
 // 2026-10-03: left slope too (trapezoid pools). 0 = vertical left wall as before.
 uniform float pool_left_inset = 0.0;
+// Match the masonry cap: back (-18,-4), front (0,18), with the unchanged basin below.
+uniform bool projected_pool = false;
 uniform int pool_tone = 2;
 uniform float phase = 0.0;
 uniform bool animate = true;
@@ -64,13 +66,22 @@ float surface_height(float x, float t) {
 
 vec4 pool(vec2 p, float t, vec2 screen_uv, vec2 pixel_size) {
     float h = max(extent.y, 8.0);
+    float basin_y = p.y;
+    float bounds_mask = 1.0;
+    if (projected_pool) {
+        float top_depth = clamp((p.y + 4.0) / 22.0, 0.0, 1.0);
+        p.x += 18.0 * (1.0 - top_depth);
+        basin_y = max(p.y - 18.0, 0.0);
+        bounds_mask = step(-4.0, p.y) * step(basin_y, h);
+        p.y = p.y <= 18.0 ? max(1.5, top_depth * 6.0) : basin_y;
+    }
     float depth = p.y - surface_height(p.x, t);
-    float right = extent.x - pool_right_inset * clamp(p.y / h, 0.0, 1.0);
-    float left = pool_left_inset * clamp(p.y / h, 0.0, 1.0);
+    float right = extent.x - pool_right_inset * clamp(basin_y / h, 0.0, 1.0);
+    float left = pool_left_inset * clamp(basin_y / h, 0.0, 1.0);
     float edge = min(p.x - left, right - p.x);
     float wet_edge = 1.0 - smoothstep(0.0, 7.0, edge);
     float alpha = smoothstep(-0.65, 0.65, depth)
-        * smoothstep(0.0, 1.5, edge);
+        * smoothstep(0.0, 0.6, edge) * bounds_mask;
 
     // A shallow tonal range avoids the polished cylindrical gradient.
     vec2 drift = vec2(p.x - t * 3.5, p.y);

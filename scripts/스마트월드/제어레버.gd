@@ -40,6 +40,10 @@ const 주철_레버부품 = preload("res://assets/textures/obstacles/switch/cast
 ##   두 물이 한 호퍼로 들어가면 0 단계에서 출구가 회색이 된다(호퍼.gd 입구_색_합치기).
 ##   끄면(기본) 예전 "둘 중 하나" 그대로라 2-1 밸브 동작은 안 바뀐다.
 @export var 세_상태_순환: bool = false
+## ★[2026-10-10 Claude · 2-8] **숨은 밸브** — 이 물(켜짐을 가진 것)이 흐르는 동안은 밸브가 안 보이고 조작도 안 된다.
+##   도형님 2-8 도면: "검정물_2를 끄면 그 뒤에 숨겨진 벨브_2가 보이게 됨". 물 뒤에 가려진 손잡이를 표현한다.
+##   비워 두면(기본) 예전 그대로 늘 보인다.
+@export var 숨김_유체: NodePath
 
 @export var 반응반경: float = 74.0:
 	set(v): 반응반경 = maxf(v, 24.0); _모양_갱신(); queue_redraw()
@@ -126,6 +130,9 @@ func 배관_포트() -> Dictionary:
 
 ## 플레이어가 상호작용 범위 안에 있는가 (월드.gd 가 E 키 중재에 쓴다)
 func 닿아있나() -> bool:
+	# 숨은 밸브는 가린 물이 흐르는 동안 없는 것과 같다 — E 가 회수로 넘어간다.
+	if _숨어있나():
+		return false
 	for b in get_overlapping_bodies():
 		if b.is_in_group("player"):
 			return true
@@ -184,9 +191,22 @@ func _켜기(경로: NodePath, 값: bool) -> void:
 		n.call("차오르기_멈춤")
 
 
+## 숨김_유체가 흐르고 있나(= 밸브가 가려져 있나). 경로가 비었거나 대상이 없으면 안 숨는다.
+func _숨어있나() -> bool:
+	if 숨김_유체.is_empty():
+		return false
+	var n := get_node_or_null(숨김_유체)
+	return n != null and ("켜짐" in n) and bool(n.get("켜짐"))
+
+
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
+	# 숨은 밸브 — 보임은 바뀔 때만 대입한다(같은 값을 매 프레임 넣지 않는다 · 성능 규칙 §8).
+	if not 숨김_유체.is_empty():
+		var 보임 := not _숨어있나()
+		if visible != 보임:
+			visible = 보임
 	if absf(_목표각도 - _각도) > 0.005:
 		_각도 = lerpf(_각도, _목표각도, 1.0 - exp(-10.0 * delta))
 		queue_redraw()

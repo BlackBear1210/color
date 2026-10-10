@@ -39,8 +39,13 @@ func _physics_process(delta: float) -> void:
 	position += _velocity * delta
 
 func _on_body_entered(body: Node2D) -> void:
+	# 삭제 예약 뒤 들어온 추가 접촉은 소리·색칠을 중복시키지 않는다.
+	if is_queued_for_deletion():
+		return
 	if body.is_in_group("player"):
 		return
+	# ActionFX가 없어도 실제 충돌 위치에서 명중음이 나도록 투사체가 재생한다.
+	preload("res://scripts/페인트_효과음.gd").재생(self, "플레이어_페인트명중", global_position, -12.0)
 	# PaintPlatform·타일맵·일반 벽 모두, 총알이 실제 충돌한 한 번의 지점에서만 물감이 튄다.
 	_물감_튐()
 	# ★[2026-07-24 도형] 페인트 시스템 v3 — 플랫폼 단위 색칠 분기 추가.

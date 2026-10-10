@@ -15,7 +15,7 @@ extends RefCounted
 ##       (하수도 씬 파일은 다른 작업자 것이라 손대지 않는다 — 가로채기만 한다.)
 ##   · 저장 = user://진행.cfg  [클리어] 스테이지경로 = true · [쳅터] 번호 = true(쳅터 클리어)
 ##
-## ▣ 지도 모양(거미줄) — 아래 `하수도_지도` 표가 **유일한 출처**다.
+## ▣ 지도 모양(거미줄) — `하수도_지도`가 기존 갈림길, `하수도_칸들()`이 이후 번호의 씬을 추가한다.
 ##   한 스테이지는 「열림」 조건 = 시작 칸이거나, 들어오는 선의 앞 스테이지 중 **하나라도** 클리어.
 ##   (FBWG 처럼 갈림길이 있어 막히면 다른 길로 돌아갈 수 있다.)
 ##   전부 클리어하면 쳅터 2 클리어 → 다음 쳅터(3)로. 쳅터 3 이 아직 없으면 "준비 중" 을 보여 준다.
@@ -30,7 +30,7 @@ const 하수도_폴더 := "res://scenes/world_2_클로드/"
 
 ## 하수도(쳅터 2) 지도 — 칸 = [이름표, 씬, 지도 위치(0~1, 왼위 기준), 들어오는 선(앞 칸 이름표들)]
 ##   위치는 화면 비율이라 해상도가 바뀌어도 모양이 같다. 왼쪽 → 오른쪽으로 깊어진다.
-##   ★순서·연결을 바꾸려면 이 표만 고친다(지도 화면은 이 표를 그대로 그린다).
+##   ★기존 갈림길을 바꾸려면 이 표를 고친다. 새 stage_2-N.tscn은 번호순으로 자동 추가된다.
 const 하수도_지도: Array = [
 	["2-1", "stage_2-1.tscn", Vector2(0.08, 0.50), []],
 	["2-2", "stage_2-2.tscn", Vector2(0.20, 0.30), ["2-1"]],
@@ -62,6 +62,31 @@ static var 마지막_칸: String = ""
 static var _cfg: ConfigFile = null
 
 
+## [2026-10-10 Codex] 약 10개로 제한하지 않는다. 기존 갈림길 표는 유지하고 이후 번호의 씬을 자동으로 이어 붙인다.
+## 내보낸 게임의 .tscn.remap도 원래 씬 이름으로 읽어 에디터와 배포판의 목록을 같게 한다.
+static func 하수도_칸들() -> Array:
+	var 결과: Array = 하수도_지도.duplicate(true)
+	var 추가: Array = []
+	for 파일명 in DirAccess.get_files_at(하수도_폴더):
+		var 이름: String = String(파일명).trim_suffix(".remap")
+		if not 이름.begins_with("stage_2-") or not 이름.ends_with(".tscn"):
+			continue
+		var 숫자 := 이름.get_basename().trim_prefix("stage_2-")
+		if not 숫자.is_valid_int() or int(숫자) <= 0:
+			continue
+		if 결과.any(func(c): return c[1] == 이름) or 추가.has(이름):
+			continue
+		if ResourceLoader.exists(하수도_폴더 + 이름, "PackedScene"):
+			추가.append(이름)
+	추가.sort_custom(func(a, b): return int(String(a).get_basename().trim_prefix("stage_2-")) < int(String(b).get_basename().trim_prefix("stage_2-")))
+	for i in 추가.size():
+		var 이름표: String = String(추가[i]).get_basename().trim_prefix("stage_")
+		var 앞: Array = [결과.back()[0]] if not 결과.is_empty() else []
+		# 12번 이후는 오른쪽 새 열에 세 칸씩 놓는다. UI가 가로로 늘어나므로 겹치거나 잘리지 않는다.
+		결과.append([이름표, 추가[i], Vector2(1.08 + floori(float(i) / 3.0) * 0.16, 0.25 + (i % 3) * 0.25), 앞])
+	return 결과.filter(func(c): return ResourceLoader.exists(씬경로(c), "PackedScene"))
+
+
 static func _설정() -> ConfigFile:
 	if _cfg == null:
 		_cfg = ConfigFile.new()
@@ -82,14 +107,14 @@ static func 씬경로(칸: Array) -> String:
 
 
 static func 칸_찾기(이름표: String) -> Array:
-	for 칸 in 하수도_지도:
+	for 칸 in 하수도_칸들():
 		if 칸[0] == 이름표:
 			return 칸
 	return []
 
 
 static func 경로로_칸(경로: String) -> Array:
-	for 칸 in 하수도_지도:
+	for 칸 in 하수도_칸들():
 		if 씬경로(칸) == 경로:
 			return 칸
 	return []
@@ -121,14 +146,15 @@ static func 열림(이름표: String) -> bool:
 
 static func 클리어_수() -> int:
 	var n := 0
-	for 칸 in 하수도_지도:
+	for 칸 in 하수도_칸들():
 		if 클리어함(칸[0]):
 			n += 1
 	return n
 
 
 static func 쳅터2_전부_클리어() -> bool:
-	return 클리어_수() == 하수도_지도.size()
+	var 칸들 := 하수도_칸들()
+	return not 칸들.is_empty() and 클리어_수() == 칸들.size()
 
 
 ## 쳅터 1(집)의 끝에서 부른다 — 지붕·마당 도안이 생기면 마지막 출구가 이걸 부르게 한다(10-06 기준 미연결).
@@ -257,5 +283,14 @@ static func 통로_가로채기(왔던_씬: String, 가려는_씬: String) -> St
 		return 가려는_씬                 # 지도 밖 씬(테스트 등) — 손대지 않는다
 	클리어_기록(칸[0])
 	마지막_칸 = 칸[0]
+	# 2-9·2-10의 옛 로비 출구 뒤에도 맵이 생겼다. 뒤 맵이 있으면 자연스럽게 이어 가고 끝이면 새 로비로 간다.
+	# 씬의 지형·통로 배치는 건드리지 않으며, 향후 2-12 이상도 같은 규칙으로 연결한다.
+	if 가려는_씬 == "res://scenes/lobby/lobby.tscn" or 가려는_씬 == 로비_씬:
+		var 칸들 := 하수도_칸들()
+		var 현재 := 칸들.find(칸)
+		# 추가 맵이 새 타이틀로 끝나도록 제작돼도 뒤 번호가 생기면 이어 간다.
+		if 현재 >= 0 and 현재 + 1 < 칸들.size():
+			return 씬경로(칸들[현재 + 1])
+		return 로비_씬
 	# [2026-10-09 Codex] 기록/해금은 저장하되 지도는 사용자가 직접 열 때 보여 준다. 도장 때문에 플레이를 끊지 않는다.
 	return 가려는_씬

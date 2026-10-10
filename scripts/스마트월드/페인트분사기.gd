@@ -160,6 +160,9 @@ func _발사() -> void:
 		총알.시작(global_position + 방향 * 총구거리, 방향, 탄속, _색, _코어, null, true, 탄낙차)
 
 	_번쩍 = 1.0
+	# 현재 적 페인트 공격은 분사기가 담당한다. 부채꼴 다발도 발사음은 한 번만 낸다.
+	preload("res://scripts/페인트_효과음.gd").재생(self, "몬스터_페인트발사",
+		global_position + Vector2.RIGHT.rotated(기준) * 총구거리, -13.0)
 	queue_redraw()
 
 

@@ -1,4 +1,5 @@
 shader_type canvas_item;
+#include "res://shaders/player_water_clip.gdshaderinc"
 // ============================================================================
 // [2026-08-23] Boundary split -- clips each source-color sprite on world lines.
 // ----------------------------------------------------------------------------
@@ -25,6 +26,7 @@ void vertex() {
 }
 
 void fragment() {
+	if (submerged_pixel(world_pos)) { discard; }
 	float region_color;
 	if (split_count <= 0) {
 		region_color = color_table.x;

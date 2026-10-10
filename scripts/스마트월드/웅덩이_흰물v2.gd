@@ -5,6 +5,8 @@ const WHITE_POOL = preload("res://scenes/장식/유체/흰물_디자인.tscn")
 var _white_visual: Node2D
 var _visual_state: Array = []
 var _침수대상: Array[Node] = []
+## 판정은 원래 홈 안에 두고 그림만 지형과 같은 원근 면으로 맞춘다.
+var _원근수면 := false
 
 ## 오른쪽 경사로와 그림/물 접촉 판정을 일치시킨다.
 @export var 오른쪽_안쪽폭: float = 0.0:
@@ -68,15 +70,33 @@ func _침수대상_찾기() -> void:
 	for terrain in terrain_root.get_children():
 		if terrain.has_method("침수마감_설정"):
 			_침수대상.append(terrain)
+		# 홈의 바닥 중앙을 실제 지형 점과 대조한다. 이름·스테이지 번호에 의존하지 않는다.
+		if terrain.has_method("발_그림_깊이") and terrain.has_method("get_point_array"):
+			var points: PackedVector2Array = terrain.get_point_array().get_tessellated_points()
+			if Geometry2D.is_point_in_polygon(terrain.to_local(to_global(Vector2(0, 0.5))), points):
+				_원근수면 = float(terrain.call("발_그림_깊이")) > 0.0
+	_white_visual.set("원근_수면", _원근수면)
+	queue_redraw()
 	_침수마감_갱신()
+
+func 물그림_다각형() -> PackedVector2Array:
+	# 물 그림·침수 마감·플레이어 가림이 하나의 경계를 공유해야 가장자리에서 발이나 돌이 새지 않는다.
+	var half := 크기.x * 0.5
+	var right := minf(오른쪽_안쪽폭, 크기.x * 0.75)
+	var left := minf(왼쪽_안쪽폭, 크기.x * 0.75 - right)
+	if _원근수면:
+		return PackedVector2Array([Vector2(-half - 18, -크기.y - 4), Vector2(half - 18, -크기.y - 4), Vector2(half, -크기.y + 18), Vector2(half - right, 18), Vector2(-half + left, 18), Vector2(-half, -크기.y + 18)])
+	return PackedVector2Array([Vector2(-half, -크기.y), Vector2(half, -크기.y), Vector2(half - right, 0), Vector2(-half + left, 0)])
+
+func 수면_그림깊이() -> float:
+	# 낙수는 새 수면의 뒤·앞 경계(-4…18) 가운데인 +7px에 앉힌다.
+	return 7.0 if _원근수면 else 0.0
 
 func _침수마감_갱신() -> void:
 	var polygon := PackedVector2Array()
 	if 켜짐:
-		# 바닥 24px, 옆면 18px 마감 두께까지 포함하되 수면 위는 가리지 않는다.
-		var left := -크기.x * 0.5 - 19.0
-		var right := 크기.x * 0.5 + 19.0
-		for point in [Vector2(left, -크기.y), Vector2(right, -크기.y), Vector2(right, 25.0), Vector2(left, 25.0)]:
+		# 넓은 사각형으로 주변 갓돌까지 지우지 않는다. 물이 실제 채운 사선 내부만 마감을 숨긴다.
+		for point in 물그림_다각형():
 			polygon.append(to_global(point))
 	for terrain in _침수대상:
 		if is_instance_valid(terrain):

@@ -30,6 +30,8 @@ var _훑기 := 0.0
 var _난수 := RandomNumberGenerator.new()
 
 func _ready() -> void:
+	# 물소리·입수·발소리도 음악이 아니라 효과음 설정으로 함께 조절한다.
+	preload("res://scripts/스마트월드/게임설정.gd").소리_준비()
 	add_to_group("하수도_소리")
 	_난수.randomize()
 	for i in 4:
@@ -37,9 +39,11 @@ func _ready() -> void:
 		_물발.append(load(경로 + "step_water_%d.wav" % (i + 1)))
 	_풍덩 = load(경로 + "splash_enter.wav")
 	_발 = AudioStreamPlayer.new()
+	_발.bus = "SFX"
 	_발.volume_db = -12.0
 	add_child(_발)
 	_입수 = AudioStreamPlayer.new()
+	_입수.bus = "SFX"
 	_입수.stream = _풍덩
 	add_child(_입수)
 
@@ -104,6 +108,7 @@ func _물줄기_갱신() -> void:
 			if not 켜짐:
 				continue
 			var p := AudioStreamPlayer2D.new()
+			p.bus = "SFX"
 			var s := (load(경로 + "stream_loop.wav") as AudioStreamWAV).duplicate() as AudioStreamWAV
 			# 합성한 WAV 는 반복 표시가 없다 → 실행 중에 전체 구간 반복으로 켠다(파일 끝과 처음이 이미 이어지게 만들었다).
 			s.loop_mode = AudioStreamWAV.LOOP_FORWARD
