@@ -79,6 +79,8 @@ def 그리기(dn, 검사결과, 출력경로):
                 d.rectangle(r, fill=(252, 252, 250))
             elif v == 4:
                 d.rectangle(r, fill=(255, 255, 255, 90))
+            elif v == 5:
+                d.rectangle(r, fill=(236, 234, 226))      # [2026-10-10] 흰구조(달빛 깔개 · 칠 못 함)
     # 빗금은 구조 칸 안에만
     마스크 = Image.new("L", img.size, 0)
     md = ImageDraw.Draw(마스크)
@@ -134,10 +136,11 @@ def 그리기(dn, 검사결과, 출력경로):
             색 = (255, 236, 120) if g.색 == "흰" else (60, 40, 120)
             pts = [P(x / 규격.칸, y / 규격.칸) for x, y in g.꼭짓점()]
             d.polygon(pts, fill=색 + (110 if g.고정 else 50,), outline=색 + (230,))
-            ox, oy = P(g.원점[0] / 규격.칸, g.원점[1] / 규격.칸)
-            d.ellipse([ox - 5, oy - 5, ox + 5, oy + 5], fill=색 + (255,), outline=(60, 50, 30))
+            # [2026-10-10] 예전엔 ox, oy 에 받아서 P() 의 도면 원점이 빛 근원으로 바뀌었다 → 빛 뒤에 그리는 것(체크포인트·닿는 바닥 줄·기믹)이 전부 어긋났다
+            lx, ly = P(g.원점[0] / 규격.칸, g.원점[1] / 규격.칸)
+            d.ellipse([lx - 5, ly - 5, lx + 5, ly + 5], fill=색 + (255,), outline=(60, 50, 30))
             표 = f"{g.근원} {g.색}" + ("" if g.고정 else (" 점멸" if g.점멸 else f" {g.주기:g}초"))
-            d.text((ox + 8, oy - 6), 표, font=f기, fill=(90, 70, 20) if g.색 == "흰" else (60, 40, 120))
+            d.text((lx + 8, ly - 6), 표, font=f기, fill=(90, 70, 20) if g.색 == "흰" else (60, 40, 120))
         elif isinstance(g, 기믹모듈.도약대):
             l, t, r, b = g.사각()
             a, bb = P(l / 규격.칸, t / 규격.칸)
@@ -332,7 +335,7 @@ def 그리기(dn, 검사결과, 출력경로):
     # 범례
     ly = 78
     lx = 16
-    for 표, 칠 in [("구조(중립·칠 안 됨)", 구조색), ("검정 판", (14, 14, 14)), ("흰 판", (252, 252, 250)), ("유령 판(칠해야 밟힘)", None)]:
+    for 표, 칠 in [("구조(검정·칠 안 됨)", 구조색), ("검정 판", (14, 14, 14)), ("흰 판", (252, 252, 250)), ("유령 판(칠해야 밟힘)", None)]:
         if 칠:
             d.rectangle([lx, ly, lx + 18, ly + 14], fill=칠, outline=(30, 30, 30))
         else:

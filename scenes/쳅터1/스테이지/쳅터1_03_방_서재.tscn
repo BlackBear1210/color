@@ -30,6 +30,9 @@
 [ext_resource type="Texture2D" path="res://assets/textures/smartshape/wood_deck_v3/black/fill.tres" id="22_2bfj8"]
 [ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="23_8tpby"]
 [ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="24_y3f02"]
+[ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/도약대.tscn" id="add_pad"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/창문빛.tscn" id="add_light"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -2634,6 +2637,41 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
+[sub_resource type="Resource" id="add_t_wstruct01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(96, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-96, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_wstruct01_P0"),
+1: SubResource("add_t_wstruct01_P1"),
+2: SubResource("add_t_wstruct01_P2"),
+3: SubResource("add_t_wstruct01_P3"),
+4: SubResource("add_t_wstruct01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_03_방_서재" type="Node2D" unique_id=278161810]
 script = ExtResource("1_world")
 "스테이지_이름" = "03 · 서재 (두 갈래 하강)"
@@ -2727,6 +2765,7 @@ position = Vector2(2304, 1152)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 _meshes = Array[ExtResource("16_gqo7n")]([SubResource("Resource_8oms7"), SubResource("Resource_jx5es")])
@@ -2741,6 +2780,7 @@ position = Vector2(1952, 352)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S02")
 _meshes = Array[ExtResource("16_gqo7n")]([SubResource("Resource_rv423"), SubResource("Resource_yh405")])
@@ -2781,6 +2821,7 @@ position = Vector2(3088, 768)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S03")
 _meshes = Array[ExtResource("16_gqo7n")]([SubResource("Resource_hyp70"), SubResource("Resource_0vbla")])
@@ -2820,6 +2861,7 @@ position = Vector2(1440, 960)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S04")
 _meshes = Array[ExtResource("16_gqo7n")]([SubResource("Resource_chkvn"), SubResource("Resource_i003u")])
@@ -2883,6 +2925,7 @@ position = Vector2(2416, 1856)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S05")
 _meshes = Array[ExtResource("16_gqo7n")]([SubResource("Resource_crhkr"), SubResource("Resource_gbygw")])
@@ -3013,6 +3056,44 @@ _points = SubResource("add_t_black05_PA")
 collision_size = 0.0
 metadata/role = "플랫폼"
 metadata/design_kind = "검정"
+
+[node name="흰구조추가01" parent="추가지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(2528, 1744)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 2
+"위치별_판정" = true
+_points = SubResource("add_t_wstruct01_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "흰구조"
+
+[node name="추가기믹" type="Node2D" parent="."]
+
+[node name="도약대01" parent="추가기믹" instance=ExtResource("add_pad")]
+position = Vector2(1232, 2080)
+"폭" = 88
+"도약속도" = -1518.6
+"색_제한" = false
+
+[node name="빛줄기01" parent="추가기믹" instance=ExtResource("add_light")]
+position = Vector2(2496, 160)
+"길이" = 1536
+"두께" = 64
+"각도" = 90
+"시작색" = 1
+"주기" = 4
+"위상" = 0
+"점멸" = false
+"근원" = 1
+
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(1344, 704)
+"멈춤들" = PackedVector2Array(0, 0, 448, -96)
+"순환" = 1
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
 
 [node name="Player" parent="." unique_id=238860479 instance=ExtResource("8_player")]
 position = Vector2(336, 640)

@@ -41,8 +41,8 @@ func _initialize() -> void:
 			if k == "빛줄기":
 				if float(g.get("주기", 0)) > 0.0 or bool(g.get("점멸", false)):
 					continue
-				_할일.append({"씬": 씬, "종류": k, "노드": 노드, "경우": "같은색", "g": g, "가시": 도안.get("가시", [])})
-				_할일.append({"씬": 씬, "종류": k, "노드": 노드, "경우": "반대색", "g": g, "가시": 도안.get("가시", [])})
+				_할일.append({"씬": 씬, "종류": k, "노드": 노드, "경우": "같은색", "g": g, "가시": 도안.get("가시", []) + 도안.get("추가가시", [])})
+				_할일.append({"씬": 씬, "종류": k, "노드": 노드, "경우": "반대색", "g": g, "가시": 도안.get("가시", []) + 도안.get("추가가시", [])})
 			elif k in ["도약대", "움직이는발판"]:
 				_할일.append({"씬": 씬, "종류": k, "노드": 노드, "경우": "", "g": g})
 			# [2026-10-09] 그 밖의 새 기믹(부서지는판·그을음·레버퍼즐·반딧불몹·누름계단 …)은 "장애물" 이 아니라 "추가기믹"
@@ -73,6 +73,11 @@ func _다음() -> void:
 	root.add_child(_씬)
 	current_scene = _씬
 	_p = _씬.get_node("Player") as CharacterBody2D
+	# [2026-10-10] 움직이는 몹(반딧불 빛 · 그을음)은 이 시험 대상이 아니다 — 경로 재생과 똑같이 치운다
+	#   (10-10 보강으로 도약대 위를 반딧불이 비추고 그을음이 지키는 자리가 생겼다 · 몹은 시험_거미방·시험_새스테이지 몫)
+	for n in get_nodes_in_group("광원몹") + get_nodes_in_group("그을음"):
+		if _씬.is_ancestor_of(n):
+			n.queue_free()
 	_죽음 = false
 	_씬.connect("사망함", func(): _죽음 = true)
 	_f = 0
@@ -93,7 +98,11 @@ func _physics_process(_d: float) -> bool:
 	if _f < 30:
 		return false
 	var g: Dictionary = _일["g"]
-	var 노드 := _씬.get_node("장애물").get_node_or_null(String(_일["노드"]))
+	# [2026-10-10] 손본 씬에 나중에 넣은 옛 종류("추가": true)는 "추가기믹" 묶음에 같은 이름으로 있다
+	var 노드: Node = null
+	for 묶음 in ["장애물", "추가기믹"]:
+		if 노드 == null and _씬.has_node(묶음):
+			노드 = _씬.get_node(묶음).get_node_or_null(String(_일["노드"]))
 	if 노드 == null:
 		_판정(false, "노드 없음")
 		return false
@@ -115,15 +124,30 @@ func _빛(노드: Node, g: Dictionary) -> void:
 	if _f == 30:
 		var 방향 := Vector2.RIGHT.rotated(deg_to_rad(float(노드.get("각도"))))
 		var 끝 := (노드 as Node2D).global_position + 방향 * (float(노드.get("길이")) - 2.0)
+		# [2026-10-10] 창문 달빛은 실행 때 광선으로 바닥을 찾는다(`창문빛._바닥` · 가운데 광선 = 2번) — 씬에 적힌 길이는 옛 값일 수 있다
+		#   (02 첫 달빛: 달빛 깔개를 깐 뒤 빛은 깔개 위에서 멈추는데 길이 값은 옛 바닥까지라 깔개 속에 세웠다).
+		var 바닥점 = 노드.get("_바닥")
+		if 바닥점 is PackedVector2Array and (바닥점 as PackedVector2Array).size() >= 3:
+			끝 = (노드 as Node2D).to_global((바닥점 as PackedVector2Array)[2]) - 방향 * 2.0
 		_p.set("자유색", 빛색 if _일["경우"] == "같은색" else (ColorDefs.WHITE if 빛색 == ColorDefs.BLACK else ColorDefs.BLACK))
 		# 빛 아래가 유령판이면 플레이어가 자기 색으로 칠해 두고 선다
-		for n in _씬.get_node("지형").get_children():
+		var 판들: Array = _씬.get_node("지형").get_children()
+		if _씬.has_node("추가지형"):
+			판들 += _씬.get_node("추가지형").get_children()
+		for n in 판들:
 			if n.get_meta("design_kind", "") == "유령":
 				n.call("_전체_즉시", 1 + int(_p.get("자유색")), true)
 				n.call("_충돌레이어_갱신")
 		_p.global_position = Vector2(끝.x, 끝.y - 1.0)
 		_p.velocity = Vector2.ZERO
 		_재기["시작"] = _p.global_position
+	elif _f == 31:
+		# 빛 끝 아래에 바닥이 없으면(빛이 허공에서 끝난다 — 09 계단 사이 빛 기둥) 서서 재는 시험이 안 된다 → 건너뛴다
+		#   (유령판을 칠한 다음 프레임에 본다 — 칠한 유령판은 그 뒤에야 충돌이 생긴다)
+		var 끝: Vector2 = _재기["시작"] + Vector2(0, 1.0)
+		var 아래 := PhysicsRayQueryParameters2D.create(끝 + Vector2(0, -4), 끝 + Vector2(0, 12), 1)
+		아래.exclude = [_p.get_rid()]
+		_재기["허공"] = _p.get_world_2d().direct_space_state.intersect_ray(아래).is_empty()
 		# 빛 끝이 가시 위(예: 08 무너진 마루의 그을음 — 구덩이 바닥까지 쏟아진다)면 가시에 죽으므로 색 판정 시험이 안 된다
 		var 가시_위 := false
 		for 가 in _일["가시"]:
@@ -136,6 +160,10 @@ func _빛(노드: Node, g: Dictionary) -> void:
 			_기록("- %s · %s %s · 건너뜀(빛 끝이 가시 구덩이 — 색 판정 대신 경로 재생이 확인)" % [String(_일["씬"]).get_file().get_basename(), _일["노드"], _일["경우"]])
 			_다음()
 			return
+		if _재기.get("허공", false):
+			_기록("- %s · %s %s · 건너뜀(빛이 허공에서 끝난다 — 서서 잴 바닥이 없다)" % [String(_일["씬"]).get_file().get_basename(), _일["노드"], _일["경우"]])
+			_다음()
+			return
 		var 기대_죽음: bool = _일["경우"] == "반대색"
 		_판정(_죽음 == 기대_죽음, "죽음=%s (기대 %s) @%s" % [_죽음, 기대_죽음, _재기["시작"]])
 
@@ -143,13 +171,17 @@ func _빛(노드: Node, g: Dictionary) -> void:
 func _도약(노드: Node2D, g: Dictionary) -> void:
 	if _f == 30:
 		# 색 도약대("색": "흰" 등)는 그 색 몸일 때만 튄다 → 도약대 색으로 맞춰 떨어뜨린다
-		if bool(노드.get("색_제한")):
-			_p.set("자유색", int(노드.get("색")))
+		# [2026-10-10] 무색 도약대는 검정 몸으로 — 도약대가 놓인 구조 바닥이 검정이 됐다(흰 몸이면 받침 옆 바닥에 닿아 죽는다).
+		_p.set("자유색", int(노드.get("색")) if bool(노드.get("색_제한")) else ColorDefs.BLACK)
 		_p.global_position = 노드.global_position + Vector2(0, -23.0 - 40.0)
 		_p.velocity = Vector2.ZERO
 		_재기 = {"최고": INF, "튐": false, "시작y": 노드.global_position.y - 23.0}
 	elif _f > 30:
 		if _p.velocity.y < -700.0:
+			if not _재기["튐"]:
+				# [2026-10-10] 튀고 나면 검정으로 — 쳅터1 구조(천장·벽)가 검정이 됐다. 흰 도약대(13)는 검은 처마 아래라
+				#   흰 몸 그대로 솟으면 머리가 처마에 닿아 죽는다. 실제 손도 튄 다음 공중에서 검정으로 바꾼다(검사기 경로와 같다).
+				_p.set("자유색", ColorDefs.BLACK)
 			_재기["튐"] = true
 		if _재기["튐"]:
 			_재기["최고"] = minf(_재기["최고"], _p.global_position.y)

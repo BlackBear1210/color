@@ -35,8 +35,21 @@ func run() -> void:
 		if 체:
 			for c in 체.get_children():
 				자리들.append([String(c.name), (c as Node2D).global_position])
+		# [2026-10-10] 체크포인트를 안 켰으면 **입구**에서 되살아난다(월드 `_입구_부활`) → 길목·옆방문 안쪽 자리와
+		#   직접 실행 시작 자리도 같은 검사를 한다. 입구 부활은 몸을 그 자리 바닥 색으로 맞추므로 그 색 하나만 본다.
+		var 연결 := s.get_node_or_null("연결")
+		if 연결:
+			for c in 연결.get_children():
+				if c.has_method("안쪽_위치"):
+					자리들.append(["입구:" + String(c.name), c.call("안쪽_위치"), true])
+		자리들.append(["시작", s.get("시작_위치"), true])
 		for 자 in 자리들:
-			for 색 in [ColorDefs.BLACK, ColorDefs.WHITE]:
+			var 색들 := [ColorDefs.BLACK, ColorDefs.WHITE]
+			if 자.size() > 2:
+				var 바닥 := int(s.call("_바닥색", 자[1]))
+				if 바닥 >= 0:
+					색들 = [바닥]
+			for 색 in 색들:
 				var 위험 := {}
 				for fr in 480:
 					p.global_position = 자[1] + Vector2(0, -1)

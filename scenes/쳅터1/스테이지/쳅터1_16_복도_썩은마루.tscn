@@ -1,5 +1,5 @@
 ; 생성: tools/쳅터1/만들기.py · out=ac9df07e0b85045f · 손으로 고치지 말고 도안(쳅터1_16_복도_썩은마루.json)을 고친 뒤 다시 생성
-[gd_scene load_steps=56 format=3]
+[gd_scene load_steps=57 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/액자.png" id="17_furn3"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="18_furn4"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/썩은마루판.tscn" id="add_plank"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/창문빛.tscn" id="add_light"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -273,6 +274,7 @@ centered = false
 position = Vector2(2048, 608)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 collision_size = 0.0
@@ -351,6 +353,17 @@ position = Vector2(3088, 992)
 
 [node name="부서지는판05_3" parent="추가기믹" instance=ExtResource("add_plank")]
 position = Vector2(3184, 992)
+
+[node name="빛줄기01" parent="추가기믹" instance=ExtResource("add_light")]
+position = Vector2(3088, 160)
+"길이" = 832
+"두께" = 64
+"각도" = 90
+"시작색" = 1
+"주기" = 2
+"위상" = 0
+"점멸" = true
+"근원" = 1
 
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(272, 992)

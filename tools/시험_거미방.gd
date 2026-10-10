@@ -73,7 +73,9 @@ func n(이름: String) -> Node:
 func 주차() -> void:
 	_p.global_position = Vector2(8.5 * C, 65 * C - 2)
 	_p.velocity = Vector2.ZERO
-	_p.set("player_color", ColorDefs.WHITE)
+	# [2026-10-10] 검정으로 세운다 — 입구 바닥(구조)이 검정이 됐다(흰 몸이면 주차하자마자 죽어 물감이 전부 회수되고
+	#   '자동 환급' 같은 탄약 셈이 어긋난다). 입구는 반딧불 빛 밖이라 검정 몸도 안전하다.
+	_p.set("player_color", ColorDefs.BLACK)
 
 
 ## 카메라를 그 점으로(촬영용) — 플레이어를 옮기면 위험할 때 쓴다

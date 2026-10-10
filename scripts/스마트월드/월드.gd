@@ -75,6 +75,11 @@ const 페인트HUD어댑터_코어 := preload("res://scripts/ui/페인트_HUD_�
 ## 안전지점으로 인정하려면 이만큼(초) 계속 안전한 땅 위에 있어야 한다.
 ## 너무 짧으면 함정 바로 앞이 체크포인트가 되어 무한 사망 루프가 생긴다.
 @export var 안전지점_유예: float = 0.45
+## ★[2026-10-10 Claude] 켜면 촛불등(체크포인트)을 켜기 전에는 **이 스테이지 입구**(들어온 길목 안쪽)에서 부활한다.
+##   자동 안전지점을 쓰지 않는다. 쳅터1 스테이지는 이 값과 상관없이 항상 켜진다(`_입구_부활`).
+##   도형님 06 복도C 제보: 칠한 유령판 위가 자동 안전지점으로 저장됐다 → 죽으면 칠이 지워져 그 자리가 허공 →
+##   "공중에서 부활 → 가시로 떨어져 사망" 이 끝없이 반복됐다. 쳅터1 은 체크포인트(촛불등)가 진짜 저장 지점이다.
+@export var 체크포인트_없으면_입구: bool = false
 
 var _플레이어: CharacterBody2D = null
 var _코어: 페인트코어 = null
@@ -85,6 +90,8 @@ var _낙하: 낙하감시 = null
 var _hud_안내: Label = null
 var _무적: float = 0.0                 ## 리스폰 직후 잠깐 무적 (즉사 반복 방지)
 var _안전점: Vector2 = Vector2.ZERO    ## 자동 체크포인트 (마지막으로 안전하게 서 있던 곳)
+var _입구점: Vector2 = Vector2.ZERO    ## [2026-10-10] 이번에 이 스테이지로 들어온 자리(연결구 안쪽 · 직접 실행이면 시작 위치)
+var _입구_부활: bool = false           ## 체크포인트가 없을 때 입구에서 부활하나(`체크포인트_없으면_입구` 또는 쳅터1)
 ## `월드.gd`가 시작 좌표로 덮어쓰기 전에 씬에 저장된 Player 위치를 보관한다.
 ## 그래야 Inspector에서 "에디터 Player 위치"를 골라도 실행 시 원래 배치가 사라지지 않는다.
 var _에디터_플레이어_위치: Vector2 = Vector2.ZERO
@@ -126,6 +133,8 @@ func _ready() -> void:
 	#   그냥 시작_위치에 세우면 "순간이동해서 나타났다"가 되어 통로를 만든 의미가 없다.
 	_플레이어.global_position = _진입_위치_정하기()
 	_안전점 = _플레이어.global_position
+	_입구점 = _안전점
+	_입구_부활 = 체크포인트_없으면_입구 or scene_file_path.begins_with("res://scenes/쳅터1/")
 
 	# ── 카메라 ── (Player.tscn 안의 기본 Camera2D 는 끄고 ProtoCamera 를 쓴다)
 	var 기본캠 := _플레이어.get_node_or_null("Camera2D") as Camera2D
@@ -143,7 +152,8 @@ func _ready() -> void:
 	# ★[2026-08-08] 이 두 줄이 도형님이 말한 전환 감각의 나머지 절반이다.
 	#   "화면이 암전된 후 다음 스테이지가 짜잔 하고 밝아지면, BGM 의 톤이 바뀌며
 	#    새로운 물리 환경이나 위험한 함정이 눈앞에 나타납니다."
-	_음향_시작()
+	# 월드의 _ready 중에는 루트가 자식을 등록하고 있어 음향 노드를 붙일 수 없다. 등록이 끝난 뒤 시작해 누락·누수를 막는다.
+	call_deferred("_음향_시작")
 	_등장_연출()
 
 	# ── 총 ──
@@ -515,6 +525,10 @@ func 연결_도착(도착: Vector2, 안쪽: Vector2) -> void:
 	_플레이어.set("velocity", Vector2.ZERO)
 	_플레이어.global_position = 도착
 	_안전점 = 안쪽
+	_입구점 = 안쪽
+	# [2026-10-10] 구조(테두리)가 검정이 됐다 — 공중으로 길목을 넘어온 흰 몸이 도착하자마자 죽지 않게 바닥 색으로 맞춘다.
+	#   막 바꿔 끼운 씬은 물리 공간에 아직 안 올라왔을 수 있다 → 한 물리 프레임 뒤에 바닥을 읽는다.
+	_바닥색_나중에(안쪽)
 	_무적 = 0.6
 	_안전_누적 = 0.0
 	if _카메라:
@@ -560,8 +574,14 @@ func _리스폰() -> void:
 	if not is_instance_valid(_플레이어):
 		return
 	_플레이어.set("velocity", Vector2.ZERO)
-	# 닿은 체크포인트를 우선하고, 아직 없을 때만 기존 자동 안전지점/시작 위치를 쓴다.
-	_플레이어.global_position = _체크포인트_위치 if _체크포인트_저장됨 else (_안전점 if 안전지점_자동저장 else _직접실행_시작위치())
+	# 닿은 체크포인트를 우선하고, 아직 없을 때만 입구(쳅터1) 또는 기존 자동 안전지점/시작 위치를 쓴다.
+	var 입구로 := _입구_부활 and not _체크포인트_저장됨
+	if _체크포인트_저장됨:
+		_플레이어.global_position = _체크포인트_위치
+	elif 입구로:
+		_플레이어.global_position = _입구점
+	else:
+		_플레이어.global_position = _안전점 if 안전지점_자동저장 else _직접실행_시작위치()
 	_무적 = 0.6
 	_안전_누적 = 0.0
 	if _카메라:
@@ -587,6 +607,9 @@ func _리스폰() -> void:
 	if _체크포인트_저장됨:
 		# 촛불등은 저장할 때 원래 발판색까지 확인했다(_체크포인트_갱신). 성수반은 부활 자리 바닥색을 다시 읽는다.
 		_플레이어.set("player_color", _체크포인트_색 if is_instance_valid(_저장체크) else _체크포인트_복원색())
+	elif 입구로:
+		# [2026-10-10] 입구 바닥(쳅터1 구조 = 검정)과 다른 색으로 죽었으면 되살아나자마자 또 죽는다 → 바닥 색으로.
+		_바닥색으로_맞추기(_입구점)
 	_부활_후처리()
 	_플레이어.collision_layer = 원래_레이어
 	_플레이어.set_physics_process(원래_물리)
@@ -614,8 +637,13 @@ func _체크포인트_접촉(body: Node2D, 지점: Area2D) -> void:
 
 func _체크포인트_복원색() -> int:
 	# 죽으면 칠한 바닥이 초기화된다. 원래 바닥색으로 맞춰 흰 몸의 검정 바닥 반복 사망을 막는다.
-	var 점 := _체크포인트_위치
-	var 질의 := PhysicsRayQueryParameters2D.create(점 + Vector2(0, -8), 점 + Vector2(0, 16), 1)
+	var 색 := _바닥색(_체크포인트_위치)
+	return 색 if 색 >= 0 else _체크포인트_색
+
+
+## 이 점(발바닥) 바로 아래 지형의 **원래 색**(칠 지우고 난 뒤의 색) — 검정/흰이 아니면(무색 구조·땅 없음) -1.
+func _바닥색(점: Vector2) -> int:
+	var 질의 := PhysicsRayQueryParameters2D.create(점 + Vector2(0, -8), 점 + Vector2(0, 24), 1)
 	질의.exclude = [_플레이어.get_rid()]
 	var 결과 := get_world_2d().direct_space_state.intersect_ray(질의)
 	if not 결과.is_empty():
@@ -624,7 +652,20 @@ func _체크포인트_복원색() -> int:
 			var 색: int = 지형.call("기본_아트색")
 			if 색 == ColorDefs.BLACK or 색 == ColorDefs.WHITE:
 				return 색
-	return _체크포인트_색
+	return -1
+
+
+## [2026-10-10] 몸 색을 이 자리 바닥 색으로(바닥이 색 규칙 밖이면 그대로 둔다).
+func _바닥색으로_맞추기(점: Vector2) -> void:
+	var 색 := _바닥색(점)
+	if 색 >= 0 and _플레이어 != null:
+		_플레이어.set("player_color", 색)
+
+
+func _바닥색_나중에(점: Vector2) -> void:
+	await get_tree().physics_frame
+	if is_instance_valid(_플레이어) and not _사망중:
+		_바닥색으로_맞추기(점)
 
 
 func _체크포인트_갱신(죽는가: bool) -> void:
@@ -652,6 +693,8 @@ func _체크포인트_갱신(죽는가: bool) -> void:
 			_체크포인트_색 = ColorDefs.BLACK
 		elif 초기 == 2:
 			_체크포인트_색 = ColorDefs.WHITE
+		elif 바닥.has_method("기본_아트색") and int(바닥.call("기본_아트색")) in [ColorDefs.BLACK, ColorDefs.WHITE]:
+			_체크포인트_색 = int(바닥.call("기본_아트색"))      # [2026-10-10] 판정색 있는 구조(쳅터1 테두리 = 검정)
 		_저장체크 = 지점
 		_체크포인트_저장됨 = true
 		_체크포인트_위치 = Vector2(지점.global_position.x, (hit["position"] as Vector2).y - 1.0)
@@ -788,6 +831,26 @@ func _붕괴발판_위인가() -> bool:
 	return false
 
 
+## 발밑(가운데·양 끝)이 칠해서 굳힌 유령판인가 — `무색일때_통과` 이고 칠할 수 있는 지형.
+func _유령판_위인가() -> bool:
+	var 공간 := _플레이어.get_world_2d().direct_space_state
+	for dx in [-16.0, 0.0, 16.0]:
+		var 기준 := _플레이어.global_position + Vector2(dx, 0)
+		var q := PhysicsRayQueryParameters2D.create(기준 + Vector2(0, -4.0), 기준 + Vector2(0, 24.0), 1)
+		q.exclude = [_플레이어.get_rid()]
+		var r := 공간.intersect_ray(q)
+		if r.is_empty():
+			continue
+		var n := r.get("collider") as Node
+		while n and n != self:
+			if n.get("무색일때_통과") != null:
+				if bool(n.get("무색일때_통과")) and bool(n.get("칠하기_허용")):
+					return true
+				break
+			n = n.get_parent()
+	return false
+
+
 func _붕괴발판_조상인가(n: Node) -> bool:
 	while n and n != self:
 		if n.is_in_group("붕괴발판"):
@@ -809,7 +872,8 @@ func _반딧불_빛자리인가() -> bool:
 
 
 func _안전점_갱신(delta: float, 죽는가: bool) -> void:
-	if not 안전지점_자동저장:
+	# [2026-10-10] 입구 부활 스테이지(쳅터1)는 자동 안전지점을 아예 안 쓴다 — 부활 = 체크포인트 아니면 입구.
+	if not 안전지점_자동저장 or _입구_부활:
 		return
 	# ⚠[2026-08-06 함정] `is_on_floor()` 만 믿으면 안 된다.
 	#   CharacterBody2D 의 이 값은 **마지막 move_and_slide() 결과가 그대로 남아 있다.**
@@ -827,6 +891,11 @@ func _안전점_갱신(delta: float, 죽는가: bool) -> void:
 	# ★[2026-10-08] 부서지는 발판 위는 안전지점이 아니다 — v3 는 저절로 복구되지 않으므로, 그 위에 저장되면
 	#   부활할 때마다 같은 발판에서 되살아나 0.9초 뒤 또 떨어진다(시험_부서지는발판 에서 실제로 잡힘).
 	if _붕괴발판_위인가():
+		_안전_누적 = 0.0
+		return
+	# ★[2026-10-10] 칠해야 생기는 유령판 위도 안전지점이 아니다 — 죽으면 페인트가 전부 회수되므로
+	#   그 자리는 허공이 된다(06 복도C "공중에서 부활 → 사망" 반복). 체크포인트 쪽(_체크포인트_갱신)은 이미 막고 있었다.
+	if _유령판_위인가():
 		_안전_누적 = 0.0
 		return
 	# ★[2026-10-10] 반딧불 몹이 머물며 빛낼 수 있는 자리도 안전지점이 아니다 — 빛이 꺼진 사이 저장되면

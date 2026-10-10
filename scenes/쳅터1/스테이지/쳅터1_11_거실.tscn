@@ -1,5 +1,5 @@
 ; 목재 v03: 지형 점 부분 갱신 / 나머지 노드 보존
-[gd_scene load_steps=185 format=3]
+[gd_scene load_steps=189 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -26,6 +26,10 @@
 [ext_resource type="Script" path="res://scripts/쳅터1/옆방문.gd" id="codex_side_door"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/잠긴문.tscn" id="add_door"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/반반열쇠_조각.tscn" id="add_key"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/그을음.tscn" id="add_soot"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/창문빛.tscn" id="add_light"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/타이머양초.tscn" id="add_candle"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -989,6 +993,7 @@ centered = false
 position = Vector2(3584, 1152)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 collision_size = 0.0
@@ -1016,6 +1021,7 @@ metadata/design_kind = "흰"
 position = Vector2(2240, 1632)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S02")
 collision_size = 0.0
@@ -1153,6 +1159,38 @@ position = Vector2(6800, 944)
 [node name="잠긴문01" parent="추가기믹" instance=ExtResource("add_door")]
 "길목" = NodePath("../../연결/오른쪽")
 
+[node name="빛줄기01" parent="추가기믹" instance=ExtResource("add_light")]
+position = Vector2(4000, 160)
+"길이" = 1728
+"두께" = 64
+"각도" = 90
+"시작색" = 1
+"주기" = 3
+"위상" = 0
+"점멸" = false
+"근원" = 1
+
+[node name="그을음01" parent="추가기믹" instance=ExtResource("add_soot")]
+position = Vector2(4720, 2080)
+"방향" = -1
+"깨어남_칸" = 4
+"속도_배" = 0.5
+"덮침_예고" = 0.8
+"영역_칸" = 6
+
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(6304, 1392)
+"멈춤들" = PackedVector2Array(0, 0, -576, 0)
+"순환" = 1
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
+
+[node name="촛불01" parent="추가기믹" instance=ExtResource("add_candle")]
+position = Vector2(4528, 2080)
+"켜둠" = true
+"영원" = true
+
 [node name="추가지형" type="Node2D" parent="."]
 
 [node name="흰판추가01" parent="추가지형" instance=ExtResource("4_tpl_white")]
@@ -1216,4 +1254,4 @@ position = Vector2(6800, 2080)
 script = ExtResource("codex_side_door")
 "다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_17_응접실.tscn"
 "다음_연결" = "왼쪽"
-"표제" = "1층 응접실"
+"표제" = "응접실"

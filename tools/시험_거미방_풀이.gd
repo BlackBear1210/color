@@ -6,7 +6,7 @@ extends SceneTree
 ##   ② C 풀이: 줄 너머로 다가가 거미를 깨운다 → 왼쪽(140)으로 걸어 물러나 기다린다 →
 ##      거미는 영역 끝(147 근처)에서 멈춰 노려보고 → 반딧불3 이 147 에 내려앉아 빛을 켜면 탄다 → 줄 삭음 → 빛받이3 → 창살3
 ##      그동안 플레이어는 한 번도 죽지 않아야 한다.
-##   ③ 세 번째 체크포인트(171 · 창살 너머)에 검정·흰 몸으로 서 있어도 반딧불·거미에 안 죽는다.
+##   ③ 세 번째 체크포인트(171 · 창살 너머)에 검정 몸으로 서 있어도 반딧불·거미에 안 죽는다(10-10: 구조 검정 → 흰 몸은 바닥에서 죽으므로 뺐다).
 ## 실행: Godot_console --headless --fixed-fps 60 --path . -s res://tools/시험_거미방_풀이.gd
 ## ⚠ 진행 파일을 쓰지 않는다(기록_허용 = 0).
 ## ============================================================================
@@ -60,6 +60,9 @@ func run() -> void:
 	if 총 and F2:
 		await wait(30)
 		var 표적: Vector2 = F2.global_position
+		# [2026-10-10] 조준선만 보는 단계 — 무적으로 둔다. 시작 바닥(구조)이 검정이 되어 흰 몸으로 서면 죽고,
+		#   그 사망 모션이 끝날 때 몸이 입구로 옮겨져(입구 부활) 뒤 단계(C 풀이)가 엉뚱한 자리에서 시작됐다.
+		_씬.set("_무적", 30.0)
 		for 색 in [ColorDefs.WHITE, ColorDefs.BLACK]:
 			_p.set("player_color", 색)
 			await wait(2)
@@ -72,6 +75,8 @@ func run() -> void:
 				check(불가, "흰 몸 → 흰 반딧불 = 빨간 X(소용없음)")
 			else:
 				check(not 불가, "검정 몸 → 흰 반딧불 = 표적 점(칠할 수 있음)")
+		_p.set("player_color", ColorDefs.BLACK)
+		_씬.set("_무적", 0.0)
 
 	# ── ② C 풀이 ──
 	var 거미 := 찾기("거미01") as Node2D
@@ -84,10 +89,12 @@ func run() -> void:
 		return
 	print("    거미 영역 %.1f칸 · 깨어남 %.1f칸 · 둥지 칸 %.1f" % [float(거미.get("영역_칸")), float(거미.get("깨어남_칸")), 거미.global_position.x / C])
 	_죽음 = 0
-	# 줄 너머(152)로 다가가 깨운다 — 흰 몸(반딧불 흰 빛 안이어도 안전)
+	# 줄 너머(152)로 다가가 깨운다 — [2026-10-10] 검정 몸: 바닥(구조)이 검정이 됐다(도형님 05 제보).
+	#   예전엔 "흰 몸이면 반딧불 흰 빛 안이어도 안전" 이었지만 이제 흰 몸은 구조 바닥에서 죽는다 →
+	#   검정 몸으로 다가가 깨우고, 반딧불이 147 에 내려앉아 빛을 켤 때는 빛 밖(140)에 물러나 있어야 한다.
 	_p.global_position = Vector2(152 * C, 55 * C - 1)
 	_p.velocity = Vector2.ZERO
-	_p.set("player_color", ColorDefs.WHITE)
+	_p.set("player_color", ColorDefs.BLACK)
 	var 깸 := false
 	for f in 120:
 		await wait(1)
@@ -127,6 +134,12 @@ func run() -> void:
 		await wait(1)
 		if int(거미.get("지금")) == 0:
 			break
+	# [2026-10-10] 이 단계는 '거미 영역' 시험이다 — 반딧불 빛 판정은 잠깐 뺀다. 구조가 검정이 되어 이제 검정 몸은
+	#   반딧불 흰 빛 아래를 그냥 못 지나간다(기다리거나 칠해야 한다 — 그건 위 C 풀이가 본다).
+	var 뺀빛: Array = []
+	for n in get_nodes_in_group("색빛"):
+		뺀빛.append(n)
+		n.remove_from_group("색빛")
 	_죽음 = 0
 	_p.global_position = Vector2(152 * C, 55 * C - 1)
 	_p.velocity = Vector2.ZERO
@@ -139,12 +152,17 @@ func run() -> void:
 	_p.set("자동_걷기", 0.0)
 	await wait(240)
 	check(_죽음 == 0 and absf(거미.global_position.x / C - 157.5) <= 11.0, "C: 깨운 뒤 달아나면 산다 · 거미는 영역 밖으로 안 나옴(거미 칸 %.1f)" % (거미.global_position.x / C))
+	for n in 뺀빛:
+		if is_instance_valid(n):
+			n.add_to_group("색빛")
 
 	# ── ③ 세 번째 체크포인트(창살 너머 171) ──
 	var 체 := _씬.get_node_or_null("체크포인트/체크04") as Node2D
 	check(체 != null and absf(체.global_position.x / C - 171.5) < 0.6, "체크04 = 창살 너머 D 선반(칸 %.1f)" % (체.global_position.x / C if 체 else -1.0))
 	if 체:
-		for 색 in [ColorDefs.BLACK, ColorDefs.WHITE]:
+		# [2026-10-10] 체크04 는 구조 바닥 위 — 구조가 검정이 되어 흰 몸은 바닥 때문에 죽는다(빛과 무관) → 검정 몸만 본다.
+		#   (촛불등 부활은 저장한 바닥 색 = 검정으로 되살린다 · 월드 _체크포인트_갱신)
+		for 색 in [ColorDefs.BLACK]:
 			_죽음 = 0
 			for f in 60 * 20:
 				_p.global_position = 체.global_position + Vector2(0, -1)

@@ -38,6 +38,7 @@ var _죽은자리 := Vector2.ZERO
 var _공중 := false
 var _튐 := false
 var _바닥프레임 := 0
+var _놓은자리 := Vector2.INF     ## [2026-10-10] 이번 비행을 놓은 자리(사망 모션이 끝나며 옮겨지면 다시 놓는다)
 var _합계 := {"성공": 0, "실패": 0, "건너뜀": 0}
 var _스테이지_합계 := {}
 
@@ -137,7 +138,11 @@ func _주기빛_끄기() -> void:
 func _유령_칠하기(색: int) -> void:
 	# 지형.gd enum 상태 { 무색, 검정, 흰색, 회색 } — 검정 1 · 흰색 2
 	var 상태값 := 1 if 색 == ColorDefs.BLACK else 2
-	for n in _씬.get_node("지형").get_children():
+	# [2026-10-10] 손본 씬에 나중에 얹은 판("추가지형" 묶음)의 유령판도 같이 칠한다
+	var 판들: Array = _씬.get_node("지형").get_children()
+	if _씬.has_node("추가지형"):
+		판들 += _씬.get_node("추가지형").get_children()
+	for n in 판들:
 		if n.get_meta("design_kind", "") == "유령":
 			n.call("_전체_즉시", 상태값, true)
 			n.call("_충돌레이어_갱신")
@@ -214,16 +219,27 @@ func _physics_process(_d: float) -> bool:
 	_f += 1
 	match _단계:
 		"씬준비":
-			if _f >= 30:          # SS2D 지형이 구워지고 페인트 코어가 붙을 시간
+			if _f == 30:          # SS2D 지형이 구워지고 페인트 코어가 붙을 시간
 				_주기빛_끄기()
 				# 길목(연결구) 판정을 끈다 — 길목 앞에 내리는 비행이 스테이지 전환을 일으키면 재생이 끊긴다
 				var 연결 := _씬.get_node_or_null("연결")
 				if 연결:
 					연결.process_mode = Node.PROCESS_MODE_DISABLED
 				_새기믹_손질()
+			elif _f >= 33:
+				# [2026-10-10] 손질(queue_free)이 실제로 빠진 **뒤에** 첫 비행을 놓는다 — 같은 프레임에 놓으면 아직 남은
+				#   반딧불 빛에 첫 비행이 1프레임 만에 죽었다(19 거미방 · 구조가 검정이 되며 첫 비행이 검정 몸이 된 뒤 드러남).
 				_다음_비행()
 		"놓임":
 			# 3프레임 가만히 — 바닥에 붙는지 본다(점프는 바닥에서만 된다)
+			# [2026-10-10] 앞 비행의 사망 모션(비동기 _리스폰)이 끝나기 전엔 출발하지 않는다 — 끝나며 몸을 부활 자리로 옮긴다.
+			if bool(_씬.get("_사망중")):
+				_f = 0
+				return false
+			if _f == 4 and _놓은자리 != Vector2.INF and _p.global_position.distance_to(_놓은자리) > 40.0:
+				_놓기(_놓은자리)          # 사망 모션이 끝나며 부활 자리로 옮겨졌다 — 다시 놓는다
+				_f = 0
+				return false
 			if _f >= 4:
 				_출발()
 		"도약대기":
@@ -282,7 +298,8 @@ func _다음_비행() -> void:
 			_스테이지_합계["건너뜀"] += 1
 			_다음_비행()
 		return
-	_놓기(Vector2(x, y - 1.0))
+	_놓은자리 = Vector2(x, y - 1.0)
+	_놓기(_놓은자리)
 	_단계 = "놓임"
 	_f = 0
 
