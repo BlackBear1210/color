@@ -20,7 +20,8 @@ class_name 열쇠
 const 새그림_폴더 := "res://assets/textures/props/신규기믹_v02/게임용/열쇠/"
 static var _새그림들: Dictionary = {}
 ## 하수도 기존 문 연결·획득 규칙을 유지하고 새 원형 열쇠의 그림만 선택한다.
-@export_enum("기존", "완성", "검정 조각", "흰 조각") var 새_디자인: int = 0:
+## 새로 놓는 하수도 열쇠도 챕터1 원형 그림을 기본으로 쓴다. 기존 문/획득 규칙은 유지한다.
+@export_enum("기존", "완성", "검정 조각", "흰 조각") var 새_디자인: int = 1:
 	set(v):
 		새_디자인 = v
 		queue_redraw()
@@ -163,7 +164,16 @@ func _draw() -> void:
 
 
 func _새_열쇠_그리기() -> bool:
-	var 이름들: Array[String] = ["왼쪽", "오른쪽"] if 새_디자인 == 1 else (["왼쪽"] if 새_디자인 == 2 else ["오른쪽"])
+	# 조건식 속 배열 리터럴은 일반 Array로 평가되어 Array[String] 대입이 실패한다.
+	# 처음부터 타입이 정해진 배열에 문자열을 넣어 완성/검정/흰 조각의 선택을 유지한다.
+	var 이름들: Array[String] = []
+	if 새_디자인 == 1:
+		이름들.append("왼쪽")
+		이름들.append("오른쪽")
+	elif 새_디자인 == 2:
+		이름들.append("왼쪽")
+	else:
+		이름들.append("오른쪽")
 	# 두 조각은 같은 크기·기준점의 캔버스다. 원본 위치 그대로 겹쳐야 지그재그 이음이 맞물린다.
 	for 이름 in 이름들:
 		if not _새그림들.has(이름):

@@ -37,7 +37,15 @@ func _ready() -> void:
 	for i in 4:
 		_돌.append(load(경로 + "step_stone_%d.wav" % (i + 1)))
 		_물발.append(load(경로 + "step_water_%d.wav" % (i + 1)))
-	_풍덩 = load(경로 + "splash_enter.wav")
+	# 새 찰박은 입수와 물속 보행에 공통 사용한다. 임포트 전에는 기존 합성음을 유지한다.
+	var 파일 := "res://assets/audio/sfx/웅덩이_찰박.ogg"
+	if ResourceLoader.exists(파일):
+		var 찰박 := load(파일) as AudioStream
+		if 찰박:
+			_풍덩 = 찰박
+			_물발.assign([찰박])
+	if _풍덩 == null:
+		_풍덩 = load(경로 + "splash_enter.wav")
 	_발 = AudioStreamPlayer.new()
 	_발.bus = "SFX"
 	_발.volume_db = -12.0
@@ -49,9 +57,11 @@ func _ready() -> void:
 
 func 입수(세기: float) -> void:
 	# 걸어 들어가면 작게, 높은 데서 떨어지면 크게.
-	_입수.volume_db = lerpf(-16.0, -4.0, clampf(세기, 0.0, 1.0))
-	_입수.pitch_scale = _난수.randf_range(0.92, 1.08)
+	# 작게 들어가면 부드럽게, 낙하 입수도 과장되지 않게 새 음원의 음량 범위를 좁힌다.
+	_입수.volume_db = lerpf(-18.0, -10.0, clampf(세기, 0.0, 1.0))
+	_입수.pitch_scale = _난수.randf_range(0.97, 1.03)
 	_입수.play()
+	_걸음 = 걸음_간격      # 진입과 첫 물속 발걸음이 같은 순간 겹치지 않게 한다.
 
 func _physics_process(delta: float) -> void:
 	var 플 := get_tree().get_first_node_in_group("player") as CharacterBody2D
@@ -79,7 +89,8 @@ func _발소리(플: CharacterBody2D, delta: float) -> void:
 		return
 	var 목록 := _물발 if 물속 else _돌
 	_발.stream = 목록[_난수.randi_range(0, 목록.size() - 1)]
-	_발.pitch_scale = _난수.randf_range(0.9, 1.1)
+	# 새 물감풍 찰박의 질감을 보존해 물속 보행은 높낮이 변화도 작게 한다.
+	_발.pitch_scale = _난수.randf_range(0.97, 1.03) if 물속 else _난수.randf_range(0.9, 1.1)
 	_발.volume_db = (-10.0 if 물속 else -14.0) + linear_to_db(발소리_배율)
 	_발.play()
 

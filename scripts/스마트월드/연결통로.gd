@@ -273,9 +273,12 @@ func _전경_갱신() -> void:
 			_띠 = Node2D.new()
 			_띠.name = "전경띠"
 			_띠.z_as_relative = false
-			_띠.z_index = 60                     # 타일·플레이어보다 앞(쳅터1 연결구와 같은 층)
 			_띠.draw.connect(_띠_그리기)
 			add_child(_띠)
+		# 챕터2 시작 입구는 배경·지형을 가리되 몸(z 1)을 덮지 않게 한다.
+		# 출구는 기존 z 60을 유지해 어둠 속으로 걸어 들어가는 전환이 남는다.
+		var 하수도_입구 := 역할 == 역할_.입구 and get_parent().scene_file_path.begins_with("res://scenes/world_2_클로드/")
+		_띠.z_index = 0 if 하수도_입구 else 60
 		_띠.queue_redraw()
 	elif _띠:
 		_띠.queue_free()

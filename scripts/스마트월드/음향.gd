@@ -33,12 +33,17 @@ const 샘플레이트: float = 22050.0
 const 버퍼길이: float = 0.4
 ## 전체 음량(데시벨). 앰비언스라 아주 작게 깔린다.
 const 기본_음량db: float = -22.0
+## 실제 곡은 효과음을 가리지 않는 시작 음량으로 재생하고 BGM 설정 버스를 그대로 따른다.
+const 음원_음량db: float = -18.0
+const 로비_음원 := "res://assets/audio/bgm/로비.ogg"
 ## 챕터가 바뀔 때 톤이 옮겨가는 시간(초). 장면전환의 암흑 구간보다 길게 잡아
 ## **화면이 밝아질 때 이미 새 톤이 들리고 있게** 한다.
 const 톤_전환시간: float = 2.2
 
 ## 진짜 음원이 꽂힌 챕터 목록 { 챕터번호: AudioStream }
 static var _음원: Dictionary = {}
+## 지연 추가가 끝나기 전 여러 씬에서 준비를 불러도 음악 노드는 하나만 만든다.
+static var _준비중: Node = null
 
 var _플레이어: AudioStreamPlayer = null
 var _재생: AudioStreamGeneratorPlayback = null
@@ -58,6 +63,8 @@ var _위상2: float = 0.0
 var _위상3: float = 0.0
 var _lfo: float = 0.0
 var _현재챕터: int = -1
+var _확인한씬: int = 0
+var _현재음량비: float = 1.0
 
 
 # ── 바깥에서 쓰는 API ───────────────────────────────────────────────────────
@@ -75,11 +82,16 @@ static func 준비(어디서든: Node) -> Node:
 	var 이미 := 루트.get_node_or_null("챕터음향")
 	if 이미:
 		return 이미
+	if is_instance_valid(_준비중):
+		return _준비중
 	var n := 챕터음향.new()
 	n.name = "챕터음향"
 	# 일시정지 중에도 앰비언스는 계속 흐른다 (멈추면 "게임이 죽은" 느낌이 난다)
 	n.process_mode = Node.PROCESS_MODE_ALWAYS
-	루트.add_child(n)
+	# 타이틀 _ready 중 루트는 자식을 준비하고 있어 즉시 add_child가 실패한다(실행 로그 확인).
+	# 씬 초기화 뒤 추가하고, 그 전에 들어온 챕터 선택은 _ready 끝에서 실제 재생한다.
+	_준비중 = n
+	루트.add_child.call_deferred(n)
 	return n
 
 
@@ -105,17 +117,33 @@ func 챕터로(챕터번호: int, 즉시: bool = false) -> void:
 ## 화면이 까맣게 죽을 때 소리만 그대로면 "화면만 꺼진" 느낌이 난다.
 func 음량비(비율: float) -> void:
 	var v := clampf(비율, 0.0, 1.0)
+	_현재음량비 = v       # 지연 추가 전에 요청된 페이드·로비 음량도 준비 완료 뒤 복원한다.
 	var db := 기본_음량db if v > 0.001 else -80.0
 	if v > 0.001:
 		db = 기본_음량db + linear_to_db(v)
 	if _플레이어:
 		_플레이어.volume_db = db
 	if _음원플레이어:
-		_음원플레이어.volume_db = db
+		_음원플레이어.volume_db = 음원_음량db + linear_to_db(v) if v > 0.001 else -80.0
 
 
 func 현재_챕터() -> int:
 	return _현재챕터
+
+
+## 집·하수도·로비 모두 같은 지속 재생기를 사용해 씬 전환 때 두 곡이 겹치지 않는다.
+func 씬에_맞추기(씬: Node) -> void:
+	var 번호 := 챕터.경로에서_챕터(씬.scene_file_path)
+	if 번호 == 0:
+		로비로()
+	elif 번호 > 0:
+		챕터로(번호, true)
+
+
+func 로비로() -> void:
+	챕터로(0, true)
+	# 인게임 암전 도중 로비로 돌아와도 이전 무음 상태를 남기지 않는다.
+	음량비(1.0)
 
 
 # ── 내부 ────────────────────────────────────────────────────────────────────
@@ -123,6 +151,15 @@ func 현재_챕터() -> int:
 func _ready() -> void:
 	# 합성 드론과 실제 음원을 같은 음악 버스로 보내 효과음 볼륨과 분리한다.
 	preload("res://scripts/스마트월드/게임설정.gd").소리_준비()
+	# 오디오 preload는 새 파일 임포트 전에 파싱을 막으므로 런타임에 등록한다.
+	for 번호 in [0, 1, 2]:
+		var 파일: String = 로비_음원 if 번호 == 0 else String(챕터.팔레트(번호).get("음악", ""))
+		if not _음원.has(번호) and ResourceLoader.exists(파일):
+			var 스트림 := load(파일) as AudioStreamOggVorbis
+			if 스트림:
+				var 반복 := 스트림.duplicate() as AudioStreamOggVorbis
+				반복.loop = true
+				음원_꽂기(번호, 반복)
 	var 생성 := AudioStreamGenerator.new()
 	생성.mix_rate = 샘플레이트
 	생성.buffer_length = 버퍼길이
@@ -140,14 +177,24 @@ func _ready() -> void:
 	_음원플레이어 = AudioStreamPlayer.new()
 	_음원플레이어.bus = "BGM"
 	_음원플레이어.name = "음원"
-	_음원플레이어.volume_db = 기본_음량db
+	_음원플레이어.volume_db = 음원_음량db
 	_음원플레이어.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_음원플레이어)
 
 	set_process(true)
+	_준비중 = null
+	# 준비() 직후 로비로()/챕터로()가 먼저 불린 경우, 그 선택을 초기화 뒤 적용한다.
+	if _현재챕터 >= 0:
+		_음원_전환(_현재챕터)
+	음량비(_현재음량비)
 
 
 func _process(delta: float) -> void:
+	# 보관한 방은 _ready가 다시 안 돈다. 실제 현재 씬 교체를 감지해 곡을 맞춘다.
+	var 씬 := get_tree().current_scene
+	if 씬 != null and 씬.get_instance_id() != _확인한씬:
+		_확인한씬 = 씬.get_instance_id()
+		씬에_맞추기(씬)
 	# ── 톤을 목표값으로 옮긴다 ──
 	if _전환속도 > 0.0:
 		var t := minf(delta * _전환속도, 1.0)
@@ -202,6 +249,13 @@ func _음원_전환(챕터번호: int) -> void:
 		return
 	if 스트림 == null:
 		_음원플레이어.stop()
+		# 실제 곡이 없는 챕터에서만 기존 합성음을 재개한다.
+		if not _플레이어.playing:
+			_플레이어.play()
+			_재생 = _플레이어.get_stream_playback() as AudioStreamGeneratorPlayback
 		return
+	# 드론 버퍼까지 중지해 제공된 음악 뒤에 합성 웅웅거림이 남지 않게 한다.
+	_플레이어.stop()
+	_재생 = null
 	_음원플레이어.stream = 스트림
 	_음원플레이어.play()

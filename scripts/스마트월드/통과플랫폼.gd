@@ -20,6 +20,8 @@ class_name 통과플랫폼
 # 검정/흰색 원본과 구멍의 알파를 그대로 사용해 물과 배경이 격자 사이로 보이게 한다.
 const 격자_아틀라스 = preload("res://assets/textures/obstacles/grate/cast_iron_v1/grate_atlas.png")
 const 원근_그림 = preload("res://scripts/스마트월드/격자_원근그림.gd")
+## 벽돌 배경에 묻히지 않도록 고정색의 명도 범위와 구멍 가장자리 대비를 따로 잡는다.
+const 흑백_셰이더 = preload("res://shaders/grate_fixed_color.gdshader")
 
 ## 챕터1 원근 지형과 같은 방향의 주철 윗면. 기존 다른 스테이지는 저장값을 유지한다.
 @export var 챕터1_원근: bool = false:
@@ -44,13 +46,16 @@ func 발_그림_깊이() -> float:
 @export_enum("검정:0", "흰색:1") var 고정색: int = ColorDefs.BLACK:
 	set(value):
 		고정색 = clampi(value, 0, 1)
+		_색_재질_갱신()
 		queue_redraw()
 
 func _ready() -> void:
-	# 얇은 격자가 이동 광원에 번쩍이지 않도록 원래 흑백 명도를 고정한다.
-	var 격자재질 := CanvasItemMaterial.new()
-	격자재질.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	# 흰색은 밝게, 검정은 짙게 칠하되 주철 질감·구멍 알파·면별 명암은 남긴다.
+	# 셰이더도 unshaded라 이동 광원 때문에 고정색이 바뀌어 보이지 않는다.
+	var 격자재질 := ShaderMaterial.new()
+	격자재질.shader = 흑백_셰이더
 	material = 격자재질
+	_색_재질_갱신()
 	# 축소되는 철망의 가는 선은 밉맵으로 평균화해 카메라 이동 시 반짝임을 줄인다.
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	collision_layer = 1
@@ -62,6 +67,12 @@ func _ready() -> void:
 	# 물감 대상 그룹에는 등록하지 않되, 직접 명중 호출도 아래에서 차단한다.
 	add_to_group("통과플랫폼")
 	queue_redraw()
+
+
+func _색_재질_갱신() -> void:
+	# 에디터 색 변경과 실행 초기화 모두 같은 고정색을 사용해 그림/사망 판정을 맞춘다.
+	if material is ShaderMaterial:
+		(material as ShaderMaterial).set_shader_parameter("white_grate", 고정색 == ColorDefs.WHITE)
 
 
 func _다시_만들기() -> void:

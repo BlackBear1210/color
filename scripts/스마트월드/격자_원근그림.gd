@@ -47,8 +47,9 @@ static func 그리기(item: CanvasItem, size: Vector2, white: bool) -> void:
 			piece = Rect2(source.position + Vector2(source.size.x - 48, 0), Vector2(48, source.size.y))
 		# 윗면 전체와 구멍을 같은 평행사변형으로 투영해 바깥 테두리와 격자 방향이 일치한다.
 		_면(item, PackedVector2Array([Vector2(left + a, back_y), Vector2(left + b, back_y),
-			Vector2(left + b + shift, front_y), Vector2(left + a + shift, front_y)]), piece, 0.88 if white else 0.82)
+			Vector2(left + b + shift, front_y), Vector2(left + a + shift, front_y)]), piece, 1.0)
+		# 흑백을 또렷하게 칠한 윗면은 다시 어둡게 누르지 않고, 앞 단면에서만 깊이를 준다.
 		# 앞 단면에는 원본 아랫 테두리만 사용한다. 구멍 아래를 불투명한 큰 판으로 막지 않는다.
 		var rim := Rect2(Vector2(piece.position.x, source.end.y - 16), Vector2(piece.size.x, 12))
 		_면(item, PackedVector2Array([Vector2(left + a + shift, front_y), Vector2(left + b + shift, front_y),
-			Vector2(left + b + shift, front_y + thickness), Vector2(left + a + shift, front_y + thickness)]), rim, 0.72)
+			Vector2(left + b + shift, front_y + thickness), Vector2(left + a + shift, front_y + thickness)]), rim, 0.88)

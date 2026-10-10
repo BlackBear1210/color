@@ -9,7 +9,7 @@ extends Control
 ## ▣ 그림 칸 — assets/ui/로비/타이틀/ (파일을 넣기만 하면 쓴다 · 없으면 코드 그림 · 크기·모양은 assets/ui/로비/_이미지_목록.md)
 ##   배경.png(1920×1080 · 화면을 덮는다) · 배경_안개.png(가로로 천천히 흐르는 안개 · 투명) · 로고.png(투명 · 가운데 위)
 ##   메뉴_붓.png(고른 메뉴 뒤 붓 자국 · 투명) · 장식_왼.png · 장식_오른.png(고른 메뉴 양옆 장식) · 먼지.png(작은 입자)
-##   소리: 타이틀_음악.ogg(있으면 반복 재생)
+##   소리: assets/audio/bgm/로비.ogg — 챕터음향의 공통 재생기로 반복한다.
 ## ▣ 메뉴: 이어하기(진행이 있을 때) · 처음부터 · 스테이지(퍼즐 보드) · 설정 · 나가기 / F12 = 예전 개발 로비
 ## ▣ 기능: 이어하기 = 아직 안 깬 첫 조각으로(이야기 모드) · 처음부터 = 진행을 지우고 01(확인 창 · 기록은 남긴다)
 ##   설정 = 소리 크기 · 전체 화면(user://settings.cfg — 예전 로비와 같은 키).
@@ -21,6 +21,9 @@ const 설정_경로 := "user://settings.cfg"
 const 개발_로비 := "res://scenes/lobby/lobby.tscn"
 const 보드표 := preload("res://scripts/진행/쳅터1_보드표.gd")
 const 설정 := preload("res://scripts/스마트월드/게임설정.gd")
+# 사용자가 고른 붓 소리 원본을 메뉴 확정에 사용한다. WAV를 직접 읽어 임포트 없이도 준비한다.
+const 확인음_경로 := "res://assets/audio/sfx/로비_붓선택.wav"
+var _확인음: AudioStreamWAV = null
 
 var _캔버스: Control
 var _그림: Dictionary = {}
@@ -203,7 +206,7 @@ func _메뉴_만들기() -> void:
 	# 집을 다 깨기 전에도 제작 중인 하수도 지도를 찾을 수 있도록 챕터 입구를 명시한다.
 	_항목("스테이지", _쳅터_선택)
 	_항목("설정", _설정_창)
-	_항목("나가기", func(): get_tree().quit())
+	_항목("나가기", _나가기)
 	var 첫: Button = _메뉴.get_child(0)
 	첫.call_deferred("grab_focus")
 	var 판 := Label.new()
@@ -234,6 +237,8 @@ func _항목(글: String, 할일: Callable) -> Button:
 	preload("res://scripts/ui/물감버튼.gd").꾸미기(b, _그림["메뉴_붓"])
 	b.pressed.connect(func():
 		if not _이동중 and _창 == null:
+			# 실제 확정 신호에서만 한 번 울리고 포커스 이동은 조용히 둔다.
+			_확인_소리()
 			할일.call())
 	b.focus_entered.connect(_고름.bind(b))
 	b.mouse_entered.connect(b.grab_focus)
@@ -285,6 +290,30 @@ func _표시_그리기() -> void:
 
 
 # ── 동작 ────────────────────────────────────────────────────────────────────
+func _확인_소리() -> void:
+	if _확인음 == null:
+		_확인음 = AudioStreamWAV.load_from_file(확인음_경로)
+	if _확인음 == null:
+		return
+	var 소리 := AudioStreamPlayer.new()
+	소리.bus = "SFX"
+	소리.stream = _확인음
+	소리.volume_db = -8.0
+	소리.process_mode = Node.PROCESS_MODE_ALWAYS
+	# 씬 전환·창 닫기로 소리 꼬리가 잘리지 않게 루트에서 재생하고 끝나면 정리한다.
+	get_tree().root.add_child(소리)
+	소리.finished.connect(소리.queue_free)
+	소리.play()
+
+
+func _나가기() -> void:
+	_이동중 = true
+	# 사용자가 고른 붓 소리의 길이에 맞춰 기다려 종료 때 뒷부분이 잘리지 않게 한다.
+	var 대기 := _확인음.get_length() + 0.03 if _확인음 != null else 0.03
+	await get_tree().create_timer(대기).timeout
+	get_tree().quit()
+
+
 func _가기(경로: String) -> void:
 	if _이동중:
 		return
@@ -377,7 +406,12 @@ func _창_버튼(부모: Control, 글: String, 할일: Callable) -> Button:
 	b.add_theme_font_override("font", _글꼴)
 	b.add_theme_font_size_override("font_size", 24)
 	preload("res://scripts/ui/물감버튼.gd").꾸미기(b, _그림["메뉴_붓"])
-	b.pressed.connect(할일)
+	b.pressed.connect(func():
+		# 닫힌 창·전환 중 남은 신호는 무시해 확인음과 실제 동작의 중복을 막는다.
+		if _이동중 or _창 == null:
+			return
+		_확인_소리()
+		할일.call())
 	부모.add_child(b)
 	return b
 
@@ -451,17 +485,8 @@ func _창_닫기() -> void:
 
 
 func _음악() -> void:
-	var 경로 := 그림_폴더 + "타이틀_음악.ogg"
-	if not ResourceLoader.exists(경로):
-		return
-	var p := AudioStreamPlayer.new()
-	# 타이틀 음악도 배경음악 슬라이더를 따라야 한다.
-	p.bus = "BGM"
-	p.stream = load(경로)
-	p.autoplay = true
-	if p.stream is AudioStreamOggVorbis:
-		(p.stream as AudioStreamOggVorbis).loop = true
-	_캔버스.add_child(p)
+	# 로비도 지속 재생기를 공유해 인게임에서 돌아왔을 때 이전 챕터 곡과 겹치지 않는다.
+	챕터음향.준비(self).로비로()
 
 
 func _화면_맞춤() -> void:

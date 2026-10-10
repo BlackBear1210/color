@@ -10,7 +10,7 @@ extends Node
 ##   · `player.gd` 점프가 실제로 성립한 프레임 → `점프()`
 ##   · `player.gd` 착지한 프레임 → `착지()`  (높은 곳인지는 여기서 잰다)
 ##   · `월드.gd` `_리스폰()` = 사망 → `죽음()`
-##   걷기는 이 노드가 스스로 본다(바닥 + 좌우로 움직이는 중이면 걸음 간격마다).
+##   걷기는 CharacterSprite 발 디딤 프레임에 연결한다(스프라이트가 없는 옛 씬만 시간 간격).
 ##
 ## ▣ 왜 Node(2D 아님)이고 AudioStreamPlayer(2D 아님)인가
 ##   · Player 루트는 scale 이 비균등하다(0.795, 0.368 — 플레이어_보조광.gd 참고). Node 는 영향이 없다.
@@ -39,8 +39,10 @@ const 경로 := "res://assets/audio/sfx/"
 @export var 죽음_음량: float = -4.0
 
 @export_group("판정")
-## 초 — 하수도 발소리(0.30)와 같은 걸음 간격. move_speed 390 달리기 애니 한 걸음과 맞다.
+## 스프라이트 없는 옛 씬의 대체 간격. 정식 캐릭터는 16프레임/20fps의 발 디딤을 직접 따른다.
 @export var 걸음_간격: float = 0.30
+## 부츠 시트에서 발이 내려와 디디는 두 프레임(0부터 센다). 좌우·흑백에 같은 박자를 쓴다.
+@export var 발디딤_프레임 := PackedInt32Array([6, 14])
 ## 이 속도(px/s)보다 느리면 걷는 걸로 안 본다(벽에 막혀 미끄러지는 중 등).
 @export var 걷기_최소속도: float = 40.0
 ## px — 공중에서 가장 높았던 곳부터 이만큼 넘게 떨어지면 "높은 곳 착지" 소리.
@@ -50,6 +52,7 @@ const 경로 := "res://assets/audio/sfx/"
 @export var 착지_최소거리: float = 12.0
 
 var _플: CharacterBody2D
+var _걷기그림: AnimatedSprite2D
 var _걷기: Array[AudioStream] = []
 var _걷기_순번 := 0
 var _걸음 := 0.0
@@ -65,7 +68,12 @@ var _죽음: AudioStreamPlayer
 func _ready() -> void:
 	_플 = get_parent() as CharacterBody2D
 	_난수.randomize()
-	for n in ["걷기_1", "걷기_2"]:
+	# 사용자가 제공한 #1을 기본 발걸음으로 선택한다. 임포트 전에는 기존 음원을 대비책으로 둔다.
+	var 부드러운 := _불러오기("걷기_부드러운")
+	var 목록 := ["걷기_1", "걷기_2"] if 부드러운 == null else []
+	if 부드러운:
+		_걷기.append(부드러운)
+	for n in 목록:
 		var s := _불러오기(n)
 		if s:
 			_걷기.append(s)
@@ -73,6 +81,10 @@ func _ready() -> void:
 	_몸 = _새_재생기("몸")
 	_죽음 = _새_재생기("죽음")
 	_죽음.stream = _불러오기("죽음_잉크터짐")
+	_걷기그림 = _플.get_node_or_null("CharacterSprite") as AnimatedSprite2D if _플 else null
+	if _걷기그림:
+		# 타이머는 애니메이션 시작·중단 때 발과 어긋나므로 실제 frame_changed 신호만 사용한다.
+		_걷기그림.frame_changed.connect(_발디딤)
 
 
 func _새_재생기(이름: String) -> AudioStreamPlayer:
@@ -105,6 +117,9 @@ func _physics_process(delta: float) -> void:
 
 
 func _걷기_갱신(delta: float) -> void:
+	# 정식 캐릭터는 발 프레임 신호가 맡는다. 멈춤·사격·공중 모션에서 타이머 소리가 나지 않는다.
+	if is_instance_valid(_걷기그림):
+		return
 	if absf(_플.velocity.x) < 걷기_최소속도 or _걷기.is_empty():
 		_걸음 = 걸음_간격 * 0.5      # 멈췄다 다시 걸으면 반 박자 뒤 첫 걸음
 		return
@@ -112,6 +127,25 @@ func _걷기_갱신(delta: float) -> void:
 	if _걸음 > 0.0:
 		return
 	_걸음 = 걸음_간격
+	_발걸음_재생()
+
+
+func _발디딤() -> void:
+	if not String(_걷기그림.animation).ends_with("_walk"):
+		return
+	if not 발디딤_프레임.has(_걷기그림.frame):
+		return
+	if _플 == null or not _플.is_on_floor() or absf(_플.velocity.x) < 걷기_최소속도:
+		return
+	# 리스폰 직후·착지 연출 중에는 착지음과 기본 발걸음을 겹치지 않는다.
+	if _착지_무시 > 0.0:
+		return
+	_발걸음_재생()
+
+
+func _발걸음_재생() -> void:
+	if _걷기.is_empty():
+		return
 	# 하수도 웅덩이 속이면 찰박 소리는 하수도_물소리.gd 가 낸다 → 여기는 쉰다(두 소리가 겹치지 않게).
 	var 하수도 := get_tree().get_first_node_in_group("하수도_소리")
 	if 하수도 and 하수도.has_method("발이_물속") and 하수도.발이_물속(_플.global_position):
@@ -119,8 +153,9 @@ func _걷기_갱신(delta: float) -> void:
 	# 두 발을 번갈아 + 높낮이를 조금씩 달리해 같은 소리가 기계처럼 반복되지 않게.
 	_발.stream = _걷기[_걷기_순번 % _걷기.size()]
 	_걷기_순번 += 1
-	_발.pitch_scale = _난수.randf_range(0.92, 1.08)
-	_발.volume_db = 걷기_음량 + _난수.randf_range(-1.5, 0.0)
+	# 선택한 부드러운 접촉음의 질감을 유지하도록 음정·음량 변화는 아주 작게 제한한다.
+	_발.pitch_scale = _난수.randf_range(0.98, 1.02)
+	_발.volume_db = 걷기_음량 + _난수.randf_range(-0.8, 0.0)
 	_발.play()
 
 
