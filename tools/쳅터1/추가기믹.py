@@ -47,14 +47,20 @@ C = 규격.칸
     "누름발판": "res://scenes/쳅터1/기믹/누름발판.tscn",
     "튀어나오는판": "res://scenes/쳅터1/기믹/튀어나오는판.tscn",
     "상자": "res://scenes/집/스마트월드_장애물/박스.tscn",
+    # [2026-10-10] 손본 씬에 나중에 넣는 옛 종류("추가": true) · 추가가시
+    "빛": "res://scenes/쳅터1/기믹/창문빛.tscn",
+    "도약대": "res://scenes/집/스마트월드_장애물/도약대.tscn",
+    "발판": "res://scenes/집/스마트월드_장애물/움직이는발판.tscn",
+    "가시": "res://scenes/장애물/가시.tscn",
 }
 # [2026-10-09] 씬 리소스 id 는 **영문·숫자·밑줄만** 된다(Godot: "The scene unique ID must contain only letters, numbers,
 #   and underscores"). 예전엔 "추가_반딧불" 처럼 한글 id 를 써서 씬을 열 때마다 오류가 쏟아졌다 → 아래 표로 바꿔 쓴다.
 #   지울 때는 옛 한글 id("추가_…")와 새 id("add_…")를 둘 다 지운다(이미 끼운 씬도 다시 돌리면 깨끗해진다).
 _아스키 = {"판": "plank", "그을음": "soot", "열쇠": "key", "문": "door", "퍼즐": "puzzle", "레버": "lever",
          "샹들리에": "chandelier", "단서": "hint", "비밀문": "secret", "양초": "candle", "반딧불": "firefly",
-         "거미줄": "web", "빛받이": "receiver", "누름발판": "plate", "튀어나오는판": "popout", "상자": "box"}
-_지형아스키 = {"흰": "white", "검정": "black", "유령": "ghost", "구조": "struct"}
+         "거미줄": "web", "빛받이": "receiver", "누름발판": "plate", "튀어나오는판": "popout", "상자": "box",
+         "빛": "light", "도약대": "pad", "발판": "mover", "가시": "spike"}
+_지형아스키 = {"흰": "white", "검정": "black", "유령": "ghost", "구조": "struct", "흰구조": "wstruct"}
 
 새종류 = (기믹모듈.부서지는판, 기믹모듈.그을음, 기믹모듈.열쇠조각, 기믹모듈.잠긴문, 기믹모듈.레버퍼즐, 기믹모듈.촛불,
          기믹모듈.반딧불몹, 기믹모듈.그을음거미, 기믹모듈.빛받이, 기믹모듈.누름계단)
@@ -69,20 +75,44 @@ def _V(x, y):
     return f"Vector2({_수(x)}, {_수(y)})"
 
 
+# [2026-10-10 Claude] 옛 종류(빛줄기·도약대·움직이는발판)도 도안에 "추가": true 를 적으면 이 묶음에 들어간다 —
+#   손으로 고친 씬은 생성기가 "장애물" 을 다시 못 쓰기 때문(도형님 10-10 "스테이지마다 기믹 4개 이상").
+_옛종류_장면 = {"빛줄기": "빛", "도약대": "도약대", "움직이는발판": "발판"}
+
+
 def 새기믹(dn):
-    return [g for g in 기믹모듈.목록(dn) if isinstance(g, 새종류)]
+    return [g for g in 기믹모듈.목록(dn) if isinstance(g, 새종류) or getattr(g, "추가", False)]
 
 
 def 노드_글(dn):
     """(ext 목록 [(id, 경로)], 노드 글) — 새 기믹이 없으면 ([], "")."""
     gs = 새기믹(dn)
-    if not gs:
+    가시들 = getattr(dn, "추가가시", [])
+    if not gs and not 가시들:
         return [], ""
     쓰는 = set()
     줄 = ['[node name="추가기믹" type="Node2D" parent="."]\n']
+    # [2026-10-10] 추가가시 — 생성기 "장애물" 의 가시와 같은 글(20칸씩 끊는다)
+    k = 0
+    for gx, gy, gw in 가시들:
+        쓰는.add("가시")
+        x = gx
+        while x < gx + gw:
+            n = min(20, gx + gw - x)
+            k += 1
+            줄.append(f'[node name="추가가시{k:02d}" parent="추가기믹" instance=ExtResource("추가_가시")]\n'
+                     f'position = {_V((x + n / 2) * C, gy * C)}\n"칸수" = {n}\n')
+            x += n
     for g in gs:
         e = g.엔진값() if hasattr(g, "엔진값") else {}
-        if isinstance(g, 기믹모듈.부서지는판):
+        종류 = type(g).__name__
+        if getattr(g, "추가", False) and 종류 in _옛종류_장면:
+            # 속성 줄은 생성기와 같은 함수(만들기.기믹_본) — 노드 이름도 생성기와 같게(빛줄기03 …) 해서 시험이 찾게 한다
+            import 만들기 as 만들기모듈
+            쓰는.add(_옛종류_장면[종류])
+            줄.append("\n".join([f'[node name="{종류}{g.i:02d}" parent="추가기믹" instance=ExtResource("추가_{_옛종류_장면[종류]}")]']
+                                + 만들기모듈.기믹_본(g)) + "\n")
+        elif isinstance(g, 기믹모듈.부서지는판):
             쓰는.add("판")
             for k, (x, y) in enumerate(e["판들"]):
                 줄.append(f'[node name="부서지는판{g.i:02d}_{k + 1}" parent="추가기믹" instance=ExtResource("추가_판")]\n'
@@ -153,7 +183,9 @@ def 노드_글(dn):
         elif isinstance(g, 기믹모듈.그을음):
             쓰는.add("그을음")
             줄.append(f'[node name="그을음{g.i:02d}" parent="추가기믹" instance=ExtResource("추가_그을음")]\n'
-                     f'position = {_V(*e["원점"])}\n"방향" = {e["방향"]}\n')
+                     f'position = {_V(*e["원점"])}\n"방향" = {e["방향"]}\n'
+                     # 도안에 적은 첫 만남의 예고·영역을 씬에도 전달해야 설계와 실제 거미 난도가 일치한다.
+                     + "".join(f'"{k}" = {_수(v)}\n' for k, v in g.설정.items()))
         elif isinstance(g, 기믹모듈.열쇠조각):
             쓰는.add("열쇠")
             줄.append(f'[node name="열쇠조각{g.i:02d}" parent="추가기믹" instance=ExtResource("추가_열쇠")]\n'
@@ -213,6 +245,7 @@ def 노드_글(dn):
 #   (쳅터1 씬은 모두 같은 목재 템플릿 3_tpl_black · 4_tpl_white · 5_tpl_ghost 와 SS2D 점 스크립트를 싣고 있다).
 #   다각형 = 사각형 네 꼭짓점(시계방향 · 생성기와 같은 순서) · 속성 = 만들기.py 종류표(흰 = 위치별_판정 · 검정 = 시작상태 1).
 _템플릿경로 = {"검정": "res://scenes/지형/목재/목재_데크_검정.tscn", "구조": "res://scenes/지형/목재/목재_데크_검정.tscn",
+             "흰구조": "res://scenes/지형/목재/목재_데크_흰색.tscn",
              "흰": "res://scenes/지형/목재/목재_데크_흰색.tscn", "유령": "res://scenes/지형/목재/목재_데크_투명.tscn"}
 _점경로 = "res://addons/rmsmartshape/shapes/point.gd"
 _점배열경로 = "res://addons/rmsmartshape/shapes/point_array.gd"
@@ -258,7 +291,7 @@ def 지형_글(dn, 글):
                    f"_points = {{\n{사전}\n}}\n_point_order = PackedInt32Array({', '.join(str(i) for i in range(n))})\n"
                    f"_constraints = {{\nVector2i(0, {n - 1}): 15\n}}\n_next_key = {n}\n")
         _템플릿, 속성, 역할 = 만들기모듈.종류표[k]
-        본 = [f'[node name="{ {"흰": "흰판", "검정": "검정판", "유령": "유령판", "구조": "구조"}[k] }추가{세기[k]:02d}" parent="추가지형" instance=ExtResource("{ids[k]}")]',
+        본 = [f'[node name="{ {"흰": "흰판", "검정": "검정판", "유령": "유령판", "구조": "구조", "흰구조": "흰구조"}[k] }추가{세기[k]:02d}" parent="추가지형" instance=ExtResource("{ids[k]}")]',
              f"position = {_V(cx, cy)}"]
         본 += [f"{a} = {b}" for a, b in 속성]
         본 += [f'_points = SubResource("{sid}_PA")', "collision_size = 0.0",
@@ -319,38 +352,78 @@ def _블록들(글):
     return out
 
 
+def _내_ext(머리):
+    """이 ext 줄이 추가기믹 묶음 것인가. ⚠ 추가지형 것(add_ss2d_* · add_tpl_* · 옛 추가_점 · 추가_tpl_)은 아니다 —
+    [2026-10-10] 예전엔 "add_" 로 시작하면 다 지워서, 추가지형을 다시 안 쓰는 씬에선 그 템플릿 ext 가 사라질 뻔했다."""
+    m = re.search(r'id="([^"]+)"', 머리)
+    i = m.group(1) if m else ""
+    if i.startswith("추가_"):
+        return not (i.startswith("추가_점") or i.startswith("추가_tpl"))
+    return i in {"add_" + v for v in _아스키.values()}
+
+
+def _묶음인가(머리):
+    이름 = re.search(r'name="([^"]+)"', 머리).group(1)
+    부모 = re.search(r'parent="([^"]*)"', 머리)
+    부모 = 부모.group(1) if 부모 else None
+    return (이름 == "추가기믹" and 부모 == ".") or bool(부모 and (부모 == "추가기믹" or 부모.startswith("추가기믹/")))
+
+
 def 갈아끼우기(글, ext, 노드):
-    # 1) 예전 묶음 지우기 — ext id "추가_…" · 노드 "추가기믹" 과 그 아래
-    지울 = []
-    for a, b, 머리 in _블록들(글):
-        if 머리.startswith("[ext_resource") and ('id="추가_' in 머리 or 'id="add_' in 머리):
-            지울.append((a, b))
-        elif 머리.startswith("[node "):
-            이름 = re.search(r'name="([^"]+)"', 머리).group(1)
-            부모 = re.search(r'parent="([^"]*)"', 머리)
-            부모 = 부모.group(1) if 부모 else None
-            if (이름 == "추가기믹" and 부모 == ".") or (부모 and (부모 == "추가기믹" or 부모.startswith("추가기믹/"))):
-                지울.append((a, b))
-    for a, b in reversed(지울):
-        글 = 글[:a] + 글[b:]
-    if not 노드:
-        return re.sub(r"\n{3,}", "\n\n", 글)
-    # 2) ext — 마지막 ext_resource 블록 뒤
-    ext글 = "".join(f'[ext_resource type="PackedScene" path="{경로}" id="{i}"]\n' for i, 경로 in ext)
+    # [2026-10-10] **제자리에서** 바꾼다 — 예전엔 묶음을 지우고 Player 앞에 다시 넣어서, 바뀐 게 없어도
+    #   씬마다 수십 줄이 옮겨졌다(04·05·08·10·11·13·18). 이제 ① 같은 묶음이면 그대로 ② 다르면 옛 자리에 새 글
+    #   ③ ext 는 그대로 쓰는 줄은 두고, 안 쓰는 줄만 빼고, 없는 줄만 마지막 ext 뒤에 붙인다.
+    필요 = dict(ext)
     블 = _블록들(글)
-    마지막ext = max((b for a, b, h in 블 if h.startswith("[ext_resource")), default=None)
-    if 마지막ext is None:
-        첫 = 글.index("\n\n") + 2
-        글 = 글[:첫] + ext글 + "\n" + 글[첫:]
+    옛묶음 = "".join(글[a:b] for a, b, h in 블 if h.startswith("[node ") and _묶음인가(h))
+    정리 = lambda t: re.sub(r"\n{2,}", "\n", re.sub(r" unique_id=\d+", "", t)).strip()
+    if 옛묶음 and 정리(옛묶음) == 정리(노드):
+        노드 = None                          # 노드는 그대로 둔다(에디터가 붙인 unique_id 도 보존)
+    자리표 = "\x00추가기믹자리\x00"
+    부분 = [글[:블[0][0]] if 블 else 글]
+    있는ext = set()
+    넣음 = False
+    for a, b, 머리 in 블:
+        t = 글[a:b]
+        if 머리.startswith("[ext_resource") and _내_ext(머리):
+            i = re.search(r'id="([^"]+)"', 머리).group(1)
+            경로 = re.search(r'path="([^"]+)"', 머리)
+            if 필요.get(i) == (경로.group(1) if 경로 else None) and i not in 있는ext:
+                있는ext.add(i)
+                부분.append(t)
+            continue
+        if 머리.startswith("[node ") and _묶음인가(머리) and 노드 is not None:
+            if not 넣음:
+                부분.append(자리표)
+                넣음 = True
+            continue
+        부분.append(t)
+    글 = "".join(부분)
+    if 노드 is None:                         # 묶음이 같다 — ext 만 정리했다
+        return re.sub(r"\n{3,}", "\n\n", 글)
+    if not 노드:
+        return re.sub(r"\n{3,}", "\n\n", 글.replace(자리표, ""))
+    # 2) 없는 ext — 마지막 ext_resource 줄 뒤
+    빠진 = [(i, 경로) for i, 경로 in ext if i not in 있는ext]
+    if 빠진:
+        ext글 = "".join(f'[ext_resource type="PackedScene" path="{경로}" id="{i}"]\n' for i, 경로 in 빠진)
+        블 = _블록들(글)
+        마지막ext = max((b for a, b, h in 블 if h.startswith("[ext_resource")), default=None)
+        if 마지막ext is None:
+            첫 = 글.index("\n\n") + 2
+            글 = 글[:첫] + ext글 + "\n" + 글[첫:]
+        else:
+            # 블록 끝은 다음 머리 시작이다 — ext 줄 바로 뒤(빈 줄 앞)에 붙인다
+            a = 글.rindex("[ext_resource", 0, 마지막ext)
+            줄끝 = 글.index("\n", a) + 1
+            글 = 글[:줄끝] + ext글 + 글[줄끝:]
+    # 3) 노드 — 옛 묶음 자리(없으면 Player 앞 · 그것도 없으면 끝)
+    if 넣음:
+        글 = 글.replace(자리표, 노드 + "\n")
     else:
-        # 블록 끝은 다음 머리 시작이다 — ext 줄 바로 뒤(빈 줄 앞)에 붙인다
-        a = 글.rindex("[ext_resource", 0, 마지막ext)
-        줄끝 = 글.index("\n", a) + 1
-        글 = 글[:줄끝] + ext글 + 글[줄끝:]
-    # 3) 노드 — Player 앞(없으면 끝)
-    m = re.search(r'^\[node name="Player"', 글, re.M)
-    자리 = m.start() if m else len(글)
-    글 = 글[:자리] + 노드 + "\n" + 글[자리:]
+        m = re.search(r'^\[node name="Player"', 글, re.M)
+        자리 = m.start() if m else len(글)
+        글 = 글[:자리] + 노드 + "\n" + 글[자리:]
     # 3') ext 묶음과 다음 블록 사이 빈 줄 한 줄(다시 돌릴 때 지운 ext 블록의 빈 줄까지 같이 지워진다 → 되살린다)
     글 = re.sub(r"(\[ext_resource [^\n]*\]\n)(\[(?:sub_resource|node) )", r"\1\n\2", 글)
     # 4) load_steps(있으면) = ext + sub + 1
@@ -358,6 +431,156 @@ def 갈아끼우기(글, ext, 노드):
         n = len(re.findall(r"^\[(?:ext_resource|sub_resource) ", 글, re.M)) + 1
         글 = re.sub(r"load_steps=\d+", f"load_steps={n}", 글, count=1)
     return re.sub(r"\n{3,}", "\n\n", 글)
+
+
+_빛_동작키 = ('"시작색"', '"주기"', '"위상"', '"점멸"')
+
+
+def _같은값(a, b):
+    a, b = a.strip(), b.strip()
+    try:
+        return float(a) == float(b)
+    except ValueError:
+        return a == b
+
+
+def 장애물_맞추기(dn, 글):
+    """[2026-10-10 Claude] 손으로 고친 씬의 "장애물/빛줄기NN"(생성기가 만든 옛 빛)에 도안의 **동작 값**만 옮긴다.
+    도형님 05 제보로 구조가 검정이 되며 10·12 의 고정 흰 빛을 점멸로 바꿔야 했다 — 그 한 줄을 도안에서 씬으로.
+    ⚠ 자리·각도·길이는 안 건드린다(Codex 가 창문 그림에 맞춰 손본 값일 수 있다). 노드가 없으면 그냥 지나간다."""
+    import 만들기 as 만들기모듈
+    for g in 기믹모듈.목록(dn):
+        if not isinstance(g, 기믹모듈.빛줄기) or getattr(g, "추가", False):
+            continue
+        머리 = re.search(r'^\[node name="빛줄기%02d" parent="장애물"[^\n]*\]$' % g.i, 글, re.M)
+        if not 머리:
+            continue
+        끝 = 글.find("\n[", 머리.end())
+        끝 = len(글) if 끝 < 0 else 끝 + 1
+        블록 = 글[머리.start():끝]
+        새블록 = 블록
+        for 줄 in 만들기모듈.기믹_본(g):
+            키, 값 = 줄.split(" = ", 1)
+            if 키 not in _빛_동작키:
+                continue
+            m = re.search(r"^" + re.escape(키) + r" = (.*)$", 새블록, re.M)
+            if m and _같은값(m.group(1), 값):
+                continue                  # 에디터는 0 을 0.0 으로 쓴다 — 값이 같으면 글자도 그대로
+            새블록 = re.sub(r"^" + re.escape(키) + r" = .*$", 줄.replace("\\", "\\\\"), 새블록, count=1, flags=re.M)
+        if 새블록 != 블록:
+            print(f"    {dn.이름}/장애물/빛줄기{g.i:02d}: 동작 값 맞춤")
+            글 = 글[:머리.start()] + 새블록 + 글[끝:]
+    return 글
+
+
+def 지형_맞추기(dn, 글):
+    """[2026-10-10] 추가지형을 **조금씩** 맞춘다 — 같은 이름·같은 자리의 판은 글자 하나 안 건드리고,
+    바뀌었거나 도안에서 빠진 판만 지우고(점 sub_resource 까지), 새 판만 붙인다.
+    왜: 에디터가 저장한 씬(01)의 추가지형 판에는 구운 메시·재질·unique_id 가 붙어 있다 — 통째로 다시 쓰면 날아간다."""
+    t_ext, t_서브, t_노드 = 지형_글(dn, 글)
+    if not t_노드:
+        return 지형_갈아끼우기(글, t_ext, t_서브, t_노드) if "추가지형" in 글 else 글
+    원함 = {}
+    for 블 in re.split(r"\n(?=\[node )", t_노드.strip() + "\n"):
+        m = re.search(r'name="([^"]+)" parent="추가지형"', 블)
+        if m:
+            원함[m.group(1)] = 블.rstrip("\n") + "\n"
+    서브블 = {}
+    for 블 in re.split(r"\n(?=\[sub_resource )", t_서브.strip() + "\n"):
+        m = re.search(r'id="(add_t_[a-z]+\d\d)_', 블)
+        if m:
+            서브블.setdefault(m.group(1), []).append(블.rstrip("\n") + "\n")
+    자리 = lambda t: (re.search(r"^position = (.*)$", t, re.M) or [None, None])[1]
+    지울, 남김 = [], set()
+    블 = _블록들(글)
+    for a, b, 머리 in 블:
+        if not (머리.startswith("[node ") and 'parent="추가지형"' in 머리):
+            continue
+        이름 = re.search(r'name="([^"]+)"', 머리).group(1)
+        if 이름 in 원함 and 자리(글[a:b]) == 자리(원함[이름]):
+            남김.add(이름)
+            continue
+        지울.append((a, b))
+        m = re.search(r'_points = SubResource\("([^"]+)_PA"\)', 글[a:b])
+        if m:
+            앞 = m.group(1)
+            지울 += [(c, d) for c, d, h in 블 if h.startswith("[sub_resource") and
+                    (f'id="{앞}_PA"' in h or re.search(r'id="' + re.escape(앞) + r'_P\d+"', h))]
+    for a, b in sorted(set(지울), reverse=True):
+        글 = 글[:a] + 글[b:]
+    새노드 = [원함[n] for n in 원함 if n not in 남김]
+    if not 새노드:
+        return re.sub(r"\n{3,}", "\n\n", 글)
+    새서브 = []
+    for n in 원함:
+        if n in 남김:
+            continue
+        m = re.search(r'_points = SubResource\("([^"]+)_PA"\)', 원함[n])
+        새서브 += 서브블.get(m.group(1), []) if m else []
+    # ext — 씬에 없는 것만(지형_글 이 이미 있는 id 를 찾아 쓴다)
+    빠진ext = [(i, 형, 경로) for i, 형, 경로 in t_ext if f'id="{i}"' not in 글]
+    if 빠진ext:
+        ext글 = "".join(f'[ext_resource type="{형}" path="{경로}" id="{i}"]\n' for i, 형, 경로 in 빠진ext)
+        마지막ext = max((b for a, b, h in _블록들(글) if h.startswith("[ext_resource")), default=None)
+        a = 글.rindex("[ext_resource", 0, 마지막ext)
+        줄끝 = 글.index("\n", a) + 1
+        글 = 글[:줄끝] + ext글 + 글[줄끝:]
+    m = re.search(r"^\[node ", 글, re.M)
+    글 = 글[:m.start()] + "\n".join(새서브) + "\n" + 글[m.start():]
+    # 노드 — 추가지형 묶음 끝(없으면 묶음째 Player 앞)
+    블 = _블록들(글)
+    묶음끝 = max((b for a, b, h in 블 if h.startswith("[node ") and
+                 ('parent="추가지형"' in h or (re.search(r'name="추가지형"', h) and 'parent="."' in h))), default=None)
+    if 묶음끝 is None:
+        m = re.search(r'^\[node name="Player"', 글, re.M)
+        넣을곳 = m.start() if m else len(글)
+        글 = 글[:넣을곳] + '[node name="추가지형" type="Node2D" parent="."]\n\n' + "\n".join(새노드) + "\n" + 글[넣을곳:]
+    else:
+        글 = 글[:묶음끝].rstrip("\n") + "\n\n" + "\n".join(새노드) + "\n" + 글[묶음끝:]
+    if re.search(r"load_steps=\d+", 글):
+        n = len(re.findall(r"^\[(?:ext_resource|sub_resource) ", 글, re.M)) + 1
+        글 = re.sub(r"load_steps=\d+", f"load_steps={n}", 글, count=1)
+    return re.sub(r"\n{3,}", "\n\n", 글)
+
+
+def _생성기_소유(글):
+    """첫 줄 표식 + 해시가 맞는 씬 = 만들기.py 가 통째로 다시 쓸 수 있다(이 파일은 건드리지 않는다)."""
+    import hashlib
+    if not 글.startswith("; 생성: tools/쳅터1/만들기.py"):
+        return False
+    첫줄, _, 나머지 = 글.partition("\n")
+    return ("out=" + hashlib.sha256(나머지.encode("utf-8")).hexdigest()[:16]) in 첫줄
+
+
+def _지형에_구워짐(글, 항목):
+    """이 추가지형 사각형이 이미 "지형" 노드(생성기가 구운 판)로 있나 — 같은 종류 · 가운데 자리가 같은 노드."""
+    k, x, y, w, h = 항목[:5]
+    cx, cy = (x * C + (x + w) * C) // 2, (y * C + (y + h) * C) // 2
+    for a, b, 머리 in _블록들(글):
+        if 머리.startswith("[node ") and 'parent="지형"' in 머리:
+            t = 글[a:b]
+            m = re.search(r"^position = Vector2\(([-\d.]+), ([-\d.]+)\)", t, re.M)
+            if m and abs(float(m.group(1)) - cx) < 1 and abs(float(m.group(2)) - cy) < 1 and \
+                    f'metadata/design_kind = "{k}"' in t:
+                return True
+    return False
+
+
+def _추가지형_같나(dn, 글):
+    """씬의 추가지형 노드(이름 · position)가 도안 추가지형과 같은가."""
+    있음 = {}
+    for a, b, 머리 in _블록들(글):
+        if 머리.startswith("[node ") and 'parent="추가지형"' in 머리:
+            이름 = re.search(r'name="([^"]+)"', 머리).group(1)
+            m = re.search(r"^position = Vector2\(([-\d.]+), ([-\d.]+)\)", 글[a:b], re.M)
+            있음[이름] = (float(m.group(1)), float(m.group(2))) if m else None
+    원함 = {}
+    세기 = {}
+    for k, x, y, w, h in getattr(dn, "추가지형", []):
+        세기[k] = 세기.get(k, 0) + 1
+        이름 = {"흰": "흰판", "검정": "검정판", "유령": "유령판", "구조": "구조", "흰구조": "흰구조"}[k] + f"추가{세기[k]:02d}"
+        원함[이름] = (float((x * C + (x + w) * C) // 2), float((y * C + (y + h) * C) // 2))
+    return 있음 == 원함
 
 
 def 적용(이름들=()):
@@ -375,16 +598,31 @@ def 적용(이름들=()):
         옛 = open(경로, encoding="utf-8", newline="").read().replace(chr(13) + chr(10), chr(10))
         # 생성기가 통째로 쓰는 씬(첫 줄 표식 · 손안댐)은 만들기.py 가 이미 같은 묶음을 넣었다 — 건드리면 생성기의
         #   '손안댐' 해시가 깨져 다음 생성이 멈춘다(2026-10-09 겪음). 새 스테이지(16·17·18)가 여기에 해당.
-        if 옛.startswith("; 생성: tools/쳅터1/만들기.py"):
+        #   ★[2026-10-10] 단, 표식이 있어도 해시가 깨진 씬(15·16·17·19 — 생성 뒤 Codex·손으로 고침)은 생성기도 멈춘다 →
+        #   여기서 갈아 끼운다(그러지 않으면 17 의 추가지형 4 장처럼 도안에만 있고 씬에는 영영 안 들어간다).
+        if _생성기_소유(옛):
             continue
         ext, 노드 = 노드_글(dn)
         새 = 옛
-        if 노드 or "추가기믹" in 옛:
+        # [2026-10-10] 에디터가 저장한 묶음(unique_id 가 붙음 · 18 숨은서재)엔 손으로 넣은 값(양초 z_index · 판 collision_mask)이
+        #   있다 — 다시 쓰면 사라진다. 도안과 다르면 알리고 건너뛴다(--에디터씬도 를 주면 덮는다).
+        옛묶음 = "".join(옛[a:b] for a, b, h in _블록들(옛) if h.startswith("[node ") and _묶음인가(h))
+        정리 = lambda t: re.sub(r"\n{2,}", "\n", re.sub(r" unique_id=\d+", "", t)).strip()
+        if "unique_id=" in 옛묶음 and "--에디터씬도" not in sys.argv and 정리(옛묶음) != 정리(노드):
+            print(f"  ⚠ {dn.이름}: 에디터가 저장한 추가기믹 묶음이 도안과 다르다 — 묶음은 건너뜀(--에디터씬도 로 덮음)")
+        elif 노드 or "추가기믹" in 옛:
             새 = 갈아끼우기(새, ext, 노드)
+        # [2026-10-10] 생성기가 만든 "장애물" 빛줄기의 **동작 값**(점멸·주기·위상·시작색)만 도안에 맞춘다
+        새 = 장애물_맞추기(dn, 새)
         # [2026-10-09] 추가지형(새 흰·검정 판) — 손으로 고친 씬에만(생성기 소유 씬은 만들기.py 가 격자에서 같이 만든다)
-        t_ext, t_서브, t_노드 = 지형_글(dn, 새)
-        if t_노드 or "추가지형" in 새:
-            새 = 지형_갈아끼우기(새, t_ext, t_서브, t_노드)
+        #   [2026-10-10] 이미 같은 판(이름·자리)이 들어 있으면 건드리지 않는다 — 에디터가 저장한 씬(18)은
+        #   추가지형 노드에 구운 재질이 붙어 있어 다시 쓰면 그것까지 날아간다.
+        # [2026-10-10] 생성기가 만든 씬(첫 줄 표식 · 15~19)은 만들 때 이미 추가지형을 격자에 넣어 "지형" 노드로 구웠다 →
+        #   그 판은 빼고 맞춘다(안 빼면 17 응접실처럼 같은 자리에 판이 두 겹 — 검사_쳅터1_지형겹침 이 잡았다).
+        if 옛.startswith("; 생성: tools/쳅터1/만들기.py"):
+            dn.추가지형 = [t for t in dn.추가지형 if not _지형에_구워짐(새, t)]
+        if not _추가지형_같나(dn, 새):
+            새 = 지형_맞추기(dn, 새)
         if 새 != 옛:
             # 편집기·색인기가 파일을 잠깐 잡고 있으면 바로 쓰기가 실패한다(Errno 22) → 임시 파일 + 바꿔치기 + 재시도(만들기.py 와 같은 방법)
             import time

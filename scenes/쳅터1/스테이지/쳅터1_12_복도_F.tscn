@@ -1,5 +1,5 @@
 ; 목재 v03: 지형 점 부분 갱신 / 나머지 노드 보존
-[gd_scene load_steps=92 format=3]
+[gd_scene load_steps=98 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -396,6 +396,41 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
+[sub_resource type="Resource" id="add_t_wstruct01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-256, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(256, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(256, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-256, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-256, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_wstruct01_P0"),
+1: SubResource("add_t_wstruct01_P1"),
+2: SubResource("add_t_wstruct01_P2"),
+3: SubResource("add_t_wstruct01_P3"),
+4: SubResource("add_t_wstruct01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_12_복도_F" type="Node2D"]
 script = ExtResource("1_world")
 "스테이지_이름" = "12 · 1층 복도 F — 식당 샹들리에 (→)"
@@ -468,6 +503,7 @@ centered = false
 position = Vector2(3072, 608)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 collision_size = 0.0
@@ -502,6 +538,7 @@ metadata/design_kind = "검정"
 position = Vector2(3040, 944)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S02")
 collision_size = 0.0
@@ -579,9 +616,9 @@ position = Vector2(3040, 160)
 "두께" = 64
 "각도" = 90
 "시작색" = 1
-"주기" = 0
+"주기" = 2
 "위상" = 0
-"점멸" = false
+"점멸" = true
 "근원" = 1
 
 [node name="빛줄기02" parent="장애물" instance=ExtResource("13_light")]
@@ -619,6 +656,19 @@ position = Vector2(3616, 768)
 "반경" = 200
 "색_시간" = 5
 
+[node name="추가지형" type="Node2D" parent="."]
+
+[node name="흰구조추가01" parent="추가지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(4096, 944)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 2
+"위치별_판정" = true
+_points = SubResource("add_t_wstruct01_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "흰구조"
+
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(272, 992)
 "점프_거리_칸" = 20.0
@@ -628,4 +678,4 @@ position = Vector2(272, 992)
 script = ExtResource("codex_side_door")
 "다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_17_응접실.tscn"
 "다음_연결" = "오른쪽"
-"표제" = "1층 응접실"
+"표제" = "응접실"

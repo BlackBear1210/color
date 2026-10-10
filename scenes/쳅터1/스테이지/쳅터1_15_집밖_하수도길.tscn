@@ -1,5 +1,5 @@
 ; 생성: tools/쳅터1/만들기.py · out=4958dace5a486b26 · 손으로 고치지 말고 도안(쳅터1_15_집밖_하수도길.json)을 고친 뒤 다시 생성
-[gd_scene load_steps=159 format=3]
+[gd_scene load_steps=160 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" path="res://scenes/집/스마트월드_장애물/박스.tscn" id="add_box"]
 [ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/튀어나오는판.tscn" id="add_popout"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/썩은마루판.tscn" id="add_plank"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/가시.tscn" id="add_spike"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -816,6 +817,7 @@ position = Vector2(3456, 1296)
 position = Vector2(3072, 1024)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 collision_size = 0.0
@@ -892,6 +894,7 @@ metadata/design_kind = "흰"
 position = Vector2(4320, 1456)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S02")
 collision_size = 0.0
@@ -963,6 +966,30 @@ position = Vector2(4688, 1600)
 collision_layer = 0
 
 [node name="추가기믹" type="Node2D" parent="."]
+
+[node name="추가가시01" parent="추가기믹" instance=ExtResource("add_spike")]
+position = Vector2(3376, 1664)
+"칸수" = 11
+
+[node name="추가가시02" parent="추가기믹" instance=ExtResource("add_spike")]
+position = Vector2(4128, 1664)
+"칸수" = 20
+
+[node name="추가가시03" parent="추가기믹" instance=ExtResource("add_spike")]
+position = Vector2(4512, 1664)
+"칸수" = 4
+
+[node name="추가가시04" parent="추가기믹" instance=ExtResource("add_spike")]
+position = Vector2(3600, 1600)
+"칸수" = 3
+
+[node name="추가가시05" parent="추가기믹" instance=ExtResource("add_spike")]
+position = Vector2(3776, 1600)
+"칸수" = 2
+
+[node name="추가가시06" parent="추가기믹" instance=ExtResource("add_spike")]
+position = Vector2(3696, 1504)
+"칸수" = 3
 
 [node name="부서지는판01_1" parent="추가기믹" instance=ExtResource("add_plank")]
 position = Vector2(2160, 1024)

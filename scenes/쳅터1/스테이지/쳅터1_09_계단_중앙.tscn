@@ -1,5 +1,5 @@
 ; 목재 v03: 지형 점 부분 갱신 / 나머지 노드 보존
-[gd_scene load_steps=174 format=3]
+[gd_scene load_steps=181 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/샹들리에.png" id="17_furn2"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/액자.png" id="18_furn3"]
 [ext_resource type="Texture2D" path="res://assets/background/쳅터1/레이어_v01/가구/창문.png" id="19_furn4"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -816,6 +817,41 @@ Vector2i(0, 28): 15
 }
 _next_key = 29
 
+[sub_resource type="Resource" id="add_t_wstruct01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(128, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(128, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_wstruct01_P0"),
+1: SubResource("add_t_wstruct01_P1"),
+2: SubResource("add_t_wstruct01_P2"),
+3: SubResource("add_t_wstruct01_P3"),
+4: SubResource("add_t_wstruct01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_09_계단_중앙" type="Node2D"]
 script = ExtResource("1_world")
 "스테이지_이름" = "09 · 중앙 계단 2층→1층 (부서진 계단)"
@@ -883,6 +919,7 @@ centered = false
 position = Vector2(1152, 1792)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 collision_size = 0.0
@@ -900,6 +937,7 @@ metadata/design_kind = "유령"
 position = Vector2(1728, 1360)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S02")
 collision_size = 0.0
@@ -919,6 +957,7 @@ metadata/design_kind = "검정"
 position = Vector2(832, 2304)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S03")
 collision_size = 0.0
@@ -980,6 +1019,29 @@ collision_layer = 0
 [node name="체크03" parent="체크포인트" instance=ExtResource("9_checkpoint")]
 position = Vector2(432, 2432)
 collision_layer = 0
+
+[node name="추가기믹" type="Node2D" parent="."]
+
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(960, 704)
+"멈춤들" = PackedVector2Array(0, 0, 576, 256)
+"순환" = 1
+"머묾" = 3
+"반경" = 200
+"색_시간" = 5
+
+[node name="추가지형" type="Node2D" parent="."]
+
+[node name="흰구조추가01" parent="추가지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(1440, 1904)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 2
+"위치별_판정" = true
+_points = SubResource("add_t_wstruct01_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "흰구조"
 
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(272, 640)

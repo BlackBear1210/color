@@ -62,6 +62,8 @@ func run() -> void:
 	# [2026-10-09 Claude] 15 개편으로 둑에 흰 바닥 조각·썩은 마루(가시)·검은 바닥 조각이 생겼다 → 연결만 보려고 그 뒤(마지막 체크 184칸)에서 걷는다
 	p.global_position = Vector2(184 * 32 + 16, 54 * 32 - 2)
 	p.velocity = Vector2.ZERO
+	# [2026-10-10] 둑(구조)이 검정이 됐다 — 앞 단계의 흰 몸 그대로 걸으면 죽어서 길목에 못 닿는다
+	p.set("player_color", ColorDefs.BLACK)
 	p.set("자동_걷기",1.0)
 	for i in 400:
 		await physics_frame

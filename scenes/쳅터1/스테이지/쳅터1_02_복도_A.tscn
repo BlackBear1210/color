@@ -1855,6 +1855,111 @@ Vector2i(0, 4): 15
 }
 _next_key = 5
 
+[sub_resource type="Resource" id="add_t_wstruct01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(128, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(128, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, 48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-128, -48)
+
+[sub_resource type="Resource" id="add_t_wstruct01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_wstruct01_P0"),
+1: SubResource("add_t_wstruct01_P1"),
+2: SubResource("add_t_wstruct01_P2"),
+3: SubResource("add_t_wstruct01_P3"),
+4: SubResource("add_t_wstruct01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_wstruct02_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="add_t_wstruct02_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, -32)
+
+[sub_resource type="Resource" id="add_t_wstruct02_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(112, 32)
+
+[sub_resource type="Resource" id="add_t_wstruct02_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, 32)
+
+[sub_resource type="Resource" id="add_t_wstruct02_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-112, -32)
+
+[sub_resource type="Resource" id="add_t_wstruct02_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_wstruct02_P0"),
+1: SubResource("add_t_wstruct02_P1"),
+2: SubResource("add_t_wstruct02_P2"),
+3: SubResource("add_t_wstruct02_P3"),
+4: SubResource("add_t_wstruct02_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_struct01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -80)
+
+[sub_resource type="Resource" id="add_t_struct01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, -80)
+
+[sub_resource type="Resource" id="add_t_struct01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(64, 80)
+
+[sub_resource type="Resource" id="add_t_struct01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, 80)
+
+[sub_resource type="Resource" id="add_t_struct01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-64, -80)
+
+[sub_resource type="Resource" id="add_t_struct01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_struct01_P0"),
+1: SubResource("add_t_struct01_P1"),
+2: SubResource("add_t_struct01_P2"),
+3: SubResource("add_t_struct01_P3"),
+4: SubResource("add_t_struct01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_02_복도_A" type="Node2D" unique_id=382929265]
 script = ExtResource("1_world")
 "스테이지_이름" = "02 · 2층 복도 A — 달빛 창문 (→)"
@@ -1931,6 +2036,7 @@ centered = false
 position = Vector2(3072, 608)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 _meshes = Array[ExtResource("14_vqeew")]([SubResource("Resource_l3w8m"), SubResource("Resource_s31rm"), SubResource("Resource_r6omw"), SubResource("Resource_5htib"), SubResource("Resource_2lnrg"), SubResource("Resource_xhfid"), SubResource("Resource_weebv"), SubResource("Resource_armq4"), SubResource("Resource_a6t5v"), SubResource("Resource_dh28m"), SubResource("Resource_gii4g"), SubResource("Resource_chx5a"), SubResource("Resource_5yt02"), SubResource("Resource_img4w"), SubResource("Resource_p6tkw"), SubResource("Resource_6effy"), SubResource("Resource_my4rw"), SubResource("Resource_2x63a"), SubResource("Resource_b2kd4"), SubResource("Resource_51vfy"), SubResource("Resource_1ojmo"), SubResource("Resource_2rlos")])
@@ -2109,6 +2215,41 @@ position = Vector2(2816, 768)
 "머묾" = 3
 "반경" = 200
 "색_시간" = 5
+
+[node name="추가지형" type="Node2D" parent="."]
+
+[node name="흰구조추가01" parent="추가지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(1344, 944)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 2
+"위치별_판정" = true
+_points = SubResource("add_t_wstruct01_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "흰구조"
+
+[node name="흰구조추가02" parent="추가지형" instance=ExtResource("4_tpl_white")]
+position = Vector2(1584, 928)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 2
+"위치별_판정" = true
+_points = SubResource("add_t_wstruct02_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "흰구조"
+
+[node name="구조추가01" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(5536, 912)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_struct01_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
 
 [node name="Player" parent="." unique_id=1222057813 instance=ExtResource("8_player")]
 position = Vector2(304, 608)

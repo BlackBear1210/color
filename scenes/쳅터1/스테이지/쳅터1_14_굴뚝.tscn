@@ -28,6 +28,8 @@
 [ext_resource type="Script" path="res://scripts/쳅터1/옆방문.gd" id="codex_side_door"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/잠긴문.tscn" id="add_door"]
 [ext_resource type="PackedScene" path="res://scenes/장애물/반반열쇠_조각.tscn" id="add_key"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/그을음.tscn" id="add_soot"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -4366,6 +4368,76 @@ size = Vector2(139.84, 32.2)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vq5cf"]
 size = Vector2(152, 23)
 
+[sub_resource type="Resource" id="add_t_struct01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, -96)
+
+[sub_resource type="Resource" id="add_t_struct01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(160, -96)
+
+[sub_resource type="Resource" id="add_t_struct01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(160, 96)
+
+[sub_resource type="Resource" id="add_t_struct01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, 96)
+
+[sub_resource type="Resource" id="add_t_struct01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-160, -96)
+
+[sub_resource type="Resource" id="add_t_struct01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_struct01_P0"),
+1: SubResource("add_t_struct01_P1"),
+2: SubResource("add_t_struct01_P2"),
+3: SubResource("add_t_struct01_P3"),
+4: SubResource("add_t_struct01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_ghost01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-16, -32)
+
+[sub_resource type="Resource" id="add_t_ghost01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(16, -32)
+
+[sub_resource type="Resource" id="add_t_ghost01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(16, 32)
+
+[sub_resource type="Resource" id="add_t_ghost01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-16, 32)
+
+[sub_resource type="Resource" id="add_t_ghost01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-16, -32)
+
+[sub_resource type="Resource" id="add_t_ghost01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_ghost01_P0"),
+1: SubResource("add_t_ghost01_P1"),
+2: SubResource("add_t_ghost01_P2"),
+3: SubResource("add_t_ghost01_P3"),
+4: SubResource("add_t_ghost01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_14_굴뚝" type="Node2D" unique_id=1769209734]
 script = ExtResource("1_world")
 "스테이지_이름" = "14 · 화덕 → 굴뚝 (4자리 반복 상승)"
@@ -4410,6 +4482,7 @@ position = Vector2(704, 2816)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 _meshes = Array[ExtResource("9_evbl0")]([SubResource("Resource_yrfx7"), SubResource("Resource_2hwxy")])
@@ -4571,6 +4644,7 @@ position = Vector2(800, 3264)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S02")
 _meshes = Array[ExtResource("9_evbl0")]([SubResource("Resource_r8nuk"), SubResource("Resource_wkhuh")])
@@ -4778,6 +4852,42 @@ position = Vector2(832, 3568)
 [node name="잠긴문01" parent="추가기믹" instance=ExtResource("add_door")]
 "길목" = NodePath("../../연결/오른쪽")
 
+[node name="그을음01" parent="추가기믹" instance=ExtResource("add_soot")]
+position = Vector2(304, 2816)
+"방향" = 1
+
+[node name="그을음02" parent="추가기믹" instance=ExtResource("add_soot")]
+position = Vector2(304, 1280)
+"방향" = 1
+
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(768, 3072)
+"멈춤들" = PackedVector2Array(0, 0, 288, -192)
+"순환" = 1
+"머묾" = 2.5
+"반경" = 200
+"색_시간" = 5
+
+[node name="추가지형" type="Node2D" parent="."]
+
+[node name="구조추가01" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(1088, 5312)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_struct01_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="유령판추가01" parent="추가지형" instance=ExtResource("5_tpl_ghost")]
+position = Vector2(528, 2976)
+_points = SubResource("add_t_ghost01_PA")
+collision_size = 0.0
+metadata/role = "플랫폼"
+metadata/design_kind = "유령"
+
 [node name="Player" parent="." unique_id=1737428143 instance=ExtResource("8_player")]
 position = Vector2(208, 5408)
 "점프_거리_칸" = 20.0
@@ -4787,4 +4897,4 @@ position = Vector2(208, 5408)
 script = ExtResource("codex_side_door")
 "다음_씬" = "res://scenes/쳅터1/스테이지/쳅터1_19_거미방.tscn"
 "다음_연결" = "오른쪽"
-"표제" = "다락 거미방"
+"표제" = "거미방"

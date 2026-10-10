@@ -28,6 +28,8 @@
 [ext_resource type="Texture2D" uid="uid://ce1n6wkb4f4gy" path="res://assets/background/쳅터1/레이어_v01/가구/침대.png" id="20_furn6"]
 [ext_resource type="Script" uid="uid://0lhxan4cqrc1" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="22_3etju"]
 [ext_resource type="Script" uid="uid://nc5bfedvnpgm" path="res://addons/rmsmartshape/materials/shape_material.gd" id="25_ut4lm"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/창문빛.tscn" id="add_light"]
+[ext_resource type="PackedScene" path="res://scenes/장애물/썩은마루판.tscn" id="add_plank"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -2507,6 +2509,76 @@ fill_texture_scale = 0.28125
 fill_texture_absolute_position = true
 fill_mesh_material = SubResource("ShaderMaterial_owh35")
 
+[sub_resource type="Resource" id="add_t_struct01_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-16, -48)
+
+[sub_resource type="Resource" id="add_t_struct01_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(16, -48)
+
+[sub_resource type="Resource" id="add_t_struct01_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(16, 48)
+
+[sub_resource type="Resource" id="add_t_struct01_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-16, 48)
+
+[sub_resource type="Resource" id="add_t_struct01_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-16, -48)
+
+[sub_resource type="Resource" id="add_t_struct01_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_struct01_P0"),
+1: SubResource("add_t_struct01_P1"),
+2: SubResource("add_t_struct01_P2"),
+3: SubResource("add_t_struct01_P3"),
+4: SubResource("add_t_struct01_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
+[sub_resource type="Resource" id="add_t_struct02_P0"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-48, -48)
+
+[sub_resource type="Resource" id="add_t_struct02_P1"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(48, -48)
+
+[sub_resource type="Resource" id="add_t_struct02_P2"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(48, 48)
+
+[sub_resource type="Resource" id="add_t_struct02_P3"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-48, 48)
+
+[sub_resource type="Resource" id="add_t_struct02_P4"]
+script = ExtResource("6_ss2d_point")
+position = Vector2(-48, -48)
+
+[sub_resource type="Resource" id="add_t_struct02_PA"]
+script = ExtResource("7_ss2d_points")
+_points = {
+0: SubResource("add_t_struct02_P0"),
+1: SubResource("add_t_struct02_P1"),
+2: SubResource("add_t_struct02_P2"),
+3: SubResource("add_t_struct02_P3"),
+4: SubResource("add_t_struct02_P4")
+}
+_point_order = PackedInt32Array(0, 1, 2, 3, 4)
+_constraints = {
+Vector2i(0, 4): 15
+}
+_next_key = 5
+
 [node name="쳅터1_01_방_시작방" type="Node2D" unique_id=677029812]
 script = ExtResource("1_world")
 "스테이지_이름" = "01 · 2층 시작방 (접힌 U자)"
@@ -2591,6 +2663,7 @@ position = Vector2(1792, 896)
 "내부_무늬" = Array[Rect2]([Rect2(-320, 704, 32, 32), Rect2(-96, 704, 64, 32), Rect2(-352, 736, 288, 32), Rect2(-384, 768, 256, 32), Rect2(-320, 800, 160, 32), Rect2(-288, 832, 64, 32)])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 _meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_kwrtr"), SubResource("Resource_5kvp2")])
@@ -2656,6 +2729,7 @@ position = Vector2(1536, 768)
 "내부_무늬" = Array[Rect2]([])
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S02")
 _meshes = Array[ExtResource("15_eotcd")]([SubResource("Resource_4uxd5"), SubResource("Resource_habmq")])
@@ -2790,6 +2864,48 @@ collision_size = 0.0
 metadata/role = "플랫폼"
 metadata/design_kind = "검정"
 
+[node name="구조추가01" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(2448, 1616)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_struct01_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="구조추가02" parent="추가지형" instance=ExtResource("3_tpl_black")]
+position = Vector2(2384, 1616)
+"칠하기_허용" = false
+"칠하기_방식" = 2
+"구조_판정색" = 1
+"위치별_판정" = true
+_points = SubResource("add_t_struct02_PA")
+collision_size = 0.0
+metadata/role = "구조"
+metadata/design_kind = "구조"
+
+[node name="추가기믹" type="Node2D" parent="."]
+
+[node name="빛줄기01" parent="추가기믹" instance=ExtResource("add_light")]
+position = Vector2(1584, 832)
+"길이" = 736
+"두께" = 64
+"각도" = 90
+"시작색" = 1
+"주기" = 0
+"위상" = 0
+"점멸" = false
+"근원" = 1
+
+[node name="부서지는판01_1" parent="추가기믹" instance=ExtResource("add_plank")]
+position = Vector2(2288, 1568)
+
 [node name="Player" parent="." unique_id=325407816 instance=ExtResource("8_player")]
 position = Vector2(3152, 1568)
 "점프_거리_칸" = 20.0
+
+[node name="체크_색전환" parent="체크포인트" instance=ExtResource("9_checkpoint")]
+position = Vector2(1808, 1568)
+collision_layer = 0

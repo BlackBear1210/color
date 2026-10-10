@@ -24,8 +24,9 @@ def res_경로(p):
 def 검사_파일(경로):
     글 = open(경로, encoding="utf-8").read()
     오류 = []
-    ext = dict(re.findall(r'\[ext_resource [^\]]*path="([^"]+)" id="([^"]+)"\]', 글))
-    ext_ids = {v: k for k, v in ext.items()}
+    # 같은 파일을 서로 다른 id로 참조해도 합법이다. 경로를 키로 삼으면 앞 id가 사라져 가시를 잘못 오류로 잡는다.
+    ext_ids = {i: p for p, i in re.findall(r'\[ext_resource [^\]]*path="([^"]+)" id="([^"]+)"\]', 글)}
+    ext = set(ext_ids.values())
     for p in ext:
         if not os.path.exists(res_경로(p)):
             오류.append(f"없는 파일: {p}")

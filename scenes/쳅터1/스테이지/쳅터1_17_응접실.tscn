@@ -1,5 +1,5 @@
 ; 생성: tools/쳅터1/만들기.py · out=30c19feae63ae8f2 · 손으로 고치지 말고 도안(쳅터1_17_응접실.json)을 고친 뒤 다시 생성
-[gd_scene load_steps=144 format=3]
+[gd_scene load_steps=170 format=3]
 
 [ext_resource type="Script" uid="uid://b5njrffiq72ba" path="res://scripts/스마트월드/월드.gd" id="1_world"]
 [ext_resource type="Script" uid="uid://ffbu67cp501b" path="res://scripts/스마트월드/페인트_코어.gd" id="2_core"]
@@ -30,6 +30,8 @@
 [ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/샹들리에함정.tscn" id="add_chandelier"]
 [ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/타이머양초.tscn" id="add_candle"]
 [ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/레버퍼즐.tscn" id="add_puzzle"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/반딧불몹.tscn" id="add_firefly"]
+[ext_resource type="PackedScene" path="res://scenes/쳅터1/기믹/창문빛.tscn" id="add_light"]
 
 [sub_resource type="Resource" id="P_S01_0"]
 script = ExtResource("6_ss2d_point")
@@ -743,6 +745,7 @@ centered = false
 position = Vector2(2400, 896)
 "칠하기_허용" = false
 "칠하기_방식" = 2
+"구조_판정색" = 1
 "위치별_판정" = true
 _points = SubResource("PA_S01")
 collision_size = 0.0
@@ -927,6 +930,25 @@ position = Vector2(2192, 1472)
 
 [node name="잠긴문01" parent="추가기믹" instance=ExtResource("add_door")]
 "길목" = NodePath("../../연결/오른쪽")
+
+[node name="반딧불01" parent="추가기믹" instance=ExtResource("add_firefly")]
+position = Vector2(3488, 1088)
+"멈춤들" = PackedVector2Array(0, 0, 576, -128)
+"순환" = 1
+"머묾" = 2.5
+"반경" = 200
+"색_시간" = 5
+
+[node name="빛줄기01" parent="추가기믹" instance=ExtResource("add_light")]
+position = Vector2(2928, 160)
+"길이" = 1408
+"두께" = 64
+"각도" = 90
+"시작색" = 1
+"주기" = 2
+"위상" = 0
+"점멸" = true
+"근원" = 1
 
 [node name="Player" parent="." instance=ExtResource("8_player")]
 position = Vector2(272, 1568)

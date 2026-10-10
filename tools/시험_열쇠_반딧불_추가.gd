@@ -178,6 +178,11 @@ func 문_열기(이름: String) -> void:
 	await wait(80)          # HUD 채움 0.4초 + 맞물림 0.6초가 끝나야 '완성'(시험_열쇠 와 같이 기다린다)
 	check(hud != null and bool(hud.call("완성됨")), "%s 두 조각 → HUD 완성" % 이름)
 	var 길목 := _씬.get_node("연결/오른쪽") as Node2D
+	# [2026-10-10] 문 시험이다 — 움직이는 몹은 치운다(10-10 보강으로 04 출구 앞 바닥을 반딧불이 비춘다 · 몹은 따로 시험한다)
+	for n in get_nodes_in_group("광원몹") + get_nodes_in_group("그을음"):
+		if _씬.is_ancestor_of(n):
+			n.queue_free()
+	await wait(2)
 	_죽음 = 0
 	놓기(길목.global_position + Vector2(-260, -4), ColorDefs.BLACK)
 	await wait(10)

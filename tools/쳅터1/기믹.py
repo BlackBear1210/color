@@ -142,7 +142,7 @@ class 빛줄기:
     def _광선길이(dn, sx, sy, ux, uy):
         """(sx,sy) 에서 (ux,uy) 로 지형(구조·검정·흰 — 유령판은 통과)까지(px). 엔진 창문_최대 2400px 와 같은 상한."""
         d = 2.0
-        단단 = lambda dd: dn.칸(math.floor((sx + ux * dd) / C), math.floor((sy + uy * dd) / C)) in (1, 2, 3)
+        단단 = lambda dd: dn.칸(math.floor((sx + ux * dd) / C), math.floor((sy + uy * dd) / C)) in (1, 2, 3, 5)
         while d < 창문_최대 and 단단(d):        # 창틀 모서리가 천장 속이면 빠져나올 때까지 건너뛴다
             d += 2.0
         while d < 창문_최대:
@@ -161,7 +161,7 @@ class 빛줄기:
         d = 4.0
         while d < 200 * C:
             x, y = ox + ux * d, oy + uy * d
-            if dn.칸(math.floor(x / C), math.floor(y / C)) in (1, 2, 3):
+            if dn.칸(math.floor(x / C), math.floor(y / C)) in (1, 2, 3, 5):
                 return d
             d += 4.0
         return d
@@ -311,6 +311,8 @@ class 그을음:
         self.i = i
         self.x, self.바닥 = g["x"], g["바닥"]
         self.방향 = -1 if int(g.get("방향", -1)) < 0 else 1
+        # 첫 거미는 짧은 영역·긴 예고로 빛 유인을 배우게 한다. 설정이 없는 후반 거미는 기존 동작을 유지한다.
+        self.설정 = {k: float(g[k]) for k in ("깨어남_칸", "속도_배", "덮침_예고", "영역_칸") if k in g}
 
     def 엔진값(self):
         return {"원점": ((self.x + 0.5) * C, self.바닥 * C), "방향": self.방향}
@@ -501,7 +503,11 @@ def 목록(dn):
             dn.경고.append(f"모르는 기믹 종류 {k}")
             continue
         세기[k] = 세기.get(k, 0) + 1
-        out.append(_종류[k](g, 세기[k], dn))
+        o = _종류[k](g, 세기[k], dn)
+        # [2026-10-10 Claude] "추가": true = 손으로 고친 씬에 나중에 넣는 옛 종류(빛줄기·도약대·움직이는발판) —
+        #   생성기 "장애물" 이 아니라 추가기믹.py 의 "추가기믹" 묶음에 들어간다.
+        o.추가 = bool(g.get("추가", False))
+        out.append(o)
     return out
 
 
@@ -525,7 +531,7 @@ def 검증(dn, 기믹들):
                 문제.append(f"움직이는발판{g.i} 왕복 {g.왕복}초 < 3초(장애물 카탈로그 규칙)")
         elif isinstance(g, 빛줄기):
             # 빛은 벽에 가려지지 않고 그대로 그려진다 → 지형을 뚫고 지나가면 벽 속에 빛이 보인다
-            묻힘 = sorted(c for c in g.지나는_칸() if dn.칸(*c) in (1, 2, 3))
+            묻힘 = sorted(c for c in g.지나는_칸() if dn.칸(*c) in (1, 2, 3, 5))
             if 묻힘:
                 문제.append(f"빛줄기{g.i} 가 지형을 뚫고 지나감 @{묻힘[0]} — 원점·각도·길이를 바꿔 빈칸에서 끝내기")
             if g.두께 * C < 규격.몸_폭:
@@ -554,7 +560,7 @@ def 검증(dn, 기믹들):
                 문제.append(f"그을음{g.i} 둥지가 바닥 위가 아님 @({g.x},{g.바닥})")
         elif isinstance(g, 열쇠조각):
             # 도형님 10-09: "열쇠 근처에는 같은 색의 발판이 있어야 색을 바꾸기 쉽다" — 8칸 안에 같은 색으로 설 수 있는 윗면
-            같은 = {1, 2, 4} if g.색 == "검정" else {3, 4}
+            같은 = {1, 2, 4} if g.색 == "검정" else {3, 4, 5}
             cx, cy = int(g.x), int(g.y)
             찾음 = False
             for yy in range(cy - 8, cy + 9):
@@ -586,13 +592,13 @@ def 검증(dn, 기믹들):
         elif isinstance(g, 반딧불몹):
             # 정지점은 빈칸 · 날아다니는 길은 지형을 뚫지 않는다(몸이 벽 속을 지나가 보이면 안 된다)
             for k, (x, y) in enumerate(g.멈춤):
-                if dn.칸(int(x), int(y)) in (1, 2, 3):
+                if dn.칸(int(x), int(y)) in (1, 2, 3, 5):
                     문제.append(f"반딧불몹{g.i} 정지점 {k} 가 지형 속 @({x},{y})")
             for (ax, ay), (bx, by) in g.길():
                 n = max(2, int(math.hypot(bx - ax, by - ay) * 4))
                 for t in range(n + 1):
                     px, py = ax + (bx - ax) * t / n, ay + (by - ay) * t / n
-                    if dn.칸(int(px), int(py)) in (1, 2, 3):
+                    if dn.칸(int(px), int(py)) in (1, 2, 3, 5):
                         문제.append(f"반딧불몹{g.i} 길이 지형을 뚫음 @({px:.1f},{py:.1f})")
                         break
             if g.새장:
@@ -609,7 +615,7 @@ def 검증(dn, 기믹들):
                 for 끝 in (w["가"], w["나"]):
                     ex, ey = 끝
                     둘레 = {(int(ex - 0.5), int(ey - 0.5)), (int(ex + 0.4), int(ey - 0.5)), (int(ex - 0.5), int(ey + 0.4)), (int(ex + 0.4), int(ey + 0.4))}
-                    if not any(dn.칸(cx, cy) in (1, 2, 3) for cx, cy in 둘레):
+                    if not any(dn.칸(cx, cy) in (1, 2, 3, 5) for cx, cy in 둘레):
                         문제.append(f"거미{g.i} 줄{k + 1} 끝 {끝} 이 지형에 안 붙음")
                 # 거미가 같은 바닥을 걸어 줄 발밑까지 가야 한다
                 발x = int(w["가"][0] if w["가"][1] > w["나"][1] else w["나"][0])
@@ -637,7 +643,7 @@ def 검증(dn, 기믹들):
                 if dn.칸(sx, sb) == 0 or any(dn.칸(xx, yy) != 0 for xx in (sx - 1, sx, sx + 1) for yy in (sb - 3, sb - 2, sb - 1)):
                     문제.append(f"누름계단{g.i} 상자 자리 @({sx},{sb}) 가 바닥 위 빈 3×3 이 아님")
         elif isinstance(g, 빛받이):
-            if dn.칸(int(g.x), int(g.y)) in (1, 2, 3):
+            if dn.칸(int(g.x), int(g.y)) in (1, 2, 3, 5):
                 문제.append(f"빛받이{g.i} 가 지형 속 @({g.x},{g.y})")
             if g.문:
                 d = g.문
