@@ -45,13 +45,26 @@ def main():
     scene_files = {p.name for p in (ROOT / "scenes/world_2_클로드").glob("stage_*.tscn")}
     # 이후 맵 수가 늘어도 검사 도구를 고칠 필요가 없도록 기존 표는 부분집합으로 확인한다.
     check("기존 하수도 씬 목록 포함", mapped <= scene_files and len(mapped) == len(rows) and bool(rows))
+    # 제작 잠금은 저장된 전체 클리어 기록보다 우선하며, 검사도 공개 가능한 칸만 도달해야 한다.
+    lock_match = re.search(r'const 하수도_제작중 := \[([^\]]*)\]', progress)
+    locked = set(re.findall(r'"(stage_2-\d+\.tscn)"', lock_match[1])) if lock_match else set()
+    expected_locked = {"stage_2-9.tscn", "stage_2-10.tscn", "stage_2-11.tscn"}
     reached = set()
     for _ in rows:
-        for name, _, prev in rows:
+        for name, filename, prev in rows:
+            if filename in locked:
+                continue
             predecessors = re.findall(r'"(2-\d+)"', prev)
             if not predecessors or any(p in reached for p in predecessors):
                 reached.add(name)
-    check("하수도 모든 칸 해금 도달", reached == {r[0] for r in rows})
+    cleared_guard = progress.split('static func 클리어함(', 1)[1].split('static func ', 1)[0]
+    open_guard = progress.split('static func 열림(', 1)[1].split('static func ', 1)[0]
+    board_table = read("scripts/진행/쳅터1_보드표.gd")
+    check("공개 칸 해금·기존 클리어보다 제작 잠금 우선", locked == expected_locked
+          and reached == {r[0] for r in rows if r[1] not in locked}
+          and "if 제작중인가(" in cleared_guard and "return false" in cleared_guard
+          and "if 제작중인가(" in open_guard and "return false" in open_guard
+          and 'return 게임진행.열림(String(조각["id"]))' in board_table)
     title = read("scripts/ui/타이틀.gd")
     board_source = read("scripts/ui/퍼즐보드.gd")
     check("로비·집 지도 하수도 입구", '_항목("스테이지", _쳅터_선택)' in title
@@ -62,7 +75,7 @@ def main():
           and 'trim_suffix(".remap")' in progress and "추가.sort_custom" in progress
           and "하수도_칸들()" in read("scripts/진행/쳅터1_보드표.gd")
           and "ensure_control_visible" in read("scripts/ui/퍼즐보드.gd"))
-    # 씬에 적힌 실제 목적지를 읽고, 옛 로비 종료만 새 규칙대로 연결해 전체 주행 경로를 추적한다.
+    # 실제 씬 출구를 따라가되, 제작 중 목적지는 지도로 돌아가야 한다(2-8 완료 기록은 유지).
     ordered = sorted(scene_files, key=lambda n: int(n[8:-5]))
     edges = {}
     for i, name in enumerate(ordered):
@@ -70,14 +83,21 @@ def main():
         target = destinations[-1] if destinations else ""
         if target in ["res://scenes/lobby/lobby.tscn", "res://scenes/lobby/타이틀.tscn"]:
             target = "res://scenes/world_2_클로드/" + ordered[i + 1] if i + 1 < len(ordered) else "res://scenes/lobby/타이틀.tscn"
+        if target.startswith("res://scenes/world_2_클로드/") and target.split("/")[-1] in locked:
+            target = "res://scenes/lobby/쳅터2_지도.tscn"
         edges[name] = target
     visited = set()
     current = "stage_2-1.tscn"
     while current in edges and current not in visited:
         visited.add(current)
         current = edges[current].split("/")[-1]
-    check("실제 출구 처음→마지막→새 로비", visited == scene_files and current == "타이틀.tscn"
-          and "씬경로(칸들[현재 + 1])" in progress, "정적 이동 모델, 실제 엔진 주행은 미실행")
+    foreground = read("scripts/쳅터1/전경전환.gd")
+    check("2-8 완료→지도·통로/이어하기 잠금 우회 차단", visited == scene_files - locked
+          and current == "쳅터2_지도.tscn" and "return 입장_경로(가려는_씬)" in progress
+          and 'return 입장_경로(String(_설정().get_value("이어하기", "씬", "")))' in progress
+          and foreground.count("var 입장 := 게임진행.입장_경로(경로)") == 2
+          and "scene_path = 게임진행.입장_경로(scene_path)" in read("scripts/proto/stage_transition.gd"),
+          "정적 이동 모델, 실제 엔진 주행은 미실행")
     bus = read("default_bus_layout.tres")
     check("음악·효과음이 Master로 합쳐짐", 'bus/1/name = &"BGM"' in bus and 'bus/2/name = &"SFX"' in bus
           and 'bus/1/send = &"Master"' in bus and 'bus/2/send = &"Master"' in bus)

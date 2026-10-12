@@ -21,7 +21,10 @@ const 설정_경로 := "user://settings.cfg"
 const 개발_로비 := "res://scenes/lobby/lobby.tscn"
 const 보드표 := preload("res://scripts/진행/쳅터1_보드표.gd")
 const 설정 := preload("res://scripts/스마트월드/게임설정.gd")
-# 사용자가 고른 붓 소리 원본을 메뉴 확정에 사용한다. WAV를 직접 읽어 임포트 없이도 준비한다.
+# 사용자가 고른 붓 소리 원본을 메뉴 확정에 사용한다.
+# [2026-10-10 Claude] 임포트된 리소스로 읽는다(load). 예전 `AudioStreamWAV.load_from_file` 은 원본 .wav 를
+#   직접 열어서, 원본 대신 .godot/imported 의 .sample 만 싣는 내보낸 게임(Gray.exe)에서 "Cannot open file" 이 났다.
+#   이제 내보내기 프리셋 포함 필터에 wav 를 따로 넣을 필요도 없다.
 const 확인음_경로 := "res://assets/audio/sfx/로비_붓선택.wav"
 var _확인음: AudioStreamWAV = null
 
@@ -202,7 +205,8 @@ func _메뉴_만들기() -> void:
 	var 있음 := 게임진행.진행_있나()
 	if 있음:
 		_항목("이어하기", _이어하기)
-	_항목("처음부터", _처음부터)
+	# 진행이 없으면(새 게임) 이어하기를 띄우지 않고 첫 항목을 '시작하기' 로 — 포커스도 여기로 간다.
+	_항목("처음부터" if 있음 else "시작하기", _처음부터)
 	# 집을 다 깨기 전에도 제작 중인 하수도 지도를 찾을 수 있도록 챕터 입구를 명시한다.
 	_항목("스테이지", _쳅터_선택)
 	_항목("설정", _설정_창)
@@ -292,7 +296,8 @@ func _표시_그리기() -> void:
 # ── 동작 ────────────────────────────────────────────────────────────────────
 func _확인_소리() -> void:
 	if _확인음 == null:
-		_확인음 = AudioStreamWAV.load_from_file(확인음_경로)
+		if ResourceLoader.exists(확인음_경로):
+			_확인음 = load(확인음_경로) as AudioStreamWAV
 	if _확인음 == null:
 		return
 	var 소리 := AudioStreamPlayer.new()

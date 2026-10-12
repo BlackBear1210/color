@@ -5,6 +5,8 @@ extends "res://scripts/player_anim.gd"
 
 const 잔량_셰이더 := preload("res://shaders/paint_head.gdshader")
 const 탱크_데이터 := preload("res://assets/characters/paint_head_a/tank_rects.gd")
+# 확인한 발 교대 시트를 직접 재생한다. 예전 다리 회전을 덧붙이면 발목이 다시 틀어진다.
+const 보행_데이터 := preload("res://assets/characters/paint_head_a/walk_cycle_data.gd")
 var _탄약: Node
 var _발사_남음: float = 0.0
 var _탱크_좌표: Dictionary = {}
@@ -21,7 +23,10 @@ func _ready() -> void:
 		call_deferred("_재질_준비")
 
 func _재질_준비() -> void:
-	_탱크_좌표 = 탱크_데이터.FRAMES
+	# 걷기 시트의 크기와 상체 프레임이 달라졌으므로 잉크 수위 좌표도 함께 바꾼다.
+	# 원본 상수 표를 직접 수정하지 않아 다른 애니메이션에서 같은 데이터를 안전하게 쓴다.
+	_탱크_좌표 = 탱크_데이터.FRAMES.duplicate(true)
+	_탱크_좌표.merge(보행_데이터.FRAMES, true)
 	for 시트 in [self, get_node_or_null("색겹침")]:
 		if 시트 != null and 시트.material is ShaderMaterial:
 			시트.material.shader = 잔량_셰이더
@@ -55,6 +60,10 @@ func _process(delta: float) -> void:
 	if _발사_남음 > 0.0:
 		flip_h = get_global_mouse_position().x < _player.global_position.x
 	_잔량_갱신()
+
+func 보행_발디딤_프레임() -> PackedInt32Array:
+	# 발소리가 예전 16프레임 박자를 따르지 않고 새 시트의 앞발 디딤과 함께 나게 한다.
+	return PackedInt32Array(보행_데이터.FOOT_CONTACT_FRAMES)
 
 func _switch(full: String) -> void:
 	# 사망은 발사보다 우선하고, 밀기는 실제 밀 수 있는 물체와 접촉한 동안만 보인다.

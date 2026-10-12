@@ -133,7 +133,12 @@ func _걷기_갱신(delta: float) -> void:
 func _발디딤() -> void:
 	if not String(_걷기그림.animation).ends_with("_walk"):
 		return
-	if not 발디딤_프레임.has(_걷기그림.frame):
+	var 디딤: PackedInt32Array = 발디딤_프레임
+	# 새 발 교대 시트는 32프레임이므로 그림이 제공하는 디딤 시점을 우선한다.
+	# 구형 캐릭터는 기존 Inspector 설정을 그대로 사용한다.
+	if _걷기그림.has_method("보행_발디딤_프레임"):
+		디딤 = _걷기그림.call("보행_발디딤_프레임")
+	if not 디딤.has(_걷기그림.frame):
 		return
 	if _플 == null or not _플.is_on_floor() or absf(_플.velocity.x) < 걷기_최소속도:
 		return

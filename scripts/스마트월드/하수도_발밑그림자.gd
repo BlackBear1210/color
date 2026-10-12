@@ -18,7 +18,11 @@ extends Node2D
 
 @export var 최대_높이: float = 160.0     ## 이보다 높이 뜨면 그림자를 안 그린다(점프 높이 160 과 같다)
 @export var 폭: float = 46.0             ## 서 있을 때 타원 가로 (충돌 폭 44 실측)
-@export var 진하기: float = 0.8
+@export var 진하기: float = 0.14
+## 표시된 발끝보다 아래쪽 바닥에 둔다. 0.5배 화면에서 약 6px 내려 사용자 표시 위치에 맞춘다.
+@export var 발밑_오프셋: float = 12.0
+
+const 발_모션 := preload("res://scripts/player_anim.gd")
 
 var _플: Node2D
 var _바닥 := Vector2.ZERO
@@ -29,7 +33,14 @@ func _ready() -> void:
 	# 스테이지 루트에 따로 두면 SS2D 지형 마감 메시가 나중에 그려져 그림자를 덮었다(실측: 폭 200·진하기 1 도 안 보임).
 	# top_level 로 Player 의 비율(scale 0.79×0.37)을 받지 않고 전역 좌표 그대로 그린다.
 	top_level = true
-	z_index = 1
+	# 그림은 월드 좌표로 계산하므로 부모 위치·비균등 배율이 다시 더해지지 않도록 기준 변환을 없앤다.
+	global_transform = Transform2D.IDENTITY
+	# 지형 위·캐릭터 뒤에 그린다. +1이면 본체보다 나중에 그려 발을 덮을 수 있다.
+	z_index = 0
+	var 그림 := get_parent().get_node_or_null("CharacterSprite") as AnimatedSprite2D
+	if 그림:
+		process_priority = 그림.process_priority + 1
+		process_physics_priority = 그림.get_parent().process_physics_priority + 1
 
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(_플):
@@ -49,15 +60,24 @@ func _physics_process(_delta: float) -> void:
 		_높이 = maxf(0.0, _바닥.y - _플.global_position.y)
 	queue_redraw()
 
+func _process(_delta: float) -> void:
+	# 렌더 프레임의 발 스냅·기울기까지 적용된 뒤 접지 위치를 맞춘다.
+	if is_instance_valid(_플) and _플 is CharacterBody2D and (_플 as CharacterBody2D).is_on_floor():
+		var 그림 := _플.get_node_or_null("CharacterSprite") as AnimatedSprite2D
+		if 그림:
+			var 발끝 := Vector2(0, 발_모션.FOOT_Y - 발_모션.FRAME_PX * 0.5)
+			_바닥 = 그림.to_global(발끝)
+	queue_redraw()
+
 func _draw() -> void:
 	if _높이 < 0.0:
 		return
 	var t := clampf(_높이 / 최대_높이, 0.0, 1.0)
 	var w := 폭 * (1.0 - 0.55 * t)
 	var a := 진하기 * (1.0 - t)
-	# 바닥 윗면 줄(갓돌)은 충돌선보다 몇 px 위까지 그려진다 → 그림자 중심을 3px 올려 윗면 위에 앉힌다.
+	# 기존 -3px는 발 뒤쪽으로 올렸으므로, 사용자 빨간 표시처럼 발 바로 아래 바닥으로 내린다.
 	# 납작한 타원(높이 = 폭의 0.28)을 8 겹 옅게 겹쳐 가장자리를 부드럽게(텍스처 없이).
-	var c := _바닥 + Vector2(0, -3)
+	var c := to_local(_바닥 + Vector2(0, 발밑_오프셋))
 	for i in 8:
 		var k := 1.0 - float(i) / 8.0
 		var rx := w * 0.5 * (0.35 + 0.65 * k)

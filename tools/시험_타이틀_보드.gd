@@ -95,7 +95,7 @@ func run() -> void:
 	var 이름들 := []
 	for b in 메뉴.get_children():
 		이름들.append(String(b.name))
-	check(이름들 == ["처음부터", "스테이지", "설정", "나가기"], "진행 없을 때 메뉴 %s (이어하기 없음)" % [이름들])
+	check(이름들 == ["시작하기", "스테이지", "설정", "나가기"], "진행 없을 때 메뉴 %s (이어하기 없음)" % [이름들])
 	await wait(80)
 	await shot("01_타이틀")
 

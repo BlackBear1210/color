@@ -85,6 +85,9 @@ static func 발견함(조각: Dictionary) -> bool:
 static func 열림(조각: Dictionary) -> bool:
 	if 조각.is_empty():
 		return false
+	# 하수도는 진행 계층의 제작 잠금까지 확인한다. 선행 클리어만 보는 집 규칙으로 우회하지 않는다.
+	if String(조각.get("씬", "")).begins_with(게임진행.하수도_폴더):
+		return 게임진행.열림(String(조각["id"]))
 	if bool(조각.get("숨김", false)):
 		return 발견함(조각)
 	var 앞: Array = 조각.get("앞", [])

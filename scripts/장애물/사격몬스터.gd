@@ -27,7 +27,8 @@ const 총알_스크립트 := preload("res://scripts/스마트월드/총알.gd")
 @export_group("발사")
 @export var 발사_켜짐: bool = true
 ## 두 발 사이 시간(초). 첫 발은 짧은 준비 뒤 쏜다 — 스테이지 시작과 동시에 쏘면 상황을 못 읽는다.
-@export_range(0.3, 10.0, 0.05) var 발사간격: float = 1.0
+# 사용자 요청: 사격 몬스터가 연속으로 쏘지 않고 각 발 사이에 3초를 기다린다.
+@export_range(0.3, 10.0, 0.05) var 발사간격: float = 3.0
 ## 처음 발사 시각을 어긋나게 한다(같은 판의 두 마리가 한꺼번에 쏘지 않게).
 @export var 위상: float = 0.0
 @export_range(100.0, 2000.0, 10.0) var 사거리: float = 700.0

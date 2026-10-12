@@ -48,6 +48,8 @@ var _mat: ShaderMaterial
 ## 잉크로 화면을 덮고 → scene_path 로 교체 → 잉크가 걷힌다. (호출 후 신경 쓸 것 없음)
 static func change_scene(from: Node, scene_path: String,
 		ink: Color = Color(0.03, 0.03, 0.03)) -> void:
+	# 로비 바로가기 등 일반 씬 전환도 미완성 하수도 맵으로 직접 들어가지 못하게 한다.
+	scene_path = 게임진행.입장_경로(scene_path)
 	var tr := StageTransition.new()
 	# current_scene 이 아니라 root 에 붙어야 씬이 바뀌어도 살아남는다
 	from.get_tree().root.add_child(tr)

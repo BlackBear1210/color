@@ -27,6 +27,10 @@ const 지도_씬 := "res://scenes/lobby/쳅터2_지도.tscn"
 ## [2026-10-09] 로비 = 새 타이틀 화면(예전 개발 로비 lobby.tscn 은 타이틀에서 F12)
 const 로비_씬 := "res://scenes/lobby/타이틀.tscn"
 const 하수도_폴더 := "res://scenes/world_2_클로드/"
+## 새 게임이 시작되는 첫 방 — 여기만 밟은 기록은 "진행" 으로 치지 않는다(`진행_있나`).
+const 첫_스테이지 := "res://scenes/쳅터1/스테이지/쳅터1_01_방_시작방.tscn"
+## 미완성 스테이지는 이전 클리어/방문 기록이 있어도 잠근다. 완성 후 이 목록에서만 해제한다.
+const 하수도_제작중 := ["stage_2-9.tscn", "stage_2-10.tscn", "stage_2-11.tscn"]
 
 ## 하수도(쳅터 2) 지도 — 칸 = [이름표, 씬, 지도 위치(0~1, 왼위 기준), 들어오는 선(앞 칸 이름표들)]
 ##   위치는 화면 비율이라 해상도가 바뀌어도 모양이 같다. 왼쪽 → 오른쪽으로 깊어진다.
@@ -121,6 +125,9 @@ static func 경로로_칸(경로: String) -> Array:
 
 
 static func 클리어함(이름표: String) -> bool:
+	# 저장 기록을 지우지는 않되 제작 중인 칸은 클리어 도장·후속 해금으로 쓰지 않는다.
+	if 제작중인가(하수도_폴더 + "stage_" + 이름표 + ".tscn"):
+		return false
 	return bool(_설정().get_value("클리어", 이름표, false))
 
 
@@ -132,6 +139,9 @@ static func 클리어_기록(이름표: String) -> void:
 
 
 static func 열림(이름표: String) -> bool:
+	# 선행 칸을 전부 깨도 제작 잠금이 우선한다.
+	if 제작중인가(하수도_폴더 + "stage_" + 이름표 + ".tscn"):
+		return false
 	var 칸 := 칸_찾기(이름표)
 	if 칸.is_empty():
 		return false
@@ -142,6 +152,16 @@ static func 열림(이름표: String) -> bool:
 		if 클리어함(String(앞)):
 			return true
 	return false
+
+
+static func 제작중인가(경로: String) -> bool:
+	# 지도·이어하기·통로가 같은 목록을 사용해야 다른 입구로 미완성 맵에 들어가지 못한다.
+	return 경로.begins_with(하수도_폴더) and 하수도_제작중.has(경로.get_file())
+
+
+static func 입장_경로(경로: String) -> String:
+	# 막힌 목적지에서는 검은 화면이나 멈춘 조작 대신 챕터2 지도를 보여 준다.
+	return 지도_씬 if 제작중인가(경로) else 경로
 
 
 static func 클리어_수() -> int:
@@ -245,7 +265,8 @@ static func 방문_기록(씬: String) -> void:
 	_저장()
 
 static func 이어할_씬() -> String:
-	return String(_설정().get_value("이어하기", "씬", ""))
+	# 예전에 2-9~2-11에서 종료한 저장 파일도 미완성 맵으로 이어하지 않는다.
+	return 입장_경로(String(_설정().get_value("이어하기", "씬", "")))
 
 
 static func 방문함(씬: String) -> bool:
@@ -264,8 +285,18 @@ static func 보드_봄_기록(키: String) -> void:
 
 
 ## 이어하기 — 진행이 하나라도 있나(타이틀의 '이어하기' 버튼을 보일지)
+##   [2026-10-10 Claude] 첫 방(01)에 들어갔다 나온 것만으로는 진행이 아니다 — 도형님 "맨 처음이면 시작하기를
+##   누르게 해야지, 이어하기가 눌러지면 안 돼". 01 은 들어가는 순간 방문이 저장되므로 예전 조건(방문 칸만 있으면)은
+##   한 번 죽고 나온 새 게임에도 이어하기를 띄웠다. 클리어가 있거나 01 밖을 밟았을 때만 진행으로 친다.
 static func 진행_있나() -> bool:
-	return _설정().has_section("쳅터1클리어") or _설정().has_section("방문") or _설정().has_section("클리어")
+	var cfg := _설정()
+	if cfg.has_section("쳅터1클리어") or cfg.has_section("클리어"):
+		return true
+	if cfg.has_section("방문"):
+		for 씬 in cfg.get_section_keys("방문"):
+			if String(씬) != 첫_스테이지 and bool(cfg.get_value("방문", 씬, false)):
+				return true
+	return false
 
 
 ## 처음부터 다시(로비 설정 등에서 쓸 수 있게). 지금은 검사 도구만 쓴다.
@@ -280,7 +311,7 @@ static func 진행_지우기() -> void:
 static func 통로_가로채기(왔던_씬: String, 가려는_씬: String) -> String:
 	var 칸 := 경로로_칸(왔던_씬)
 	if 칸.is_empty():
-		return 가려는_씬                 # 지도 밖 씬(테스트 등) — 손대지 않는다
+		return 입장_경로(가려는_씬)      # 지도 밖 입구에서도 제작 잠금만 적용한다
 	클리어_기록(칸[0])
 	마지막_칸 = 칸[0]
 	# 2-9·2-10의 옛 로비 출구 뒤에도 맵이 생겼다. 뒤 맵이 있으면 자연스럽게 이어 가고 끝이면 새 로비로 간다.
@@ -290,7 +321,8 @@ static func 통로_가로채기(왔던_씬: String, 가려는_씬: String) -> St
 		var 현재 := 칸들.find(칸)
 		# 추가 맵이 새 타이틀로 끝나도록 제작돼도 뒤 번호가 생기면 이어 간다.
 		if 현재 >= 0 and 현재 + 1 < 칸들.size():
-			return 씬경로(칸들[현재 + 1])
+			return 입장_경로(씬경로(칸들[현재 + 1]))
 		return 로비_씬
 	# [2026-10-09 Codex] 기록/해금은 저장하되 지도는 사용자가 직접 열 때 보여 준다. 도장 때문에 플레이를 끊지 않는다.
-	return 가려는_씬
+	# 2-8을 깨면 기록은 남기고, 미완성 2-9 대신 지도로 돌아간다.
+	return 입장_경로(가려는_씬)

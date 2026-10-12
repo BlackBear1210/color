@@ -269,7 +269,10 @@ func _고름(c: Dictionary) -> void:
 	var 깸 := 보드표.클리어함(c)
 	var 열 := 보드표.열림(c)
 	_정보.text = "%s · %s" % [String(c["id"]), String(c["이름"])]
-	if 깸:
+	# 제작 잠금은 앞 칸 클리어로 풀리지 않으므로 일반 해금 안내와 구분한다.
+	if 게임진행.제작중인가(보드표.씬경로(c)):
+		_정보_기록.text = "잠김 · 제작 중인 스테이지입니다"
+	elif 깸:
 		var r := 보드표.기록(c)
 		var 기록형 = load("res://scripts/ui/실행_기록.gd")
 		_정보_기록.text = "클리어 · 최단 %s · 최소 사망 %d · %d번 통과" % [기록형.시간_문자(float(r.get("초", 0.0))), int(r.get("사망", 0)), int(r.get("횟수", 1))] if not r.is_empty() else "클리어"
