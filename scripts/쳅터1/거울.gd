@@ -8,7 +8,8 @@ var _가까움 := false
 
 func _process(_delta: float) -> void:
 	if not Engine.is_editor_hint():
-		var p := get_tree().current_scene.get_node_or_null("Player") as Node2D
+		# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+		var p := 플레이어찾기.찾기(self) as Node2D
 		_가까움 = p != null and p.global_position.distance_to(global_position + Vector2(0, 50)) < 145.0
 		var left := Input.is_physical_key_pressed(KEY_Q)
 		var right := Input.is_physical_key_pressed(KEY_R)

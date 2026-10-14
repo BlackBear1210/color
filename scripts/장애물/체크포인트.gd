@@ -151,7 +151,8 @@ func _바닥_맞추기() -> void:
 	q.collide_with_areas = false
 	# 시작 위치의 플레이어 몸을 바닥으로 잡으면 등불이 떠 보인다. 지형만 찾도록 플레이어를 제외한다.
 	var 제외: Array[RID] = []
-	for 몸 in get_tree().get_nodes_in_group("player"):
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	for 몸 in 플레이어찾기.모두(self):
 		if 몸 is CollisionObject2D:
 			제외.append(몸.get_rid())
 	q.exclude = 제외
@@ -322,7 +323,7 @@ func 켜기() -> void:
 		# 잉크 색: 기본 흰색. 스위치를 켰을 때만 지금 플레이어가 고른 색(자유색)을 쓴다.
 		_잉크색 = ColorDefs.WHITE
 		if 잉크_색_기억:
-			var p := get_tree().get_first_node_in_group("player")
+			var p := 플레이어찾기.찾기(self)
 			if p != null and p.has_method("선택색"):
 				_잉크색 = ColorDefs.BLACK if int(p.call("선택색")) == ColorDefs.BLACK else ColorDefs.WHITE
 		# 불이 붙는 것과 거의 동시에 차오르기 시작해 0.9 초에 가득 — 빛이 먼저, 잉크가 뒤따른다

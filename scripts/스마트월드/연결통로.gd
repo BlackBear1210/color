@@ -593,7 +593,8 @@ func _얇은벽_재고_메우기() -> bool:
 		var 몸 := get_node_or_null(이름) as CollisionObject2D
 		if 몸:
 			제외.append(몸.get_rid())
-	for p in get_tree().get_nodes_in_group("player"):
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	for p in 플레이어찾기.모두(self):
 		if p is CollisionObject2D:
 			제외.append((p as CollisionObject2D).get_rid())
 	var d := 방향()

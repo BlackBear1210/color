@@ -92,7 +92,8 @@ func _physics_process(delta: float) -> void:
 ## 밟힘 = 몸이 실제로 움직이는 중이고(사망 모션 중 멈춘 몸의 남은 접촉 기록은 무시) 발이 이 판 윗면에 있다.
 ##   SS2D_붕괴발판 에서 겪은 함정 두 가지(부활 직후 다시 무너짐 · 옆 판 오인)를 같은 방법으로 막는다.
 func _밟혔나() -> bool:
-	for 후보 in get_tree().get_nodes_in_group("player"):
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	for 후보 in 플레이어찾기.모두(self):
 		var 몸 := 후보 as CharacterBody2D
 		if 몸 == null or not 몸.is_on_floor() or not 몸.is_physics_processing():
 			continue

@@ -64,7 +64,8 @@ func 입수(세기: float) -> void:
 	_걸음 = 걸음_간격      # 진입과 첫 물속 발걸음이 같은 순간 겹치지 않게 한다.
 
 func _physics_process(delta: float) -> void:
-	var 플 := get_tree().get_first_node_in_group("player") as CharacterBody2D
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	var 플 := 플레이어찾기.찾기(self) as CharacterBody2D
 	if 플 != null:
 		_발소리(플, delta)
 	_훑기 -= delta

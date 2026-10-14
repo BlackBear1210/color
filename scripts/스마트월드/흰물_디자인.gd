@@ -177,7 +177,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	var mat := material as ShaderMaterial
 	if mat != null:
-		mat.set_shader_parameter("anim_time", fmod(float(Time.get_ticks_msec()) * 0.001, 3600.0))
+		# [2026-10-14] 시간은 연출시계.gd 한 곳에서 읽는다(게임에선 예전과 같은 실제 시계 · 시험 때만 프레임 시계)
+		mat.set_shader_parameter("anim_time", 연출시계.초())
 		if 입체감 or (자연물 and _v3_쓰나()):
 			_조명_넘기기(mat, delta)
 

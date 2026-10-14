@@ -51,7 +51,8 @@ func _실제로_밟혔나() -> bool:
 	var 폴리 := get_collision_polygon_node()
 	if 폴리 == null:
 		return false
-	for 후보 in get_tree().get_nodes_in_group("player"):
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	for 후보 in 플레이어찾기.모두(self):
 		var 몸 := 후보 as CharacterBody2D
 		if 몸 == null or not 몸.is_on_floor():
 			continue
@@ -69,7 +70,7 @@ func _복구위치에_플레이어가_있나() -> bool:
 	var 범위 := Rect2(폴리.polygon[0], Vector2.ZERO)
 	for 점 in 폴리.polygon:
 		범위 = 범위.expand(점)
-	for 몸 in get_tree().get_nodes_in_group("player"):
+	for 몸 in 플레이어찾기.모두(self):
 		if 몸 is Node2D and 범위.grow(64.0).has_point(폴리.to_local(몸.global_position + Vector2(0, -48))):
 			return true
 	return false

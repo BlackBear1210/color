@@ -113,7 +113,8 @@ func _맞음() -> void:
 			문들.append(n)
 	if 목표 == null and not 문들.is_empty():
 		목표 = 문들[0] as Node2D
-	var p := get_tree().get_first_node_in_group("player") as CharacterBody2D
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	var p := 플레이어찾기.찾기(self) as CharacterBody2D
 	var 걸림 := 0.0
 	if 카메라 and 카메라.has_method("비추기") and 목표:
 		# 조작을 묶는다 — 비추는 동안 몸이 미끄러지거나 떨어지지 않게(바닥에 선 채 퍼즐을 푼다)

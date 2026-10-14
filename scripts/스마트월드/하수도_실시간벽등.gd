@@ -174,13 +174,14 @@ func _가림막_설치() -> void:
 		for node in terrain.get_children():
 			if node.has_method("get_collision_polygon_node"):
 				_가림막_추가(node.call("get_collision_polygon_node") as CollisionPolygon2D)
-	var player := get_tree().get_first_node_in_group("player")
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	var player := 플레이어찾기.찾기(self)
 	if player != null:
 		_가림막_추가(player.get_node_or_null("CollisionPolygon2D") as CollisionPolygon2D)
 
 
 func _발밑그림자_설치() -> void:
-	var player := get_tree().get_first_node_in_group("player") as Node
+	var player := 플레이어찾기.찾기(self) as Node
 	if player == null or player.has_node("발밑그림자"):
 		return
 	var foot := preload("res://scripts/스마트월드/하수도_발밑그림자.gd").new()

@@ -90,7 +90,8 @@ func _process(delta: float) -> void:
 		return
 	# 한 번 지나간 뒤로는 영구히 열림 — 책장이 밀려난 자리(통로 쪽)에 몸이 들어가면
 	if not 영구 and _진행 > 0.5:
-		var p := get_tree().get_first_node_in_group("player") as Node2D
+		# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+		var p := 플레이어찾기.찾기(self) as Node2D
 		if p:
 			var 로컬 := to_local(p.global_position)
 			if signf(로컬.x) == signf(-밀림.x) and absf(로컬.x) > 크기.x * 0.6 and absf(로컬.y) < 크기.y:
@@ -110,7 +111,7 @@ func _process(delta: float) -> void:
 
 
 func _문간에_몸이_있나() -> bool:
-	var p := get_tree().get_first_node_in_group("player") as Node2D
+	var p := 플레이어찾기.찾기(self) as Node2D
 	if p == null:
 		return false
 	var 로컬 := to_local(p.global_position)

@@ -13,17 +13,31 @@ F5 연결 지도 — "F5 를 누르면 어떤 파일들이 줄줄이 불려 오�
   3. .gd            : 글 안의 "res://..." · "uid://..." (preload/load/change_scene 전부)
                       + class_name 으로 이름만 불러 쓰는 스크립트(preload 없이 쓰는 경우)
                       + "res://폴더/" 처럼 폴더만 적고 이름을 이어 붙이는 경우
-                        → 그 폴더 파일 중 스크립트 글에 이름이 나오는 것만 잇는다(동적)
+                        → 그 폴더 바로 아래 파일을 **전부** 잇는다(동적 · "폴더 전체")
+                      + "…/saw_r%d.png" 같은 형식 문자열 → 맞는 파일 전부
   4. .gdshader      : #include "res://..."
   5. .json/.cfg     : 표 안의 "res://..."
+  6. 짝 규칙        : xxx_black ↔ xxx_white · …/black/… ↔ …/white/…(지형.gd 가 짝을 찾아 씀)
+                      · xxx.png → xxx_n.png(노멀맵) · default_bus_layout.tres(엔진 기본)
   uid:// 는 .uid · .import · 씬 머리줄에서 진짜 경로로 바꾼다.
 
+[2026-10-13 검토로 고친 것] 처음 판은 이름을 실행 중에 만드는 로드(잠긴문 문 그림 · 하수도 발소리
+  step_*_%d.wav · 흑백 짝 그림 · 노멀맵)를 놓쳐서 실제로 쓰는 파일 153 개를 "안 씀" 으로 냈다.
+  지울 파일을 고르는 지도이므로 지금은 **넉넉하게**(쓰는 쪽으로) 잇는다. 그래서 "F5 에서 닿음" 에는
+  안 쓰는 것이 조금 섞일 수 있지만, "안 닿음" 은 정적·동적 로드를 다 확인한 결과다.
+  검증 방법: Godot 의존 캐시(.godot/editor/filesystem_cache10)와 간선 비교 — 284 파일 중 어긋남 0
+  (8 건은 캐시가 옛것) · 경로를 조립하는 load/exists/DirAccess 호출 전부 눈으로 확인 · class_name 누락 0.
+
 한계
-  - 실행 중에 글자를 조립해서 만드는 경로("stage_" + str(n))는 이름이 글에 안 나오면 못 잡는다.
   - 주석 줄(# 로 시작)은 일부러 뺀다 — 옛 경로가 주석에 남아 있는 경우가 많아서.
+  - 새로 경로를 조립하는 코드를 쓰면(폴더 상수 없이 다른 리소스 경로에서 바꿔 만들기 등) 다시 확인할 것.
+
+안 닿는 파일 분류(6 절 · docs/연결지도_안닿는파일.txt)
+  가 아무 데도 이름이 없음 · 나 문서에만 · 다 안 쓰는 옛 파일끼리만 · 라 검사(규칙 3)가 씀 · 마 다른 도구만 씀
+  가·나·다·마 의 경계는 이름 검색이라 대략적이다. 확실한 선은 "F5 로 안 닿음" 과 "라(검사)" 다.
 
 쓰는 법
-  python -X utf8 tools/연결지도.py              → docs/연결지도_F5.md 를 새로 쓴다(멱등)
+  python -X utf8 tools/연결지도.py              → docs/연결지도_F5.md · 연결지도_안닿는파일.txt 를 새로 쓴다(멱등)
   python -X utf8 tools/연결지도.py 월드.gd       → 그 파일이 쓰는 것 / 그 파일을 쓰는 곳 / F5 에서 가는 길
 """
 import os
@@ -33,6 +47,14 @@ from collections import defaultdict, deque
 
 루트 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 결과_경로 = os.path.join(루트, "docs", "연결지도_F5.md")
+목록_경로 = os.path.join(루트, "docs", "연결지도_안닿는파일.txt")
+# CLAUDE.md 규칙 3 의 검사 목록 — 원문 docs/다음작업_프롬프트.md §1 은 10-04 정리 때 저장소 밖으로 나갔다
+# (git a082c01^ 에 남아 있음). 거기 적힌 것 중 지금 tools/ 에 남아 있는 것만 실제로 쓰인다.
+검사_목록 = {
+    "check_스마트월드", "test_SS2D_중복연결", "test_color_death", "test_lobby_flow", "test_paint_system",
+    "test_stages", "test_낙하사망", "test_빛창문", "test_사망판정", "test_지형규칙", "test_차오르는물",
+    "test_챕터전환", "test_카메라공간", "test_카메라연출", "test_통로전환", "test_페인트v4", "레벨검사",
+}
 
 # 엔진 내부 캐시·백업은 진짜 게임 파일이 아니다
 # docs/ 는 검토용 사본(씬·코드 통째 복사본)이 있어 같은 uid 가 두 벌이 된다 → 진짜 파일과 섞여서 뺀다
@@ -159,16 +181,21 @@ def 연결_찾기(파일들, uid표):
                     # 폴더만 적은 줄: begins_with 같은 "여기 씬인가?" 검사는 불러오는 게 아니다
                     if "begins_with" in 줄 or "contains" in 줄:
                         continue
+                    # [2026-10-13 검토] 이름이 글에 그대로 나오는 것만 잇던 것을 고쳤다.
+                    #   폴더 + 재 + "_문_닫힘.png"(잠긴문) · 경로 + "step_stone_%d.wav"(하수도_물소리)
+                    #   · DirAccess.get_files_at(폴더)(게임진행)처럼 이름을 실행 중에 만드는 곳을 놓쳤다.
+                    #   지울 파일을 고르는 지도라서 "모자라게" 보다 "넉넉하게" 잇는 쪽이 안전하다 →
+                    #   폴더 바로 아래 파일을 전부 잇고, 이름이 글에 안 나오는 것은 "폴더 전체" 로 표시해 둔다.
                     for 후보 in 폴더_안.get(p, []):
                         이름 = os.path.splitext(후보.rsplit("/", 1)[1])[0]
-                        if len(이름) >= 2 and 이름 in 글:
-                            잇기(후보, "폴더+이름")
+                        잇기(후보, "폴더+이름" if len(이름) >= 2 and 이름 in 글 else "폴더 전체")
                     continue
                 if "%" in p:
-                    접두 = p.split("%")[0]
+                    # "…/saw_r%d.png" · "…/%s/fill.tres" — 형식 자리를 아무 글자로 보고 맞춘다
+                    틀 = re.compile(re.sub(r"%(?:0?\d+)?[sd]", "[^/]+", re.escape(p).replace(r"\%", "%")) + "$")
                     for 후보 in 파일들:
-                        if 후보.startswith(접두) and 후보.endswith(p.rsplit("%s", 1)[-1]):
-                            잇기(후보, "폴더+이름")
+                        if 틀.match(후보):
+                            잇기(후보, "형식 문자열")
                     continue
                 if p in 파일들:
                     잇기(p, "경로")
@@ -184,6 +211,30 @@ def 연결_찾기(파일들, uid표):
                 뒤 = 코드만[m.end():m.end() + 1]
                 if 뒤 == "." or re.search(r"(:|->|\bas|\bis|\bextends|\[)\s*$", 앞):
                     잇기(클래스표[m.group(1)], "class_name")
+
+    # ── 실행 중에 "짝" 으로 불려 오는 파일 ──
+    # [2026-10-13 검토] 아래 둘은 경로가 어느 글에도 안 적혀 있는데 실제로 읽힌다.
+    #   1) 흑백 짝: 지형.gd `_짝_찾기` 가 xxx_black.png ↔ xxx_white.png, …/black/… ↔ …/white/…
+    #      를 바꿔 끼운다(하수도_벽돌지형.gd 도 /black/ ↔ /white/). 한쪽만 쓰여 있어도 다른 쪽이 필요하다.
+    #   2) 노멀 짝: lobby.gd · 하수도_주철배관.gd 가 xxx.png 옆의 xxx_n.png 를 찾아 붙인다.
+    for r in 파일들:
+        if 종류(r) not in ("그림", "리소스"):
+            continue
+        폴더, 파일 = r.rsplit("/", 1)
+        이름, 확장 = os.path.splitext(파일)
+        짝들 = []
+        조각 = 이름.split("_")
+        for i, t in enumerate(조각):
+            if t in ("black", "white"):
+                반대 = 조각[:]
+                반대[i] = "white" if t == "black" else "black"
+                짝들.append(f"{폴더}/{'_'.join(반대)}{확장}")
+        if "/black/" in r + "/" or "/white/" in r + "/":
+            짝들.append(r.replace("/black/", "/\0/").replace("/white/", "/black/").replace("/\0/", "/white/"))
+        짝들.append(f"{폴더}/{이름}_n{확장}")
+        for 짝 in 짝들:
+            if 짝 != r and 짝 in 파일들:
+                쓰는것[r].setdefault(짝, "흑백·노멀 짝")
     return 쓰는것
 
 
@@ -339,24 +390,133 @@ def 문서_쓰기(파일들, 쓰는것, 출발, 닿음):
         w(f"- `{짧게(r)}` ← " + " · ".join(f"`{x}`" for x in 누가))
     w("")
 
-    # 4-6 안 닿는 파일 폴더별
-    w("## 6. F5 로 안 닿는 파일 — 폴더별 개수")
+    # 4-6 안 닿는 파일 — 지울 후보를 고르려고 다섯 칸으로 나눈다
+    # [2026-10-13] 도형님 목적 = 필요 없는 파일 정리. "F5 로 안 닿는다" 만으로는 시험 씬·도구 입력이
+    #   섞여서 고를 수가 없다 → 누가 이름이라도 부르는지로 나눈다. 전체 목록은 옆 txt 에.
+    분류 = 안닿는_분류(파일들, 쓰는것, 닿음)
+    설명 = {
+        "가": "아무 데도 안 나옴 — 게임·도구·문서 어디에도 파일 이름이 없다. **지울 1순위**",
+        "나": "문서(.md)에만 이름이 나옴 — 게임·도구는 안 쓴다. 기록용이면 지워도 게임엔 영향 없음",
+        "다": "안 쓰는 옛 파일끼리만 이어짐 — 옛 씬·옛 코드가 부르는 것. 부르는 쪽과 같이 지울지 판단",
+        "라": "검사(CLAUDE.md 규칙 3 의 검사 도구)가 불러 씀 — 지우면 검사가 깨진다. 남기거나 검사를 먼저 고칠 것",
+        "마": "다른 도구(촬영·진단·빌더·시험_*·이미지 굽는 파이썬)만 씀 — 게임엔 영향 없음. 그 도구와 같이 정리",
+    }
+    w("## 6. F5 로 안 닿는 파일 — 지울 후보 분류")
     w("")
-    w("지워도 된다는 뜻이 **아니다**. 도구가 쓰는 파일, 에디터에서만 여는 시험 씬, 동적으로 불리는 파일이 섞여 있다.")
+    w(f"전체 목록(파일 하나하나): `{os.path.relpath(목록_경로, 루트).replace(os.sep, '/')}`")
     w("")
-    폴더수 = defaultdict(int)
-    for r in 파일들:
-        if r in 닿음 or 종류(r) == "기타" or r.startswith(("res://docs/", "res://addons/", "res://tools/")):
-            continue
-        폴더수[r.rsplit("/", 1)[0]] += 1
-    w("| 폴더 | 개수 |")
-    w("|---|---:|")
-    for 폴더, n in sorted(폴더수.items(), key=lambda x: -x[1])[:60]:
-        w(f"| `{짧게(폴더)}/` | {n} |")
+    w("| 칸 | 뜻 | 개수 |")
+    w("|---|---|---:|")
+    for k in "가나다라마":
+        w(f"| {k} | {설명[k]} | {len(분류[k])} |")
     w("")
+    w("⚠ 지우기 전에: `.import`·`.uid` 짝 파일도 같이 지운다 · `addons/` 는 플러그인 통째라 건드리지 않는다 · "
+      "지운 뒤 에디터를 한 번 열어 깨진 의존(빨간 경고)이 없는지 보고 검사 13개를 돌린다.")
+    w("")
+    for k in "가나다라마":
+        폴더수 = defaultdict(int)
+        for r in 분류[k]:
+            폴더수[r.rsplit("/", 1)[0]] += 1
+        w(f"<details><summary>{k}. {설명[k].split(' — ')[0]} — 폴더별 (위 25)</summary>")
+        w("")
+        w("| 폴더 | 개수 |")
+        w("|---|---:|")
+        for 폴더, n in sorted(폴더수.items(), key=lambda x: -x[1])[:25]:
+            w(f"| `{짧게(폴더)}/` | {n} |")
+        w("")
+        w("</details>")
+        w("")
 
-    with open(결과_경로, "w", encoding="utf-8", newline="\n") as f:
-        f.write("\n".join(줄) + "\n")
+    안전_쓰기(결과_경로, "\n".join(줄) + "\n")
+    목록 = ["# F5 로 안 닿는 게임 파일 — tools/연결지도.py 가 만든다(손으로 고치지 말 것)",
+            "# 칸: 가=아무데도 안 나옴 · 나=문서에만 · 다=옛 파일끼리만 · 라=시험·도구가 불러 씀 · 마=도구 글에 이름만", ""]
+    for k in "가나다라마":
+        목록.append(f"## {k}. {설명[k]}  ({len(분류[k])}개)")
+        목록 += [f"{k}\t{종류(r)}\t{짧게(r)}" for r in sorted(분류[k])]
+        목록.append("")
+    안전_쓰기(목록_경로, "\n".join(목록) + "\n")
+
+
+def 안전_쓰기(경로, 글):
+    # 앱의 파일 창이 결과 문서를 열어 두면 Windows 가 open(…, "w") 에 Errno 22 를 낸다(10-13 두 번 겪음).
+    # 옆에 임시 파일로 쓰고 바꿔 끼우며, 잠깐 잠긴 경우를 위해 몇 번 다시 해 본다.
+    import time
+    임시 = 경로 + ".tmp"
+    with open(임시, "w", encoding="utf-8", newline="\n") as f:
+        f.write(글)
+    for _ in range(10):
+        try:
+            os.replace(임시, 경로)
+            return
+        except OSError:
+            time.sleep(0.3)
+    raise OSError(f"{경로} 를 바꿔 쓸 수 없다(다른 프로그램이 열고 있나?) — 새 내용은 {임시} 에 있다")
+
+
+def 안닿는_분류(파일들, 쓰는것, 닿음):
+    """F5 로 안 닿는 게임 파일(addons·docs·tools 밖)을 가/나/다/라 로 나눈다."""
+    # 맨 위 폴더 파일(export_presets.cfg · icon.svg …)과 점 폴더(.codex 등 AI 도구 설정)는
+    # 게임 리소스가 아니라 프로젝트 설정이다 → 지울 후보에서 뺀다(검토 때 "가" 로 잘못 나왔다)
+    대상 = sorted(r for r in 파일들 if r not in 닿음 and 종류(r) != "기타"
+                  and "/" in r[len("res://"):] and not r[len("res://"):].startswith(".")
+                  and not r.startswith(("res://addons/", "res://docs/", "res://tools/")))
+
+    # 라: CLAUDE.md 규칙 3 의 "검사" 가 연결로 닿는 것 — 지우면 검사가 깨진다
+    # 마: 그 밖의 도구(촬영·진단·빌더·시험_*)가 닿거나 이름을 적은 것 — 도구와 같이 정리할 것
+    # check_스마트월드.gd 처럼 "폴더 안 스크립트를 전부 컴파일해 본다" 는 검사는 폴더를 통째로 훑지만,
+    # 파일 하나를 지운다고 깨지지 않는다 → 도구 자신이 건 "폴더 전체" 연결은 여기서 뺀다.
+    도구용 = {k: ({t: w for t, w in v.items() if w != "폴더 전체"} if k.startswith("res://tools/") else v)
+              for k, v in 쓰는것.items()}
+    검사_닿음, 도구_닿음 = set(), set()
+    for r in 파일들:
+        if r.startswith("res://tools/") and r.endswith(".gd"):
+            닿 = set(따라가기(도구용, r))
+            (검사_닿음 if r.rsplit("/", 1)[1][:-3] in 검사_목록 else 도구_닿음).update(닿)
+    # 이름 검색용 글 덩어리 — 파이썬 도구는 res:// 없이 상대 경로·이름으로 적으니 이름으로 찾는다
+    def 덩어리(폴더들, 확장자들, 깊이_밖=False):
+        조각 = []
+        for 폴더 in 폴더들:
+            for 위, 하위, 이름들 in os.walk(os.path.join(루트, 폴더)):
+                하위[:] = [d for d in 하위 if d not in (".godot", ".git", "_진단")]
+                for n in 이름들:
+                    # 이 도구가 만든 결과(연결지도_*)는 모든 이름을 담고 있다 — 넣으면 전부 "문서에 나옴" 이 된다
+                    if n.startswith("연결지도") or n == "연결지도.py":
+                        continue
+                    if os.path.splitext(n)[1].lower() in 확장자들:
+                        try:
+                            with open(os.path.join(위, n), encoding="utf-8", errors="ignore") as f:
+                                조각.append(f.read())
+                        except OSError:
+                            pass
+        return "\n".join(조각)
+    도구글 = 덩어리(["tools"], {".gd", ".py", ".json", ".cfg", ".txt", ".tscn", ".cmd", ".ps1", ".mjs", ".js", ".sh"})
+    문서글 = 덩어리(["docs", "scenes", "assets", "scripts"], {".md", ".txt"})
+    for n in ("CLAUDE.md", "AGENTS.md"):
+        문서글 += "\n" + 읽기("res://" + n)
+
+    # 다: 안 닿는 게임 파일이 부르는 것
+    옛것이_부름 = set()
+    for r in 대상:
+        옛것이_부름 |= set(쓰는것.get(r, {}))
+
+    # 라 = 시험 씬·도구 코드가 실제로 불러 씀(그래프) / 마 = 도구 글에 이름만 나옴.
+    # 마 는 대개 "이 그림을 굽는 파이썬 도구" 라서, 게임이 안 쓰면 지워도 도구로 다시 만들 수 있다.
+    분류 = {k: [] for k in "가나다라마"}
+    for r in 대상:
+        이름 = r.rsplit("/", 1)[1]
+        if r in 검사_닿음:
+            분류["라"].append(r)
+        # 파이썬 도구는 "scenes/쳅터1/도안/<이름>.png" 처럼 폴더만 적고 파일을 만들어 낸다(만들기.py 도면 PNG)
+        # → 파일이 사는 폴더 경로가 도구 글에 있으면 "도구가 만들거나 읽는 파일" 로 본다
+        elif r in 도구_닿음 or 이름 in 도구글 or (짧게(r).rsplit("/", 1)[0] + "/") in 도구글:
+            분류["마"].append(r)
+        elif r in 옛것이_부름:
+            분류["다"].append(r)
+        elif 이름 in 문서글:
+            분류["나"].append(r)
+        else:
+            분류["가"].append(r)
+    return 분류
 
 
 def 한_파일_보기(쓰는것, 파일들, 닿음, 출발, 찾는말):
@@ -408,6 +568,9 @@ def main():
     쓰는것["res://project.godot"] = {**쓰는것.get("res://project.godot", {})}
     if 출발:
         쓰는것["res://project.godot"][출발] = "main_scene"
+    # 엔진이 이름으로 정해 두고 읽는 파일 — project.godot 에 안 적혀 있어도 쓰인다(오디오 버스 배치)
+    if "res://default_bus_layout.tres" in 파일들:
+        쓰는것["res://project.godot"]["res://default_bus_layout.tres"] = "엔진 기본"
     닿음 = 따라가기(쓰는것, "res://project.godot")
     if len(sys.argv) > 1:
         한_파일_보기(쓰는것, 파일들, 닿음, 출발, sys.argv[1])

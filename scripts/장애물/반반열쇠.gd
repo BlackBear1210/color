@@ -77,7 +77,8 @@ func _physics_process(delta: float) -> void:
 	# 에디터에서는 그림만 보인다(@tool — 씬에 직접 놓을 때 자리를 보려고). 판정·둥실거림은 실행 때만.
 	if 주움 or Engine.is_editor_hint():
 		return
-	var p := get_tree().get_first_node_in_group("player") as CharacterBody2D
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	var p := 플레이어찾기.찾기(self) as CharacterBody2D
 	var 맞음 := false
 	if p and p.has_method("선택색"):
 		맞음 = int(p.call("선택색")) == 색()

@@ -88,6 +88,9 @@ func _한판(경로: String) -> void:
 			if "입구_시안_사용" in n0:
 				n0.set("입구_시안_사용", false)
 	root.add_child(씬)
+	# ★[2026-10-14] 실제 게임처럼 현재 씬으로 지정한다. 안 하면 current_scene 으로 플레이어를 찾는 코드
+	#   (쳅터1 거울.gd 등)가 매 프레임 null 오류를 찍어 — 15 에서 1,342 번 — 스크립트 시간이 부풀려 재졌다.
+	current_scene = 씬
 	var 로드_ms := float(Time.get_ticks_usec() - t0) / 1000.0
 	for i in 30:
 		await process_frame
@@ -225,6 +228,7 @@ func _한판(경로: String) -> void:
 			k["중심"].x, k["중심"].y, k["중앙"], k["최대"], k["처리"], k["물리"], k["렌더cpu"], k["gpu"], k["그리기"]])
 	PhysicsServer2D.set_active(true)
 	씬.queue_free()
+	current_scene = null          # 지운 씬을 현재 씬으로 남겨 두지 않는다(다음 판이 새로 지정)
 	탐침.queue_free()
 	탐침끝.queue_free()
 	await process_frame

@@ -228,7 +228,8 @@ func 가려졌나(시작: Vector2, 끝: Vector2) -> bool:
 	#   여기는 지형만 본다(플레이어 몸은 빼고 — 몸이 빛을 가리면 자기 몸에 빛이 안 닿는다).
 	var q := PhysicsRayQueryParameters2D.create(시작, 끝, 1)
 	q.collide_with_areas = false
-	var p := get_tree().get_first_node_in_group("player") as CollisionObject2D
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	var p := 플레이어찾기.찾기(self) as CollisionObject2D
 	if p:
 		q.exclude = [p.get_rid()]
 	return not get_world_2d().direct_space_state.intersect_ray(q).is_empty()
@@ -344,7 +345,7 @@ func _부채_만들기() -> void:
 	var 끝들 := PackedVector2Array()
 	var o := global_position
 	var 공간 := get_world_2d().direct_space_state
-	var p := get_tree().get_first_node_in_group("player") as CollisionObject2D
+	var p := 플레이어찾기.찾기(self) as CollisionObject2D
 	var 막이들 := get_tree().get_nodes_in_group("빛막이")
 	for i in 광선수:
 		var 각 := TAU * float(i) / float(광선수)

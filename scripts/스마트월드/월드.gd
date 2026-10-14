@@ -10,6 +10,17 @@ extends Node2D
 ##   · E 키 중재 — 레버가 가까우면 레버 조작, 아니면 페인트 수동 회수
 ##   · HUD — 남은 페인트 / 회수 대기 / 현재 색
 ##
+## ▣ 목차 [2026-10-14] — 파일 안 구역 순서 (`# ── 이름 ──` 줄로 나뉜다)
+##   _ready · _physics_process · _unhandled_input   스테이지 조립 · 매 물리 프레임 판정 · E 키 중재
+##   사망 판정      _사망_판정 → 몸 조각마다 _조각이_반대색에_닿았나 (약속: docs/코드_구조_규칙.md §2 반대색인가)
+##   리스폰         연결_도착 · _리스폰 · 체크포인트(_체크포인트_접촉·_갱신) · 바닥색 맞추기
+##   챕터·등장 연출  스테이지_번호 · _음향_시작 · _등장_연출
+##   진입·안전지점   _진입_위치_정하기 · _안전점_갱신(붕괴발판·유령판·반딧불 자리 제외) · _낙하를_받아주나
+##   화면(HUD·메뉴)  → `월드_화면조립.gd` 로 옮김
+## ⚠ 이름에 밑줄이 붙어 있어도 **바깥에서 직접 부르는 것**이 많다 — 이름을 바꾸거나 다른 파일로 옮기지 말 것.
+##   시험·촬영 도구 약 45 개: _사망_판정 · _리스폰 · _무적 · _카메라 · _안전점 · _입구점 · _입구_부활 · _체크포인트_* ·
+##   _저장체크 · _바닥색 · _유령판_위인가 · _낙하 · _사망중 / 상속 스크립트: _부활_후처리(stage_2_5_월드) · _안전점_갱신(하강수로_월드).
+##
 ## ▣ 왜 stage_lab.gd 를 안 쓰고 새로 만들었나
 ##   stage_lab 은 PaintPlatform(v3, 384px 덩어리 아트) 전용으로 짜여 있어
 ##   SS2D 지형·식물·유체를 모른다. 기존 스테이지를 깨지 않으려면 건드리지 않는 게 맞다.
@@ -27,7 +38,6 @@ func 스테이지_완료() -> void:
 
 const 카메라_스크립트 := preload("res://scripts/proto/proto_camera.gd")
 const 총_스크립트 := preload("res://scripts/스마트월드/총.gd")
-const 메뉴_스크립트 := preload("res://scripts/스마트월드/일시정지_메뉴.gd")
 ## [2026-08-06 추가] 낙하 거리 기반 즉사 판정기
 const 낙하감시_스크립트 := preload("res://scripts/스마트월드/낙하_감시.gd")
 ## [2026-10-04] 쳅터1 연결구 전환(줌인·암전·교체·줌아웃). 진행 중엔 사망 판정을 멈춘다.
@@ -36,12 +46,10 @@ const 전경전환_스크립트 := preload("res://scripts/쳅터1/전경전환.g
 const 반반열쇠_관리 := preload("res://scripts/장애물/반반열쇠_관리.gd")
 ## Inspector `시작_위치_방식`의 두 번째 선택값. 숫자를 함수마다 반복하지 않는다.
 const 시작_위치_방식_에디터_플레이어: int = 1
-## [2026-08-17 추가] 점(pip) 방식 페인트 HUD + 그 어댑터.
+## [2026-10-14] 페인트 HUD · 조작 안내 · ESC 메뉴 붙이기는 `월드_화면조립.gd` 로 옮겼다(바깥에서 쓰는 곳 0 인 유일한 덩어리).
 ## ⚠ class_name 이 아니라 경로 preload 로 잡는다 — 새 스크립트의 전역 클래스 이름은
 ##   에디터가 한 번 훑기 전까지 등록되지 않아서, 헤드리스 검사가 통째로 죽는다.
-## ★[2026-09-05] 모든 스테이지가 쓰는 **공통 HUD 씬**. stage_lab.gd 도 같은 것을 쓴다.
-const 페인트HUD_씬 := preload("res://scenes/ui/페인트_HUD.tscn")
-const 페인트HUD어댑터_코어 := preload("res://scripts/ui/페인트_HUD_어댑터_코어.gd")
+const 화면조립 := preload("res://scripts/스마트월드/월드_화면조립.gd")
 
 @export var 스테이지_이름: String = "스마트월드 테스트"
 ## 카메라가 벗어나지 않을 범위. 비워두면(size 0) 리밋 없이 자유롭게 따라간다.
@@ -87,7 +95,6 @@ var _카메라: ProtoCamera = null
 var _총: 페인트총 = null
 var _낙하: 낙하감시 = null
 
-var _hud_안내: Label = null
 var _무적: float = 0.0                 ## 리스폰 직후 잠깐 무적 (즉사 반복 방지)
 var _안전점: Vector2 = Vector2.ZERO    ## 자동 체크포인트 (마지막으로 안전하게 서 있던 곳)
 var _입구점: Vector2 = Vector2.ZERO    ## [2026-10-10] 이번에 이 스테이지로 들어온 자리(연결구 안쪽 · 직접 실행이면 시작 위치)
@@ -204,16 +211,16 @@ func _ready() -> void:
 			목표.body_entered.connect(func(body: Node2D):
 				if body == _플레이어:
 					스테이지_완료())
-	_HUD_만들기()
+	화면조립.HUD_붙이기(self, _플레이어, _코어)
 	# ★[2026-10-08] 반반 열쇠 — 열쇠 스테이지(표 또는 씬에 놓인 조각/문)면 조각·잠긴 문·HUD 칸을 만든다.
-	#   HUD 칸이 페인트 HUD 아래에 붙으므로 반드시 `_HUD_만들기()` 다음. 열쇠 스테이지가 아니면 아무것도 안 한다.
+	#   HUD 칸이 페인트 HUD 아래에 붙으므로 반드시 `화면조립.HUD_붙이기()` 다음. 열쇠 스테이지가 아니면 아무것도 안 한다.
 	반반열쇠_관리.배치(self)
 	# 배치된 성수반은 불만 켜던 상태였으므로 실제 부활 위치도 이 월드에 저장한다.
 	#   쳅터1 촛불등은 빼고 — 촛불등은 안전 착지를 확인한 뒤 `_체크포인트_갱신` 이 저장한다(공중 스침 저장 방지).
 	for 지점 in get_tree().get_nodes_in_group("checkpoint"):
 		if 지점 is Area2D and is_ancestor_of(지점) and not bool(지점.get("_촛불형")):
 			지점.body_entered.connect(_체크포인트_접촉.bind(지점))
-	_메뉴_만들기()
+	화면조립.메뉴_붙이기(self)
 	for n in get_tree().get_nodes_in_group("checkpoint"):
 		if n is Area2D and is_ancestor_of(n) and bool(n.get("_촛불형")):
 			_체크목록.append(n)
@@ -518,6 +525,8 @@ func _반대색_대상_찾기(맞은것: Object) -> Node:
 		n = n.get_parent()
 	return null
 
+
+# ── 리스폰 · 체크포인트 ─────────────────────────────────────────────────────
 
 ## [2026-10-04] 쳅터1 연결구(스테이지 사이 길목)로 들어왔을 때 `scripts/쳅터1/전경전환.gd` 가 부른다.
 ##   도착: 길목 굴 안(카메라 리밋 밖) · 안쪽: 방 안 2칸 = 자동 체크포인트. 리스폰과 같은 뒷정리를 한다.
@@ -955,94 +964,3 @@ func _발밑에_땅있나() -> bool:
 		기준 + Vector2(0, -4.0), 기준 + Vector2(0, 24.0), 1)
 	q.exclude = [_플레이어.get_rid()]
 	return not 공간.intersect_ray(q).is_empty()
-
-
-# ── HUD ────────────────────────────────────────────────────────────────────
-## ★[2026-08-17 전면 교체] 글씨 HUD → 점(pip) HUD.
-##
-## 예전에는 `"페인트 8 / 12 (회수대기 3) [회색으로 잠김 2발]"` 한 줄이었다. 문제가 셋:
-##   ① 퍼즐의 핵심 자원을 문장으로 읽게 만든다.
-##   ② "회수대기 3" 의 3 은 발 수가 아니라 **대상 개수**였다(회수_대기수() = 줄 길이).
-##      옆 숫자들은 발 단위라 플레이어는 "3발"로 오해한다.
-##   ③ FIFO 순서가 안 보여서 E 가 "무엇이 풀릴지 모르고 누르는 키"였다.
-## → `페인트_HUD.gd` 가 세 가지를 한꺼번에 해결한다. 여기서는 붙이기만 한다.
-##   스마트월드 6개 씬이 전부 이 파일을 쓰므로 이 한 줄로 전부 적용된다.
-## ★★[2026-09-05 STEP 2] HUD 를 **코드로 만들지 않고 공통 씬을 인스턴스**한다.
-##   예전에는 `페인트HUD_스크립트.new()` 로 빈 CanvasLayer 를 만들고 그 안을 전부
-##   코드로 그렸다(얼굴 배지 · 캡슐 바). 그게 인게임의 "이상한 얼굴 UI" 였다.
-##   → 이제 `scenes/ui/페인트_HUD.tscn` **하나를** 여기서도, `stage_lab.gd` 에서도 쓴다.
-##     HUD 모양을 고치려면 그 씬 하나만 고치면 되고, 스테이지가 늘어도 복사할 것이 없다.
-func _HUD_만들기() -> void:
-	if _코어:
-		var 새HUD: CanvasLayer = 페인트HUD_씬.instantiate()
-		새HUD.name = "페인트HUD"
-		add_child(새HUD)
-		새HUD.연결(_플레이어, 페인트HUD어댑터_코어.new(_코어, 새HUD))
-
-	# ── ⚠ 씬에 구워져 저장된 옛 HUD 치우기 (§5-1 지뢰의 실물) ──────────────
-	# `스마트월드_1.tscn` · `스마트월드_2.tscn` 에는 예전 빌더가 owner 를 트리 전체에
-	# 박는 바람에 **런타임에 만든 HUD 가 씬 파일에 통째로 저장돼 있다.**
-	# 그래서 지금까지 HUD 가 항상 두 벌이었다 — 씬에 구워진 쪽은 갱신이 안 되니
-	# 스크린샷에서 "페인트 12 / 12 (회수대기 0)" 이 계속 굳어 있었다.
-	# 씬 파일을 고치는 건 위험하므로(디자이너 편집본이 날아갈 수 있다) 여기서 치운다.
-	# 노드를 재사용해야 한다 — queue_free() 는 지연 삭제라 같은 이름으로 새로 만들면
-	# Godot 이 "HUD2" 로 이름을 바꿔 버린다.
-	var layer := get_node_or_null("HUD") as CanvasLayer
-	if layer != null:
-		for 자식 in layer.get_children():
-			layer.remove_child(자식)
-			자식.free()
-	else:
-		layer = CanvasLayer.new()
-		layer.name = "HUD"
-		add_child(layer)
-
-	# ── ★[2026-09-05 비주얼] Production HUD 와 Gameplay Help 를 갈라 놓는다 ──
-	# 예전에는 안내문이 초상+게이지 **바로 아래**(28, 116)에 붙어 있었다.
-	# HUD 를 실화면에서 읽히는 크기(배율 1.35)로 키우니 게이지가 글자 위로 올라타서
-	# 둘이 한 덩어리로 뭉개졌다 — 자원 표시와 임시 안내가 섞여 보이는 것이 최악이다.
-	#
-	# → 안내문은 **화면 상단 가운데**로 옮긴다. 좌상단 HUD 와 자리가 절대 안 겹치고,
-	#   나중에 이 줄을 통째로 지워도(정식 출시 때) HUD 는 한 글자도 안 건드리게 된다.
-	#   ⚠ 이건 여전히 **테스트 안내**다. 지우라는 지시가 오면 이 블록만 지우면 끝이다.
-	_hud_안내 = Label.new()
-	_hud_안내.name = "조작안내"
-	_hud_안내.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	_hud_안내.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hud_안내.offset_top = 82.0
-	_hud_안내.offset_bottom = 112.0
-	# 중앙 타이머 아래의 선택적 보조 안내로 두어 기본 HUD를 가리지 않는다.
-	_hud_안내.visible = 게임설정.조작안내_불러오기()
-	_hud_안내.add_to_group("조작안내")
-	_hud_안내.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_hud_안내.add_theme_font_size_override("font_size", 17)
-	# 안내는 **보조 정보**다 — HUD 보다 어둡게 둬서 시선이 먼저 HUD 로 가게 한다.
-	_hud_안내.add_theme_color_override("font_color", Color(0.72, 0.72, 0.70, 0.80))
-	_hud_안내.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-	_hud_안내.add_theme_constant_override("outline_size", 5)
-	_hud_안내.text = "A/D 이동  ·  Space 점프  ·  Shift 색전환  ·  좌클릭 발사  ·  E 회수/레버"
-	# 자원 HUD(layer 100)와 **다른 층**에 둔다. 층이 같으면 언젠가 또 겹친다.
-	var 안내층 := CanvasLayer.new()
-	안내층.name = "게임플레이_안내"
-	안내층.layer = 90
-	add_child(안내층)
-	안내층.add_child(_hud_안내)
-
-
-## ESC 메뉴를 붙이고, 저장된 밝기를 화면에 반영한다.
-## 밝기는 씬의 CanvasModulate("어둠") 색을 곱해서 만든다 —
-## 그래서 이 스테이지가 의도한 **원래 색을 기준값으로 넘겨줘야** 한다.
-## (현재 색을 기준으로 삼으면 슬라이더를 만질 때마다 값이 누적돼 점점 어두워진다)
-func _메뉴_만들기() -> void:
-	var 어둠 := get_node_or_null("어둠") as CanvasModulate
-	if 어둠 == null:
-		# 이름이 다르더라도 첫 번째 CanvasModulate 를 쓴다 (씬을 손으로 고쳤을 때 대비)
-		for 자식 in get_children():
-			if 자식 is CanvasModulate:
-				어둠 = 자식
-				break
-	var 메뉴 := 메뉴_스크립트.new()
-	메뉴.name = "일시정지메뉴"
-	add_child(메뉴)
-	if 어둠:
-		메뉴.연결(어둠, 어둠.color)

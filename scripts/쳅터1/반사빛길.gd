@@ -53,7 +53,8 @@ func _physics_process(_delta: float) -> void:
 	빛경로.append(origin)
 	var received := false
 	var exclude: Array[RID] = []
-	var p := get_tree().current_scene.get_node_or_null("Player") as CollisionObject2D
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	var p := 플레이어찾기.찾기(self) as CollisionObject2D
 	if p:
 		exclude.append(p.get_rid())
 	for body in _발판들:

@@ -195,7 +195,8 @@ func _process(delta: float) -> void:
 	# 일렁임 시간은 게임 중·아직 유령일 때만 민다(셰이더 TIME 금지 규칙 — 에디터가 쉬지 못한다).
 	#   칠해서 굳으면 _유령_세기값() 이 0 이 되어 더 이상 매 프레임 값을 보내지 않는다.
 	if 유령_일렁임 and not Engine.is_editor_hint() and _유령_세기값() > 0.0:
-		var 시각 := fmod(float(Time.get_ticks_msec()) * 0.001, 3600.0)
+		# [2026-10-14] 시간은 연출시계.gd 한 곳에서 읽는다(게임에선 예전과 같은 실제 시계 · 시험 때만 프레임 시계)
+		var 시각 := 연출시계.초()
 		for mat in _셰이더들:
 			mat.set_shader_parameter("anim_time", 시각)
 	if _마감_필요 and 땅지형 and not 석조선반 and is_inside_tree():

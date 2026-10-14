@@ -33,7 +33,8 @@ func _on_body_entered(body: Node2D) -> void:
 	if body is TileMapLayer:
 		_paint_color(body as TileMapLayer)
 	# 기존 TileMap 씬도 총구가 아닌 실제 지형 충돌점에서 물감 조각을 낸다.
-	var 플레이어 := get_tree().get_first_node_in_group("player")
+	# [2026-10-14] 플레이어 찾기는 플레이어찾기.gd 한 곳으로 모았다(같은 노드를 찾는다 · 이유는 그 파일 머리말)
+	var 플레이어 := 플레이어찾기.찾기(self)
 	var 행동효과 := 플레이어.get_node_or_null("ActionFX") if 플레이어 else null
 	if 행동효과 and 행동효과.has_method("명중"):
 		# [2026-09-05] 옛 타일맵 총알도 같은 공통 이펙트를 쓴다(법선은 없어서 안 넘긴다).
