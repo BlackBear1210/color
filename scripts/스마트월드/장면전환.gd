@@ -205,6 +205,9 @@ func _진행(씬경로: String, 다음번호: int) -> void:
 	await get_tree().process_frame
 	await get_tree().physics_frame
 	await get_tree().process_frame
+	# [2026-10-15 프레임 방어] 아직 까만 동안 — 출구 사진 저장 · 이번 실행에서 처음 들어가는 씬이면 멈춘 채 미리 그려
+	#   처음 그릴 때의 준비를 끝낸다(최대 1 초 · 재방문은 바로 지나간다). 이유·측정은 화면준비.gd 머리말.
+	await 화면준비.암전_중(get_tree(), 씬경로)
 
 	# ★새 챕터의 톤으로 갈아탄다. **침묵이 끝나기 전에** 시작해 두면
 	#   화면이 밝아질 때 이미 새 톤이 깔려 있다 = "다른 세계에 도착했다".

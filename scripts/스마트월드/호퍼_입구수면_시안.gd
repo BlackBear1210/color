@@ -63,7 +63,8 @@ func _process(delta: float) -> void:
 	super._process(delta)
 	_물줄기_맞추기()
 	# 뒤 겹도 같은 시계로 다시 그린다(앞 겹은 부모가 24fps 로 다시 그린다).
-	if is_instance_valid(_뒤겹):
+	# [2026-10-15 프레임 방어] 화면 밖이면 건너뛴다(부모 `_화면안` 과 같은 판단 — 들어오는 프레임에 바로 다시 그린다).
+	if is_instance_valid(_뒤겹) and _화면안:
 		_뒤겹.queue_redraw()
 
 

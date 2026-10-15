@@ -39,9 +39,21 @@ func _initialize() -> void:
 
 func _실행() -> void:
 	# 측정 중에는 화면 동기화·상한을 끈다 — 켜 두면 모든 프레임이 16.7ms 로 눌려 비용이 안 보인다.
-	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-	Engine.max_fps = 0
-	RenderingServer.viewport_set_measure_render_time(root.get_viewport_rid(), true)
+	# ★[2026-10-15] 프레임 방어 비교용 — "플레이어가 60 아래를 보나" 는 실제 게임과 같은 동기화·상한으로 재야 한다.
+	#   --동기=끔|켬|적응 (기본 끔) · --상한=N (Engine.max_fps · 기본 0 = 없음) · --설정따름 = 게임 설정(프로젝트·게임설정)을 건드리지 않음
+	var 동기 := "끔"
+	var 상한 := 0
+	for a in OS.get_cmdline_user_args():
+		if String(a).begins_with("--동기="):
+			동기 = String(a).trim_prefix("--동기=")
+		elif String(a).begins_with("--상한="):
+			상한 = int(String(a).trim_prefix("--상한="))
+	if not OS.get_cmdline_user_args().has("--설정따름"):
+		DisplayServer.window_set_vsync_mode({"켬": DisplayServer.VSYNC_ENABLED, "적응": DisplayServer.VSYNC_ADAPTIVE}.get(동기, DisplayServer.VSYNC_DISABLED))
+		Engine.max_fps = 상한
+	print("    동기 %s · 상한 %d" % [DisplayServer.window_get_vsync_mode(), Engine.max_fps])
+	# --gpu측정끔 : GPU 시간 측정(타이머 질의)을 끈다 — 측정 자체가 GPU 와 맞춰 기다리며 튐을 만드는지 대조할 때(gpu 칸은 0 이 된다)
+	RenderingServer.viewport_set_measure_render_time(root.get_viewport_rid(), not OS.get_cmdline_user_args().has("--gpu측정끔"))
 	var 대상: Array = []
 	for a in OS.get_cmdline_user_args():
 		var s := String(a)
@@ -205,9 +217,11 @@ func _한판(경로: String) -> void:
 	전체.sort()
 	var n := 전체.size()
 	var 넘음 := 전체.filter(func(v): return v > 예산_ms).size()
-	print("%-16s 로드 %6.0fms  칸 %2d  중앙 %5.2f  p95 %5.2f  p99 %5.2f  최대 %6.2f ms  16.7초과 %d/%d" % [
+	# 60Hz 화면에서 18ms 를 넘으면 그 프레임은 화면 한 주기를 놓친 것 = 플레이어 눈에 60 아래(--실제동기 일 때 의미가 있다)
+	var 놓침 := 전체.filter(func(v): return v > 18.0).size()
+	print("%-16s 로드 %6.0fms  칸 %2d  중앙 %5.2f  p95 %5.2f  p99 %5.2f  최대 %6.2f ms  16.7초과 %d/%d  18초과 %d" % [
 		경로.get_file().get_basename(), 로드_ms, 칸들.size(),
-		전체[n / 2], 전체[int(n * 0.95)], 전체[int(n * 0.99)], 전체[n - 1], 넘음, n])
+		전체[n / 2], 전체[int(n * 0.95)], 전체[int(n * 0.99)], 전체[n - 1], 넘음, n, 놓침])
 	print("    평균: gpu %5.2f · 렌더 cpu %5.2f · 스크립트(process+physics) %5.2f 최대 %5.2f ms" % [
 		합["gpu"] / n, 합["렌더cpu"] / n, 합["스크립트"] / n, 합["스크립트최대"]])
 	# ★[2026-10-02] 판정 — 외관을 바꾼 뒤 이 판정을 안 봐서 2-3 이 41FPS 로 떨어진 걸 놓쳤다(호퍼 입구 v4).

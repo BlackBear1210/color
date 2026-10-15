@@ -40,7 +40,7 @@ import time
 저장소 = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 엔진 = r"C:\Users\Public\godot46\Godot_v4.6.3-stable_win64_console.exe"   # 한글 경로에선 콘솔 exe 가 본체를 못 찾는다(CLAUDE.md)
 결과_뿌리 = os.path.join(저장소, "tools", "_진단", "전후비교")
-단계_전부 = ["연결", "로드", "화면", "검사", "경로"]
+단계_전부 = ["연결", "로드", "화면", "검사", "경로", "프레임"]
 
 # 규칙 3 검사 중 지금 tools/ 에 있는 것 + 최근 기능 시험. 시간 제한(초)은 원래부터 멈추는 것 때문에 둔다.
 검사_목록 = [
@@ -203,6 +203,39 @@ def 검사_단계(폴더, 빠르게):
         json.dump(요약, f, ensure_ascii=False, indent=1)
 
 
+def 프레임_단계(폴더):
+    """[2026-10-15] 쳅터1·하수도 스테이지 전부를 측정_하수도_프레임.gd 로 잰다(창 모드 · 실제 게임처럼 VSync 끔 · 플레이어 멈춤).
+    기준과 비교하지 않고 문턱으로 본다 — 60 FPS 아래(16.7 ms 초과) 프레임이 생기면 보고서에 적는다.
+    호퍼 입구가 화면 밖에서도 매 프레임 다시 그려 2-3 p99 가 16 ms 에 붙어 있던 것(작업기록 2026-10-15)을 다시 놓치지 않으려고."""
+    씬목록 = os.path.join(폴더, "씬목록.txt")
+    if not os.path.exists(씬목록):
+        연결_단계(폴더)
+    스테이지 = [l.strip() for l in open(씬목록, encoding="utf-8")
+              if "/scenes/쳅터1/스테이지/" in l or "/scenes/world_2_클로드/stage_" in l]
+    code = 엔진_돌리기(["--resolution", "1920x1080", "--audio-driver", "Dummy", "--rendering-method", "gl_compatibility",
+                      "-s", "res://tools/측정_하수도_프레임.gd", "--"] + 스테이지 + ["--칸=120"],
+                     os.path.join(폴더, "프레임.log"), 3000)
+    줄 = 프레임_읽기(os.path.join(폴더, "프레임.log"))
+    print(f"  프레임: 스테이지 {len(줄)} · 16.7ms 초과 {sum(r['넘음'] for r in 줄.values())} / {sum(r['n'] for r in 줄.values())} (종료 {code})")
+
+
+def 프레임_읽기(로그):
+    결과 = {}
+    if not os.path.exists(로그):
+        return 결과
+    for l in open(로그, encoding="utf-8", errors="replace"):
+        m = re.match(r"^(\S+)\s+로드.*중앙\s+([\d.]+)\s+p95\s+([\d.]+)\s+p99\s+([\d.]+)\s+최대\s+([\d.]+) ms\s+16.7초과 (\d+)/(\d+)\s+18초과 (\d+)", l)
+        if m:
+            결과[m.group(1)] = {"p99": float(m.group(4)), "최대": float(m.group(5)), "넘음": int(m.group(6)),
+                               "n": int(m.group(7)), "놓침": int(m.group(8))}
+    return 결과
+
+
+# [2026-10-15] 스테이지마다 따로 본다 — 전체 비율로 보면 한 스테이지의 23/960 이 다른 스테이지 수천 프레임에 묻혔다.
+#   한 스테이지에서 18 ms 넘은 프레임이 이 수 이하면 PC 상태 흔들림으로 보고 "참고" 로만 적는다(그보다 많으면 실패).
+프레임_참고_허용 = 1
+
+
 def 경로_단계(폴더):
     # 시험_경로재생 은 tools/쳅터1/검사.py 가 남긴 경로(tools/_진단/경로)를 읽는다 — 먼저 만든다
     subprocess.run([sys.executable, "-X", "utf8", os.path.join(저장소, "tools", "쳅터1", "검사.py")],
@@ -279,6 +312,25 @@ def 비교(기준, 지금, 단계=단계_전부):
     if "경로" in 단계 and os.path.exists(lb) and os.path.exists(la):
         합 = lambda p: [l.strip() for l in open(p, encoding="utf-8", errors="replace") if "합계" in l][-1:]
         칸("경로 재생 합계", [] if 합(la) == 합(lb) else [f"기준 {합(la)} → 지금 {합(lb)}"])
+
+    pf = os.path.join(지금, "프레임.log")
+    if "프레임" in 단계 and os.path.exists(pf):
+        r = 프레임_읽기(pf)
+        총 = sum(x["n"] for x in r.values()) or 1
+        줄글 = lambda k, x: f"{k}: 16.7ms 초과 {x['넘음']}/{x['n']} · 18ms 초과 {x['놓침']} · p99 {x['p99']} · 최대 {x['최대']}"
+        떨어짐 = [줄글(k, x) for k, x in sorted(r.items()) if x["놓침"] > 프레임_참고_허용]
+        드묾 = [줄글(k, x) for k, x in sorted(r.items()) if x["넘음"] > 0 and x["놓침"] <= 프레임_참고_허용]
+        if not r:
+            칸("프레임 — 60 FPS", ["측정 결과가 없다 — 지금/프레임.log 를 볼 것"])
+        else:
+            칸("프레임 — 60 FPS 아래로 떨어짐" if 떨어짐 else "프레임 — 60 FPS", 떨어짐)
+            줄.append(f"스테이지 {len(r)} · 프레임 {총} · 16.7ms 초과 {sum(x['넘음'] for x in r.values())} · p99 최고 {max(x['p99'] for x in r.values())} ms")
+            줄.append("")
+            if 드묾:
+                줄.append(f"### 참고 — 드물게 넘은 프레임(스테이지마다 18ms 초과 {프레임_참고_허용} 개 이하 · PC 상태 흔들림일 수 있음)")
+                줄.append("")
+                줄.extend(f"- {x}" for x in 드묾)
+                줄.append("")
 
     줄.insert(5, "**결과: " + ("다름 없음 ✔" if not 다름 else "다름 — " + " · ".join(다름)) + "**")
     with open(os.path.join(결과_뿌리, "보고서.md"), "w", encoding="utf-8") as f:
@@ -358,7 +410,7 @@ def main():
     for s in 단계:
         print(f"[{s}]")
         {"연결": lambda: 연결_단계(폴더), "로드": lambda: 로드_단계(폴더), "화면": lambda: 화면_단계(폴더),
-         "검사": lambda: 검사_단계(폴더, 빠르게), "경로": lambda: 경로_단계(폴더)}[s]()
+         "검사": lambda: 검사_단계(폴더, 빠르게), "경로": lambda: 경로_단계(폴더), "프레임": lambda: 프레임_단계(폴더)}[s]()
     if 인자[0] == "기준" and "화면" in 단계:
         print("[흔들림]")
         흔들림_마스크(폴더)
