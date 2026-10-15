@@ -42,10 +42,42 @@ func 상태_받기(물색: int, 유입들: Array) -> void:
 func _process(delta: float) -> void:
 	_시간 += delta
 	_누적 += delta
+	# ★[2026-10-15 프레임 방어] 화면 밖 입구는 다시 그리지 않는다.
+	#   Godot 은 화면 밖 CanvasItem 도 queue_redraw 하면 _draw 를 다시 돌려 그림 명령을 새로 만든다.
+	#   2-3 은 호퍼가 15 개라 안 보이는 입구 10 여 개가 매 프레임 그림을 다시 만들었고(뒤 겹은 매 프레임),
+	#   그 때문에 p99 가 16 ms 로 60 FPS 한계에 붙어 있었다(입구를 빼면 11 ms — 작업기록 2026-10-15).
+	#   시간(_시간·_누적)은 그대로 흐르게 두고 그리기만 건너뛴다 → 화면에 들어오는 그 프레임에 바로 다시 그려
+	#   지금 시각의 물결이 나온다(화면 안에 있을 때의 그림은 예전과 같다).
+	var 보임 := _화면에_보이나()
+	var 막_보임 := 보임 and not _화면안
+	_화면안 = 보임
 	# 작은 입구 효과만 24fps로 갱신한다. 물 v3의 GPU 애니메이션/판정은 건드리지 않는다.
 	if _누적 >= 1.0 / 24.0:
 		_누적 = fmod(_누적, 1.0 / 24.0)
+		if 보임:
+			queue_redraw()
+	elif 막_보임:
 		queue_redraw()
+
+
+## [2026-10-15] 그리는 범위를 넉넉히 감싼 사각형이 지금 화면(뷰포트)에 걸려 있나.
+##   범위 = 앞 금속 띠(원화 ±204 × 배율) · 물결·착수 왕관·방울(입구 위아래 수십 px) — 넉넉하게 ±260 · 위아래 여유 + 화면_여유.
+##   카메라 줌·흔들림은 get_global_transform_with_canvas 가 함께 반영한다.
+const 화면_여유 := 96.0
+var _화면안 := false
+
+func _화면에_보이나() -> bool:
+	if not is_instance_valid(_호퍼):
+		return true
+	var 배율: Vector2 = _호퍼.call("입구_아트_배율")
+	var 높이: float = _호퍼.get("높이")
+	var 반폭 := maxf(260.0 * absf(배율.x), float(_호퍼.get("폭")))
+	var 로컬 := Rect2(-반폭, -높이 - 120.0 * absf(배율.y) - 64.0, 반폭 * 2.0, 260.0 * absf(배율.y) + 128.0)
+	var 변환 := _호퍼.get_global_transform_with_canvas()
+	var 범위 := Rect2(변환 * 로컬.position, Vector2.ZERO)
+	for 꼭짓점 in [Vector2(로컬.end.x, 로컬.position.y), 로컬.end, Vector2(로컬.position.x, 로컬.end.y)]:
+		범위 = 범위.expand(변환 * 꼭짓점)
+	return 범위.grow(화면_여유).intersects(get_viewport_rect())
 
 static func 수면색(물색: int) -> Color:
 	match 물색:

@@ -45,7 +45,8 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _토글() -> void:
-	if _이동중:
+	# [2026-10-15] 스테이지 전환 암전 대기(화면준비) 중에는 열지 않는다 — 대기가 끝나며 일시정지를 풀 때 메뉴와 엉킨다
+	if _이동중 or 화면준비.대기중:
 		return
 	_열림 = not _열림
 	visible = _열림
