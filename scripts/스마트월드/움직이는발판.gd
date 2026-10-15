@@ -30,6 +30,20 @@ extends AnimatableBody2D
 class_name 움직이는발판
 
 const 원근_그림 = preload("res://scripts/스마트월드/격자_원근그림.gd")
+const 목재그림 = preload("res://scripts/스마트월드/목재_장치그림.gd")
+## 자동은 실제로 배치된 챕터1에서만 목재를 쓴다. 다른 챕터의 주철/칠하기 퍼즐은 기존 설정을 따른다.
+@export_enum("자동:0", "집 목재:1", "기존:2") var 장치_디자인: int = 0:
+	set(value): 장치_디자인 = value; queue_redraw()
+
+func _집_디자인인가() -> bool:
+	if 장치_디자인 != 0:
+		return 장치_디자인 == 1
+	var node: Node = self
+	while node:
+		if node.scene_file_path.contains("/쳅터1/"):
+			return true
+		node = node.get_parent()
+	return false
 ## 고정색 주철 승강기도 격자/돌과 같은 원근을 쓴다. 기존 칠하기 퍼즐의 외관은 보존한다.
 @export var 챕터1_원근: bool = false:
 	set(value):
@@ -38,6 +52,8 @@ const 원근_그림 = preload("res://scripts/스마트월드/격자_원근그림
 
 func 발_그림_깊이() -> float:
 	# 몸과 승강기 왕복 경로는 그대로 두고 발 그림만 윗면 중앙에 맞춘다.
+	if _집_디자인인가() and 칠하기_가능:
+		return 7.0
 	return -4.0 + minf(18.0, 크기.x * 0.375) * 22.0 / 18.0 * 0.5 if 챕터1_원근 and not 칠하기_가능 else 0.0
 
 @export_group("모양")
@@ -219,6 +235,10 @@ func _draw() -> void:
 		_주철판_그리기()
 		_구간_그리기()
 		return
+	if _집_디자인인가():
+		_목재판_그리기()
+		_구간_그리기()
+		return
 
 	var 본체 := Color(0.22, 0.23, 0.26)
 	match _상태색:
@@ -253,9 +273,24 @@ func _draw() -> void:
 	_구간_그리기()
 
 
-## 칠할 수 없는 승강기 = 주철 판. `통과플랫폼._draw()` 와 같은 원본 영역·같은 늘리기 방식
-## (양끝 볼트는 비율 유지, 가운데만 늘림)이라 격자와 한 벌로 읽힌다.
-## 방향 화살표는 그리지 않는다 — "움직인다"는 매달린 쇠사슬(장식 키트)이 알려 준다.
+## 챕터1 이동 발판은 점프대와 같은 철띠 목재를 쓰고, 하부 장치로 이동 축을 구분한다.
+func _목재판_그리기() -> void:
+	# 안 칠한 면도 검정 판정이므로 회색 안전판처럼 보이지 않게 한다. 부분 칠은 원래 횟수대로 왼쪽부터 드러난다.
+	var tint := Color(0.30, 0.30, 0.30)
+	if _상태색 == ColorDefs.WHITE:
+		tint = Color(2.0, 2.0, 1.96)
+	elif _상태색 == ColorDefs.GRAY:
+		tint = Color(1.0, 1.0, 1.0)
+	목재그림.이동_하부(self, 크기, 이동방향 == 1)
+	var y := -크기.y * 0.5 + 발_그림_깊이()
+	목재그림.상판(self, 크기.x, y, 7.0, tint)
+	if _상태색 < 0 and _맞은횟수 > 0:
+		var progress := clampf(float(_맞은횟수) / float(maxi(필요횟수, 1)), 0.0, 1.0)
+		var paint := Color(2.0, 2.0, 1.96) if _진행색 == ColorDefs.WHITE else Color(0.30, 0.30, 0.30)
+		목재그림.상판(self, 크기.x, y, 7.0, paint, progress)
+
+
+## 칠할 수 없는 승강기의 주철 원본·양끝 볼트·격자 원근은 기존 규격을 따른다.
 func _주철판_그리기() -> void:
 	if 챕터1_원근:
 		# 정지 격자와 동일한 원본/분할/명암을 써 승강기만 정면 띠로 남는 이질감을 없앤다.

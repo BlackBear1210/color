@@ -49,6 +49,8 @@ extends Area2D
 ## ============================================================================
 class_name 도약대
 
+const 목재그림 = preload("res://scripts/스마트월드/목재_장치그림.gd")
+
 @export_range(60, 400) var 폭: float = 150.0:
 	set(v): 폭 = v; _재구성()
 @export_range(20, 120) var 높이: float = 46.0:
@@ -407,11 +409,17 @@ func _draw() -> void:
 	var 판색 := Color(0.82, 0.82, 0.82)            # 무색 = 장치 명도(77 근처 — 판 평균 92 × 0.82)
 	if 색_제한:
 		판색 = Color(1.7, 1.7, 1.7) if 색 == ColorDefs.WHITE else Color(0.22, 0.22, 0.22)
-	draw_texture_rect(판, Rect2(-판.get_width() * sx_판 * 0.5, 판바닥 - 판h, 판.get_width() * sx_판, 판h), false, 판색)
-	if 색_제한 and 색 == ColorDefs.BLACK:
+	if _텍스처.get("재질") == "집":
+		# 원화의 양끝이 벌어지는 대칭 원근을 제거한다. 발 자리와 코일의 눌림은 기존 식 그대로 유지한다.
+		var 발y := 판바닥 - 판h * (1.0 - float(발자리_비율["집"]))
+		목재그림.상판(self, 폭, 발y, clampf(판h * 0.28, 4.0, 8.0), 판색)
+	else:
+		draw_texture_rect(판, Rect2(-판.get_width() * sx_판 * 0.5, 판바닥 - 판h, 판.get_width() * sx_판, 판h), false, 판색)
+	if 색_제한 and 색 == ColorDefs.BLACK and _텍스처.get("재질") != "집":
 		# 검정 판은 어두운 화면에서 사라진다 → 판 위 가장자리에 얇은 밝은 테(카드 0 "black objects … lighter rim")
 		draw_line(Vector2(-폭 * 0.47, 판바닥 - 판h + 1.5), Vector2(폭 * 0.47, 판바닥 - 판h + 1.5),
 			Color(0.34, 0.34, 0.35, 0.9), 1.5)
+	draw_set_transform(Vector2.ZERO)
 
 
 ## 부품 그림이 없을 때만 쓰는 예전 버섯형(회귀 방지)

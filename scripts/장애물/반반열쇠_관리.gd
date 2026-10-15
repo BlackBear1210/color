@@ -181,7 +181,8 @@ func _날아가기(월드위치: Vector2, 쪽: String) -> void:
 	if HUD == null:
 		return
 	var 화면 := _월드.get_viewport().get_canvas_transform() * 월드위치
-	var 목표: Vector2 = HUD.call("칸_중심")
+	# 분리된 HUD에서는 주운 반쪽 칸으로 보낸다. 완성 열쇠의 출발점(칸_중심)은 그대로 사용한다.
+	var 목표: Vector2 = HUD.call("조각_중심", 쪽)
 	var 그림 := TextureRect.new()
 	그림.texture = load(열쇠_폴더 + 쪽 + ".png")
 	# ⚠ TextureRect 는 기본(EXPAND_KEEP_SIZE)이면 그림 크기(2배 저장) 아래로 줄지 않는다 → 크기 무시로

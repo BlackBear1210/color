@@ -1,5 +1,7 @@
 @tool
 extends 색레이저
+
+const 상판접지 = preload("res://scripts/쳅터1/상판_접지.gd")
 ## ============================================================================
 ## [2026-10-05 Claude] 쳅터1 색 빛 — 창문 달빛 · 천장 틈 빛 기둥 · 그을음 기둥
 ## ----------------------------------------------------------------------------
@@ -56,6 +58,9 @@ const 창문_최대 := 2400.0                           ## 빛이 닿을 수 있
 var _창문: Sprite2D
 var _빛면 := PackedVector2Array()                  ## 빛 부피(노드 로컬, 볼록 다각형) = 판정 모양
 var _바닥 := PackedVector2Array()                  ## [최소 가장자리 착지, 최대 가장자리 착지, 가운데 착지](로컬)
+var _그림바닥 := PackedVector2Array()              ## 판정 착지점과 분리한 2.5D 윗면 중앙(그림 전용)
+var _끝보정 := Vector2.ZERO
+var _최근그림점 := Vector2.ZERO
 var _모서리 := PackedVector2Array()                ## 빛에 수직인 방향으로 [가장 바깥 두 유리 꼭짓점](로컬)
 
 
@@ -103,8 +108,10 @@ func _창문_갱신() -> void:
 		if c.dot(수직) > 최대.dot(수직):
 			최대 = c
 	var 착지 := PackedVector2Array()
+	var 그림착지 := PackedVector2Array()
 	for 시작 in [최소, 최대, (최소 + 최대) * 0.5]:
 		착지.append(_광선(시작, 방향))
+		그림착지.append(_최근그림점)
 	var 점들 := 꼭짓점.duplicate()
 	점들.append(착지[0])
 	점들.append(착지[1])
@@ -119,6 +126,7 @@ func _창문_갱신() -> void:
 				break
 	_모서리 = PackedVector2Array([최소, 최대])
 	_바닥 = 착지
+	_그림바닥 = 그림착지
 	if 바뀜:
 		_빛면 = 껍질
 		_재구성()
@@ -133,7 +141,9 @@ func _광선(시작: Vector2, 방향: Vector2) -> Vector2:
 	if player:
 		q.exclude = [player.get_rid()]
 	var hit := get_world_2d().direct_space_state.intersect_ray(q)
-	return to_local(hit.position) if not hit.is_empty() else 시작 + 방향 * 창문_최대
+	var point := to_local(hit.position) if not hit.is_empty() else 시작 + 방향 * 창문_최대
+	_최근그림점 = point + 상판접지.충돌_보정(self, point, hit)
+	return point
 
 
 ## 창문 모드면 판정 모양 = 빛 부피 다각형. 아니면 부모(색레이저)의 직사각형 띠.
@@ -185,6 +195,9 @@ func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	if _창문:
 		_창문_갱신()
+	else:
+		# 천장 틈·그을음·반사광도 끝이 닿은 면을 기준으로 한다. 움직이는 발판이 받치면 그 면의 깊이를 따른다.
+		_끝보정 = 상판접지.보정(self, Vector2.RIGHT.rotated(deg_to_rad(각도)) * 길이)
 
 
 func _재질() -> void:
@@ -219,8 +232,13 @@ func _draw() -> void:
 	if _창문 and _빛면.size() >= 3:
 		_창문빛_그리기(방향, 수직, 흰, 본, 세기)      # [2026-10-07] 창문 모드 — 파일 끝 함수
 		return
+	# 근원은 고정하고 끝으로 갈수록 깊이를 보간한다. 빛 기둥이 뒤 모서리에서 끊기는 틈을 없앤다.
+	var offset := Vector2(0, 7) if Engine.is_editor_hint() and 방향.y > 0.2 else _끝보정
+	var axis := 방향 / maxf(길이, 1.0)
+	draw_set_transform_matrix(Transform2D(Vector2.RIGHT + offset * axis.x, Vector2.DOWN + offset * axis.y, Vector2.ZERO))
 	_근원_그리기(방향, 수직, 흰, 본, maxf(세기, 0.25))
 	if 세기 <= 0.01:
+		draw_set_transform(Vector2.ZERO)
 		return
 	var 반 := 두께 * 0.5
 	var 마디 := 10
@@ -300,8 +318,9 @@ func _draw() -> void:
 	var 고임 := PackedVector2Array()
 	for i in 20:
 		var t := TAU * float(i) / 20.0
-		고임.append(끝 + Vector2(cos(t) * 두께 * (1.1 if 흰 else 0.7), sin(t) * 7.0 - 3.0))
+		고임.append(끝 + Vector2(cos(t) * 두께 * (1.1 if 흰 else 0.7), sin(t) * 7.0))
 	draw_colored_polygon(고임, _투명(본, (0.22 if 흰 else 0.55) * 세기))
+	draw_set_transform(Vector2.ZERO)
 
 
 func _근원_그리기(방향: Vector2, 수직: Vector2, 흰: bool, 본: Color, 세기: float) -> void:
@@ -374,8 +393,8 @@ func _창문빛_그리기(방향: Vector2, 수직: Vector2, 흰: bool, 본: Colo
 		if c.dot(수직) > 모서리[1].dot(수직):
 			모서리[1] = c
 	var 보이는 := 지금.duplicate()
-	보이는.append(_바닥[0])
-	보이는.append(_바닥[1])
+	보이는.append(_그림바닥[0])
+	보이는.append(_그림바닥[1])
 	보이는 = Geometry2D.convex_hull(보이는)
 	if 보이는.size() > 1 and 보이는[0].is_equal_approx(보이는[-1]):
 		보이는.remove_at(보이는.size() - 1)
@@ -389,13 +408,13 @@ func _창문빛_그리기(방향: Vector2, 수직: Vector2, 흰: bool, 본: Colo
 		색들.append(_투명(본, lerpf(0.16, 0.05, u) * 세기 * 숨))
 	draw_polygon(보이는, 색들)
 	# 판정 경계가 읽히도록 가장자리 두 광선에 아주 옅은 선
-	draw_line(모서리[0], _바닥[0], _투명(본, 0.10 * 세기), 1.5, true)
-	draw_line(모서리[1], _바닥[1], _투명(본, 0.10 * 세기), 1.5, true)
+	draw_line(모서리[0], _그림바닥[0], _투명(본, 0.10 * 세기), 1.5, true)
+	draw_line(모서리[1], _그림바닥[1], _투명(본, 0.10 * 세기), 1.5, true)
 	# ── ③ 빛살 + 창살 그림자 ──
 	for k in 9:
 		var f := (float(k) + 0.5) / 9.0
 		var 시작 := 모서리[0].lerp(모서리[1], f)
-		var 끝 := _바닥[0].lerp(_바닥[1], f)
+		var 끝 := _그림바닥[0].lerp(_그림바닥[1], f)
 		var 굵기 := lerpf(4.0, 14.0, fposmod(sin(k * 7.13) * 91.7, 1.0))
 		var a := (0.035 + 0.035 * sin(_시각 * (0.25 + 0.07 * k) + k * 1.9)) * 세기
 		draw_line(시작, 끝, _투명(본, maxf(a, 0.0)), 굵기, true)
@@ -418,7 +437,7 @@ func _창문빛_그리기(방향: Vector2, 수직: Vector2, 흰: bool, 본: Colo
 		var h2 := fposmod(sin(float(n) * 78.233) * 12543.137, 1.0)
 		var u := fposmod(h + _시각 * (0.02 + 0.03 * h2), 1.0)
 		var 시작 := 모서리[0].lerp(모서리[1], h2)
-		var 끝 := _바닥[0].lerp(_바닥[1], h2)
+		var 끝 := _그림바닥[0].lerp(_그림바닥[1], h2)
 		var 점 := 시작.lerp(끝, u) + 수직 * sin(_시각 * (0.6 + h) + n) * 4.0
 		var 반짝 := 0.5 + 0.5 * sin(_시각 * (1.6 + 2.0 * h) + n * 1.7)
 		var 끝흐림 := clampf(minf(u, 1.0 - u) * 8.0, 0.0, 1.0)

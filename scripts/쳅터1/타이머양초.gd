@@ -1,5 +1,8 @@
 @tool
 extends Node2D
+
+const 상판접지 = preload("res://scripts/쳅터1/상판_접지.gd")
+var _접지 := Vector2.ZERO
 ## ============================================================================
 ## [2026-10-09 Claude 신규] 타이머 양초 — 세계 안의 시계(기획 §4-I 타임어택 = "큰 양초가 타들어 감")
 ## ----------------------------------------------------------------------------
@@ -31,6 +34,10 @@ func _ready() -> void:
 		var 경로 := "res://assets/textures/props/신규기믹_v02/게임용/테마/양초_%d.png" % k
 		_그림들.append(load(경로) if ResourceLoader.exists(경로) else null)
 	z_index = -1
+	if Engine.is_editor_hint():
+		_접지 = Vector2(0, 7)
+	else:
+		_바닥맞추기.call_deferred()
 	queue_redraw()
 	if Engine.is_editor_hint():
 		set_process(false)
@@ -40,6 +47,14 @@ func _ready() -> void:
 		켜기()
 	else:
 		set_process(false)
+
+
+func _바닥맞추기() -> void:
+	# 시계·레버의 논리 위치를 유지하면서 양초 그림과 안전한 빛의 중심만 같은 상판에 맞춘다.
+	await get_tree().physics_frame
+	if is_inside_tree():
+		_접지 = 상판접지.보정(self, Vector2.ZERO)
+		queue_redraw()
 
 
 func 켜기(초: float = -1.0) -> void:
@@ -64,7 +79,7 @@ func 남은_비율() -> float:
 func 빛_안인가(월드점: Vector2) -> bool:
 	if not 켜짐:
 		return false
-	return 월드점.distance_to(global_position + Vector2(0, -_불높이())) <= 빛_반경
+	return 월드점.distance_to(to_global(_접지 + Vector2(0, -_불높이()))) <= 빛_반경
 
 
 func _불높이() -> float:
@@ -83,6 +98,7 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	draw_set_transform(_접지)
 	# 상태: 켜짐 = 남은 비율로 0~3 · 다 탔음 = 5(촛대만) · 아직 안 켬 = 0 번 그림에서 불꽃만 잘라 낸 '새 초'
 	var 단계 := 5
 	var 새초 := false

@@ -7,6 +7,7 @@ extends Control
 ##   · 조각을 주우면 점선 안이 **주운 반쪽의 실제 모양 그대로** 0.4초 동안 잉크가 차오르듯 채워진다
 ##     (왼쪽 반 = 검정 · 오른쪽 반 = 흰색).
 ##   · 둘 다 차면 지그재그 면이 **맞물리며 붙는 연출**(0.6초) → 점선이 실선 = 완성된 열쇠.
+##   · [2026-10-15] 미완성일 때는 두 조각과 점선 윤곽을 좌우로 나란히 놓고, 전부 획득하면 가운데에서 한 열쇠로 합친다.
 ##   · 잠긴 문에 열쇠 없이 다가가면 흔들림(`흔들기`) · 조각 하나뿐이면 빈 반쪽이 깜빡인다(`빈쪽_깜빡`).
 ##
 ## ▣ 그림
@@ -33,6 +34,8 @@ var _가짐 := {"왼쪽": false, "오른쪽": false}
 var _채움 := {"왼쪽": 0.0, "오른쪽": 0.0}
 var _완성 := false
 var _외곽: PackedVector2Array = PackedVector2Array()   ## 그림 픽셀 좌표(2배) — 그릴 때 배율을 곱한다
+## 좌우로 떨어진 두 조각의 점선도 각각 따라가도록 반쪽 윤곽을 원본 알파에서 한 번만 구한다.
+var _조각외곽: Dictionary = {}
 var _윤곽: Control = null
 var _크기 := Vector2(80, 143)
 var _t := 0.0
@@ -48,14 +51,16 @@ func _ready() -> void:
 	if 실:
 		_크기 = Vector2(실.get_size())
 		_외곽 = _바깥윤곽(실.get_image())
-	size = _크기 * 배율
+	# 사용자 참고 이미지처럼 같은 높이에 좌우로 놓는다. 세로 공간은 원래 열쇠 한 개 높이만 사용한다.
+	var 그림크기 := _크기 * 배율
+	size = 그림크기 + Vector2(_분리폭(), 0)
 	for 쪽 in ["왼쪽", "오른쪽"]:
 		var tr := TextureRect.new()
 		tr.name = 쪽
 		tr.texture = load(폴더 + 쪽 + "_HUD.png")
 		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tr.stretch_mode = TextureRect.STRETCH_SCALE
-		tr.size = size
+		tr.size = 그림크기
 		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var m := ShaderMaterial.new()
 		m.shader = 채움_셰이더
@@ -64,6 +69,8 @@ func _ready() -> void:
 		add_child(tr)
 		_반[쪽] = tr
 		_재질[쪽] = m
+		_조각외곽[쪽] = _바깥윤곽(tr.texture.get_image())
+	_자리_맞추기(0.0)
 	# 윤곽은 채움 **위**에 그린다(채움 가장자리가 점선을 덮어 끊어 보이지 않게)
 	_윤곽 = Control.new()
 	_윤곽.name = "윤곽"
@@ -89,10 +96,17 @@ func _바깥윤곽(img: Image) -> PackedVector2Array:
 ## 관리자가 스테이지에 들어올 때 부른다 — 이미 주운 조각(저장된 진행)은 연출 없이 바로 채운다.
 func 준비(왼: bool, 오: bool) -> void:
 	_가짐 = {"왼쪽": 왼, "오른쪽": 오}
+	# 재입장/리스폰 중 끝나지 않은 맞물림이 남아 저장된 상태를 다시 흔들지 않게 한다.
+	_맞물림_t = -1.0
+	_깜빡_t = 0.0
+	_깜빡_쪽 = ""
 	for 쪽 in ["왼쪽", "오른쪽"]:
 		_채움[쪽] = 1.0 if _가짐[쪽] else 0.0
 		_재질[쪽].set_shader_parameter("fill", _채움[쪽])
+		_재질[쪽].set_shader_parameter("flash", 0.0)
+		_재질[쪽].set_shader_parameter("ghost", 0.0)
 	_완성 = 왼 and 오
+	_자리_맞추기(1.0 if _완성 else 0.0)
 	_윤곽.queue_redraw()
 
 
@@ -113,6 +127,27 @@ func 완성됨() -> bool:
 ## 화면(뷰포트) 좌표 — 조각이 날아올 목표 · 완성 열쇠가 문으로 떠날 출발점.
 func 칸_중심() -> Vector2:
 	return get_global_transform_with_canvas() * (size * 0.5)
+
+
+## 주운 조각은 자기 칸으로 날아온다. 둘 다 모은 뒤 문으로 떠날 때는 기존 칸_중심()을 쓴다.
+func 조각_중심(쪽: String) -> Vector2:
+	var tr: TextureRect = _반[쪽]
+	return get_global_transform_with_canvas() * (tr.position + tr.size * 0.5)
+
+
+func _분리폭() -> float:
+	# 두 텍스처는 완성 열쇠와 같은 투명 캔버스를 쓴다. 반 폭만 벌리면 지그재그 사이에 약 14px 틈이 생긴다.
+	return _크기.x * 배율 * 0.5
+
+
+func _자리_맞추기(합침: float) -> void:
+	var gap := _분리폭()
+	for 쪽 in ["왼쪽", "오른쪽"]:
+		var start := 0.0 if 쪽 == "왼쪽" else gap
+		var target := Vector2(lerpf(start, gap * 0.5, 합침), 0)
+		# 합체가 끝나 번쩍임만 남은 프레임에는 같은 위치를 다시 넣지 않는다.
+		if not _반[쪽].position.is_equal_approx(target):
+			_반[쪽].position = target
 
 
 ## 잠긴 문에 열쇠 없이 다가갔다(0.35초 좌우 흔들림).
@@ -149,30 +184,21 @@ func _process(delta: float) -> void:
 	# 둘 다 다 찼으면 → 맞물림 시작(한 번)
 	if not _완성 and _채움["왼쪽"] >= 1.0 and _채움["오른쪽"] >= 1.0 and _맞물림_t < 0.0:
 		_맞물림_t = 0.0
-	# ── 맞물림 0.6초: 0~0.25 벌어짐(±5px) → 0.25~0.4 철컥 붙음(살짝 넘침) → 번쩍 → 점선이 실선 ──
+	# 좌우의 반쪽을 같은 캔버스 위치로 포개 하나의 열쇠를 만든 뒤에만 전체 실선으로 바꾼다.
 	if _맞물림_t >= 0.0:
 		_맞물림_t += delta
-		var k := _맞물림_t / 맞물림_시간
-		var 벌어짐 := 0.0
-		if k < 0.42:
-			벌어짐 = 5.0 * sin(k / 0.42 * PI * 0.5)
-		elif k < 0.67:
-			var u := (k - 0.42) / 0.25
-			벌어짐 = lerpf(5.0, -1.2, u * u)
-		else:
-			벌어짐 = lerpf(-1.2, 0.0, clampf((k - 0.67) / 0.33, 0.0, 1.0))
-		_반["왼쪽"].position.x = -벌어짐
-		_반["오른쪽"].position.x = 벌어짐
-		var 번쩍 := clampf(1.0 - absf(k - 0.62) / 0.18, 0.0, 1.0)
+		var k := _맞물림_t / maxf(맞물림_시간, 0.001)
+		_자리_맞추기(smoothstep(0.08, 0.80, k))
+		var 번쩍 := clampf(1.0 - absf(k - 0.84) / 0.16, 0.0, 1.0)
 		for 쪽 in ["왼쪽", "오른쪽"]:
 			_재질[쪽].set_shader_parameter("flash", 번쩍)
-		if k >= 0.62 and not _완성:
+		if k >= 0.80 and not _완성:
 			_완성 = true            # 붙는 순간 점선 → 실선
 			_윤곽.queue_redraw()
 		if k >= 1.0:
 			_맞물림_t = -1.0
+			_자리_맞추기(1.0)
 			for 쪽 in ["왼쪽", "오른쪽"]:
-				_반[쪽].position.x = 0.0
 				_재질[쪽].set_shader_parameter("flash", 0.0)
 		else:
 			바쁨 = true
@@ -207,16 +233,25 @@ func _기준x() -> float:
 
 
 func _윤곽_그리기() -> void:
-	if _외곽.size() < 3:
+	if _완성:
+		_윤곽선(_외곽, Vector2(_분리폭() * 0.5, 0), true)
+	else:
+		# 점선도 각 조각과 같이 움직인다. 합쳐진 전체 외곽을 미리 그리면 분리 상태가 읽히지 않는다.
+		for 쪽 in ["왼쪽", "오른쪽"]:
+			_윤곽선(_조각외곽[쪽], _반[쪽].position, false)
+
+
+func _윤곽선(outline: PackedVector2Array, offset: Vector2, solid: bool) -> void:
+	if outline.size() < 3:
 		return
 	var s := 배율
 	var 점들 := PackedVector2Array()
-	for p in _외곽:
-		점들.append(p * s)
-	점들.append(_외곽[0] * s)
+	for p in outline:
+		점들.append(p * s + offset)
+	점들.append(outline[0] * s + offset)
 	var 밝은 := Color(0.80, 0.80, 0.80, 0.92)
 	var 어두운 := Color(0.02, 0.02, 0.02, 0.75)
-	if _완성:
+	if solid:
 		# 실선 — 어두운 받침선 위에 밝은 선(어떤 배경에서도 읽히게)
 		_윤곽.draw_polyline(점들, 어두운, 3.6, true)
 		_윤곽.draw_polyline(점들, 밝은, 1.8, true)
